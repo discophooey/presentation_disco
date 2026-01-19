@@ -585,18 +585,7 @@
             });
 
             if (!combinedBody.trim()) {
-                return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Empty Stack</title></head><body style="padding: 100px; text-align: center; font-family: 'APRegular', 'APMedium', 'APBold', sans-serif; color: #666;"><h1>No Content</h1><p>All sections were empty.</p><script>
-(function(){
-  var path = location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('#disco-nav a').forEach(function(a){
-    if(a.getAttribute('href') === path){
-      a.style.color = '#4a9eff';
-      a.style.borderBottom = '2px solid #4a9eff';
-    }
-  });
-})();
-</script>
-</body></html>';
+                return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Empty Stack</title></head><body style="padding: 100px; text-align: center; font-family: sans-serif; color: #666;"><h1>No Content</h1><p>All sections were empty.</p></body></html>';
             }
 
             // Build the final combined HTML using string concatenation to avoid template literal issues
@@ -624,18 +613,7 @@
                 '    <script>\n' +
                 '        ' + combinedScripts + '\n' +
                 '    </' + 'script>\n' +
-                '<script>
-(function(){
-  var path = location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('#disco-nav a').forEach(function(a){
-    if(a.getAttribute('href') === path){
-      a.style.color = '#4a9eff';
-      a.style.borderBottom = '2px solid #4a9eff';
-    }
-  });
-})();
-</script>
-</body>\n' +
+                '</body>\n' +
                 '</html>';
 
             return htmlDoc;
