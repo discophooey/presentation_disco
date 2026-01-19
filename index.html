@@ -27,11 +27,77 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .landing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
 .module-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 24px; text-decoration: none; transition: all 0.2s; display: block; }
 .module-card:hover { border-color: #4a9eff; transform: translateY(-3px); box-shadow: 0 10px 30px rgba(74, 158, 255, 0.1); }
-.module-card h3 { color: #4a9eff; font-size: 16px; margin-bottom: 8px; }
+.module-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.module-card h3 { color: #4a9eff; font-size: 16px; margin: 0; }
 .module-card p { color: #888; font-size: 13px; line-height: 1.5; }
+
+.demo-btn { 
+    background: #2a2a2a; 
+    border: 1px solid #3a3a3a; 
+    color: #888; 
+    font-size: 10px; 
+    padding: 4px 8px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    font-weight: 500; 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 4px;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+.demo-btn:hover { background: #3a3a3a; color: #fff; border-color: #4a4a4a; }
+.demo-btn .play-icon { font-size: 8px; }
 
 .section-title { max-width: 1200px; margin: 0 auto 20px; padding-top: 40px; border-top: 1px solid #2a2a2a; margin-top: 40px; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
 .section-title:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+
+/* Demo Modal */
+.demo-modal { 
+    display: none; 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,0.9); 
+    z-index: 1000; 
+    align-items: center; 
+    justify-content: center;
+    padding: 20px;
+}
+.demo-modal.active { display: flex; }
+.demo-modal-content { 
+    background: #1a1a1a; 
+    border-radius: 12px; 
+    width: 100%; 
+    max-width: 500px; 
+    max-height: 90vh;
+    overflow: hidden;
+    border: 1px solid #2a2a2a;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.demo-modal-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 16px 20px; 
+    border-bottom: 1px solid #2a2a2a;
+}
+.demo-modal-header h3 { color: #4a9eff; font-size: 16px; margin: 0; }
+.demo-modal-close { 
+    background: #2a2a2a; 
+    border: none; 
+    color: #888; 
+    width: 32px; 
+    height: 32px; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.demo-modal-close:hover { background: #3a3a3a; color: #fff; }
+.demo-modal-body { height: 400px; }
+.demo-modal-body iframe { width: 100%; height: 100%; border: none; }
 </style>
 </head>
 <body>
@@ -54,24 +120,115 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     
     <div class="section-title">Modules</div>
     <div class="landing-grid">
-        <a href="before-after.html" class="module-card"><h3>Before/After</h3><p>Scroll-driven comparison slider between two images with drag and scroll modes.</p></a>
-        <a href="card-stack.html" class="module-card"><h3>Card Stack</h3><p>Stacked cards that fly away on scroll, revealing content beneath.</p></a>
-        <a href="collage.html" class="module-card"><h3>Collage</h3><p>Multi-image grid layout with per-image positioning controls.</p></a>
-        <a href="gallery.html" class="module-card"><h3>Gallery</h3><p>Scroll-driven image sequence with transitions and text overlays.</p></a>
-        <a href="globe.html" class="module-card"><h3>Globe</h3><p>3D WebGL globe with animated location markers and connection lines.</p></a>
-        <a href="hotspots.html" class="module-card"><h3>Hotspots</h3><p>Interactive annotation points that appear at scroll positions.</p></a>
-        <a href="layers.html" class="module-card"><h3>Layers</h3><p>Multi-layer parallax compositions with various animation effects.</p></a>
-        <a href="pull-quote.html" class="module-card"><h3>Pull Quote</h3><p>Large-format text display with scroll-triggered reveal animations.</p></a>
-        <a href="single-image.html" class="module-card"><h3>Single Image</h3><p>Hero images with scroll-driven effects like zoom, parallax, tilt.</p></a>
-        <a href="stat-counter.html" class="module-card"><h3>Stat Counter</h3><p>Animated number counters that increment on scroll.</p></a>
-        <a href="timeline.html" class="module-card"><h3>Timeline</h3><p>Vertical timeline with events that reveal on scroll.</p></a>
-        <a href="video.html" class="module-card"><h3>Video</h3><p>Scroll-controlled video playback with text overlays.</p></a>
-        <a href="zoom-detail.html" class="module-card"><h3>Zoom Detail</h3><p>Progressive zoom into a specific image region on scroll.</p></a>
+        <a href="before-after.html" class="module-card">
+            <div class="module-card-header">
+                <h3>Before/After</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('before-after-demo.html', 'Before/After')"><span class="play-icon">▶</span> demo</button>
+            </div>
+            <p>Scroll-driven comparison slider between two images with drag and scroll modes.</p>
+        </a>
+        <a href="card-stack.html" class="module-card">
+            <div class="module-card-header">
+                <h3>Card Stack</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('card-stack-demo.html', 'Card Stack')"><span class="play-icon">▶</span> demo</button>
+            </div>
+            <p>Stacked cards that fly away on scroll, revealing content beneath.</p>
+        </a>
+        <a href="collage.html" class="module-card">
+            <div class="module-card-header">
+                <h3>Collage</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('collage-demo.html', 'Collage')"><span class="play-icon">▶</span> demo</button>
+            </div>
+            <p>Multi-image grid layout with per-image positioning controls.</p>
+        </a>
+        <a href="gallery.html" class="module-card">
+            <div class="module-card-header">
+                <h3>Gallery</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('gallery-demo.html', 'Gallery')"><span class="play-icon">▶</span> demo</button>
+            </div>
+            <p>Scroll-driven image sequence with transitions and text overlays.</p>
+        </a>
+        <a href="globe.html" class="module-card">
+            <div class="module-card-header">
+                <h3>Globe</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('globe-demo.html', 'Globe')"><span class="play-icon">▶</span> demo</button>
+            </div>
+            <p>3D WebGL globe with animated location markers and connection lines.</p>
+        </a>
+        <a href="hotspots.html" class="module-card">
+            <div class="module-card-header">
+                <h3>Hotspots</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('hotspots-demo.html', 'Hotspots')"><span class="play-icon">▶</span> demo</button>
+            </div>
+            <p>Interactive annotation points that appear at scroll positions.</p>
+        </a>
+        <a href="layers.html" class="module-card">
+            <div class="module-card-header">
+                <h3>Layers</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('layers-demo.html', 'Layers')"><span class="play-icon">▶</span> demo</button>
+            </div>
+            <p>Multi-layer parallax compositions with various animation effects.</p>
+        </a>
+        <a href="pull-quote.html" class="module-card">
+            <div class="module-card-header">
+                <h3>Pull Quote</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('pull-quote-demo.html', 'Pull Quote')"><span class="play-icon">▶</span> demo</button>
+            </div>
+            <p>Large-format text display with scroll-triggered reveal animations.</p>
+        </a>
+        <a href="single-image.html" class="module-card">
+            <div class="module-card-header">
+                <h3>Single Image</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('single-image-demo.html', 'Single Image')"><span class="play-icon">▶</span> demo</button>
+            </div>
+            <p>Hero images with scroll-driven effects like zoom, parallax, tilt.</p>
+        </a>
+        <a href="stat-counter.html" class="module-card">
+            <div class="module-card-header">
+                <h3>Stat Counter</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('stat-counter-demo.html', 'Stat Counter')"><span class="play-icon">▶</span> demo</button>
+            </div>
+            <p>Animated number counters that increment on scroll.</p>
+        </a>
+        <a href="timeline.html" class="module-card">
+            <div class="module-card-header">
+                <h3>Timeline</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('timeline-demo.html', 'Timeline')"><span class="play-icon">▶</span> demo</button>
+            </div>
+            <p>Vertical timeline with events that reveal on scroll.</p>
+        </a>
+        <a href="video.html" class="module-card">
+            <div class="module-card-header">
+                <h3>Video</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('video-demo.html', 'Video')"><span class="play-icon">▶</span> demo</button>
+            </div>
+            <p>Scroll-controlled video playback with text overlays.</p>
+        </a>
+        <a href="zoom-detail.html" class="module-card">
+            <div class="module-card-header">
+                <h3>Zoom Detail</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('zoom-detail-demo.html', 'Zoom Detail')"><span class="play-icon">▶</span> demo</button>
+            </div>
+            <p>Progressive zoom into a specific image region on scroll.</p>
+        </a>
     </div>
     
     <div class="section-title">Tools</div>
     <div class="landing-grid">
         <a href="stack-builder-clean.html" class="module-card"><h3>Stack Builder</h3><p>Combine multiple module exports into a single seamless scroll story.</p></a>
+    </div>
+</div>
+
+<!-- Demo Modal -->
+<div class="demo-modal" id="demoModal">
+    <div class="demo-modal-content">
+        <div class="demo-modal-header">
+            <h3 id="demoTitle">Demo</h3>
+            <button class="demo-modal-close" onclick="closeDemo()">✕</button>
+        </div>
+        <div class="demo-modal-body">
+            <iframe id="demoIframe" src=""></iframe>
+        </div>
     </div>
 </div>
 
@@ -96,6 +253,29 @@ function logout() {
     sessionStorage.removeItem('disco_auth');
     location.reload();
 }
+
+function openDemo(demoFile, title) {
+    document.getElementById('demoTitle').textContent = title + ' Demo';
+    document.getElementById('demoIframe').src = 'demos/' + demoFile;
+    document.getElementById('demoModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDemo() {
+    document.getElementById('demoModal').classList.remove('active');
+    document.getElementById('demoIframe').src = '';
+    document.body.style.overflow = '';
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeDemo();
+});
+
+// Close modal on backdrop click
+document.getElementById('demoModal').addEventListener('click', function(e) {
+    if (e.target === this) closeDemo();
+});
 
 if (sessionStorage.getItem('disco_auth') === '1') {
     document.getElementById('loginScreen').style.display = 'none';
