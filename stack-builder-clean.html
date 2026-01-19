@@ -417,6 +417,26 @@
         let sectionIdCounter = 0;
         let draggedIndex = null;
 
+        // Persistence functions
+        function saveState() {
+            localStorage.setItem('disco_stack_sections', JSON.stringify(sections));
+            localStorage.setItem('disco_stack_counter', sectionIdCounter);
+        }
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('disco_stack_sections');
+                const counter = localStorage.getItem('disco_stack_counter');
+                if (saved) {
+                    sections = JSON.parse(saved);
+                    sectionIdCounter = parseInt(counter) || sections.length;
+                    renderSections();
+                }
+            } catch (e) {
+                console.warn('Could not load saved state:', e);
+            }
+        }
+
         function addSection() {
             const section = {
                 id: ++sectionIdCounter,
@@ -425,12 +445,14 @@
             };
             sections.push(section);
             renderSections();
+            saveState();
         }
 
         function removeSection(id) {
             if (confirm('Remove this section?')) {
                 sections = sections.filter(s => s.id !== id);
                 renderSections();
+                saveState();
             }
         }
 
@@ -438,6 +460,7 @@
             const section = sections.find(s => s.id === id);
             if (section) {
                 section.html = html;
+                saveState();
             }
         }
 
@@ -490,6 +513,7 @@
             if (newName && newName.trim()) {
                 section.name = newName.trim();
                 renderSections();
+                saveState();
             }
         }
 
@@ -519,6 +543,7 @@
                         sections.splice(draggedIndex, 1);
                         sections.splice(dropIndex, 0, draggedSection);
                         renderSections();
+                        saveState();
                     }
                 });
             });
@@ -650,6 +675,7 @@
                 sectionIdCounter = 0;
                 document.getElementById('embedCode').value = '';
                 renderSections();
+                saveState();
             }
         }
 
@@ -665,8 +691,8 @@
             alert('✓ Copied to clipboard!');
         }
 
-        // Initialize
-        renderSections();
+        // Initialize - load saved state
+        loadState();
     </script>
 <script>
 (function(){
