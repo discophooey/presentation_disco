@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scroll Story Planner - Presentation Disco</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; padding: 24px; }
+
+.header { max-width: 900px; margin: 0 auto 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.header-left { display: flex; align-items: center; gap: 12px; }
+.back-btn { background: #2a2a2a; border: 1px solid #3a3a3a; color: #888; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; text-decoration: none; }
+.back-btn:hover { background: #3a3a3a; color: #fff; }
+.title-input { background: transparent; border: none; color: #4a9eff; font-size: 24px; font-weight: 600; outline: none; width: 300px; }
+.subtitle { color: #666; font-size: 13px; margin-top: 4px; }
+.header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; border: none; }
+.btn-ghost { background: transparent; border: 1px solid #3a3a3a; color: #888; }
+.btn-ghost:hover { background: #2a2a2a; color: #fff; }
+.btn-secondary { background: #2a2a2a; border: 1px solid #3a3a3a; color: #888; }
+.btn-secondary:hover { background: #3a3a3a; color: #fff; }
+.btn-primary { background: #4a9eff; color: #000; font-weight: 600; }
+.btn-primary:hover { background: #357abd; }
+.btn-success { background: #2ecc71; color: #000; }
+
+.container { max-width: 900px; margin: 0 auto; }
+
+.section { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; margin-bottom: 12px; overflow: hidden; cursor: grab; }
+.section.dragging { opacity: 0.5; }
+.section-header { padding: 12px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.section-header:hover { background: #1f1f1f; }
+.drag-handle { color: #555; cursor: grab; }
+.module-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; min-width: 100px; text-align: center; }
+.section-title-input { flex: 1; background: transparent; border: none; color: #fff; font-size: 15px; font-weight: 500; outline: none; }
+.section-duration { color: #666; font-size: 12px; }
+.section-actions { display: flex; gap: 4px; }
+.section-btn { background: transparent; border: none; color: #555; cursor: pointer; padding: 4px 8px; font-size: 14px; }
+.section-btn:hover { color: #fff; }
+.section-btn.edit-active { background: #4a9eff; color: #000; border-radius: 4px; }
+
+.section-edit { padding: 16px; background: #151515; border-top: 1px solid #2a2a2a; display: none; }
+.section-edit.active { display: block; }
+.edit-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.edit-field label { color: #666; font-size: 11px; display: block; margin-bottom: 6px; text-transform: uppercase; }
+.edit-field select, .edit-field textarea { width: 100%; background: #2a2a2a; border: 1px solid #3a3a3a; color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-family: inherit; }
+.edit-field textarea { min-height: 80px; resize: vertical; }
+.color-options { display: flex; gap: 6px; }
+.color-btn { width: 28px; height: 28px; border: 2px solid transparent; border-radius: 4px; cursor: pointer; }
+.color-btn.active { border-color: #fff; }
+
+.notes-preview { padding: 0 16px 12px 48px; color: #666; font-size: 13px; }
+
+.add-section-btn { width: 100%; padding: 16px; background: transparent; border: 2px dashed #2a2a2a; border-radius: 8px; color: #555; cursor: pointer; font-size: 14px; margin-top: 8px; }
+.add-section-btn:hover { border-color: #4a9eff; color: #4a9eff; }
+
+.empty-state { text-align: center; padding: 60px 20px; color: #666; }
+.empty-state-icon { font-size: 48px; margin-bottom: 16px; }
+
+/* Modal */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 1000; }
+.modal.active { display: flex; }
+.modal-content { background: #1a1a1a; border-radius: 12px; padding: 24px; width: 90%; max-width: 600px; max-height: 80vh; overflow: auto; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.modal-header h3 { color: #4a9eff; margin: 0; }
+.modal-close { background: transparent; border: none; color: #888; font-size: 20px; cursor: pointer; }
+.modal-textarea { width: 100%; height: 200px; background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 8px; color: #ccc; padding: 16px; font-size: 13px; font-family: monospace; resize: none; margin-bottom: 16px; }
+.modal-actions { display: flex; gap: 8px; }
+.modal-actions .btn { flex: 1; padding: 12px; }
+
+.share-url-box { background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px; margin-bottom: 16px; word-break: break-all; font-family: monospace; font-size: 12px; color: #888; max-height: 100px; overflow: auto; }
+
+.load-item { background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 8px; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.load-item:hover { border-color: #4a9eff; }
+.load-item-title { color: #fff; font-weight: 500; }
+.load-item-meta { color: #666; font-size: 12px; }
+
+.import-label { display: block; padding: 12px; background: #2a2a2a; border: 1px dashed #3a3a3a; border-radius: 8px; text-align: center; color: #888; cursor: pointer; margin-top: 16px; }
+.import-label:hover { border-color: #4a9eff; color: #4a9eff; }
+.import-label input { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <div class="header-left">
+            <a href="index.html" class="back-btn">← Hub</a>
+            <input type="text" class="title-input" id="projectTitle" value="Untitled Story" />
+        </div>
+        <div class="subtitle"><span id="sectionCount">0</span> sections · ~<span id="totalDuration">0</span>s scroll</div>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-ghost" onclick="newProject()">New</button>
+        <button class="btn btn-secondary" onclick="openLoadModal()">Load</button>
+        <button class="btn btn-secondary" id="saveBtn" onclick="saveProject()">Save</button>
+        <button class="btn btn-secondary" onclick="openShareModal()">Share</button>
+        <button class="btn btn-primary" onclick="addSection()">+ Add</button>
+    </div>
+</div>
+
+<div class="container">
+    <div id="sectionsContainer">
+        <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <p>Start planning your scroll story.<br>Click "+ Add" to create your first section.</p>
+        </div>
+    </div>
+    <button class="add-section-btn" onclick="addSection()">+ Add Section</button>
+</div>
+
+<!-- Share Modal -->
+<div class="modal" id="shareModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Share Plan</h3>
+            <button class="modal-close" onclick="closeModal('shareModal')">×</button>
+        </div>
+        <div id="shareUrlBox" class="share-url-box" style="display:none;"></div>
+        <textarea class="modal-textarea" id="shareText" readonly></textarea>
+        <div class="modal-actions">
+            <button class="btn btn-primary" onclick="copyShareUrl()">📋 Copy Share URL</button>
+            <button class="btn btn-secondary" onclick="copyShareText()">Copy Text</button>
+            <button class="btn btn-secondary" onclick="exportJSON()">Download JSON</button>
+        </div>
+    </div>
+</div>
+
+<!-- Load Modal -->
+<div class="modal" id="loadModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Load Project</h3>
+            <button class="modal-close" onclick="closeModal('loadModal')">×</button>
+        </div>
+        <div id="savedProjectsList"></div>
+        <label class="import-label">
+            Import from JSON file
+            <input type="file" accept=".json" onchange="importJSON(event)" />
+        </label>
+    </div>
+</div>
+
+<script>
+const moduleTypes = [
+    { id: 'before-after', name: 'Before/After', color: '#e74c3c' },
+    { id: 'card-stack', name: 'Card Stack', color: '#9b59b6' },
+    { id: 'collage', name: 'Collage', color: '#3498db' },
+    { id: 'gallery', name: 'Gallery', color: '#2ecc71' },
+    { id: 'globe', name: 'Globe', color: '#1abc9c' },
+    { id: 'hotspots', name: 'Hotspots', color: '#e67e22' },
+    { id: 'layers', name: 'Layers', color: '#3498db' },
+    { id: 'pull-quote', name: 'Pull Quote', color: '#9b59b6' },
+    { id: 'single-image', name: 'Single Image', color: '#e74c3c' },
+    { id: 'stat-counter', name: 'Stat Counter', color: '#f39c12' },
+    { id: 'timeline', name: 'Timeline', color: '#1abc9c' },
+    { id: 'video', name: 'Video', color: '#e74c3c' },
+    { id: 'zoom-detail', name: 'Zoom Detail', color: '#2ecc71' },
+    { id: 'text', name: 'Text Block', color: '#95a5a6' },
+];
+
+const colors = ['#e74c3c', '#e67e22', '#f39c12', '#2ecc71', '#1abc9c', '#3498db', '#9b59b6', '#95a5a6'];
+
+let sections = [];
+let sectionIdCounter = 0;
+let draggedId = null;
+let editingId = null;
+
+// Check for shared project in URL
+function loadFromUrl() {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+        try {
+            const json = LZString.decompressFromEncodedURIComponent(hash);
+            const data = JSON.parse(json);
+            if (data.title && data.sections) {
+                document.getElementById('projectTitle').value = data.title;
+                sections = data.sections;
+                sectionIdCounter = Math.max(...sections.map(s => s.id), 0);
+                renderSections();
+                // Clear hash after loading
+                history.replaceState(null, '', window.location.pathname);
+            }
+        } catch (e) {
+            console.warn('Could not load from URL:', e);
+        }
+    }
+}
+
+function getModuleInfo(typeId) {
+    return moduleTypes.find(m => m.id === typeId) || moduleTypes[0];
+}
+
+function addSection() {
+    const section = {
+        id: ++sectionIdCounter,
+        moduleType: 'text',
+        title: 'New Section',
+        notes: '',
+        color: '#95a5a6',
+        duration: '2s'
+    };
+    sections.push(section);
+    editingId = section.id;
+    renderSections();
+}
+
+function removeSection(id, e) {
+    e.stopPropagation();
+    if (confirm('Remove this section?')) {
+        sections = sections.filter(s => s.id !== id);
+        renderSections();
+    }
+}
+
+function toggleEdit(id) {
+    editingId = editingId === id ? null : id;
+    renderSections();
+}
+
+function updateSection(id, field, value) {
+    const section = sections.find(s => s.id === id);
+    if (section) {
+        section[field] = value;
+        if (field === 'moduleType') {
+            section.color = getModuleInfo(value).color;
+        }
+        renderSections();
+    }
+}
+
+function renderSections() {
+    const container = document.getElementById('sectionsContainer');
+    document.getElementById('sectionCount').textContent = sections.length;
+    
+    const totalDuration = sections.reduce((acc, s) => acc + parseInt(s.duration || 0), 0);
+    document.getElementById('totalDuration').textContent = totalDuration;
+
+    if (sections.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📝</div>
+                <p>Start planning your scroll story.<br>Click "+ Add" to create your first section.</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '';
+    sections.forEach((section, index) => {
+        const mod = getModuleInfo(section.moduleType);
+        const isEditing = editingId === section.id;
+        
+        html += `
+            <div class="section ${draggedId === section.id ? 'dragging' : ''}" 
+                 draggable="true" 
+                 data-id="${section.id}"
+                 ondragstart="handleDragStart(event, ${section.id})"
+                 ondragover="handleDragOver(event, ${section.id})"
+                 ondragend="handleDragEnd()"
+                 style="border-left: 4px solid ${section.color};">
+                <div class="section-header" ondblclick="toggleEdit(${section.id})">
+                    <span class="drag-handle">⋮⋮</span>
+                    <span class="module-badge" style="background: ${section.color}33; color: ${section.color};">
+                        ${mod.name}
+                    </span>
+                    <input type="text" class="section-title-input" value="${section.title}" 
+                           onchange="updateSection(${section.id}, 'title', this.value)"
+                           onclick="event.stopPropagation()" />
+                    <span class="section-duration">${section.duration}</span>
+                    <div class="section-actions">
+                        <button class="section-btn ${isEditing ? 'edit-active' : ''}" onclick="event.stopPropagation(); toggleEdit(${section.id})">
+                            ${isEditing ? 'Done' : '✎'}
+                        </button>
+                        <button class="section-btn" onclick="removeSection(${section.id}, event)">×</button>
+                    </div>
+                </div>
+                <div class="section-edit ${isEditing ? 'active' : ''}">
+                    <div class="edit-grid">
+                        <div class="edit-field">
+                            <label>Module Type</label>
+                            <select onchange="updateSection(${section.id}, 'moduleType', this.value)">
+                                ${moduleTypes.map(m => `<option value="${m.id}" ${section.moduleType === m.id ? 'selected' : ''}>${m.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="edit-field">
+                            <label>Duration</label>
+                            <select onchange="updateSection(${section.id}, 'duration', this.value)">
+                                ${['1s','2s','3s','4s','5s','6s','8s','10s'].map(d => `<option value="${d}" ${section.duration === d ? 'selected' : ''}>${d}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="edit-field">
+                            <label>Color</label>
+                            <div class="color-options">
+                                ${colors.map(c => `<button class="color-btn ${section.color === c ? 'active' : ''}" style="background: ${c};" onclick="updateSection(${section.id}, 'color', '${c}')"></button>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="edit-field">
+                        <label>Notes & Assets Needed</label>
+                        <textarea placeholder="Describe what goes here, assets needed, etc..." 
+                                  onchange="updateSection(${section.id}, 'notes', this.value)">${section.notes || ''}</textarea>
+                    </div>
+                </div>
+                ${!isEditing && section.notes ? `<div class="notes-preview">${section.notes.length > 100 ? section.notes.slice(0, 100) + '...' : section.notes}</div>` : ''}
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+// Drag and drop
+function handleDragStart(e, id) {
+    draggedId = id;
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e, targetId) {
+    e.preventDefault();
+    if (draggedId === targetId) return;
+    
+    const draggedIndex = sections.findIndex(s => s.id === draggedId);
+    const targetIndex = sections.findIndex(s => s.id === targetId);
+    
+    const [dragged] = sections.splice(draggedIndex, 1);
+    sections.splice(targetIndex, 0, dragged);
+    renderSections();
+}
+
+function handleDragEnd() {
+    draggedId = null;
+    renderSections();
+}
+
+// Save/Load
+function saveProject() {
+    const title = document.getElementById('projectTitle').value;
+    const projectId = title.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const project = {
+        id: projectId,
+        title: title,
+        sections: sections,
+        savedAt: new Date().toISOString()
+    };
+    
+    const existing = JSON.parse(localStorage.getItem('disco_planner_projects') || '[]');
+    const index = existing.findIndex(p => p.id === projectId);
+    if (index >= 0) {
+        existing[index] = project;
+    } else {
+        existing.push(project);
+    }
+    
+    localStorage.setItem('disco_planner_projects', JSON.stringify(existing));
+    
+    const btn = document.getElementById('saveBtn');
+    btn.textContent = '✓ Saved';
+    btn.classList.add('btn-success');
+    setTimeout(() => {
+        btn.textContent = 'Save';
+        btn.classList.remove('btn-success');
+    }, 2000);
+}
+
+function newProject() {
+    if (sections.length > 0 && !confirm('Start a new project? Unsaved changes will be lost.')) return;
+    document.getElementById('projectTitle').value = 'Untitled Story';
+    sections = [];
+    sectionIdCounter = 0;
+    editingId = null;
+    renderSections();
+}
+
+function openLoadModal() {
+    const saved = JSON.parse(localStorage.getItem('disco_planner_projects') || '[]');
+    const container = document.getElementById('savedProjectsList');
+    
+    if (saved.length === 0) {
+        container.innerHTML = '<p style="color: #666; text-align: center; padding: 40px;">No saved projects yet</p>';
+    } else {
+        container.innerHTML = saved.map(p => `
+            <div class="load-item" onclick="loadProject('${p.id}')">
+                <div>
+                    <div class="load-item-title">${p.title}</div>
+                    <div class="load-item-meta">${p.sections.length} sections · ${new Date(p.savedAt).toLocaleDateString()}</div>
+                </div>
+                <button class="section-btn" onclick="event.stopPropagation(); deleteProject('${p.id}')">×</button>
+            </div>
+        `).join('');
+    }
+    
+    document.getElementById('loadModal').classList.add('active');
+}
+
+function loadProject(projectId) {
+    const saved = JSON.parse(localStorage.getItem('disco_planner_projects') || '[]');
+    const project = saved.find(p => p.id === projectId);
+    if (project) {
+        document.getElementById('projectTitle').value = project.title;
+        sections = project.sections;
+        sectionIdCounter = Math.max(...sections.map(s => s.id), 0);
+        editingId = null;
+        renderSections();
+        closeModal('loadModal');
+    }
+}
+
+function deleteProject(projectId) {
+    if (!confirm('Delete this project?')) return;
+    const saved = JSON.parse(localStorage.getItem('disco_planner_projects') || '[]');
+    const updated = saved.filter(p => p.id !== projectId);
+    localStorage.setItem('disco_planner_projects', JSON.stringify(updated));
+    openLoadModal();
+}
+
+function importJSON(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        try {
+            const project = JSON.parse(event.target.result);
+            if (project.title && project.sections) {
+                document.getElementById('projectTitle').value = project.title;
+                sections = project.sections;
+                sectionIdCounter = Math.max(...sections.map(s => s.id), 0);
+                editingId = null;
+                renderSections();
+                closeModal('loadModal');
+            }
+        } catch (err) {
+            alert('Invalid project file');
+        }
+    };
+    reader.readAsText(file);
+}
+
+// Share
+function generateShareText() {
+    const title = document.getElementById('projectTitle').value;
+    let text = `# ${title}\n\n`;
+    text += `Total sections: ${sections.length}\n`;
+    text += `Estimated scroll: ${sections.reduce((acc, s) => acc + parseInt(s.duration), 0)}s\n\n`;
+    text += `---\n\n`;
+    sections.forEach((s, i) => {
+        const mod = getModuleInfo(s.moduleType);
+        text += `## ${i + 1}. ${s.title}\n`;
+        text += `**Module:** ${mod.name}\n`;
+        text += `**Duration:** ${s.duration}\n`;
+        if (s.notes) text += `**Notes:** ${s.notes}\n`;
+        text += `\n`;
+    });
+    return text;
+}
+
+function generateShareUrl() {
+    const data = {
+        title: document.getElementById('projectTitle').value,
+        sections: sections
+    };
+    const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(data));
+    return window.location.origin + window.location.pathname + '#' + compressed;
+}
+
+function openShareModal() {
+    document.getElementById('shareText').value = generateShareText();
+    const url = generateShareUrl();
+    document.getElementById('shareUrlBox').textContent = url;
+    document.getElementById('shareUrlBox').style.display = 'block';
+    document.getElementById('shareModal').classList.add('active');
+}
+
+function copyShareUrl() {
+    navigator.clipboard.writeText(generateShareUrl());
+    alert('Share URL copied! Send this link to collaborators.');
+}
+
+function copyShareText() {
+    navigator.clipboard.writeText(document.getElementById('shareText').value);
+    alert('Text copied to clipboard!');
+}
+
+function exportJSON() {
+    const data = {
+        title: document.getElementById('projectTitle').value,
+        sections: sections
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = data.title.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.json';
+    a.click();
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+// Close modals on backdrop click
+document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal(modal.id);
+    });
+});
+
+// Close on escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    }
+});
+
+// Init
+loadFromUrl();
+renderSections();
+</script>
+</body>
+</html>
