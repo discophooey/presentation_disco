@@ -33,7 +33,7 @@
             min-height: 100vh;
             padding: 20px;
             overflow-x: hidden;
-        }
+         padding-top: 41px !important; }
 
         .container {
             max-width: 1400px;
@@ -344,7 +344,7 @@
 <a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
 <a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
 </div>
-<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}body{padding-top:41px!important;}</style>
+<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
 
     <div class="container">
         <div class="panel">
@@ -366,15 +366,15 @@
                 </div>
             </div>
 
-            <button id="addSectionBtn" class="secondary">+ Add Section</button>
+            <button onclick="addSection()" class="secondary">+ Add Section</button>
         </div>
 
         <div class="preview-panel panel">
             <h2>Actions</h2>
 
-            <button id="previewBtn" class="success">👁️ Preview Combined</button>
-            <button id="exportBtn">⬇️ Export HTML</button>
-            <button id="clearBtn" class="secondary">🗑️ Clear All</button>
+            <button onclick="previewStack()" class="success">👁️ Preview Combined</button>
+            <button onclick="exportStack()">⬇️ Export HTML</button>
+            <button onclick="clearStack()" class="secondary">🗑️ Clear All</button>
 
             <div class="preview-info">
                 <strong>How to use:</strong>
@@ -395,7 +395,7 @@
 
             <h2>Export Settings</h2>
             <textarea id="embedCode" readonly placeholder="Combined HTML will appear here after preview..."></textarea>
-            <button id="copyBtn" class="secondary">📋 Copy to Clipboard</button>
+            <button onclick="copyCode()" class="secondary">📋 Copy to Clipboard</button>
         </div>
     </div>
 
@@ -404,7 +404,7 @@
         <div class="preview-modal-content">
             <div class="preview-modal-header">
                 <h3>Preview - Combined Stack</h3>
-                <button id="closePreviewBtn" class="close-preview">✕ Close</button>
+                <button onclick="closePreview()" class="close-preview">✕ Close</button>
             </div>
             <div class="preview-modal-body">
                 <iframe id="previewIframe"></iframe>
@@ -588,8 +588,7 @@
                 return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Empty Stack</title></head><body style="padding: 100px; text-align: center; font-family: 'APRegular', 'APMedium', 'APBold', sans-serif; color: #666;"><h1>No Content</h1><p>All sections were empty.</p><script>
 (function(){
   var path = location.pathname.split('/').pop() || 'index.html';
-  var links = document.querySelectorAll('#disco-nav a');
-  links.forEach(function(a){
+  document.querySelectorAll('#disco-nav a').forEach(function(a){
     if(a.getAttribute('href') === path){
       a.style.color = '#4a9eff';
       a.style.borderBottom = '2px solid #4a9eff';
@@ -620,26 +619,7 @@
                 '        ' + combinedStyles + '\n' +
                 '    </style>\n' +
                 '</head>\n' +
-                '<body>
-<div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
-<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
-<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
-<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
-<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
-<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
-<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
-<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
-<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
-<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
-<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
-<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
-<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
-<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
-<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
-</div>
-<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}body{padding-top:41px!important;}</style>
-\n' +
+                '<body>\n' +
                 '    ' + combinedBody + '\n' +
                 '    <script>\n' +
                 '        ' + combinedScripts + '\n' +
@@ -647,8 +627,7 @@
                 '<script>
 (function(){
   var path = location.pathname.split('/').pop() || 'index.html';
-  var links = document.querySelectorAll('#disco-nav a');
-  links.forEach(function(a){
+  document.querySelectorAll('#disco-nav a').forEach(function(a){
     if(a.getAttribute('href') === path){
       a.style.color = '#4a9eff';
       a.style.borderBottom = '2px solid #4a9eff';
@@ -710,20 +689,11 @@
 
         // Initialize
         renderSections();
-        
-        // Event listeners (more reliable than onclick in iframes)
-        document.getElementById('addSectionBtn').addEventListener('click', addSection);
-        document.getElementById('previewBtn').addEventListener('click', previewStack);
-        document.getElementById('exportBtn').addEventListener('click', exportStack);
-        document.getElementById('clearBtn').addEventListener('click', clearStack);
-        document.getElementById('copyBtn').addEventListener('click', copyCode);
-        document.getElementById('closePreviewBtn').addEventListener('click', closePreview);
     </script>
 <script>
 (function(){
   var path = location.pathname.split('/').pop() || 'index.html';
-  var links = document.querySelectorAll('#disco-nav a');
-  links.forEach(function(a){
+  document.querySelectorAll('#disco-nav a').forEach(function(a){
     if(a.getAttribute('href') === path){
       a.style.color = '#4a9eff';
       a.style.borderBottom = '2px solid #4a9eff';

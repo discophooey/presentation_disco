@@ -21,7 +21,7 @@
 
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'APRegular', 'APMedium', 'APBold', sans-serif; background: #0a0a0a; color: #e0e0e0; }
+body { font-family: 'APRegular', 'APMedium', 'APBold', sans-serif; background: #0a0a0a; color: #e0e0e0;  padding-top: 41px !important; }
 .app { display: grid; grid-template-columns: 400px 1fr; height: 100vh; }
 .controls { background: #111; padding: 20px; overflow-y: auto; border-right: 1px solid #222; }
 h1 { font-size: 18px; color: #4a9eff; margin-bottom: 20px; }
@@ -91,7 +91,7 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 <a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
 <a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
 </div>
-<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}body{padding-top:41px!important;}</style>
+<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
 
 <div class="app">
     <div class="controls">
@@ -442,8 +442,7 @@ updatePreviewHeight();
 <script>
 (function(){
   var path = location.pathname.split('/').pop() || 'index.html';
-  var links = document.querySelectorAll('#disco-nav a');
-  links.forEach(function(a){
+  document.querySelectorAll('#disco-nav a').forEach(function(a){
     if(a.getAttribute('href') === path){
       a.style.color = '#4a9eff';
       a.style.borderBottom = '2px solid #4a9eff';
