@@ -263,7 +263,7 @@ function updatePreview() {
     for (var i = 0; i < stats.length; i++) {
         var s = stats[i];
         html += '<div class="stat-box" data-i="' + i + '">';
-        html += '<div class="stat-number" style="color:' + numColor + ';font-size:' + numSize + 'px;font-family: 'APRegular', 'APMedium', 'APBold', sans-serif;">';
+        html += '<div class="stat-number" style="color:' + numColor + ';font-size:' + numSize + 'px;font-family:' + numFont + ';">';
         html += '<span class="pre">' + s.prefix + '</span><span class="val">0</span><span class="suf">' + s.suffix + '</span></div>';
         html += '<div class="stat-label" style="color:' + labelColor + ';">' + s.label + '</div></div>';
     }
