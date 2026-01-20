@@ -560,7 +560,7 @@
 
  <button onclick="exportHTML()">Generate HTML</button>
  <button class="secondary" onclick="clearAll()">Clear All</button>
- <button class="secondary" onclick="resetModule()" style="margin-top:8px;">↺ Reset</button>
+ <button class="secondary" onclick="resetModule()">↺ Reset</button>
  </div>
 
  <div class="panel">
@@ -1429,52 +1429,70 @@ window.addEventListener('scroll',onScroll,{passive:true});setTimeout(upd,100);up
 })();
 </script>
 <script>
-// Persistence
+// Persistence for gallery
 (function() {
-    var moduleKey = 'disco_' + location.pathname.split('/').pop().replace('.html', '');
+    var KEY = 'disco_gallery';
     
-    function saveModuleState() {
-        var state = {};
+    function saveState() {
+        var state = { inputs: {} };
+        
+        state.images = images;
+        state.customFonts = customFonts;
         document.querySelectorAll('input[id], select[id], textarea[id]').forEach(function(el) {
-            if (el.type === 'checkbox') state[el.id] = el.checked;
-            else if (el.type === 'radio') { if (el.checked) state[el.id] = el.value; }
-            else state[el.id] = el.value;
+            if (el.type === 'checkbox') state.inputs[el.id] = el.checked;
+            else if (el.type === 'file') return;
+            else state.inputs[el.id] = el.value;
         });
-        localStorage.setItem(moduleKey, JSON.stringify(state));
+        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
     }
     
-    function loadModuleState() {
+    function loadState() {
         try {
-            var saved = localStorage.getItem(moduleKey);
-            if (saved) {
-                var state = JSON.parse(saved);
-                Object.keys(state).forEach(function(id) {
-                    var el = document.getElementById(id);
-                    if (el) {
-                        if (el.type === 'checkbox') el.checked = state[id];
-                        else if (el.type === 'radio') el.checked = (el.value === state[id]);
-                        else el.value = state[id];
-                        el.dispatchEvent(new Event('input', {bubbles:true}));
-                        el.dispatchEvent(new Event('change', {bubbles:true}));
-                    }
-                });
-            }
-        } catch(e) { console.warn('Could not load state:', e); }
+            var saved = localStorage.getItem(KEY);
+            if (!saved) return;
+            var state = JSON.parse(saved);
+            
+            
+            if (state.images) images = state.images;
+            if (state.customFonts) customFonts = state.customFonts;
+            
+            Object.keys(state.inputs || {}).forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) {
+                    if (el.type === 'checkbox') el.checked = state.inputs[id];
+                    else if (el.type === 'file') return;
+                    else el.value = state.inputs[id];
+                    var valEl = document.getElementById(id + 'Val');
+                    if (valEl && el.type === 'range') valEl.textContent = el.value + (id.toLowerCase().includes('offset') ? 'px' : (id.toLowerCase().includes('scale') || id.toLowerCase().includes('duration') || id.toLowerCase().includes('mult') ? '%' : ''));
+                }
+            });
+            
+            renderList(); renderPreview();
+        } catch(e) { console.warn('Load state error:', e); }
     }
     
     window.resetModule = function() {
         if (confirm('Reset all settings to defaults?')) {
-            localStorage.removeItem(moduleKey);
+            localStorage.removeItem(KEY);
             location.reload();
         }
     };
     
-    document.querySelectorAll('input, select, textarea').forEach(function(el) {
-        el.addEventListener('change', saveModuleState);
-        el.addEventListener('input', saveModuleState);
-    });
+    var _orig_remove = window.remove;
+    window.remove = function(i) { var r = _orig_remove.apply(this, arguments); saveState(); return r; };
+    var _orig_clearAll = window.clearAll;
+    window.clearAll = function() { var r = _orig_clearAll.apply(this, arguments); saveState(); return r; };
+    var _orig_addFromURL = window.addFromURL;
+    window.addFromURL = function() { var r = _orig_addFromURL.apply(this, arguments); setTimeout(saveState, 500); return r; };
     
-    setTimeout(loadModuleState, 100);
+    // Save after file uploads
+    var imgInput = document.getElementById('imageInput');
+    if (imgInput) imgInput.addEventListener('change', function() { setTimeout(saveState, 500); });
+    
+    document.addEventListener('change', saveState);
+    document.addEventListener('input', saveState);
+    
+    setTimeout(loadState, 150);
 })();
 </script>
 </body>

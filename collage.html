@@ -163,6 +163,7 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
             </div>
             <button onclick="generateExport()">Generate HTML</button>
             <button class="secondary" onclick="copyCode()" style="margin-top:8px;">📋 Copy Code</button>
+            <button class="secondary" onclick="resetModule()">↺ Reset</button>
         </div>
     </div>
     
@@ -190,7 +191,6 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         <textarea class="code" id="exportCode" readonly></textarea>
         <div style="display:flex;gap:10px;margin-top:15px;">
             <button onclick="copyCode()">📋 Copy</button>
-            <button class="secondary" onclick="resetModule()" style="margin-top:8px;">↺ Reset</button>
             <button onclick="downloadCode()" class="secondary">💾 Download</button>
         </div>
     </div>
@@ -552,52 +552,64 @@ updatePreview();
 })();
 </script>
 <script>
-// Persistence
+// Persistence for collage
 (function() {
-    var moduleKey = 'disco_' + location.pathname.split('/').pop().replace('.html', '');
+    var KEY = 'disco_collage';
     
-    function saveModuleState() {
-        var state = {};
+    function saveState() {
+        var state = { inputs: {} };
+        
+        state.images = images;
         document.querySelectorAll('input[id], select[id], textarea[id]').forEach(function(el) {
-            if (el.type === 'checkbox') state[el.id] = el.checked;
-            else if (el.type === 'radio') { if (el.checked) state[el.id] = el.value; }
-            else state[el.id] = el.value;
+            if (el.type === 'checkbox') state.inputs[el.id] = el.checked;
+            else if (el.type === 'file') return;
+            else state.inputs[el.id] = el.value;
         });
-        localStorage.setItem(moduleKey, JSON.stringify(state));
+        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
     }
     
-    function loadModuleState() {
+    function loadState() {
         try {
-            var saved = localStorage.getItem(moduleKey);
-            if (saved) {
-                var state = JSON.parse(saved);
-                Object.keys(state).forEach(function(id) {
-                    var el = document.getElementById(id);
-                    if (el) {
-                        if (el.type === 'checkbox') el.checked = state[id];
-                        else if (el.type === 'radio') el.checked = (el.value === state[id]);
-                        else el.value = state[id];
-                        el.dispatchEvent(new Event('input', {bubbles:true}));
-                        el.dispatchEvent(new Event('change', {bubbles:true}));
-                    }
-                });
-            }
-        } catch(e) { console.warn('Could not load state:', e); }
+            var saved = localStorage.getItem(KEY);
+            if (!saved) return;
+            var state = JSON.parse(saved);
+            
+            
+            if (state.images) images = state.images;
+            
+            Object.keys(state.inputs || {}).forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) {
+                    if (el.type === 'checkbox') el.checked = state.inputs[id];
+                    else if (el.type === 'file') return;
+                    else el.value = state.inputs[id];
+                    var valEl = document.getElementById(id + 'Val');
+                    if (valEl && el.type === 'range') valEl.textContent = el.value + (id.toLowerCase().includes('offset') ? 'px' : (id.toLowerCase().includes('scale') || id.toLowerCase().includes('duration') || id.toLowerCase().includes('mult') ? '%' : ''));
+                }
+            });
+            
+            updateImageList(); updatePreview();
+        } catch(e) { console.warn('Load state error:', e); }
     }
     
     window.resetModule = function() {
         if (confirm('Reset all settings to defaults?')) {
-            localStorage.removeItem(moduleKey);
+            localStorage.removeItem(KEY);
             location.reload();
         }
     };
     
-    document.querySelectorAll('input, select, textarea').forEach(function(el) {
-        el.addEventListener('change', saveModuleState);
-        el.addEventListener('input', saveModuleState);
-    });
+    var _orig_addImage = window.addImage;
+    window.addImage = function() { var r = _orig_addImage.apply(this, arguments); saveState(); return r; };
+    var _orig_removeImage = window.removeImage;
+    window.removeImage = function() { var r = _orig_removeImage.apply(this, arguments); saveState(); return r; };
+    var _orig_moveImage = window.moveImage;
+    window.moveImage = function() { var r = _orig_moveImage.apply(this, arguments); saveState(); return r; };
     
-    setTimeout(loadModuleState, 100);
+    document.addEventListener('change', saveState);
+    document.addEventListener('input', saveState);
+    
+    setTimeout(loadState, 150);
 })();
 </script>
 </body>
