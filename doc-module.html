@@ -380,8 +380,8 @@ function renderList() {
                     <input type="range" min="5" max="80" step="1" value="${h.width}" oninput="this.previousElementSibling.textContent='Width: '+this.value+'%';updateHighlight(${h.id},'width',this.value)">
                 </div>
                 <div class="control-group">
-                    <label>Height: ${h.height}px</label>
-                    <input type="range" min="8" max="60" step="1" value="${h.height}" oninput="this.previousElementSibling.textContent='Height: '+this.value+'px';updateHighlight(${h.id},'height',this.value)">
+                    <label>Height: ${h.height}px <span style="color:#666;font-weight:normal;">(scales on mobile)</span></label>
+                    <input type="range" min="8" max="60" step="1" value="${h.height}" oninput="this.previousElementSibling.innerHTML='Height: '+this.value+'px <span style=\\'color:#666;font-weight:normal;\\'>(scales on mobile)</span>';updateHighlight(${h.id},'height',this.value)">
                 </div>
                 <div class="control-group">
                     <label>Appear At: ${h.appearAt}%</label>
@@ -419,8 +419,10 @@ function rebuildPreview() {
     
     highlights.forEach(h => {
         const blend = h.blendMode || 'multiply';
+        // Convert pixel height to percentage of image for responsive scaling
+        const heightPct = imageNaturalHeight > 0 ? (h.height / imageNaturalHeight) * 100 : 2;
         html += `<div class="doc-highlight${placingId===h.id?' placing':''}" data-appear="${h.appearAt}" 
-            style="left:${h.x}%;top:${h.y}%;width:${h.width}%;height:${h.height}px;mix-blend-mode:${blend};">
+            style="left:${h.x}%;top:${h.y}%;width:${h.width}%;height:${heightPct.toFixed(2)}%;mix-blend-mode:${blend};">
             <div class="hl-bar" style="background:${h.color};opacity:${h.opacity};"></div>
         </div>`;
     });
@@ -542,7 +544,9 @@ function generateExport() {
     
     const hlHtml = highlights.map(h => {
         const blend = h.blendMode || 'multiply';
-        return `<div class="hl" data-a="${h.appearAt}" style="left:${h.x.toFixed(1)}%;top:${h.y.toFixed(1)}%;width:${h.width}%;height:${h.height}px;mix-blend-mode:${blend};">` +
+        // Convert pixel height to percentage of image for responsive scaling
+        const heightPct = imageNaturalHeight > 0 ? (h.height / imageNaturalHeight) * 100 : 2;
+        return `<div class="hl" data-a="${h.appearAt}" style="left:${h.x.toFixed(1)}%;top:${h.y.toFixed(1)}%;width:${h.width}%;height:${heightPct.toFixed(2)}%;mix-blend-mode:${blend};">` +
         `<div class="hl-bar" style="background:${h.color};opacity:${h.opacity};"></div></div>`;
     }).join('\n');
     
