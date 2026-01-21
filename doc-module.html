@@ -731,7 +731,7 @@ function loadProject() {
                 }
             });
             
-            if (state.imageUrl) document.getElementById('imageUrl').value = state.imageUrl;
+            if (state.imageUrl) { document.getElementById('imageUrl').value = state.imageUrl; loadImage(); }
             
             // Update display values
             document.getElementById('scaleVal').textContent = parseFloat(document.getElementById('imageScale').value).toFixed(2) + 'x';
