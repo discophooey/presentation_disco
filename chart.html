@@ -840,7 +840,7 @@ updatePreview();
     var KEY = 'disco_chart';
     
     function saveState() {
-        var state = { inputs: {}, config: config };
+        var state = { inputs: {}, data: config.data };
         
         document.querySelectorAll('input[id], select[id], textarea[id]').forEach(function(el) {
             if (el.type === 'checkbox') state.inputs[el.id] = el.checked;
@@ -848,7 +848,7 @@ updatePreview();
             else state.inputs[el.id] = el.value;
         });
         
-        // Save toggle states
+        // Save toggle states explicitly
         state.chartType = config.chartType;
         state.orientation = config.orientation;
         state.pieStyle = config.pieStyle;
@@ -864,12 +864,8 @@ updatePreview();
             if (!saved) return;
             var state = JSON.parse(saved);
             
-            // Restore config
-            if (state.config) {
-                Object.keys(state.config).forEach(function(k) {
-                    config[k] = state.config[k];
-                });
-            }
+            // Restore data array first
+            if (state.data) config.data = state.data;
             
             // Restore inputs
             Object.keys(state.inputs || {}).forEach(function(id) {
@@ -891,7 +887,7 @@ updatePreview();
                 }
             });
             
-            // Restore toggle states
+            // Restore toggle states (these update config and UI)
             if (state.chartType) setChartType(state.chartType);
             if (state.orientation) setOrientation(state.orientation);
             if (state.pieStyle) setPieStyle(state.pieStyle);
@@ -913,11 +909,11 @@ updatePreview();
     
     // Wrap data functions to trigger save
     var _orig_addDataEntry = window.addDataEntry;
-    window.addDataEntry = function() { var r = _orig_addDataEntry.apply(this, arguments); saveState(); return r; };
+    window.addDataEntry = function() { _orig_addDataEntry.apply(this, arguments); saveState(); };
     var _orig_removeDataEntry = window.removeDataEntry;
-    window.removeDataEntry = function() { var r = _orig_removeDataEntry.apply(this, arguments); saveState(); return r; };
+    window.removeDataEntry = function() { _orig_removeDataEntry.apply(this, arguments); saveState(); };
     var _orig_updateDataEntry = window.updateDataEntry;
-    window.updateDataEntry = function() { var r = _orig_updateDataEntry.apply(this, arguments); saveState(); return r; };
+    window.updateDataEntry = function() { _orig_updateDataEntry.apply(this, arguments); saveState(); };
     
     document.addEventListener('change', saveState);
     document.addEventListener('input', saveState);
