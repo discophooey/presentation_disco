@@ -250,6 +250,9 @@ let textLayers = [];
 function toggleSection(el) { el.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('collapsed'); }
 
 function saveProject() {
+    var filename = prompt('Save project as:', 'layers-project');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
     const project = {
         layers: layers,
         textLayers: textLayers,
@@ -271,7 +274,7 @@ function saveProject() {
     const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'layers-project.json';
+    a.download = safeName + '.json';
     a.click();
 }
 
@@ -708,9 +711,12 @@ upd();
 function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
 function copyCode() { document.getElementById('exportCode').select(); document.execCommand('copy'); alert('Copied!'); }
 function downloadCode() {
+    var filename = prompt('Save export as:', 'layers');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
     const blob = new Blob([document.getElementById('exportCode').value], {type:'text/html'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = 'layers.html'; a.click();
+    a.download = safeName + '.html'; a.click();
 }
 
 updatePreviewHeight();

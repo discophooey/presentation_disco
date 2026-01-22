@@ -488,9 +488,12 @@ upd();
 function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
 function copyCode() { document.getElementById('exportCode').select(); document.execCommand('copy'); alert('Copied!'); }
 function downloadCode() {
+    var filename = prompt('Save export as:', 'video');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
     const blob = new Blob([document.getElementById('exportCode').value], {type:'text/html'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = 'video.html'; a.click();
+    a.download = safeName + '.html'; a.click();
 }
 
 updatePreviewHeight();

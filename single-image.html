@@ -236,6 +236,9 @@ function loadImage() {
 }
 
 function saveProject() {
+    var filename = prompt('Save project as:', 'single-image-project');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
     const project = {
         imageUrl: imageUrl,
         imageNaturalWidth: imageNaturalWidth,
@@ -265,7 +268,7 @@ function saveProject() {
     const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'single-image-project.json';
+    a.download = safeName + '.json';
     a.click();
 }
 
@@ -682,10 +685,13 @@ function copyCode() { document.getElementById('exportCode').select(); document.e
 function downloadCode() {
     const code = document.getElementById('exportCode').value;
     if (!code) { generateExport(); return; }
+    var filename = prompt('Save export as:', 'single-image');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
     const blob = new Blob([code], { type: 'text/html' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'single-image.html';
+    a.download = safeName + '.html';
     a.click();
 }
 

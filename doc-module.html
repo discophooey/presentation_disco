@@ -798,12 +798,19 @@ function copyCode() {
 function downloadCode() {
     const code = document.getElementById('exportCode').value;
     if (!code) { generateExport(); return; }
+    const filename = prompt('Save export as:', 'doc-module');
+    if (!filename) return;
     const blob = new Blob([code], {type:'text/html'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'doc-module.html'; a.click();
+    const safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = safeName + '.html'; a.click();
 }
 
 // SAVE/LOAD PROJECT
 function saveProject() {
+    const defaultName = 'doc-module-project';
+    const filename = prompt('Save project as:', defaultName);
+    if (!filename) return; // User cancelled
+    
     const project = { 
         imageUrl,
         imageNaturalWidth,
@@ -827,7 +834,8 @@ function saveProject() {
         }
     };
     const blob = new Blob([JSON.stringify(project,null,2)], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'doc-module-project.json'; a.click();
+    const safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = safeName + '.json'; a.click();
 }
 
 function loadProject() {

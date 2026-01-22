@@ -448,12 +448,18 @@ upd();
 function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
 function copyCode() { document.getElementById('exportCode').select(); document.execCommand('copy'); alert('Copied!'); }
 function downloadCode() {
+    var filename = prompt('Save export as:', 'hotspots');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
     const blob = new Blob([document.getElementById('exportCode').value], {type:'text/html'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hotspots.html'; a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = safeName + '.html'; a.click();
 }
 
 // SAVE/LOAD
 function saveProject() {
+    var filename = prompt('Save project as:', 'hotspots-project');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
     const project = { imageUrl, hotspots, settings: {
         imageFit: document.getElementById('imageFit').value,
         captionText: document.getElementById('captionText').value,
@@ -462,7 +468,7 @@ function saveProject() {
         stickyOffset: document.getElementById('stickyOffset').value
     }};
     const blob = new Blob([JSON.stringify(project,null,2)], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'hotspots-project.json'; a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = safeName + '.json'; a.click();
 }
 
 function loadProject() {

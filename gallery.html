@@ -1400,11 +1400,14 @@ window.addEventListener('scroll',onScroll,{passive:true});setTimeout(upd,100);up
 
  function downloadHTML() {
  const code = document.getElementById('exportCode').value;
+ var filename = prompt('Save export as:', 'gallery');
+ if (!filename) return;
+ var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
  const blob = new Blob([code], { type: 'text/html' });
  const url = URL.createObjectURL(blob);
  const a = document.createElement('a');
  a.href = url;
- a.download = 'scrolltastic-gallery-' + Date.now() + '.html';
+ a.download = safeName + '.html';
  a.click();
  URL.revokeObjectURL(url);
  }

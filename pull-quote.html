@@ -467,10 +467,13 @@ function copyCode() {
 function downloadCode() {
     var code = document.getElementById('exportCode').value;
     if (!code) { generateExport(); return; }
+    var filename = prompt('Save export as:', 'pull-quote');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
     var blob = new Blob([code], { type: 'text/html' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'pull-quote.html';
+    a.download = safeName + '.html';
     a.click();
 }
 

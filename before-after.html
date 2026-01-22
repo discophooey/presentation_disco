@@ -548,9 +548,12 @@ function copyCode() {
 function downloadCode() {
     var c = document.getElementById('exportCode').value;
     if (!c) { generateExport(); return; }
+    var filename = prompt('Save export as:', 'before-after');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
     var a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([c], {type:'text/html'}));
-    a.download = 'before-after.html';
+    a.download = safeName + '.html';
     a.click();
 }
 
