@@ -373,6 +373,10 @@ function getModuleInputsHtml(section) {
                 <div class="edit-field">
                     <label>Caption</label>
                     <input type="text" value="${c.caption || ''}" placeholder="Image caption..." onchange="updateContent(${id}, 'caption', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Caption Credit</label>
+                    <input type="text" value="${c.captionCredit || ''}" placeholder="Photo: Name / Agency" onchange="updateContent(${id}, 'captionCredit', this.value)">
                 </div>`;
         
         case 'layers':
@@ -395,6 +399,10 @@ function getModuleInputsHtml(section) {
                 <div class="edit-field" style="margin-top:12px;">
                     <label>Caption</label>
                     <input type="text" value="${c.caption || ''}" placeholder="Caption..." onchange="updateContent(${id}, 'caption', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Caption Credit</label>
+                    <input type="text" value="${c.captionCredit || ''}" placeholder="Photo: Name / Agency" onchange="updateContent(${id}, 'captionCredit', this.value)">
                 </div>`;
         
         case 'before-after':
@@ -410,6 +418,10 @@ function getModuleInputsHtml(section) {
                 <div class="edit-field">
                     <label>Caption</label>
                     <input type="text" value="${c.caption || ''}" placeholder="Image caption..." onchange="updateContent(${id}, 'caption', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Caption Credit</label>
+                    <input type="text" value="${c.captionCredit || ''}" placeholder="Photo: Name / Agency" onchange="updateContent(${id}, 'captionCredit', this.value)">
                 </div>`;
         
         case 'video':
@@ -421,6 +433,10 @@ function getModuleInputsHtml(section) {
                 <div class="edit-field">
                     <label>Caption</label>
                     <input type="text" value="${c.caption || ''}" placeholder="Video caption..." onchange="updateContent(${id}, 'caption', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Caption Credit</label>
+                    <input type="text" value="${c.captionCredit || ''}" placeholder="Video: Name / Agency" onchange="updateContent(${id}, 'captionCredit', this.value)">
                 </div>`;
         
         case 'pull-quote':
@@ -458,6 +474,10 @@ function getModuleInputsHtml(section) {
                 <div class="edit-field" style="margin-top:12px;">
                     <label>Caption</label>
                     <input type="text" value="${c.caption || ''}" placeholder="Gallery caption..." onchange="updateContent(${id}, 'caption', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Caption Credit</label>
+                    <input type="text" value="${c.captionCredit || ''}" placeholder="Photo: Name / Agency" onchange="updateContent(${id}, 'captionCredit', this.value)">
                 </div>`;
         
         case 'hotspots':
@@ -469,6 +489,10 @@ function getModuleInputsHtml(section) {
                 <div class="edit-field">
                     <label>Caption</label>
                     <input type="text" value="${c.caption || ''}" placeholder="Caption..." onchange="updateContent(${id}, 'caption', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Caption Credit</label>
+                    <input type="text" value="${c.captionCredit || ''}" placeholder="Photo: Name / Agency" onchange="updateContent(${id}, 'captionCredit', this.value)">
                 </div>`;
         
         case 'stat-counter':
@@ -631,6 +655,10 @@ function getModuleInputsHtml(section) {
                 <div class="edit-field" style="margin-top:12px;">
                     <label>Caption</label>
                     <input type="text" value="${c.caption || ''}" placeholder="Collage caption..." onchange="updateContent(${id}, 'caption', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Caption Credit</label>
+                    <input type="text" value="${c.captionCredit || ''}" placeholder="Photo: Name / Agency" onchange="updateContent(${id}, 'captionCredit', this.value)">
                 </div>`;
         
         case 'zoom-detail':
@@ -642,6 +670,10 @@ function getModuleInputsHtml(section) {
                 <div class="edit-field">
                     <label>Caption</label>
                     <input type="text" value="${c.caption || ''}" placeholder="Caption..." onchange="updateContent(${id}, 'caption', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Caption Credit</label>
+                    <input type="text" value="${c.captionCredit || ''}" placeholder="Photo: Name / Agency" onchange="updateContent(${id}, 'captionCredit', this.value)">
                 </div>`;
         
         case 'matte':
@@ -940,7 +972,11 @@ function buildModuleState(section) {
             if (!c.imageUrl) return null;
             return {
                 imageUrl: c.imageUrl,
-                inputs: { imageUrl: c.imageUrl }
+                inputs: { 
+                    imageUrl: c.imageUrl,
+                    captionText: c.caption || '',
+                    captionCredit: c.captionCredit || ''
+                }
             };
         
         case 'layers':
@@ -956,7 +992,10 @@ function buildModuleState(section) {
                     blend: 'normal'
                 })),
                 textLayers: [],
-                inputs: {}
+                inputs: {
+                    captionText: c.caption || '',
+                    captionCredit: c.captionCredit || ''
+                }
             };
         
         case 'before-after':
@@ -964,14 +1003,23 @@ function buildModuleState(section) {
             return {
                 beforeUrl: c.beforeUrl,
                 afterUrl: c.afterUrl,
-                inputs: { beforeUrl: c.beforeUrl, afterUrl: c.afterUrl }
+                inputs: { 
+                    beforeUrl: c.beforeUrl, 
+                    afterUrl: c.afterUrl,
+                    captionText: c.caption || '',
+                    captionCredit: c.captionCredit || ''
+                }
             };
         
         case 'video':
             if (!c.videoUrl) return null;
             return {
                 videoUrl: c.videoUrl,
-                inputs: { videoUrl: c.videoUrl }
+                inputs: { 
+                    videoUrl: c.videoUrl,
+                    captionText: c.caption || '',
+                    captionCredit: c.captionCredit || ''
+                }
             };
         
         case 'pull-quote':
@@ -995,7 +1043,10 @@ function buildModuleState(section) {
                     startScroll: 0,
                     endScroll: 100
                 })),
-                inputs: {}
+                inputs: {
+                    captionText: c.caption || '',
+                    captionCredit: c.captionCredit || ''
+                }
             };
         
         case 'hotspots':
@@ -1003,7 +1054,11 @@ function buildModuleState(section) {
             return {
                 imageUrl: c.imageUrl,
                 hotspots: [],
-                inputs: { imageUrl: c.imageUrl }
+                inputs: { 
+                    imageUrl: c.imageUrl,
+                    captionText: c.caption || '',
+                    captionCredit: c.captionCredit || ''
+                }
             };
         
         case 'stat-counter':
@@ -1065,14 +1120,21 @@ function buildModuleState(section) {
                     rotation: 0,
                     zIndex: i
                 })),
-                inputs: {}
+                inputs: {
+                    captionText: c.caption || '',
+                    captionCredit: c.captionCredit || ''
+                }
             };
         
         case 'zoom-detail':
             if (!c.imageUrl) return null;
             return {
                 imageUrl: c.imageUrl,
-                inputs: { imageUrl: c.imageUrl }
+                inputs: { 
+                    imageUrl: c.imageUrl,
+                    captionText: c.caption || '',
+                    captionCredit: c.captionCredit || ''
+                }
             };
         
         case 'matte':
