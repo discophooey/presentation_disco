@@ -966,14 +966,20 @@ function rebuildPoints() {
     }
     // Rebuild
     points.forEach(p => {
+        const size = p.size || 8;
+        const color = p.color || '#ff3333';
         const pos = latLngToVector3(p.lat, p.lng, 1.02);
-        const geo = new THREE.SphereGeometry(p.size * 0.006, 16, 16);
-        const mat = new THREE.MeshBasicMaterial({ color: p.color });
+        const geo = new THREE.SphereGeometry(size * 0.006, 16, 16);
+        const mat = new THREE.MeshBasicMaterial({ color: color });
         const mesh = new THREE.Mesh(geo, mat);
         mesh.position.copy(pos);
         mesh.userData.pointId = p.id;
         pointsGroup.add(mesh);
     });
+    // Set view to first point
+    if (points.length > 0) {
+        setViewToPoint(points[0].lat, points[0].lng);
+    }
     updateLabels();
 }
 
@@ -1532,6 +1538,10 @@ applyVisualStyle();
                     if (valEl && el.type === 'range') valEl.textContent = el.value + (id.toLowerCase().includes('offset') ? 'px' : (id.toLowerCase().includes('scale') || id.toLowerCase().includes('duration') || id.toLowerCase().includes('mult') ? '%' : ''));
                 }
             });
+            
+            // Rebuild 3D objects from loaded data
+            rebuildPoints();
+            rebuildLines();
             
             renderPointList(); renderLinesList(); updatePreview();
         } catch(e) { console.warn('Load state error:', e); }

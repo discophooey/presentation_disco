@@ -1129,7 +1129,17 @@ function buildModuleState(section) {
         case 'globe':
             if (!c.points || !c.points.length) return null;
             return {
-                points: c.points,
+                points: c.points.map(function(p) {
+                    return {
+                        id: p.id || Date.now(),
+                        label: p.label || '',
+                        lat: p.lat,
+                        lng: p.lng,
+                        color: p.color || '#ff3333',
+                        size: p.size || 8,
+                        showLabel: p.showLabel !== false
+                    };
+                }),
                 lines: [],
                 inputs: {}
             };
