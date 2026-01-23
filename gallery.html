@@ -1418,10 +1418,7 @@ window.addEventListener('scroll',onScroll,{passive:true});setTimeout(upd,100);up
  document.getElementById('exportModal').classList.remove('active');
  }
 
- // Auto-load examples on page load
- window.addEventListener('load', function() {
- loadExampleGallery();
- });
+ // No auto-load - start with empty gallery
  </script>
 <script>
 (function(){
@@ -1498,7 +1495,11 @@ window.addEventListener('scroll',onScroll,{passive:true});setTimeout(upd,100);up
     document.addEventListener('change', saveState);
     document.addEventListener('input', saveState);
     
-    setTimeout(loadState, 150);
+    setTimeout(function() {
+        loadState();
+        renderList();
+        renderPreview();
+    }, 150);
 })();
 </script>
 </body>

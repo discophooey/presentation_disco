@@ -1036,9 +1036,24 @@ function buildModuleState(section) {
             if (!c.images || !c.images.length) return null;
             return {
                 images: c.images.map((src, i) => ({
+                    id: Date.now() + i,
                     src: src,
+                    name: src.split('/').pop() || 'Image',
+                    textEnabled: false,
                     text: '',
-                    caption: '',
+                    textSize: 32,
+                    textColor: '#ffffff',
+                    textAlign: 'center',
+                    textPosition: 'bottom',
+                    textX: 0,
+                    textY: 0,
+                    textBgEnabled: true,
+                    textBgOpacity: 80,
+                    textLineHeight: 1.4,
+                    textLetterSpacing: 0,
+                    captionEnabled: true,
+                    caption: c.caption || '',
+                    credit: c.captionCredit || '',
                     link: '',
                     startScroll: 0,
                     endScroll: 100
