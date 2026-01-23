@@ -840,21 +840,20 @@ updatePreview();
     var KEY = 'disco_chart';
     
     function saveState() {
-        var state = { inputs: {}, data: config.data };
+        var state = { inputs: {} };
         
-        document.querySelectorAll('input[id], select[id], textarea[id]').forEach(function(el) {
-            if (el.type === 'checkbox') state.inputs[el.id] = el.checked;
-            else if (el.type === 'file') return;
-            else state.inputs[el.id] = el.value;
-        });
-        
-        // Save toggle states explicitly
+        state.data = config.data;
         state.chartType = config.chartType;
         state.orientation = config.orientation;
         state.pieStyle = config.pieStyle;
         state.stagger = config.stagger;
         state.sizing = config.sizing;
         
+        document.querySelectorAll('input[id], select[id], textarea[id]').forEach(function(el) {
+            if (el.type === 'checkbox') state.inputs[el.id] = el.checked;
+            else if (el.type === 'file') return;
+            else state.inputs[el.id] = el.value;
+        });
         try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
     }
     
@@ -864,35 +863,38 @@ updatePreview();
             if (!saved) return;
             var state = JSON.parse(saved);
             
-            // Restore data array first
+            // Restore data array
             if (state.data) config.data = state.data;
             
-            // Restore inputs
+            // Restore toggle states directly to config (don't call set functions yet)
+            if (state.chartType) config.chartType = state.chartType;
+            if (state.orientation) config.orientation = state.orientation;
+            if (state.pieStyle) config.pieStyle = state.pieStyle;
+            if (typeof state.stagger !== 'undefined') config.stagger = state.stagger;
+            if (state.sizing) config.sizing = state.sizing;
+            
+            // Restore input values
             Object.keys(state.inputs || {}).forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) {
                     if (el.type === 'checkbox') el.checked = state.inputs[id];
                     else if (el.type === 'file') return;
                     else el.value = state.inputs[id];
-                    
-                    // Update value displays
                     var valEl = document.getElementById(id + 'Val');
-                    if (valEl && el.type === 'range') {
-                        var suffix = id.toLowerCase().includes('offset') ? 'px' : 
-                                    id.toLowerCase().includes('size') ? 'px' :
-                                    id.toLowerCase().includes('scale') ? '%' :
-                                    id.toLowerCase().includes('duration') ? '%' : '';
-                        valEl.textContent = el.value + suffix;
-                    }
+                    if (valEl && el.type === 'range') valEl.textContent = el.value + (id.toLowerCase().includes('offset') ? 'px' : (id.toLowerCase().includes('size') ? 'px' : (id.toLowerCase().includes('scale') || id.toLowerCase().includes('duration') ? '%' : '')));
                 }
             });
             
-            // Restore toggle states (these update config and UI)
-            if (state.chartType) setChartType(state.chartType);
-            if (state.orientation) setOrientation(state.orientation);
-            if (state.pieStyle) setPieStyle(state.pieStyle);
-            if (typeof state.stagger !== 'undefined') setStagger(state.stagger);
-            if (state.sizing) setSizing(state.sizing);
+            // Update toggle button UI
+            document.querySelectorAll('[data-type]').forEach(function(b) { b.classList.toggle('active', b.dataset.type === config.chartType); });
+            document.querySelectorAll('[data-orient]').forEach(function(b) { b.classList.toggle('active', b.dataset.orient === config.orientation); });
+            document.querySelectorAll('[data-pie]').forEach(function(b) { b.classList.toggle('active', b.dataset.pie === config.pieStyle); });
+            document.querySelectorAll('[data-stagger]').forEach(function(b) { b.classList.toggle('active', b.dataset.stagger === String(config.stagger)); });
+            document.querySelectorAll('[data-sizing]').forEach(function(b) { b.classList.toggle('active', b.dataset.sizing === config.sizing); });
+            
+            // Show/hide options
+            document.getElementById('bar-options').style.display = config.chartType === 'bar' ? 'block' : 'none';
+            document.getElementById('pie-options').style.display = config.chartType === 'pie' ? 'block' : 'none';
             
             renderDataList();
             updatePreviewHeight();
@@ -907,7 +909,6 @@ updatePreview();
         }
     };
     
-    // Wrap data functions to trigger save
     var _orig_addDataEntry = window.addDataEntry;
     window.addDataEntry = function() { _orig_addDataEntry.apply(this, arguments); saveState(); };
     var _orig_removeDataEntry = window.removeDataEntry;
