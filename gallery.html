@@ -569,9 +569,10 @@
  <div class="modal-content">
  <h2>Generated HTML</h2>
  <textarea class="code" id="exportCode" readonly></textarea>
- <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+ <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
  <button onclick="copyCode()" style="background: #34a853;">📋 Copy HTML</button>
  <button onclick="downloadHTML()" style="background: #4a9eff;">⬇️ Download File</button>
+ <button onclick="sendToStackBuilder()" style="background: #666;">📚 Send to Stack</button>
  </div>
  <button class="secondary" onclick="closeModal()">Close</button>
  </div>
@@ -1347,6 +1348,17 @@ window.addEventListener('scroll',onScroll,{passive:true});setTimeout(upd,100);up
  a.download = safeName + '.html';
  a.click();
  URL.revokeObjectURL(url);
+ }
+
+ function sendToStackBuilder() {
+ const code = document.getElementById('exportCode').value;
+ if (!code) { alert('Generate HTML first'); return; }
+ const queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
+ queue.push({ name: 'Gallery', html: code, timestamp: Date.now() });
+ localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
+ if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
+ window.location.href = 'stack-builder-clean.html';
+ }
  }
 
  function closeModal() {

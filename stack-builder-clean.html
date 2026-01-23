@@ -689,8 +689,38 @@
             alert('✓ Copied to clipboard!');
         }
 
-        // Initialize - load saved state
+        // Check for queued items from other modules
+        function checkQueue() {
+            try {
+                const queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
+                if (queue.length === 0) return;
+                
+                const count = queue.length;
+                const names = queue.map(q => q.name).join(', ');
+                
+                if (confirm(`Import ${count} module${count > 1 ? 's' : ''} from queue?\n\n${names}`)) {
+                    queue.forEach(item => {
+                        const section = {
+                            id: ++sectionIdCounter,
+                            name: item.name || `Section ${sectionIdCounter}`,
+                            html: item.html
+                        };
+                        sections.push(section);
+                    });
+                    renderSections();
+                    saveState();
+                }
+                
+                // Clear queue after processing
+                localStorage.removeItem('disco_stack_queue');
+            } catch (e) {
+                console.warn('Could not process queue:', e);
+            }
+        }
+
+        // Initialize - load saved state then check queue
         loadState();
+        checkQueue();
     </script>
 <script>
 (function(){

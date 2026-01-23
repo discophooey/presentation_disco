@@ -239,8 +239,8 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         <textarea class="code" id="exportCode" readonly></textarea>
         <div style="display:flex;gap:10px;margin-top:12px;">
             <button onclick="copyCode()">📋 Copy</button>
-            <button class="secondary" onclick="resetModule()">↺ Reset</button>
             <button class="secondary" onclick="downloadCode()">💾 Download</button>
+            <button class="secondary" onclick="sendToStackBuilder()">📚 Stack</button>
         </div>
     </div>
 </div>
@@ -719,6 +719,16 @@ function downloadCode() {
     const blob = new Blob([document.getElementById('exportCode').value], {type:'text/html'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = safeName + '.html'; a.click();
+}
+function sendToStackBuilder() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate HTML first'); return; }
+    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
+    queue.push({ name: 'Layers', html: code, timestamp: Date.now() });
+    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
+    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
+        window.location.href = 'stack-builder-clean.html';
+    }
 }
 
 updatePreviewHeight();

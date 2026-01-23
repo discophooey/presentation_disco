@@ -158,7 +158,7 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
     <div class="modal-content">
         <div class="modal-header"><h2 style="margin:0;border:0;padding:0;background:none;">Export HTML</h2><button class="modal-close" onclick="closeModal()">×</button></div>
         <textarea class="code" id="exportCode" readonly></textarea>
-        <div class="row" style="margin-top:12px;"><button onclick="copyCode()">📋 Copy</button><button onclick="downloadCode()" class="secondary">💾 Download</button></div>
+        <div class="row" style="margin-top:12px;"><button onclick="copyCode()">📋 Copy</button><button onclick="downloadCode()" class="secondary">💾 Download</button><button onclick="sendToStackBuilder()" class="secondary">📚 Stack</button></div>
     </div>
 </div>
 
@@ -366,6 +366,16 @@ function downloadCode() {
     a.href = URL.createObjectURL(blob);
     a.download = safeName + '.html';
     a.click();
+}
+function sendToStackBuilder() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate HTML first'); return; }
+    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
+    queue.push({ name: 'Timeline', html: code, timestamp: Date.now() });
+    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
+    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
+        window.location.href = 'stack-builder-clean.html';
+    }
 }
 
 updateEventList();
