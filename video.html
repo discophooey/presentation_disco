@@ -458,12 +458,15 @@ if(v.readyState>=1){vidDur=v.duration;}
 function lerp(a,b,t){return a+(b-a)*t;}
 function upd(){
 if(!activated)return;
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["${uid}"];
+if(extP!==undefined){tarP=extP;}else{
 var r=wrap.getBoundingClientRect();
 var wh=window.innerHeight;
 var scrolled=Math.max(0,-r.top);
 var scrollRange=wrap.offsetHeight-wh;
 if(scrollRange<=0)scrollRange=1;
 tarP=Math.max(0,Math.min(1,scrolled/scrollRange));
+}
 curP=lerp(curP,tarP,${smooth});
 if(Math.abs(curP-tarP)>0.001){raf=requestAnimationFrame(upd);}
 if(vidDur>0&&v.readyState>=2){v.currentTime=curP*vidDur;}

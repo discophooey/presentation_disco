@@ -1236,6 +1236,8 @@ capTimers[idx]=setTimeout(function(){cap.classList.remove('show');},3000);
 }
 function upd(){
 if(!c)return;
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS[c.id];
+if(extP!==undefined){tarP=extP*100;}else{
 var r=c.getBoundingClientRect(),wh=window.innerHeight;
 
 
@@ -1243,6 +1245,7 @@ var scrolled=Math.max(0,-r.top);
 var scrollRange=c.offsetHeight-wh;
 if(scrollRange<=0)scrollRange=1;
 tarP=Math.max(0,Math.min(100,scrolled/scrollRange*100));
+}
 curP=lerp(curP,tarP,0.12);
 if(Math.abs(curP-tarP)>0.01){rafId=requestAnimationFrame(upd);}
 var progress=curP;

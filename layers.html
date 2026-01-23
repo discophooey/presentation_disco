@@ -655,12 +655,15 @@ wrap.style.height=(stage.offsetHeight*scrollMult)+"px";
 setHeight();window.addEventListener("resize",setHeight);
 function lerp(a,b,t){return a+(b-a)*t;}
 function upd(){
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["${uid}"];
+if(extP!==undefined){tarP=extP;}else{
 var r=wrap.getBoundingClientRect();
 var wh=window.innerHeight;
 var scrolled=Math.max(0,-r.top);
 var scrollRange=wrap.offsetHeight-wh;
 if(scrollRange<=0)scrollRange=1;
 tarP=Math.max(0,Math.min(1,scrolled/scrollRange));
+}
 curP=lerp(curP,tarP,0.12);
 if(Math.abs(curP-tarP)>0.001){raf=requestAnimationFrame(upd);}
 var p=curP;

@@ -764,10 +764,14 @@ w.style.height=(st.offsetHeight*${sm})+'px';
 window.addEventListener('resize',function(){w.style.height=(st.offsetHeight*${sm})+'px';});
 function ease(t){return 1-Math.pow(1-t,3);}${keyframeJs}
 function upd(){
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS['${uid}'];
+var p;
+if(extP!==undefined){p=extP*100;}else{
 var r=w.getBoundingClientRect();
 var scrolled=Math.max(0,-r.top);
 var range=w.offsetHeight-window.innerHeight;
-var p=range>0?(scrolled/range)*100:0;${keyframes.length > 0 ? `
+p=range>0?(scrolled/range)*100:0;
+}${keyframes.length > 0 ? `
 var t=getT(p);
 var panX=(t.x-50)*(t.s-1)/t.s;
 var panY=(t.y-50)*(t.s-1)/t.s;

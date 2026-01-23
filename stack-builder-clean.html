@@ -383,12 +383,42 @@
                 <strong>How to use:</strong>
                 1. Open any Scrolltastic module<br>
                 2. Configure and generate HTML<br>
-                3. Copy the HTML code<br>
-                4. Come back here and click "+ Add Section"<br>
-                5. Paste the code into the section<br>
-                6. Repeat for more modules<br>
-                7. Drag sections to reorder<br>
-                8. Preview and export!
+                3. Click "Send to Stack" in export modal<br>
+                4. Repeat for more modules<br>
+                5. Drag sections to reorder<br>
+                6. Preview and export!
+            </div>
+
+            <h2>Stack Mode</h2>
+            <div style="margin-bottom:16px;">
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:8px;">
+                    <input type="radio" name="stackMode" value="normal" checked onchange="updateMode()">
+                    <span><strong>Normal</strong> — modules stack vertically</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                    <input type="radio" name="stackMode" value="viewport" onchange="updateMode()">
+                    <span><strong>Viewport</strong> — modules blend in single viewport</span>
+                </label>
+            </div>
+            
+            <div id="viewportSettings" style="display:none;background:#1a1a1a;padding:12px;border-radius:8px;margin-bottom:16px;">
+                <div style="margin-bottom:10px;">
+                    <label style="display:block;margin-bottom:4px;font-size:12px;color:#888;">Scroll Budget per Section (px)</label>
+                    <input type="number" id="scrollBudget" value="2000" min="500" max="5000" step="100" style="width:100%;padding:8px;background:#0a0a0a;border:1px solid #333;border-radius:4px;color:#fff;">
+                </div>
+                <div style="margin-bottom:10px;">
+                    <label style="display:block;margin-bottom:4px;font-size:12px;color:#888;">Transition</label>
+                    <select id="transitionType" style="width:100%;padding:8px;background:#0a0a0a;border:1px solid #333;border-radius:4px;color:#fff;">
+                        <option value="crossfade">Crossfade</option>
+                        <option value="blur">Blur</option>
+                        <option value="none">None (hard cut)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block;margin-bottom:4px;font-size:12px;color:#888;">Transition Duration (% of scroll budget)</label>
+                    <input type="range" id="transitionDuration" min="0" max="30" value="15" style="width:100%;">
+                    <span id="transitionDurationVal" style="font-size:11px;color:#666;">15%</span>
+                </div>
             </div>
 
             <h2>Export Settings</h2>
@@ -547,6 +577,15 @@
             });
         }
 
+        function updateMode() {
+            const mode = document.querySelector('input[name="stackMode"]:checked').value;
+            document.getElementById('viewportSettings').style.display = mode === 'viewport' ? 'block' : 'none';
+        }
+        
+        document.getElementById('transitionDuration').addEventListener('input', function() {
+            document.getElementById('transitionDurationVal').textContent = this.value + '%';
+        });
+
         function previewStack() {
             if (sections.length === 0) {
                 alert('Add some sections first!');
@@ -575,6 +614,11 @@
         }
 
         function generateCombinedHTML() {
+            const mode = document.querySelector('input[name="stackMode"]:checked').value;
+            return mode === 'viewport' ? generateViewportHTML() : generateNormalHTML();
+        }
+
+        function generateNormalHTML() {
             let combinedStyles = '';
             let combinedScripts = '';
             let combinedBody = '';
@@ -635,6 +679,143 @@
                 '    ' + combinedBody + '\n' +
                 '    <script>\n' +
                 '        ' + combinedScripts + '\n' +
+                '    </' + 'script>\n' +
+                '</body>\n' +
+                '</html>';
+
+            return htmlDoc;
+        }
+
+        function generateViewportHTML() {
+            const scrollBudget = parseInt(document.getElementById('scrollBudget').value) || 2000;
+            const transitionType = document.getElementById('transitionType').value;
+            const transitionPct = parseInt(document.getElementById('transitionDuration').value) / 100;
+            
+            let combinedStyles = '';
+            let combinedBody = '';
+            let combinedScripts = '';
+            let moduleIds = [];
+            let title = 'Scrolltastic Viewport Stack';
+
+            sections.forEach((section, index) => {
+                if (!section.html.trim()) return;
+
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(section.html, 'text/html');
+
+                if (index === 0 && doc.querySelector('title')) {
+                    title = doc.querySelector('title').textContent;
+                }
+
+                // Find the module's unique ID from the HTML
+                const firstDiv = doc.body.querySelector('div[id]');
+                const moduleId = firstDiv ? firstDiv.id : 'module' + index;
+                moduleIds.push(moduleId);
+
+                // Extract styles
+                doc.querySelectorAll('style').forEach(style => {
+                    combinedStyles += style.textContent + '\n\n';
+                });
+
+                // Wrap body content in a viewport layer
+                const bodyContent = doc.body ? doc.body.innerHTML : section.html;
+                combinedBody += '<div class="vp-layer" data-index="' + index + '">\n' + bodyContent + '\n</div>\n';
+
+                // Extract scripts
+                doc.querySelectorAll('script').forEach(script => {
+                    combinedScripts += script.textContent + '\n\n';
+                });
+            });
+
+            if (moduleIds.length === 0) {
+                return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Empty Stack</title></head><body style="padding: 100px; text-align: center; font-family: sans-serif; color: #666;"><h1>No Content</h1><p>All sections were empty.</p></body></html>';
+            }
+
+            const totalHeight = scrollBudget * moduleIds.length;
+            const transitionRange = scrollBudget * transitionPct;
+
+            // Build viewport mode controller
+            const controllerJS = `
+window.SCROLLTASTIC_PROGRESS = {};
+(function(){
+var ids = ${JSON.stringify(moduleIds)};
+var n = ids.length;
+var budget = ${scrollBudget};
+var total = budget * n;
+var transType = "${transitionType}";
+var transPct = ${transitionPct};
+var layers = document.querySelectorAll('.vp-layer');
+
+function upd(){
+    var scrollY = window.scrollY || window.pageYOffset;
+    var progress = Math.max(0, Math.min(1, scrollY / (total - window.innerHeight)));
+    
+    for(var i = 0; i < n; i++){
+        var start = i / n;
+        var end = (i + 1) / n;
+        var localP = Math.max(0, Math.min(1, (progress - start) / (end - start)));
+        
+        // Set progress for module
+        window.SCROLLTASTIC_PROGRESS[ids[i]] = localP;
+        
+        // Calculate layer opacity and effects
+        var layer = layers[i];
+        if(!layer) continue;
+        
+        var opacity = 1;
+        var filter = '';
+        
+        if(transType !== 'none' && n > 1){
+            // Fade in
+            if(i > 0 && localP < transPct){
+                var fadeP = localP / transPct;
+                opacity = fadeP;
+                if(transType === 'blur') filter = 'blur(' + ((1 - fadeP) * 10) + 'px)';
+            }
+            // Fade out
+            if(i < n - 1 && localP > (1 - transPct)){
+                var fadeP = (1 - localP) / transPct;
+                opacity = fadeP;
+                if(transType === 'blur') filter = 'blur(' + ((1 - fadeP) * 10) + 'px)';
+            }
+        }
+        
+        // Show only active layer (with transitions)
+        var isActive = progress >= start - transPct/(n) && progress <= end + transPct/(n);
+        layer.style.opacity = isActive ? opacity : 0;
+        layer.style.filter = filter;
+        layer.style.pointerEvents = isActive && opacity > 0.5 ? 'auto' : 'none';
+    }
+    
+    requestAnimationFrame(upd);
+}
+upd();
+})();
+`;
+
+            const htmlDoc = '<!DOCTYPE html>\n' +
+                '<html lang="en">\n' +
+                '<head>\n' +
+                '    <meta charset="UTF-8">\n' +
+                '    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+                '    <title>' + title + '</title>\n' +
+                '    <style>\n' +
+                '        * { margin: 0; padding: 0; box-sizing: border-box; }\n' +
+                '        body { background: #000; overflow-x: hidden; height: ' + totalHeight + 'px; }\n' +
+                '        .vp-container { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; overflow: hidden; }\n' +
+                '        .vp-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.1s; }\n' +
+                '        .vp-layer > div { position: relative !important; height: auto !important; }\n' +
+                '        .vp-layer [class*="-stage"], .vp-layer [class*="-wrap"] > [class*="-stage"] { position: relative !important; height: 100vh !important; }\n' +
+                '        ' + combinedStyles + '\n' +
+                '    </style>\n' +
+                '</head>\n' +
+                '<body>\n' +
+                '    <div class="vp-container">\n' +
+                '        ' + combinedBody + '\n' +
+                '    </div>\n' +
+                '    <script>\n' +
+                '        ' + combinedScripts + '\n' +
+                '        ' + controllerJS + '\n' +
                 '    </' + 'script>\n' +
                 '</body>\n' +
                 '</html>';

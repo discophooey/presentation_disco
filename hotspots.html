@@ -428,10 +428,14 @@ var w=document.getElementById('${uid}'),st=w.querySelector('.stage');
 w.style.height=(st.offsetHeight*${sm})+'px';
 window.addEventListener('resize',function(){w.style.height=(st.offsetHeight*${sm})+'px';});
 function upd(){
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS['${uid}'];
+var p;
+if(extP!==undefined){p=extP*100;}else{
 var r=w.getBoundingClientRect();
 var scrolled=Math.max(0,-r.top);
 var range=w.offsetHeight-window.innerHeight;
-var p=range>0?(scrolled/range)*100:0;
+p=range>0?(scrolled/range)*100:0;
+}
 w.querySelectorAll('.hp').forEach(function(h){
 var s=parseFloat(h.dataset.s)||0,e=parseFloat(h.dataset.e)||100;
 h.classList.toggle('on',p>=s&&p<=e);

@@ -500,8 +500,13 @@ else if(e.key==="ArrowRight"){e.preventDefault();curIdx=(curIdx+1)%n;showImg(cur
 });
 function upd(){
 var wh=window.innerHeight;
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["${uid}"];
+var shouldReveal=false;
+if(extP!==undefined){shouldReveal=extP>0.1;}else{
 var areaRect=w.querySelector(".c-area").getBoundingClientRect();
-if(areaRect.top<wh*0.85){
+shouldReveal=areaRect.top<wh*0.85;
+}
+if(shouldReveal){
 for(var i=0;i<n;i++){
 if(!revealed[i]){
 revealed[i]=true;

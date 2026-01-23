@@ -522,11 +522,15 @@ document.onmouseup=function(){drag=0;};
 document.ontouchend=function(){drag=0;};
 }
 if(mode!=="drag"){
+var tar=0;
 function upd(){
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["${uid}"];
+if(extP!==undefined){tar=extP;}else{
 var r=w.getBoundingClientRect(),wh=window.innerHeight;
 var scrolled=Math.max(0,-r.top),range=w.offsetHeight-wh;
 if(range<=0)range=1;
-var tar=Math.max(0,Math.min(1,scrolled/range));
+tar=Math.max(0,Math.min(1,scrolled/range));
+}
 cur+=(tar-cur)*0.12;
 if(!drag){pos=${startPos}+(100-${startPos})*cur;set(pos);}
 requestAnimationFrame(upd);

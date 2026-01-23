@@ -327,12 +327,16 @@ for(var j=0;j<n;j++)revealed[j]=false;
 function setH(){w.style.height=(s.offsetHeight*scrollMult)+"px";}
 setH();window.addEventListener("resize",setH);
 function upd(){
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["${uid}"];
+var tarP;
+if(extP!==undefined){tarP=extP;}else{
 var r=w.getBoundingClientRect();
 var wh=window.innerHeight;
 var scrolled=Math.max(0,-r.top);
 var scrollRange=w.offsetHeight-wh;
 if(scrollRange<=0)scrollRange=1;
-var tarP=Math.max(0,Math.min(1,scrolled/scrollRange));
+tarP=Math.max(0,Math.min(1,scrolled/scrollRange));
+}
 curP+=(tarP-curP)*0.12;
 prog.style.height=(curP*100)+"%";
 for(var i=0;i<n;i++){

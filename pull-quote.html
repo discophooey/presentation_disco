@@ -432,12 +432,16 @@ bgHtml +
 'show();\n' +
 '}\n' +
 'function upd(){\n' +
+'var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\n' +
+'var p;\n' +
+'if(extP!==undefined){p=extP;}else{\n' +
 'var r=w.getBoundingClientRect();\n' +
 'var wh=window.innerHeight;\n' +
 'var scrolled=Math.max(0,-r.top);\n' +
 'var scrollRange=w.offsetHeight-wh;\n' +
 'if(scrollRange<=0)scrollRange=1;\n' +
-'var p=Math.max(0,Math.min(1,scrolled/scrollRange));\n' +
+'p=Math.max(0,Math.min(1,scrolled/scrollRange));\n' +
+'}\n' +
 'var show=p>=qr||revealed;\n' +
 'if(p>=qr&&!revealed){\n' +
 'revealed=true;\n' +
