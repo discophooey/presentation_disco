@@ -744,11 +744,16 @@ var budget = ${scrollBudget};
 var total = budget * n;
 var transType = "${transitionType}";
 var transPct = ${transitionPct};
+var wrap = document.querySelector('.vp-wrap');
 var layers = document.querySelectorAll('.vp-layer');
 
 function upd(){
-    var scrollY = window.scrollY || window.pageYOffset;
-    var progress = Math.max(0, Math.min(1, scrollY / (total - window.innerHeight)));
+    var rect = wrap.getBoundingClientRect();
+    var wh = window.innerHeight;
+    var scrolled = Math.max(0, -rect.top);
+    var scrollRange = wrap.offsetHeight - wh;
+    if(scrollRange <= 0) scrollRange = 1;
+    var progress = Math.max(0, Math.min(1, scrolled / scrollRange));
     
     for(var i = 0; i < n; i++){
         var start = i / n;
@@ -801,17 +806,19 @@ upd();
                 '    <title>' + title + '</title>\n' +
                 '    <style>\n' +
                 '        * { margin: 0; padding: 0; box-sizing: border-box; }\n' +
-                '        body { background: #000; overflow-x: hidden; height: ' + totalHeight + 'px; }\n' +
-                '        .vp-container { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; overflow: hidden; }\n' +
-                '        .vp-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.1s; }\n' +
+                '        .vp-wrap { position: relative; width: 100%; height: ' + totalHeight + 'px; background: #000; overflow: hidden; }\n' +
+                '        .vp-container { position: sticky; top: 0; left: 0; width: 100%; height: 100vh; overflow: hidden; }\n' +
+                '        .vp-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.1s; overflow: hidden; }\n' +
                 '        .vp-layer > div { position: relative !important; height: auto !important; }\n' +
                 '        .vp-layer [class*="-stage"], .vp-layer [class*="-wrap"] > [class*="-stage"] { position: relative !important; height: 100vh !important; }\n' +
                 '        ' + combinedStyles + '\n' +
                 '    </style>\n' +
                 '</head>\n' +
                 '<body>\n' +
+                '    <div class="vp-wrap">\n' +
                 '    <div class="vp-container">\n' +
                 '        ' + combinedBody + '\n' +
+                '    </div>\n' +
                 '    </div>\n' +
                 '    <script>\n' +
                 '        ' + combinedScripts + '\n' +
