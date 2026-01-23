@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Scroll Story Planner - Presentation Disco</title>
+<title>Presentation Planner - Presentation Disco</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -116,15 +116,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <div>
         <div class="header-left">
             <a href="index.html" class="back-btn">← Hub</a>
-            <input type="text" class="title-input" id="projectTitle" value="Untitled Story" />
+            <input type="text" class="title-input" id="projectTitle" value="Untitled Presentation" />
         </div>
         <div class="subtitle"><span id="sectionCount">0</span> sections · ~<span id="totalDuration">0</span>s scroll</div>
     </div>
     <div class="header-actions">
         <button class="btn btn-ghost" onclick="newProject()">New</button>
         <button class="btn btn-secondary" onclick="openLoadModal()">Load</button>
-        <button class="btn btn-secondary" id="saveBtn" onclick="saveProject()">Save</button>
-        <button class="btn btn-secondary" onclick="openShareModal()">Share</button>
+        <button class="btn btn-secondary" onclick="openSaveShareModal()">Save / Share</button>
         <button class="btn btn-export" onclick="exportToModules()">⬆ Export to Modules</button>
         <button class="btn btn-primary" onclick="addSection()">+ Add</button>
     </div>
@@ -146,7 +145,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <div id="sectionsContainer">
         <div class="empty-state">
             <div class="empty-state-icon">📝</div>
-            <p>Start planning your scroll story.<br>Click "+ Add" to create your first section.</p>
+            <p>Start planning your scroll presentation.<br>Click "+ Add" to create your first section.</p>
         </div>
     </div>
     <button class="add-section-btn" onclick="addSection()">+ Add Section</button>
@@ -156,15 +155,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 <div class="modal" id="shareModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Share Plan</h3>
+            <h3>Save / Share</h3>
             <button class="modal-close" onclick="closeModal('shareModal')">×</button>
         </div>
-        <div id="shareUrlBox" class="share-url-box" style="display:none;"></div>
-        <textarea class="modal-textarea" id="shareText" readonly></textarea>
-        <div class="modal-actions">
-            <button class="btn btn-primary" onclick="copyShareUrl()">📋 Copy Share URL</button>
-            <button class="btn btn-secondary" onclick="copyShareText()">Copy Text</button>
-            <button class="btn btn-secondary" onclick="exportJSON()">Download JSON</button>
+        <div class="edit-field" style="margin-bottom:16px;">
+            <label>Project Name</label>
+            <input type="text" id="saveProjectName" style="margin-bottom:0;">
+        </div>
+        <div class="modal-actions" style="margin-bottom:16px;">
+            <button class="btn btn-primary" id="saveBtn" onclick="saveAndDownload()">💾 Save & Download</button>
+        </div>
+        <div style="border-top:1px solid #2a2a2a;padding-top:16px;margin-top:8px;">
+            <label style="color:#666;font-size:11px;display:block;margin-bottom:8px;text-transform:uppercase;">Share Options</label>
+            <div id="shareUrlBox" class="share-url-box"></div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="copyShareUrl()">📋 Copy Share URL</button>
+                <button class="btn btn-secondary" onclick="copyShareText()">📄 Copy as Text</button>
+            </div>
         </div>
     </div>
 </div>
@@ -236,13 +243,14 @@ function loadFromUrl() {
                 document.getElementById('projectTitle').value = data.title;
                 sections = data.sections;
                 sectionIdCounter = Math.max(...sections.map(s => s.id), 0);
-                renderSections();
                 history.replaceState(null, '', window.location.pathname);
+                return true;
             }
         } catch (e) {
             console.warn('Could not load from URL:', e);
         }
     }
+    return false;
 }
 
 function getModuleInfo(typeId) {
@@ -361,6 +369,10 @@ function getModuleInputsHtml(section) {
                 <div class="edit-field">
                     <label>Image URL</label>
                     <input type="text" value="${c.imageUrl || ''}" placeholder="https://..." onchange="updateContent(${id}, 'imageUrl', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Caption</label>
+                    <input type="text" value="${c.caption || ''}" placeholder="Image caption..." onchange="updateContent(${id}, 'caption', this.value)">
                 </div>`;
         
         case 'layers':
@@ -379,6 +391,10 @@ function getModuleInputsHtml(section) {
                             <button onclick="removeContentItem(${id}, 'images', ${i})">×</button>
                         </div>
                     `).join('')}
+                </div>
+                <div class="edit-field" style="margin-top:12px;">
+                    <label>Caption</label>
+                    <input type="text" value="${c.caption || ''}" placeholder="Caption..." onchange="updateContent(${id}, 'caption', this.value)">
                 </div>`;
         
         case 'before-after':
@@ -390,6 +406,10 @@ function getModuleInputsHtml(section) {
                 <div class="edit-field">
                     <label>After Image URL</label>
                     <input type="text" value="${c.afterUrl || ''}" placeholder="https://..." onchange="updateContent(${id}, 'afterUrl', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Caption</label>
+                    <input type="text" value="${c.caption || ''}" placeholder="Image caption..." onchange="updateContent(${id}, 'caption', this.value)">
                 </div>`;
         
         case 'video':
@@ -397,6 +417,10 @@ function getModuleInputsHtml(section) {
                 <div class="edit-field">
                     <label>Video URL</label>
                     <input type="text" value="${c.videoUrl || ''}" placeholder="https://..." onchange="updateContent(${id}, 'videoUrl', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Caption</label>
+                    <input type="text" value="${c.caption || ''}" placeholder="Video caption..." onchange="updateContent(${id}, 'caption', this.value)">
                 </div>`;
         
         case 'pull-quote':
@@ -430,6 +454,10 @@ function getModuleInputsHtml(section) {
                             <button onclick="removeContentItem(${id}, 'images', ${i})">×</button>
                         </div>
                     `).join('')}
+                </div>
+                <div class="edit-field" style="margin-top:12px;">
+                    <label>Caption</label>
+                    <input type="text" value="${c.caption || ''}" placeholder="Gallery caption..." onchange="updateContent(${id}, 'caption', this.value)">
                 </div>`;
         
         case 'hotspots':
@@ -437,6 +465,10 @@ function getModuleInputsHtml(section) {
                 <div class="edit-field">
                     <label>Background Image URL</label>
                     <input type="text" value="${c.imageUrl || ''}" placeholder="https://..." onchange="updateContent(${id}, 'imageUrl', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Caption</label>
+                    <input type="text" value="${c.caption || ''}" placeholder="Caption..." onchange="updateContent(${id}, 'caption', this.value)">
                 </div>`;
         
         case 'stat-counter':
@@ -559,15 +591,11 @@ function getModuleInputsHtml(section) {
         case 'globe':
             return `
                 <div class="input-row">
-                    <div class="edit-field" style="flex:0.4;">
-                        <label>Latitude</label>
-                        <input type="number" id="input_${id}_lat" placeholder="40.7" step="0.1">
-                    </div>
-                    <div class="edit-field" style="flex:0.4;">
-                        <label>Longitude</label>
-                        <input type="number" id="input_${id}_lng" placeholder="-74.0" step="0.1">
-                    </div>
                     <div class="edit-field" style="flex:1;">
+                        <label>Coordinates</label>
+                        <input type="text" id="input_${id}_coords" placeholder="40.71, -74.00 | 40°42'N 74°0'W | Google Maps paste">
+                    </div>
+                    <div class="edit-field" style="flex:0.8;">
                         <label>Label</label>
                         <input type="text" id="input_${id}_label" placeholder="New York">
                     </div>
@@ -576,8 +604,8 @@ function getModuleInputsHtml(section) {
                 <div class="items-list">
                     ${(c.points || []).map((p, i) => `
                         <div class="item-row">
-                            <span class="item-text">${p.label}</span>
-                            <span class="item-sub">${p.lat}, ${p.lng}</span>
+                            <span class="item-text">${p.label || 'Point ' + (i+1)}</span>
+                            <span class="item-sub">${p.lat.toFixed(4)}, ${p.lng.toFixed(4)}</span>
                             <button onclick="removeContentItem(${id}, 'points', ${i})">×</button>
                         </div>
                     `).join('')}
@@ -599,6 +627,10 @@ function getModuleInputsHtml(section) {
                             <button onclick="removeContentItem(${id}, 'images', ${i})">×</button>
                         </div>
                     `).join('')}
+                </div>
+                <div class="edit-field" style="margin-top:12px;">
+                    <label>Caption</label>
+                    <input type="text" value="${c.caption || ''}" placeholder="Collage caption..." onchange="updateContent(${id}, 'caption', this.value)">
                 </div>`;
         
         case 'zoom-detail':
@@ -606,6 +638,10 @@ function getModuleInputsHtml(section) {
                 <div class="edit-field">
                     <label>Image URL</label>
                     <input type="text" value="${c.imageUrl || ''}" placeholder="https://..." onchange="updateContent(${id}, 'imageUrl', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Caption</label>
+                    <input type="text" value="${c.caption || ''}" placeholder="Caption..." onchange="updateContent(${id}, 'caption', this.value)">
                 </div>`;
         
         case 'matte':
@@ -670,14 +706,51 @@ function addCardItem(sectionId) {
     document.getElementById(`input_${sectionId}_image`).value = '';
 }
 
+function parseCoordinates(str) {
+    if (!str) return null;
+    str = str.trim();
+    
+    // Try decimal format: "40.71, -74.00" or "40.71 -74.00"
+    let match = str.match(/^(-?\d+\.?\d*)[,\s]+(-?\d+\.?\d*)$/);
+    if (match) {
+        return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+    }
+    
+    // Try DMS format: 40°42'N 74°0'W or 40°42'46"N 74°0'22"W
+    match = str.match(/(\d+)[°](\d+)?['′]?(\d+\.?\d*)?["″]?\s*([NSns])[,\s]+(\d+)[°](\d+)?['′]?(\d+\.?\d*)?["″]?\s*([EWew])/);
+    if (match) {
+        let lat = parseFloat(match[1]) + (parseFloat(match[2] || 0) / 60) + (parseFloat(match[3] || 0) / 3600);
+        let lng = parseFloat(match[5]) + (parseFloat(match[6] || 0) / 60) + (parseFloat(match[7] || 0) / 3600);
+        if (match[4].toUpperCase() === 'S') lat = -lat;
+        if (match[8].toUpperCase() === 'W') lng = -lng;
+        return { lat, lng };
+    }
+    
+    // Try Google Maps URL paste: contains @40.7,-74.0 or !3d40.7!4d-74.0
+    match = str.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+    if (match) {
+        return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+    }
+    match = str.match(/!3d(-?\d+\.?\d*)!4d(-?\d+\.?\d*)/);
+    if (match) {
+        return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+    }
+    
+    return null;
+}
+
 function addGlobeItem(sectionId) {
-    const lat = document.getElementById(`input_${sectionId}_lat`).value;
-    const lng = document.getElementById(`input_${sectionId}_lng`).value;
+    const coordsInput = document.getElementById(`input_${sectionId}_coords`).value;
     const label = document.getElementById(`input_${sectionId}_label`).value;
-    if (!lat || !lng) return;
-    addContentObject(sectionId, 'points', { lat: parseFloat(lat), lng: parseFloat(lng), label: label || '', id: Date.now() });
-    document.getElementById(`input_${sectionId}_lat`).value = '';
-    document.getElementById(`input_${sectionId}_lng`).value = '';
+    
+    const coords = parseCoordinates(coordsInput);
+    if (!coords) {
+        alert('Could not parse coordinates. Try formats like:\n• 40.71, -74.00\n• 40°42\'N 74°0\'W\n• Paste Google Maps URL');
+        return;
+    }
+    
+    addContentObject(sectionId, 'points', { lat: coords.lat, lng: coords.lng, label: label || '', id: Date.now() });
+    document.getElementById(`input_${sectionId}_coords`).value = '';
     document.getElementById(`input_${sectionId}_label`).value = '';
 }
 
@@ -731,7 +804,7 @@ function renderSections() {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">📝</div>
-                <p>Start planning your scroll story.<br>Click "+ Add" to create your first section.</p>
+                <p>Start planning your scroll presentation.<br>Click "+ Add" to create your first section.</p>
             </div>
         `;
         return;
@@ -1020,9 +1093,12 @@ function buildModuleState(section) {
                     containerHeight: 500
                 },
                 inputs: {
-                    matteText: c.matteText || 'REVEAL',
-                    bgImageUrl: c.imageUrl || ''
-                }
+                    'matte-text': c.matteText || 'REVEAL',
+                    'bg-image-url': c.imageUrl || ''
+                },
+                textAnim: 'random',
+                textPosition: 'center',
+                sizing: 'contain'
             };
         
         default:
@@ -1054,38 +1130,9 @@ function handleDragEnd() {
 }
 
 // Save/Load
-function saveProject() {
-    const title = document.getElementById('projectTitle').value;
-    const projectId = title.toLowerCase().replace(/[^a-z0-9]/g, '-');
-    const project = {
-        id: projectId,
-        title: title,
-        sections: sections,
-        savedAt: new Date().toISOString()
-    };
-    
-    const existing = JSON.parse(localStorage.getItem('disco_planner_projects') || '[]');
-    const index = existing.findIndex(p => p.id === projectId);
-    if (index >= 0) {
-        existing[index] = project;
-    } else {
-        existing.push(project);
-    }
-    
-    localStorage.setItem('disco_planner_projects', JSON.stringify(existing));
-    
-    const btn = document.getElementById('saveBtn');
-    btn.textContent = '✓ Saved';
-    btn.classList.add('btn-success');
-    setTimeout(() => {
-        btn.textContent = 'Save';
-        btn.classList.remove('btn-success');
-    }, 2000);
-}
-
 function newProject() {
     if (sections.length > 0 && !confirm('Start a new project? Unsaved changes will be lost.')) return;
-    document.getElementById('projectTitle').value = 'Untitled Story';
+    document.getElementById('projectTitle').value = 'Untitled Presentation';
     sections = [];
     sectionIdCounter = 0;
     editingId = null;
@@ -1184,12 +1231,60 @@ function generateShareUrl() {
     return window.location.origin + window.location.pathname + '#' + compressed;
 }
 
-function openShareModal() {
-    document.getElementById('shareText').value = generateShareText();
+function openSaveShareModal() {
+    const title = document.getElementById('projectTitle').value;
+    document.getElementById('saveProjectName').value = title;
     const url = generateShareUrl();
     document.getElementById('shareUrlBox').textContent = url;
-    document.getElementById('shareUrlBox').style.display = 'block';
     document.getElementById('shareModal').classList.add('active');
+}
+
+function saveAndDownload() {
+    const newTitle = document.getElementById('saveProjectName').value.trim();
+    if (!newTitle) {
+        alert('Please enter a project name');
+        return;
+    }
+    
+    // Update the title input to match
+    document.getElementById('projectTitle').value = newTitle;
+    
+    const projectId = newTitle.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const project = {
+        id: projectId,
+        title: newTitle,
+        sections: sections,
+        savedAt: new Date().toISOString()
+    };
+    
+    // Save to localStorage
+    const existing = JSON.parse(localStorage.getItem('disco_planner_projects') || '[]');
+    const index = existing.findIndex(p => p.id === projectId);
+    if (index >= 0) {
+        existing[index] = project;
+    } else {
+        existing.push(project);
+    }
+    localStorage.setItem('disco_planner_projects', JSON.stringify(existing));
+    savePlannerState();
+    
+    // Download JSON
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = projectId + '.json';
+    a.click();
+    
+    const btn = document.getElementById('saveBtn');
+    btn.textContent = '✓ Saved!';
+    btn.classList.remove('btn-primary');
+    btn.classList.add('btn-success');
+    setTimeout(() => {
+        btn.textContent = '💾 Save & Download';
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-primary');
+    }, 2000);
 }
 
 function copyShareUrl() {
@@ -1198,7 +1293,7 @@ function copyShareUrl() {
 }
 
 function copyShareText() {
-    navigator.clipboard.writeText(document.getElementById('shareText').value);
+    navigator.clipboard.writeText(generateShareText());
     alert('Text copied to clipboard!');
 }
 
@@ -1219,6 +1314,34 @@ function closeModal(id) {
     document.getElementById(id).classList.remove('active');
 }
 
+// Persistence
+var PLANNER_KEY = 'disco_planner_current';
+
+function savePlannerState() {
+    try {
+        var state = {
+            title: document.getElementById('projectTitle').value,
+            sections: sections,
+            sectionIdCounter: sectionIdCounter,
+            currentTake: document.getElementById('currentTake').value
+        };
+        localStorage.setItem(PLANNER_KEY, JSON.stringify(state));
+    } catch(e) {}
+}
+
+function loadPlannerState() {
+    try {
+        var saved = localStorage.getItem(PLANNER_KEY);
+        if (!saved) return false;
+        var state = JSON.parse(saved);
+        if (state.title) document.getElementById('projectTitle').value = state.title;
+        if (state.sections) sections = state.sections;
+        if (state.sectionIdCounter) sectionIdCounter = state.sectionIdCounter;
+        if (state.currentTake) document.getElementById('currentTake').value = state.currentTake;
+        return true;
+    } catch(e) { return false; }
+}
+
 // Close modals on backdrop click
 document.querySelectorAll('.modal').forEach(modal => {
     modal.addEventListener('click', (e) => {
@@ -1233,8 +1356,30 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+// Auto-save on changes
+document.addEventListener('change', savePlannerState);
+document.addEventListener('input', savePlannerState);
+
+// Wrap functions that modify state to trigger save
+var _orig_addSection = addSection;
+addSection = function() { _orig_addSection(); savePlannerState(); };
+var _orig_removeSection = removeSection;
+removeSection = function(id, e) { _orig_removeSection(id, e); savePlannerState(); };
+var _orig_updateSection = updateSection;
+updateSection = function(id, field, value) { _orig_updateSection(id, field, value); savePlannerState(); };
+var _orig_updateContent = updateContent;
+updateContent = function(id, field, value) { _orig_updateContent(id, field, value); savePlannerState(); };
+var _orig_addContentItem = addContentItem;
+addContentItem = function(sectionId, field) { _orig_addContentItem(sectionId, field); savePlannerState(); };
+var _orig_addContentObject = addContentObject;
+addContentObject = function(sectionId, field, obj) { _orig_addContentObject(sectionId, field, obj); savePlannerState(); };
+var _orig_removeContentItem = removeContentItem;
+removeContentItem = function(sectionId, field, index) { _orig_removeContentItem(sectionId, field, index); savePlannerState(); };
+
 // Init
-loadFromUrl();
+if (!loadFromUrl()) {
+    loadPlannerState();
+}
 renderSections();
 </script>
 </body>
