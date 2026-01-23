@@ -360,6 +360,12 @@
  max-height: none;
  }
  }
+
+ .hint {
+ font-size: 11px;
+ color: #666;
+ margin-top: 6px;
+ }
  </style>
 </head>
 <body>
@@ -390,21 +396,10 @@
  <h1>Scrolltastic Image Gallery</h1>
 
  <div class="control-group">
- <label>🔗 Image URL (Recommended)</label>
- <input type="text" id="imageURL" placeholder="https://...">
- <button onclick="addFromURL()" style="margin-top: 8px; background: #34a853;">Add from URL</button>
- <div style="font-size: 11px; color: #4a9eff; margin-top: 6px;">
- 💡 Accepts any direct image URL: GitHub, CDN, S3, Cloudinary, your server, etc.
- </div>
- </div>
-
- <div class="control-group">
- <label>📁 Upload Images (Large File Size Warning)</label>
- <input type="file" id="imageInput" accept="image/*" multiple>
- <div style="font-size: 11px; color: #ff6b35; margin-top: 6px; line-height: 1.4;">
- ⚠️ Uploading creates very large HTML files (base64 encoding). This may crash your CMS.<br>
- <strong>For production: Use URLs instead ↑</strong>
- </div>
+ <label>Image URL</label>
+ <input type="url" id="imageUrl" placeholder="https://...">
+ <button onclick="addImage()" style="margin-top:8px;">Add Image</button>
+ <div class="hint">Any direct image URL (CDN, S3, GitHub raw, your server)</div>
  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
  <button onclick="loadExampleGallery()" style="background: #9b59b6;">Load Example</button>
  <button onclick="clearAllImages()" style="background: #e74c3c;">Clear All</button>
@@ -618,7 +613,6 @@
  images = [];
  renderList();
  renderPreview();
- document.getElementById('imageInput').value = '';
  }
  }
 
@@ -674,101 +668,42 @@
  reader.readAsDataURL(file);
  }
 
- document.getElementById('imageInput').addEventListener('change', function(e) {
- const files = Array.from(e.target.files);
- files.forEach((file, i) => {
- const reader = new FileReader();
- reader.onload = (event) => {
- // Extract filename without extension for default caption
- const fileName = file.name.replace(/\.[^/.]+$/, '');
- const cleanName = fileName.replace(/[-_]/g, ' ');
-
- images.push({
- id: Date.now() + i,
- src: event.target.result,
- name: file.name,
- textEnabled: false,
- text: '',
- textSize: 32,
- textColor: '#ffffff',
- textAlign: 'center',
- textPosition: 'bottom',
- textX: 0,
- textY: 0,
- textBgEnabled: true,
- textBgOpacity: 80,
- textLineHeight: 1.4,
- textLetterSpacing: 0,
- captionEnabled: true,
- caption: 'Scroll-driven image gallery with cinematic transitions—crossfade, slide, blur, zoom, ken burns—plus timed text overlays and captions.',
- credit: 'Marshall Ritzel',
- captionBgEnabled: false,
- startScroll: 0,
- endScroll: 100
- });
- if (images.length === files.length) {
- autoDistributeTiming();
- render();
- }
- };
- reader.readAsDataURL(file);
- });
- e.target.value = '';
- });
-
- function addFromURL() {
- const input = document.getElementById('imageURL');
- let url = input.value.trim();
-
- if (!url) {
- alert('Please enter an image URL');
- return;
- }
-
- // Auto-convert GitHub URLs to raw format
+ function addImage() {
+ let url = document.getElementById('imageUrl').value.trim();
+ if (!url) { alert('Enter image URL'); return; }
  if (url.includes('github.com') && url.includes('/blob/')) {
- url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
- url = url.split('?')[0]; // Remove ?raw=true etc
+     url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
  }
-
- // Test if URL is valid by loading it
  const img = new Image();
- img.crossOrigin = "anonymous"; // Enable CORS
  img.onload = function() {
- // Extract filename without extension for default caption
- const fileName = (url.split('/').pop() || 'Image').replace(/\.[^/.]+$/, '');
- const cleanName = fileName.replace(/[-_]/g, ' ');
-
- images.push({
- id: Date.now(),
- src: url,
- name: url.split('/').pop() || 'Image',
- textEnabled: false,
- text: '',
- textSize: 32,
- textColor: '#ffffff',
- textAlign: 'center',
- textPosition: 'bottom',
- textX: 0,
- textY: 0,
- textBgEnabled: true,
- textBgOpacity: 80,
- textLineHeight: 1.4,
- textLetterSpacing: 0,
- captionEnabled: true,
- caption: 'Scroll-driven image gallery with cinematic transitions—crossfade, slide, blur, zoom, ken burns—plus timed text overlays and captions.',
- credit: 'Marshall Ritzel',
- captionBgEnabled: false,
- startScroll: 0,
- endScroll: 100
- });
- input.value = '';
- autoDistributeTiming();
- render();
+     images.push({
+         id: Date.now(),
+         src: url,
+         name: url.split('/').pop() || 'Image',
+         textEnabled: false,
+         text: '',
+         textSize: 32,
+         textColor: '#ffffff',
+         textAlign: 'center',
+         textPosition: 'bottom',
+         textX: 0,
+         textY: 0,
+         textBgEnabled: true,
+         textBgOpacity: 80,
+         textLineHeight: 1.4,
+         textLetterSpacing: 0,
+         captionEnabled: false,
+         caption: '',
+         credit: '',
+         captionBgEnabled: false,
+         startScroll: 0,
+         endScroll: 100
+     });
+     document.getElementById('imageUrl').value = '';
+     autoDistributeTiming();
+     render();
  };
- img.onerror = function() {
- alert('Failed to load image from:\n' + url + '\n\nCheck that:\n1. File exists on GitHub\n2. Repo is public\n3. Wait 2 min if just uploaded');
- };
+ img.onerror = function() { alert('Failed to load image'); };
  img.src = url;
  }
 
@@ -1502,12 +1437,8 @@ window.addEventListener('scroll',onScroll,{passive:true});setTimeout(upd,100);up
     window.remove = function(i) { var r = _orig_remove.apply(this, arguments); saveState(); return r; };
     var _orig_clearAll = window.clearAll;
     window.clearAll = function() { var r = _orig_clearAll.apply(this, arguments); saveState(); return r; };
-    var _orig_addFromURL = window.addFromURL;
-    window.addFromURL = function() { var r = _orig_addFromURL.apply(this, arguments); setTimeout(saveState, 500); return r; };
-    
-    // Save after file uploads
-    var imgInput = document.getElementById('imageInput');
-    if (imgInput) imgInput.addEventListener('change', function() { setTimeout(saveState, 500); });
+    var _orig_addImage = window.addImage;
+    window.addImage = function() { var r = _orig_addImage.apply(this, arguments); setTimeout(saveState, 500); return r; };
     
     document.addEventListener('change', saveState);
     document.addEventListener('input', saveState);
