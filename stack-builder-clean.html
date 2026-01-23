@@ -403,6 +403,14 @@
             
             <div id="viewportSettings" style="display:none;background:#1a1a1a;padding:12px;border-radius:8px;margin-bottom:16px;">
                 <div style="margin-bottom:10px;">
+                    <label style="display:block;margin-bottom:4px;font-size:12px;color:#888;">Desktop Top Offset (px)</label>
+                    <input type="number" id="vpDesktopOffset" value="50" min="0" max="300" style="width:100%;padding:8px;background:#0a0a0a;border:1px solid #333;border-radius:4px;color:#fff;">
+                </div>
+                <div style="margin-bottom:10px;">
+                    <label style="display:block;margin-bottom:4px;font-size:12px;color:#888;">Mobile Top Offset (px)</label>
+                    <input type="number" id="vpMobileOffset" value="200" min="0" max="300" style="width:100%;padding:8px;background:#0a0a0a;border:1px solid #333;border-radius:4px;color:#fff;">
+                </div>
+                <div style="margin-bottom:10px;">
                     <label style="display:block;margin-bottom:4px;font-size:12px;color:#888;">Scroll Budget per Section (px)</label>
                     <input type="number" id="scrollBudget" value="2000" min="500" max="5000" step="100" style="width:100%;padding:8px;background:#0a0a0a;border:1px solid #333;border-radius:4px;color:#fff;">
                 </div>
@@ -690,6 +698,8 @@
             const scrollBudget = parseInt(document.getElementById('scrollBudget').value) || 2000;
             const transitionType = document.getElementById('transitionType').value;
             const transitionPct = parseInt(document.getElementById('transitionDuration').value) / 100;
+            const desktopOffset = parseInt(document.getElementById('vpDesktopOffset').value) || 50;
+            const mobileOffset = parseInt(document.getElementById('vpMobileOffset').value) || 200;
             
             let combinedStyles = '';
             let combinedBody = '';
@@ -807,10 +817,11 @@ upd();
                 '    <style>\n' +
                 '        * { margin: 0; padding: 0; box-sizing: border-box; }\n' +
                 '        .vp-wrap { position: relative; width: 100%; height: ' + totalHeight + 'px; background: #000; overflow: hidden; }\n' +
-                '        .vp-container { position: sticky; top: 0; left: 0; width: 100%; height: 100vh; overflow: hidden; }\n' +
+                '        .vp-container { position: sticky; top: ' + desktopOffset + 'px; left: 0; width: 100%; height: calc(100vh - ' + desktopOffset + 'px); overflow: hidden; }\n' +
                 '        .vp-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.1s; overflow: hidden; }\n' +
                 '        .vp-layer > div { position: relative !important; height: auto !important; }\n' +
-                '        .vp-layer [class*="-stage"], .vp-layer [class*="-wrap"] > [class*="-stage"] { position: relative !important; height: 100vh !important; }\n' +
+                '        .vp-layer [class*="-stage"], .vp-layer [class*="-wrap"] > [class*="-stage"] { position: relative !important; height: 100% !important; }\n' +
+                '        @media(max-width:768px){ .vp-container { top: ' + mobileOffset + 'px; height: calc(100vh - ' + mobileOffset + 'px); } }\n' +
                 '        ' + combinedStyles + '\n' +
                 '    </style>\n' +
                 '</head>\n' +
