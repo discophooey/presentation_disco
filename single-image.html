@@ -55,14 +55,18 @@ button.danger { background: #c53030; color: #fff; }
 .range-row input[type="range"] { flex: 1; }
 .range-row input[type="number"] { width: 60px; }
 .range-val { font-size: 10px; color: #4a9eff; float: right; }
-.text-layer { background: #1a1a1a; border: 1px solid #333; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
-.text-layer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.text-layer-title { font-size: 11px; font-weight: 600; color: #4a9eff; }
-.text-layer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.text-layer-grid .control-group { margin-bottom: 0; }
-.text-layer-grid label { font-size: 9px; }
-.text-layer-grid input, .text-layer-grid textarea { font-size: 10px; padding: 4px 6px; }
-.text-layer-grid textarea { min-height: 36px; }
+.layer-item { background: #1a1a1a; border: 1px solid #333; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
+.layer-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+.layer-title { font-size: 11px; font-weight: 600; color: #4a9eff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+.layer-btns { display: flex; gap: 4px; }
+.layer-btns button { width: 28px; height: 28px; padding: 0; font-size: 12px; }
+.layer-body { overflow: hidden; max-height: 500px; transition: max-height 0.3s; margin-top: 8px; }
+.layer-body.collapsed { max-height: 0; margin-top: 0; }
+.layer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.layer-grid .control-group { margin-bottom: 0; }
+.layer-grid label { font-size: 9px; }
+.layer-grid input, .layer-grid select, .layer-grid textarea { font-size: 10px; padding: 4px 6px; }
+.layer-grid textarea { min-height: 36px; resize: vertical; }
 .preview-area { background: #000; display: flex; flex-direction: column; overflow: hidden; }
 .preview-header { padding: 10px 16px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; font-size: 11px; color: #666; }
 #progressDisplay { color: #4a9eff; font-weight: bold; }
@@ -146,17 +150,31 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         
         <h2 onclick="toggleSection(this)" class="collapsed">Text Layers</h2>
         <div class="section collapsed">
-            <div id="textLayerList"></div>
-            <button onclick="addTextLayer()" class="secondary" style="margin-top:8px;">+ Add Text Layer</button>
-            <div class="control-group" style="margin-top:12px;">
-                <label>Font Size <span class="range-val" id="fontSizeVal">24px</span></label>
-                <input type="range" id="fontSize" min="12" max="72" value="24" oninput="document.getElementById('fontSizeVal').textContent=this.value+'px'; updatePreview();">
+            <div class="row" style="display:flex;gap:10px;">
+                <div class="control-group" style="flex:1;">
+                    <label>Font Size <span class="range-val" id="fontSizeVal">24px</span></label>
+                    <input type="range" id="fontSize" min="12" max="72" value="24" oninput="document.getElementById('fontSizeVal').textContent=this.value+'px'; updatePreview();">
+                </div>
+                <div class="control-group" style="flex:1;">
+                    <label>Color</label>
+                    <input type="color" id="fontColor" value="#ffffff" onchange="updatePreview();">
+                </div>
             </div>
             <div class="control-group">
-                <label>Font Color</label>
-                <input type="color" id="fontColor" value="#ffffff" onchange="updatePreview();">
+                <label><input type="checkbox" id="textBgEnabled" checked onchange="updatePreview();"> Text Background</label>
             </div>
-            <div class="control-group"><label><input type="checkbox" id="textBgEnabled" checked onchange="updatePreview();">Text Background</label></div>
+            <div class="row" style="display:flex;gap:10px;">
+                <div class="control-group" style="flex:1;">
+                    <label>BG Opacity <span class="range-val" id="bgOpVal">70%</span></label>
+                    <input type="range" id="bgOpacity" min="0" max="100" value="70" oninput="document.getElementById('bgOpVal').textContent=this.value+'%'; updatePreview();">
+                </div>
+                <div class="control-group" style="flex:1;">
+                    <label>BG Blur <span class="range-val" id="bgBlurVal">8px</span></label>
+                    <input type="range" id="bgBlur" min="0" max="30" value="8" oninput="document.getElementById('bgBlurVal').textContent=this.value+'px'; updatePreview();">
+                </div>
+            </div>
+            <button onclick="addTextLayer()" class="secondary" style="margin-bottom:12px;">+ Add Text Layer</button>
+            <div id="textLayerList"></div>
         </div>
         
         <h2 onclick="toggleSection(this)" class="collapsed">Caption</h2>
@@ -259,6 +277,8 @@ function saveProject() {
             fontSize: document.getElementById('fontSize').value,
             fontColor: document.getElementById('fontColor').value,
             textBgEnabled: document.getElementById('textBgEnabled').checked,
+            bgOpacity: document.getElementById('bgOpacity').value,
+            bgBlur: document.getElementById('bgBlur').value,
             captionEnabled: document.getElementById('captionEnabled').checked,
             captionText: document.getElementById('captionText').value,
             captionCredit: document.getElementById('captionCredit').value,
@@ -303,6 +323,8 @@ function loadProject() {
                     document.getElementById('fontSize').value = project.settings.fontSize || 24;
                     document.getElementById('fontColor').value = project.settings.fontColor || '#ffffff';
                     document.getElementById('textBgEnabled').checked = project.settings.textBgEnabled !== false;
+                    document.getElementById('bgOpacity').value = project.settings.bgOpacity || 70;
+                    document.getElementById('bgBlur').value = project.settings.bgBlur || 8;
                     document.getElementById('captionEnabled').checked = project.settings.captionEnabled !== false;
                     document.getElementById('captionText').value = project.settings.captionText || '';
                     document.getElementById('captionCredit').value = project.settings.captionCredit || '';
@@ -315,6 +337,8 @@ function loadProject() {
                     document.getElementById('zoomEndVal').textContent = parseFloat(project.settings.zoomEnd).toFixed(1) + 'x';
                     document.getElementById('effectScaleVal').textContent = parseFloat(project.settings.effectScale).toFixed(2) + 'x';
                     document.getElementById('fontSizeVal').textContent = project.settings.fontSize + 'px';
+                    document.getElementById('bgOpVal').textContent = (project.settings.bgOpacity || 70) + '%';
+                    document.getElementById('bgBlurVal').textContent = (project.settings.bgBlur || 8) + 'px';
                     document.getElementById('scrollDurVal').textContent = project.settings.scrollDuration;
                     document.getElementById('desktopOffsetVal').textContent = project.settings.desktopOffset + 'px';
                     document.getElementById('mobileOffsetVal').textContent = project.settings.mobileOffset + 'px';
@@ -334,6 +358,11 @@ function loadProject() {
 }
 
 function toggleSection(el) { el.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('collapsed'); }
+
+function toggleLayerBody(id) {
+    const body = document.getElementById('layer-body-' + id);
+    if (body) body.classList.toggle('collapsed');
+}
 
 function updateEffectControls() {
     const e = document.getElementById('effectType').value;
@@ -357,13 +386,16 @@ function updatePreviewHeight() {
 
 // Text Layers
 function addTextLayer() {
+    const count = textLayers.length;
+    const fadeIn = 5 + (count * 20);
+    const fadeOut = 25 + (count * 20);
     textLayers.push({
         id: Date.now(),
         text: 'Your Text',
         x: 50,
         y: 50,
-        fadeIn: 0,
-        fadeOut: 100
+        fadeIn: Math.min(fadeIn, 95),
+        fadeOut: Math.min(fadeOut, 100)
     });
     renderTextLayerList();
     updatePreview();
@@ -384,20 +416,23 @@ function updateTextLayer(id, field, value) {
 }
 
 function renderTextLayerList() {
-    const container = document.getElementById('textLayerList');
     let html = '';
     textLayers.forEach((t, i) => {
-        html += '<div class="text-layer">';
-        html += '<div class="text-layer-header"><span class="text-layer-title">Text ' + (i+1) + '</span><button class="small danger" onclick="removeTextLayer(' + t.id + ')">✕</button></div>';
-        html += '<div class="text-layer-grid">';
-        html += '<div class="control-group" style="grid-column:span 2"><label>Text</label><textarea oninput="updateTextLayer(' + t.id + ',\'text\',this.value)">' + t.text + '</textarea></div>';
-        html += '<div class="control-group"><label>X % <span class="range-val">' + t.x + '</span></label><input type="range" value="' + t.x + '" min="-10" max="110" oninput="this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value;updateTextLayer(' + t.id + ',\'x\',this.value)"><input type="number" value="' + t.x + '" min="-10" max="110" style="width:50px;margin-top:4px;" onchange="updateTextLayer(' + t.id + ',\'x\',this.value)"></div>';
-        html += '<div class="control-group"><label>Y % <span class="range-val">' + t.y + '</span></label><input type="range" value="' + t.y + '" min="-10" max="110" oninput="this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value;updateTextLayer(' + t.id + ',\'y\',this.value)"><input type="number" value="' + t.y + '" min="-10" max="110" style="width:50px;margin-top:4px;" onchange="updateTextLayer(' + t.id + ',\'y\',this.value)"></div>';
-        html += '<div class="control-group"><label>Fade In %</label><input type="number" value="' + t.fadeIn + '" min="0" max="100" onchange="updateTextLayer(' + t.id + ',\'fadeIn\',this.value)"></div>';
-        html += '<div class="control-group"><label>Fade Out %</label><input type="number" value="' + t.fadeOut + '" min="0" max="100" onchange="updateTextLayer(' + t.id + ',\'fadeOut\',this.value)"></div>';
-        html += '</div></div>';
+        html += '<div class="layer-item">';
+        html += '<div class="layer-header" onclick="toggleLayerBody(\'txt-' + t.id + '\')">';
+        html += '<span class="layer-title">Text ' + (i+1) + ': ' + t.text.substring(0,15) + (t.text.length > 15 ? '...' : '') + '</span>';
+        html += '<button class="small danger" onclick="event.stopPropagation(); removeTextLayer(' + t.id + ')">✕</button>';
+        html += '</div>';
+        html += '<div class="layer-body" id="layer-body-txt-' + t.id + '">';
+        html += '<div class="control-group"><label>Text</label><textarea onchange="updateTextLayer(' + t.id + ',\'text\',this.value)">' + t.text + '</textarea></div>';
+        html += '<div class="layer-grid">';
+        html += '<div class="control-group"><label>X <span class="range-val">' + t.x + '%</span></label><input type="range" min="0" max="100" value="' + t.x + '" oninput="updateTextLayer(' + t.id + ',\'x\',this.value); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
+        html += '<div class="control-group"><label>Y <span class="range-val">' + t.y + '%</span></label><input type="range" min="0" max="100" value="' + t.y + '" oninput="updateTextLayer(' + t.id + ',\'y\',this.value); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
+        html += '<div class="control-group"><label>In <span class="range-val">' + t.fadeIn + '%</span></label><input type="range" min="0" max="100" value="' + t.fadeIn + '" oninput="updateTextLayer(' + t.id + ',\'fadeIn\',this.value); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
+        html += '<div class="control-group"><label>Out <span class="range-val">' + t.fadeOut + '%</span></label><input type="range" min="0" max="100" value="' + t.fadeOut + '" oninput="updateTextLayer(' + t.id + ',\'fadeOut\',this.value); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
+        html += '</div></div></div>';
     });
-    container.innerHTML = html;
+    document.getElementById('textLayerList').innerHTML = html;
 }
 
 function updatePreview() {
@@ -420,9 +455,11 @@ function updatePreview() {
     const fontSize = document.getElementById('fontSize').value;
     const fontColor = document.getElementById('fontColor').value;
     const textBg = document.getElementById('textBgEnabled').checked;
+    const bgOp = document.getElementById('bgOpacity').value / 100;
+    const bgBlur = document.getElementById('bgBlur').value;
     
     textLayers.forEach((t, i) => {
-        const bgStyle = textBg ? 'background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);' : '';
+        const bgStyle = textBg ? `background:rgba(0,0,0,${bgOp});backdrop-filter:blur(${bgBlur}px);-webkit-backdrop-filter:blur(${bgBlur}px);` : '';
         matteHTML += `<div class="preview-txt" id="txt${i}" style="left:${t.x}%;top:${t.y}%;transform:translate(-50%,-50%);font-size:${fontSize}px;color:${fontColor};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}">${t.text.replace(/\n/g,'<br>')}</div>`;
     });
     
@@ -566,7 +603,9 @@ function generateExport() {
     const fontSize = document.getElementById('fontSize').value;
     const fontColor = document.getElementById('fontColor').value;
     const textBg = document.getElementById('textBgEnabled').checked;
-    const bgStyle = textBg ? 'background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);' : '';
+    const bgOp = document.getElementById('bgOpacity').value / 100;
+    const bgBlur = document.getElementById('bgBlur').value;
+    const bgStyle = textBg ? `background:rgba(0,0,0,${bgOp});backdrop-filter:blur(${bgBlur}px);-webkit-backdrop-filter:blur(${bgBlur}px);` : '';
     
     const captionEnabled = document.getElementById('captionEnabled').checked;
     const captionText = document.getElementById('captionText').value;
