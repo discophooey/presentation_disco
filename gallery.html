@@ -1458,8 +1458,22 @@ window.addEventListener('scroll',onScroll,{passive:true});setTimeout(upd,100);up
             if (!saved) return;
             var state = JSON.parse(saved);
             
+            // Convert GitHub URLs to raw URLs
+            function convertGithubUrl(url) {
+                if (!url) return url;
+                if (url.includes('github.com') && url.includes('/blob/')) {
+                    return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
+                }
+                return url;
+            }
             
-            if (state.images) images = state.images;
+            if (state.images) {
+                images = state.images.map(function(img) {
+                    if (img.src) img.src = convertGithubUrl(img.src);
+                    if (img.url) img.url = convertGithubUrl(img.url);
+                    return img;
+                });
+            }
             if (state.customFonts) customFonts = state.customFonts;
             
             Object.keys(state.inputs || {}).forEach(function(id) {

@@ -1035,12 +1035,21 @@ function buildModuleState(section) {
         case 'gallery':
             if (!c.images || !c.images.length) return null;
             var now = Date.now();
+            // Convert GitHub URLs to raw URLs
+            function convertGithubUrl(url) {
+                if (!url) return url;
+                if (url.includes('github.com') && url.includes('/blob/')) {
+                    return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
+                }
+                return url;
+            }
             return {
                 images: c.images.map(function(url, i) {
+                    var convertedUrl = convertGithubUrl(url);
                     return {
                         id: now + i * 1000,
-                        src: url,
-                        name: (url && typeof url === 'string') ? (url.split('/').pop() || 'Image') : 'Image',
+                        src: convertedUrl,
+                        name: (convertedUrl && typeof convertedUrl === 'string') ? (convertedUrl.split('/').pop() || 'Image') : 'Image',
                         textEnabled: false,
                         text: '',
                         textSize: 32,
