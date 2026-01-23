@@ -866,7 +866,7 @@ updatePreview();
             // Restore data array
             if (state.data) config.data = state.data;
             
-            // Restore toggle states directly to config (don't call set functions yet)
+            // Restore toggle states directly to config
             if (state.chartType) config.chartType = state.chartType;
             if (state.orientation) config.orientation = state.orientation;
             if (state.pieStyle) config.pieStyle = state.pieStyle;
@@ -909,12 +909,25 @@ updatePreview();
         }
     };
     
+    // Wrap data functions to trigger save
     var _orig_addDataEntry = window.addDataEntry;
     window.addDataEntry = function() { _orig_addDataEntry.apply(this, arguments); saveState(); };
     var _orig_removeDataEntry = window.removeDataEntry;
     window.removeDataEntry = function() { _orig_removeDataEntry.apply(this, arguments); saveState(); };
     var _orig_updateDataEntry = window.updateDataEntry;
     window.updateDataEntry = function() { _orig_updateDataEntry.apply(this, arguments); saveState(); };
+    
+    // Wrap toggle functions to trigger save (onclick doesn't fire change/input events)
+    var _orig_setChartType = window.setChartType;
+    window.setChartType = function() { _orig_setChartType.apply(this, arguments); saveState(); };
+    var _orig_setOrientation = window.setOrientation;
+    window.setOrientation = function() { _orig_setOrientation.apply(this, arguments); saveState(); };
+    var _orig_setPieStyle = window.setPieStyle;
+    window.setPieStyle = function() { _orig_setPieStyle.apply(this, arguments); saveState(); };
+    var _orig_setStagger = window.setStagger;
+    window.setStagger = function() { _orig_setStagger.apply(this, arguments); saveState(); };
+    var _orig_setSizing = window.setSizing;
+    window.setSizing = function() { _orig_setSizing.apply(this, arguments); saveState(); };
     
     document.addEventListener('change', saveState);
     document.addEventListener('input', saveState);
