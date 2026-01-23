@@ -842,7 +842,7 @@
  // Auto: detect from first image
  if (images.length > 0) {
  const firstImg = new Image();
- firstImg.src = images[0].src;
+ firstImg.src = images[0].src || images[0].url || '';
  firstImg.onload = function() {
  const ratio = (this.height / this.width * 100).toFixed(2);
  stickyStage.style.aspectRatio = `${this.width} / ${this.height}`;
@@ -879,6 +879,7 @@
 
  list.innerHTML = images.map((img, i) => {
  const escapeHtml = (str) => str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+ const imgSrc = img.src || img.url || '';
  return `
  <div class="image-item">
  <div class="image-item-header">
@@ -889,7 +890,7 @@
  <button class="icon-btn" onclick="remove(${i})">×</button>
  </div>
  </div>
- <img src="${img.src}" class="image-thumb">
+ <img src="${imgSrc}" class="image-thumb">
 
  <div class="control-group" style="margin-top: 10px; padding: 10px; background: #0a0a0a; border-radius: 6px;">
  <label style="font-size: 11px; color: #4a9eff;">Scroll Timing</label>
@@ -1030,8 +1031,9 @@
  let html = `<div class="story-container" style="height: ${scrollLength}vh;"><div class="sticky-stage">`;
 
  images.forEach((img, i) => {
+ const imgSrc = img.src || img.url || '';
  html += `<div class="image-layer" data-index="${i}" data-start="${img.startScroll || 0}" data-end="${img.endScroll || 100}">`;
- html += `<img src="${img.src}" style="object-fit: ${fit};">`;
+ html += `<img src="${imgSrc}" style="object-fit: ${fit};">`;
 
  if (img.textEnabled && img.text) {
  let pos = '';
@@ -1222,7 +1224,8 @@
  let layers = '';
 
  images.forEach((img, i) => {
- layers += `<div class="image-layer" data-index="${i}" data-start="${img.startScroll || 0}" data-end="${img.endScroll || 100}"><img src="${img.src}" style="object-fit: ${fit};">`;
+ const imgSrc = img.src || img.url || '';
+ layers += `<div class="image-layer" data-index="${i}" data-start="${img.startScroll || 0}" data-end="${img.endScroll || 100}"><img src="${imgSrc}" style="object-fit: ${fit};">`;
 
  if (img.textEnabled && img.text) {
  let pos = '';

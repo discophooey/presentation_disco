@@ -1034,30 +1034,33 @@ function buildModuleState(section) {
         
         case 'gallery':
             if (!c.images || !c.images.length) return null;
+            var now = Date.now();
             return {
-                images: c.images.map((src, i) => ({
-                    id: Date.now() + i,
-                    src: src,
-                    name: src.split('/').pop() || 'Image',
-                    textEnabled: false,
-                    text: '',
-                    textSize: 32,
-                    textColor: '#ffffff',
-                    textAlign: 'center',
-                    textPosition: 'bottom',
-                    textX: 0,
-                    textY: 0,
-                    textBgEnabled: true,
-                    textBgOpacity: 80,
-                    textLineHeight: 1.4,
-                    textLetterSpacing: 0,
-                    captionEnabled: true,
-                    caption: c.caption || '',
-                    credit: c.captionCredit || '',
-                    link: '',
-                    startScroll: 0,
-                    endScroll: 100
-                })),
+                images: c.images.map(function(url, i) {
+                    return {
+                        id: now + i * 1000,
+                        src: url,
+                        name: (url && typeof url === 'string') ? (url.split('/').pop() || 'Image') : 'Image',
+                        textEnabled: false,
+                        text: '',
+                        textSize: 32,
+                        textColor: '#ffffff',
+                        textAlign: 'center',
+                        textPosition: 'bottom',
+                        textX: 0,
+                        textY: 0,
+                        textBgEnabled: true,
+                        textBgOpacity: 80,
+                        textLineHeight: 1.4,
+                        textLetterSpacing: 0,
+                        captionEnabled: true,
+                        caption: c.caption || '',
+                        credit: c.captionCredit || '',
+                        link: '',
+                        startScroll: Math.round(i * 100 / c.images.length),
+                        endScroll: Math.round((i + 1) * 100 / c.images.length)
+                    };
+                }),
                 inputs: {
                     captionText: c.caption || '',
                     captionCredit: c.captionCredit || ''
