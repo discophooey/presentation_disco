@@ -751,20 +751,10 @@ window.SCROLLTASTIC_PROGRESS = {};
 var ids = ${JSON.stringify(moduleIds)};
 var n = ids.length;
 var budget = ${scrollBudget};
-var total = budget * n;
 var transType = "${transitionType}";
 var transPct = ${transitionPct};
 var wrap = document.querySelector('.vp-wrap');
 var layers = document.querySelectorAll('.vp-layer');
-
-// Disable module's own height calculations by removing inline height on wrappers
-setTimeout(function(){
-    layers.forEach(function(layer){
-        var wrapper = layer.firstElementChild;
-        if(wrapper) wrapper.style.height = '100%';
-    });
-    window.dispatchEvent(new Event('resize'));
-}, 100);
 
 function upd(){
     var rect = wrap.getBoundingClientRect();
@@ -779,10 +769,8 @@ function upd(){
         var end = (i + 1) / n;
         var localP = Math.max(0, Math.min(1, (progress - start) / (end - start)));
         
-        // Set progress for module
         window.SCROLLTASTIC_PROGRESS[ids[i]] = localP;
         
-        // Calculate layer opacity and effects
         var layer = layers[i];
         if(!layer) continue;
         
@@ -790,13 +778,11 @@ function upd(){
         var filter = '';
         
         if(transType !== 'none' && n > 1){
-            // Fade in
             if(i > 0 && localP < transPct){
                 var fadeP = localP / transPct;
                 opacity = fadeP;
                 if(transType === 'blur') filter = 'blur(' + ((1 - fadeP) * 10) + 'px)';
             }
-            // Fade out
             if(i < n - 1 && localP > (1 - transPct)){
                 var fadeP = (1 - localP) / transPct;
                 opacity = fadeP;
@@ -804,7 +790,6 @@ function upd(){
             }
         }
         
-        // Show only active layer (with transitions)
         var isActive = progress >= start - transPct/(n) && progress <= end + transPct/(n);
         layer.style.opacity = isActive ? opacity : 0;
         layer.style.filter = filter;
@@ -825,13 +810,12 @@ upd();
                 '    <title>' + title + '</title>\n' +
                 '    <style>\n' +
                 '        * { margin: 0; padding: 0; box-sizing: border-box; }\n' +
+                '        body { background: #000; }\n' +
                 '        ' + combinedStyles + '\n' +
                 '        .vp-wrap { position: relative; width: 100%; height: ' + totalHeight + 'px; background: #000; clip-path: inset(0); }\n' +
-                '        .vp-container { position: sticky; top: ' + desktopOffset + 'px; left: 0; width: 100%; height: calc(100vh - ' + desktopOffset + 'px); overflow: hidden; }\n' +
-                '        .vp-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.1s; overflow: hidden; display: flex; align-items: center; justify-content: center; }\n' +
+                '        .vp-container { position: fixed; top: ' + desktopOffset + 'px; left: 0; width: 100%; height: calc(100vh - ' + desktopOffset + 'px); overflow: hidden; }\n' +
+                '        .vp-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.1s; }\n' +
                 '        .vp-layer:first-child { opacity: 1; }\n' +
-                '        .vp-layer > div { width: 100% !important; height: 100% !important; display: flex !important; align-items: center !important; justify-content: center !important; }\n' +
-                '        .vp-layer canvas { width: 100% !important; height: 100% !important; }\n' +
                 '        @media(max-width:768px){ .vp-container { top: ' + mobileOffset + 'px; height: calc(100vh - ' + mobileOffset + 'px); } }\n' +
                 '    </style>\n' +
                 '</head>\n' +
