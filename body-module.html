@@ -46,7 +46,7 @@ h2.ctrl.collapsed::after { transform: rotate(-90deg); }
 .section.collapsed { max-height: 0 !important; }
 .control-group { margin-bottom: 12px; }
 .control-group label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; }
-.control-group input[type="text"], .control-group input[type="number"], .control-group select, .control-group textarea { width: 100%; padding: 8px 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 13px; }
+.control-group input[type="text"], .control-group input[type="url"], .control-group input[type="number"], .control-group select, .control-group textarea { width: 100%; padding: 8px 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 13px; }
 .control-group input[type="color"] { width: 50px; height: 32px; border: none; background: none; cursor: pointer; }
 .control-group input[type="checkbox"] { width: auto; margin-right: 8px; }
 .control-group textarea { min-height: 150px; line-height: 1.5; font-family: inherit; }
@@ -58,7 +58,6 @@ button.secondary { background: #2a2a2a; color: #888; }
 button.secondary:hover { background: #333; color: #fff; }
 button.danger { background: #c0392b; color: #fff; }
 button.danger:hover { background: #e74c3c; }
-button.small { padding: 6px 10px; font-size: 11px; margin: 0; width: auto; }
 .toolbar { display: flex; gap: 4px; margin-bottom: 8px; }
 .toolbar button { width: auto; padding: 6px 10px; margin: 0; font-size: 12px; }
 .save-load-bar { display: flex; gap: 8px; margin-bottom: 16px; }
@@ -159,10 +158,8 @@ Continue writing your story here. The text will automatically wrap and maintain 
             <div id="imageSettings">
                 <div class="control-group">
                     <label>Image URL</label>
-                    <div class="inline-group">
-                        <input type="text" id="imageUrl" placeholder="https://..." oninput="updatePreview()">
-                        <button class="secondary small" onclick="loadImage()">Load</button>
-                    </div>
+                    <input type="url" id="imageUrl" placeholder="https://...">
+                    <button class="secondary" onclick="loadImage()" style="margin-top:8px;">Load Image</button>
                 </div>
                 <div class="control-group">
                     <label>Image Caption</label>
@@ -278,12 +275,10 @@ Continue writing your story here. The text will automatically wrap and maintain 
     </div>
 </div>
 
-<!-- Image Load Input -->
-<input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageLoad(event)">
-
 <script>
 var STORAGE_KEY = 'disco_body-module';
 var PROJECTS_KEY = 'disco_body-module_projects';
+var loadedImageUrl = null;
 
 function toggleSection(el) {
     el.classList.toggle('collapsed');
@@ -304,19 +299,18 @@ function insertTag(before, after) {
 }
 
 function loadImage() {
-    document.getElementById('imageInput').click();
-}
-
-function handleImageLoad(e) {
-    var file = e.target.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-        document.getElementById('imageUrl').value = ev.target.result;
+    var url = document.getElementById('imageUrl').value.trim();
+    if (!url) { alert('Enter an image URL first'); return; }
+    if (url.includes('github.com') && url.includes('/blob/')) {
+        url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
+    }
+    var img = new Image();
+    img.onload = function() {
+        loadedImageUrl = url;
         updatePreview();
     };
-    reader.readAsDataURL(file);
-    e.target.value = '';
+    img.onerror = function() { alert('Could not load image. Check the URL.'); };
+    img.src = url;
 }
 
 function parseMarkdown(text) {
@@ -344,7 +338,6 @@ function updatePreview() {
     var bodyText = document.getElementById('bodyText').value;
     var textAlign = document.getElementById('textAlign').value;
     var imageEnabled = document.getElementById('imageEnabled').checked;
-    var imageUrl = document.getElementById('imageUrl').value;
     var imageCaption = document.getElementById('imageCaption').value;
     var imagePosition = document.getElementById('imagePosition').value;
     var textColor = document.getElementById('textColor').value;
@@ -353,7 +346,6 @@ function updatePreview() {
     var fontSize = document.getElementById('fontSize').value;
     var maxWidth = document.getElementById('maxWidth').value;
     
-    // Toggle image settings visibility
     document.getElementById('imageSettings').style.display = imageEnabled ? 'block' : 'none';
     
     scroll.style.background = bgColor;
@@ -371,10 +363,9 @@ function updatePreview() {
         s.style.color = headlineColor;
     });
     
-    if (imageEnabled && imageUrl) {
+    if (imageEnabled && loadedImageUrl) {
         imgCol.style.display = 'block';
-        img.src = imageUrl;
-        img.onerror = function() { imgCol.style.display = 'none'; };
+        img.src = loadedImageUrl;
         caption.textContent = imageCaption;
         caption.style.display = imageCaption ? 'block' : 'none';
         content.className = 'preview-content img-' + imagePosition;
@@ -388,11 +379,9 @@ function updatePreview() {
 
 function openLightbox() {
     var imageEnabled = document.getElementById('imageEnabled').checked;
-    var url = document.getElementById('imageUrl').value;
-    var cap = document.getElementById('imageCaption').value;
-    if (!imageEnabled || !url) return;
-    document.getElementById('lightboxImg').src = url;
-    document.getElementById('lightboxCaption').textContent = cap;
+    if (!imageEnabled || !loadedImageUrl) return;
+    document.getElementById('lightboxImg').src = loadedImageUrl;
+    document.getElementById('lightboxCaption').textContent = document.getElementById('imageCaption').value;
     document.getElementById('lightbox').classList.add('active');
 }
 
@@ -417,6 +406,7 @@ function resetModule() {
     document.getElementById('bgColor').value = '#0a0a0a';
     document.getElementById('fontSize').value = 17;
     document.getElementById('maxWidth').value = 650;
+    loadedImageUrl = null;
     updatePreview();
 }
 
@@ -425,7 +415,6 @@ function generateExport() {
     var bodyText = document.getElementById('bodyText').value;
     var textAlign = document.getElementById('textAlign').value;
     var imageEnabled = document.getElementById('imageEnabled').checked;
-    var imageUrl = document.getElementById('imageUrl').value;
     var imageCaption = document.getElementById('imageCaption').value;
     var imagePosition = document.getElementById('imagePosition').value;
     var textColor = document.getElementById('textColor').value;
@@ -435,7 +424,7 @@ function generateExport() {
     var maxWidth = document.getElementById('maxWidth').value;
     
     var html = parseMarkdown(bodyText);
-    var showImage = imageEnabled && imageUrl;
+    var showImage = imageEnabled && loadedImageUrl;
     
     var imgHTML = '';
     var imgCSS = '';
@@ -443,7 +432,7 @@ function generateExport() {
     if (showImage) {
         imgHTML = '<div class="bm-img-col">\n' +
             '<div class="bm-img-wrap" onclick="document.getElementById(\'' + uid + 'lb\').classList.add(\'active\')">\n' +
-            '<img src="' + imageUrl + '" alt="">\n' +
+            '<img src="' + loadedImageUrl + '" alt="">\n' +
             '</div>\n' +
             (imageCaption ? '<div class="bm-caption">' + imageCaption + '</div>\n' : '') +
             '</div>';
@@ -464,7 +453,7 @@ function generateExport() {
     var flexDir = showImage ? (imagePosition === 'left' ? 'row' : 'row-reverse') : '';
     
     var code = '<style>\n' +
-'#' + uid + '{background:' + bgColor + ';padding:40px 20px}\n' +
+'#' + uid + '{background:' + bgColor + ';padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
 '#' + uid + ' .bm-body{max-width:' + maxWidth + 'px;margin:0 auto}\n' +
 '#' + uid + ' .bm-content{display:flex;gap:30px;' + (showImage ? 'flex-direction:' + flexDir : '') + '}\n' +
 '#' + uid + ' .bm-text{flex:1;line-height:1.7;color:' + textColor + ';font-size:' + fontSize + 'px;text-align:' + textAlign + '}\n' +
@@ -485,7 +474,7 @@ imgHTML +
 '</div>\n' +
 (showImage ? '<div id="' + uid + 'lb" onclick="this.classList.remove(\'active\')">\n' +
 '<button class="lb-close">✕</button>\n' +
-'<img src="' + imageUrl + '">\n' +
+'<img src="' + loadedImageUrl + '">\n' +
 (imageCaption ? '<div class="lb-cap">' + imageCaption + '</div>\n' : '') +
 '</div>\n' : '');
     
@@ -585,6 +574,7 @@ function loadProject(id) {
     document.getElementById('bgColor').value = proj.bgColor || '#0a0a0a';
     document.getElementById('fontSize').value = proj.fontSize || 17;
     document.getElementById('maxWidth').value = proj.maxWidth || 650;
+    loadedImageUrl = proj.loadedImageUrl || null;
     
     updatePreview();
     closeModal('loadModal');
@@ -610,7 +600,8 @@ function getCurrentState() {
         headlineColor: document.getElementById('headlineColor').value,
         bgColor: document.getElementById('bgColor').value,
         fontSize: document.getElementById('fontSize').value,
-        maxWidth: document.getElementById('maxWidth').value
+        maxWidth: document.getElementById('maxWidth').value,
+        loadedImageUrl: loadedImageUrl
     };
 }
 
@@ -622,7 +613,7 @@ function loadState() {
     var saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
         var s = JSON.parse(saved);
-        document.getElementById('bodyText').value = s.bodyText || '';
+        document.getElementById('bodyText').value = s.bodyText || '## Headline Goes Here\n\nThis is your body text.';
         document.getElementById('textAlign').value = s.textAlign || 'left';
         document.getElementById('imageEnabled').checked = s.imageEnabled !== false;
         document.getElementById('imageUrl').value = s.imageUrl || '';
@@ -633,6 +624,7 @@ function loadState() {
         document.getElementById('bgColor').value = s.bgColor || '#0a0a0a';
         document.getElementById('fontSize').value = s.fontSize || 17;
         document.getElementById('maxWidth').value = s.maxWidth || 650;
+        loadedImageUrl = s.loadedImageUrl || null;
     }
     updatePreview();
 }

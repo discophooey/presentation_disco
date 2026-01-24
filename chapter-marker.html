@@ -15,9 +15,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 #progressDisplay { color: #4a9eff; font-weight: bold; }
 .preview-scroll { flex: 1; overflow-y: auto; background: #000; }
 .preview-container { min-height: 300vh; position: relative; }
-.preview-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+.preview-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 .preview-chapter { font-size: 14px; color: #666; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 20px; opacity: 0; transform: translateY(20px); transition: all 0.6s; }
-.preview-title { font-weight: 700; line-height: 1.1; text-align: center; opacity: 0; transition: all 0.8s 0.2s; }
+.preview-title { font-weight: 700; line-height: 1.1; text-align: center; opacity: 0; transition: all 0.8s 0.2s; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 .preview-subtitle { font-size: 20px; color: #888; margin-top: 20px; opacity: 0; transform: translateY(20px); transition: all 0.6s 0.4s; }
 .preview-stage.revealed .preview-chapter,
 .preview-stage.revealed .preview-subtitle { opacity: 1; transform: translateY(0); }
@@ -294,10 +294,8 @@ function updatePreview() {
         stage.style.background = bgColor1;
     }
     
-    // Apply effect class
     title.className = 'preview-title ' + effect;
     
-    // Check scroll position
     var scroll = document.getElementById('previewScroll');
     var container = document.getElementById('previewContainer');
     var scrollTop = scroll.scrollTop;
@@ -413,10 +411,10 @@ function generateExport() {
     }
     
     var code = '<style>\n' +
-'#' + uid + '{position:relative;background:' + bgCSS + '}\n' +
+'#' + uid + '{position:relative;background:' + bgCSS + ';font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
 '#' + uid + ' .cm-stage{position:sticky;top:' + desktopOffset + 'px;height:calc(100vh - ' + desktopOffset + 'px);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}\n' +
 '#' + uid + ' .cm-chapter{font-size:14px;color:#666;letter-spacing:4px;text-transform:uppercase;margin-bottom:20px;opacity:0;transform:translateY(20px);transition:all 0.6s}\n' +
-'#' + uid + ' .cm-title{font-size:' + titleSize + 'px;font-weight:700;color:' + titleColor + ';line-height:1.1;text-align:center}\n' +
+'#' + uid + ' .cm-title{font-size:' + titleSize + 'px;font-weight:700;color:' + titleColor + ';line-height:1.1;text-align:center;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
 '#' + uid + ' .cm-subtitle{font-size:20px;color:#888;margin-top:20px;opacity:0;transform:translateY(20px);transition:all 0.6s 0.4s}\n' +
 '#' + uid + '.on .cm-chapter,#' + uid + '.on .cm-subtitle{opacity:1;transform:translateY(0)}\n' +
 effectCSS + '\n' +

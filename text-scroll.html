@@ -30,7 +30,7 @@ h2.collapsed::after { transform: rotate(-90deg); }
 .section.collapsed { max-height: 0 !important; }
 .control-group { margin-bottom: 12px; }
 .control-group label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; }
-.control-group input[type="text"], .control-group input[type="number"], .control-group select, .control-group textarea { width: 100%; padding: 8px 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 13px; }
+.control-group input[type="text"], .control-group input[type="url"], .control-group input[type="number"], .control-group select, .control-group textarea { width: 100%; padding: 8px 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 13px; }
 .control-group input[type="color"] { width: 50px; height: 32px; border: none; background: none; cursor: pointer; }
 .control-group input[type="range"] { width: 100%; }
 .inline-group { display: flex; gap: 10px; align-items: center; }
@@ -41,7 +41,6 @@ button.secondary { background: #2a2a2a; color: #888; }
 button.secondary:hover { background: #333; color: #fff; }
 button.danger { background: #c0392b; color: #fff; }
 button.danger:hover { background: #e74c3c; }
-button.small { padding: 6px 10px; font-size: 11px; margin: 0; width: auto; }
 
 .blocks-list { background: #0a0a0a; border-radius: 6px; padding: 10px; margin: 10px 0; max-height: 300px; overflow-y: auto; }
 .block-item { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 6px; padding: 10px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.2s; }
@@ -67,6 +66,7 @@ button.small { padding: 6px 10px; font-size: 11px; margin: 0; width: auto; }
 .saved-item .date { color: #666; font-size: 11px; }
 .saved-item .delete { background: none; border: none; color: #888; cursor: pointer; padding: 4px 8px; margin: 0; width: auto; }
 .saved-item .delete:hover { color: #e74c3c; }
+.range-val { color: #888; font-size: 11px; margin-left: 8px; }
 </style>
 </head>
 <body>
@@ -114,7 +114,7 @@ button.small { padding: 6px 10px; font-size: 11px; margin: 0; width: auto; }
             <h2 onclick="toggleSection(this)">Edit Block</h2>
             <div class="section">
                 <div class="control-group">
-                    <label>Text (one punchy statement)</label>
+                    <label>Text</label>
                     <textarea id="blockText" rows="3" oninput="updateBlock()"></textarea>
                 </div>
                 
@@ -133,37 +133,43 @@ button.small { padding: 6px 10px; font-size: 11px; margin: 0; width: auto; }
                 <div id="bgImageGroup" style="display:none;">
                     <div class="control-group">
                         <label>Image URL</label>
-                        <div class="inline-group">
-                            <input type="text" id="bgImage" placeholder="https://..." oninput="updateBlock()">
-                            <button class="secondary small" onclick="loadImage()">Load</button>
-                        </div>
+                        <input type="url" id="bgImage" placeholder="https://..." oninput="updateBlock()">
+                        <button class="secondary" onclick="loadBgImage()" style="margin-top:8px;">Load Image</button>
                     </div>
                     <div class="inline-group">
                         <div class="control-group">
-                            <label>Image X Position (%)</label>
+                            <label>Image X (%)</label>
                             <input type="range" id="bgPosX" min="0" max="100" value="50" oninput="updateBlock()">
                         </div>
                         <div class="control-group">
-                            <label>Image Y Position (%)</label>
+                            <label>Image Y (%)</label>
                             <input type="range" id="bgPosY" min="0" max="100" value="50" oninput="updateBlock()">
                         </div>
                     </div>
                 </div>
                 
                 <div class="control-group">
-                    <label>Scroll Timing (1 = normal)</label>
+                    <label>Text Position X (%)<span class="range-val" id="textOffsetXVal">50%</span></label>
+                    <input type="range" id="textOffsetX" min="0" max="100" value="50" oninput="updateBlock(); document.getElementById('textOffsetXVal').textContent=this.value+'%';">
+                </div>
+                <div class="control-group">
+                    <label>Text Position Y (%)<span class="range-val" id="textOffsetYVal">50%</span></label>
+                    <input type="range" id="textOffsetY" min="0" max="100" value="50" oninput="updateBlock(); document.getElementById('textOffsetYVal').textContent=this.value+'%';">
+                </div>
+                
+                <div class="control-group">
+                    <label>Scroll Timing<span class="range-val" id="blockTimingVal">1x</span></label>
                     <input type="range" id="blockTiming" min="0.5" max="2" step="0.1" value="1" oninput="updateBlock(); document.getElementById('blockTimingVal').textContent=this.value+'x';">
-                    <span id="blockTimingVal" style="color:#888;font-size:11px;">1x</span>
                 </div>
                 
                 <button class="danger" onclick="deleteBlock()">Delete Block</button>
             </div>
         </div>
         
-        <h2 onclick="toggleSection(this)">Text Style</h2>
+        <h2 onclick="toggleSection(this)">Text Style (Global)</h2>
         <div class="section">
             <div class="control-group">
-                <label>Text Position</label>
+                <label>Base Text Position</label>
                 <select id="textPosition" onchange="updatePreview()">
                     <option value="center">Center</option>
                     <option value="bottom-left">Bottom Left</option>
@@ -298,9 +304,6 @@ button.small { padding: 6px 10px; font-size: 11px; margin: 0; width: auto; }
     </div>
 </div>
 
-<!-- Image Load Input -->
-<input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageLoad(event)">
-
 <script>
 var blocks = [];
 var selectedBlockIndex = -1;
@@ -312,20 +315,17 @@ function toggleSection(el) {
     el.nextElementSibling.classList.toggle('collapsed');
 }
 
-function loadImage() {
-    document.getElementById('imageInput').click();
-}
-
-function handleImageLoad(e) {
-    var file = e.target.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-        document.getElementById('bgImage').value = ev.target.result;
-        updateBlock();
-    };
-    reader.readAsDataURL(file);
-    e.target.value = '';
+function loadBgImage() {
+    var url = document.getElementById('bgImage').value.trim();
+    if (!url) { alert('Enter an image URL first'); return; }
+    if (url.includes('github.com') && url.includes('/blob/')) {
+        url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
+        document.getElementById('bgImage').value = url;
+    }
+    var img = new Image();
+    img.onload = function() { updateBlock(); };
+    img.onerror = function() { alert('Could not load image. Check the URL.'); };
+    img.src = url;
 }
 
 function renderBlocksList() {
@@ -334,7 +334,7 @@ function renderBlocksList() {
         var bgText = b.bgType === 'inherit' ? '(inherits)' : b.bgType === 'color' ? b.bgColor : 'image';
         html += '<div class="block-item ' + (i === selectedBlockIndex ? 'selected' : '') + '" onclick="selectBlock(' + i + ')">';
         html += '<div class="block-text">' + (b.text || '(empty)') + '</div>';
-        html += '<div class="block-bg">BG: ' + bgText + ' | Timing: ' + (b.timing || 1) + 'x</div>';
+        html += '<div class="block-bg">BG: ' + bgText + ' | Pos: ' + (b.textOffsetX !== undefined ? b.textOffsetX : 50) + '%, ' + (b.textOffsetY !== undefined ? b.textOffsetY : 50) + '%</div>';
         html += '</div>';
     });
     document.getElementById('blocksList').innerHTML = html || '<div style="color:#666;font-size:12px;text-align:center;padding:20px;">No blocks yet. Add one!</div>';
@@ -348,6 +348,8 @@ function addBlock() {
         bgImage: '',
         bgPosX: 50,
         bgPosY: 50,
+        textOffsetX: 50,
+        textOffsetY: 50,
         timing: 1
     });
     selectedBlockIndex = blocks.length - 1;
@@ -376,6 +378,10 @@ function loadBlockEditor() {
     document.getElementById('bgImage').value = b.bgImage || '';
     document.getElementById('bgPosX').value = b.bgPosX || 50;
     document.getElementById('bgPosY').value = b.bgPosY || 50;
+    document.getElementById('textOffsetX').value = b.textOffsetX !== undefined ? b.textOffsetX : 50;
+    document.getElementById('textOffsetY').value = b.textOffsetY !== undefined ? b.textOffsetY : 50;
+    document.getElementById('textOffsetXVal').textContent = (b.textOffsetX !== undefined ? b.textOffsetX : 50) + '%';
+    document.getElementById('textOffsetYVal').textContent = (b.textOffsetY !== undefined ? b.textOffsetY : 50) + '%';
     document.getElementById('blockTiming').value = b.timing || 1;
     document.getElementById('blockTimingVal').textContent = (b.timing || 1) + 'x';
     updateBgInputs();
@@ -396,6 +402,10 @@ function updateBlock() {
     b.bgImage = document.getElementById('bgImage').value;
     b.bgPosX = parseInt(document.getElementById('bgPosX').value) || 50;
     b.bgPosY = parseInt(document.getElementById('bgPosY').value) || 50;
+    b.textOffsetX = parseInt(document.getElementById('textOffsetX').value);
+    b.textOffsetY = parseInt(document.getElementById('textOffsetY').value);
+    if (isNaN(b.textOffsetX)) b.textOffsetX = 50;
+    if (isNaN(b.textOffsetY)) b.textOffsetY = 50;
     b.timing = parseFloat(document.getElementById('blockTiming').value) || 1;
     renderBlocksList();
     updatePreview();
@@ -457,32 +467,6 @@ function updatePreview() {
     text.querySelector('p').style.fontSize = fontSize + 'px';
     text.querySelector('p').style.color = textColor;
     
-    text.style.left = '50%';
-    text.style.right = 'auto';
-    text.style.transform = 'translateX(-50%)';
-    text.style.textAlign = 'center';
-    if (position === 'center') {
-        text.style.top = '50%';
-        text.style.bottom = 'auto';
-        text.style.transform = 'translate(-50%, -50%)';
-    } else if (position === 'bottom-left') {
-        text.style.top = 'auto';
-        text.style.bottom = '80px';
-        text.style.left = '40px';
-        text.style.transform = 'none';
-        text.style.textAlign = 'left';
-    } else if (position === 'bottom-right') {
-        text.style.top = 'auto';
-        text.style.bottom = '80px';
-        text.style.left = 'auto';
-        text.style.right = '40px';
-        text.style.transform = 'none';
-        text.style.textAlign = 'right';
-    } else {
-        text.style.top = 'auto';
-        text.style.bottom = '80px';
-    }
-    
     backdrop.style.background = 'rgba(0,0,0,' + (darken / 100) + ')';
     backdrop.style.backdropFilter = blur > 0 ? 'blur(' + blur + 'px)' : 'none';
     
@@ -512,6 +496,7 @@ function updatePreview() {
         blockProgress = 1;
     }
     
+    var currentBlock = blocks[blockIndex];
     var resolved = getResolvedBg(blockIndex);
     var bgStyle, bgPos;
     if (resolved.bgType === 'image' && resolved.bgImage) {
@@ -547,6 +532,17 @@ function updatePreview() {
         activeBg.style.transform = 'scale(1)';
     }
     
+    // Calculate text position with per-block absolute positioning
+    var posX = currentBlock.textOffsetX !== undefined ? currentBlock.textOffsetX : 50;
+    var posY = currentBlock.textOffsetY !== undefined ? currentBlock.textOffsetY : 50;
+    
+    text.style.left = posX + '%';
+    text.style.top = posY + '%';
+    text.style.right = 'auto';
+    text.style.bottom = 'auto';
+    text.style.transform = 'translate(-50%, -50%)';
+    text.style.textAlign = 'center';
+    
     var textOpacity = 1;
     if (fadeIn > 0 && blockProgress < fadeIn) {
         textOpacity = blockProgress / fadeIn;
@@ -554,7 +550,7 @@ function updatePreview() {
         textOpacity = (1 - blockProgress) / fadeOut;
     }
     
-    text.querySelector('p').textContent = blocks[blockIndex].text;
+    text.querySelector('p').textContent = currentBlock.text;
     text.style.opacity = textOpacity;
     text.classList.add('active');
 }
@@ -578,20 +574,6 @@ function generateExport() {
     var desktopOffset = document.getElementById('desktopOffset').value;
     var mobileOffset = document.getElementById('mobileOffset').value;
     
-    var posCSS = '', posMobileCSS = '';
-    if (position === 'center') {
-        posCSS = 'top:50%;left:50%;transform:translate(-50%,-50%);text-align:center';
-    } else if (position === 'bottom-left') {
-        posCSS = 'bottom:80px;left:40px;text-align:left';
-        posMobileCSS = 'bottom:60px;left:20px;';
-    } else if (position === 'bottom-right') {
-        posCSS = 'bottom:80px;right:40px;text-align:right';
-        posMobileCSS = 'bottom:60px;right:20px;';
-    } else {
-        posCSS = 'bottom:80px;left:50%;transform:translateX(-50%);text-align:center';
-        posMobileCSS = 'bottom:60px;';
-    }
-    
     var blocksData = blocks.map(function(b, i) {
         var resolved = getResolvedBg(i);
         return {
@@ -600,6 +582,8 @@ function generateExport() {
             color: resolved.bgType === 'color' ? resolved.bgColor : null,
             posX: resolved.bgPosX || 50,
             posY: resolved.bgPosY || 50,
+            textOffsetX: b.textOffsetX !== undefined ? b.textOffsetX : 50,
+            textOffsetY: b.textOffsetY !== undefined ? b.textOffsetY : 50,
             timing: b.timing || 1
         };
     });
@@ -609,9 +593,9 @@ function generateExport() {
 '#' + uid + ' .ts-stage{position:sticky;top:' + desktopOffset + 'px;height:calc(100vh - ' + desktopOffset + 'px);overflow:hidden}\n' +
 '#' + uid + ' .ts-bg{position:absolute;inset:0;background-size:cover;transition:opacity ' + speed + 'ms,transform 3s}\n' +
 '#' + uid + ' .ts-backdrop{position:absolute;inset:0;background:rgba(0,0,0,' + (darken/100) + ');' + (blur > 0 ? 'backdrop-filter:blur(' + blur + 'px);-webkit-backdrop-filter:blur(' + blur + 'px);' : '') + '}\n' +
-'#' + uid + ' .ts-text{position:absolute;' + posCSS + ';padding:40px;max-width:900px;transition:opacity 0.3s;z-index:10}\n' +
-'#' + uid + ' .ts-text p{font-size:' + fontSize + 'px;font-weight:600;color:' + textColor + ';line-height:1.3;text-shadow:2px 2px 8px rgba(0,0,0,0.8);margin:0}\n' +
-'@media(max-width:768px){#' + uid + ' .ts-stage{top:' + mobileOffset + 'px;height:calc(100vh - ' + mobileOffset + 'px)}#' + uid + ' .ts-text{padding:20px;' + posMobileCSS + '}#' + uid + ' .ts-text p{font-size:' + Math.round(fontSize * 0.6) + 'px}}\n' +
+'#' + uid + ' .ts-text{position:absolute;padding:40px;max-width:900px;transition:opacity 0.3s;z-index:10}\n' +
+'#' + uid + ' .ts-text p{font-size:' + fontSize + 'px;font-weight:600;color:' + textColor + ';line-height:1.3;text-shadow:2px 2px 8px rgba(0,0,0,0.8);margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
+'@media(max-width:768px){#' + uid + ' .ts-stage{top:' + mobileOffset + 'px;height:calc(100vh - ' + mobileOffset + 'px)}#' + uid + ' .ts-text{padding:20px}#' + uid + ' .ts-text p{font-size:' + Math.round(fontSize * 0.6) + 'px}}\n' +
 '</style>\n' +
 '<div id="' + uid + '">\n' +
 '<div class="ts-stage">\n' +
@@ -632,12 +616,16 @@ function generateExport() {
 'var data=' + JSON.stringify(blocksData) + ';\n' +
 'var n=data.length;\n' +
 'var baseDur=' + baseDur + ';\n' +
+'var basePos="' + position + '";\n' +
 'var effect="' + effect + '";\n' +
 'var fadeIn=' + fadeIn + ',fadeOut=' + fadeOut + ';\n' +
 'var curIdx=-1;\n' +
 'var totalTiming=data.reduce(function(s,b){return s+(b.timing||1);},0);\n' +
 'function setH(){w.style.height=(stage.offsetHeight*baseDur*(totalTiming/n))+"px";}\n' +
 'setH();window.addEventListener("resize",setH);\n' +
+'function setTextPos(px,py){\n' +
+'text.style.left=px+"%";text.style.top=py+"%";text.style.right="auto";text.style.bottom="auto";text.style.transform="translate(-50%,-50%)";text.style.textAlign="center";\n' +
+'}\n' +
 'function upd(){\n' +
 'var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\n' +
 'var progress;\n' +
@@ -655,6 +643,7 @@ function generateExport() {
 'if(curIdx%2===0){bg2.style.background=bgStyle;bg2.style.opacity=1;bg1.style.opacity=0;}\n' +
 'else{bg1.style.background=bgStyle;bg1.style.opacity=1;bg2.style.opacity=0;}\n' +
 'p.textContent=d.text;\n' +
+'setTextPos(d.textOffsetX!==undefined?d.textOffsetX:50,d.textOffsetY!==undefined?d.textOffsetY:50);\n' +
 'curIdx=idx;\n' +
 '}\n' +
 'var activeBg=curIdx%2===0?bg2:bg1;if(curIdx===0)activeBg=bg1;\n' +
@@ -665,7 +654,7 @@ function generateExport() {
 'text.style.opacity=op;\n' +
 'requestAnimationFrame(upd);\n' +
 '}\n' +
-'if(n>0){var d=data[0];bg1.style.background=d.bg?"url("+d.bg+") "+d.posX+"% "+d.posY+"%/cover no-repeat":d.color;bg1.style.opacity=1;p.textContent=d.text;curIdx=0;}\n' +
+'if(n>0){var d=data[0];bg1.style.background=d.bg?"url("+d.bg+") "+d.posX+"% "+d.posY+"%/cover no-repeat":d.color;bg1.style.opacity=1;p.textContent=d.text;setTextPos(d.textOffsetX!==undefined?d.textOffsetX:50,d.textOffsetY!==undefined?d.textOffsetY:50);curIdx=0;}\n' +
 'upd();\n' +
 '})();\n' +
 '<\/scr' + 'ipt>';
