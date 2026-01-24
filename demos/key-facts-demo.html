@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Key Facts Panel Demo</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+#kf1{position:relative;background:#0a0a0a;display:flex;align-items:center;justify-content:center}
+#kf1 .kf-stage{position:sticky;top:50px;width:100%;max-width:600px;padding:20px}
+#kf1 .kf-panel{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:30px}
+#kf1 .kf-title{font-size:14px;color:#4a9eff;text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;opacity:0;transform:translateY(10px);transition:all 0.4s}
+#kf1.on .kf-title{opacity:1;transform:translateY(0)}
+#kf1 .kf-fact{display:flex;gap:12px;padding:16px 0;border-bottom:1px solid #2a2a2a;opacity:0;transform:translateX(-20px);transition:all 0.4s}
+#kf1 .kf-fact:last-child{border-bottom:none}
+#kf1.on .kf-fact{opacity:1;transform:translateX(0)}
+#kf1 .kf-icon{width:24px;height:24px;background:#4a9eff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#000;flex-shrink:0}
+#kf1 .kf-text{font-size:15px;line-height:1.5;color:#ccc}
+#kf1 .kf-source{font-size:12px;color:#666;margin-top:20px;padding-top:16px;border-top:1px solid #2a2a2a;opacity:0;transition:all 0.4s}
+#kf1.on .kf-source{opacity:1}
+</style>
+</head>
+<body>
+<div id="kf1">
+<div class="kf-stage">
+<div class="kf-panel">
+<div class="kf-title">What You Need to Know</div>
+<div class="kf-fact" style="transition-delay:0ms">
+<div class="kf-icon">•</div>
+<div class="kf-text">The investigation revealed over 500 documents had been hidden from public view</div>
+</div>
+<div class="kf-fact" style="transition-delay:100ms">
+<div class="kf-icon">→</div>
+<div class="kf-text">Three senior officials were implicated in the cover-up spanning two decades</div>
+</div>
+<div class="kf-fact" style="transition-delay:200ms">
+<div class="kf-icon">!</div>
+<div class="kf-text">Estimated $2.3 million in funds were misallocated during this period</div>
+</div>
+<div class="kf-fact" style="transition-delay:300ms">
+<div class="kf-icon">✓</div>
+<div class="kf-text">New oversight measures have since been implemented following the report</div>
+</div>
+<div class="kf-source">Source: Internal audit report, January 2024</div>
+</div>
+</div>
+</div>
+<script>
+(function(){
+var w=document.getElementById("kf1");
+var scrollMult=1.5;
+function setH(){w.style.height=(w.querySelector(".kf-stage").offsetHeight*scrollMult)+"px";}
+setH();window.addEventListener("resize",setH);
+function upd(){
+var r=w.getBoundingClientRect();
+var scrolled=Math.max(0,-r.top);
+var range=w.offsetHeight-window.innerHeight;
+var progress=range>0?scrolled/range:0;
+if(progress>0.1)w.classList.add("on");else w.classList.remove("on");
+requestAnimationFrame(upd);
+}
+upd();
+})();
+</script>
+</body>
+</html>

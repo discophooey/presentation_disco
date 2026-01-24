@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter Marker Demo</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+#cm1{position:relative;background:linear-gradient(135deg,#0f0f0f 0%,#1a1a2e 100%)}
+#cm1 .cm-stage{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+#cm1 .cm-chapter{font-size:14px;color:#666;letter-spacing:4px;text-transform:uppercase;margin-bottom:20px;opacity:0;transform:translateY(20px);transition:all 0.6s}
+#cm1.on .cm-chapter{opacity:1;transform:translateY(0)}
+#cm1 .cm-title{font-size:72px;font-weight:700;color:#fff;line-height:1.1;text-align:center;padding:0 20px;opacity:0;transition:opacity 0.1s}
+#cm1.on .cm-title{opacity:1}
+#cm1 .cm-subtitle{font-size:20px;color:#888;margin-top:20px;opacity:0;transform:translateY(20px);transition:all 0.6s 0.4s}
+#cm1.on .cm-subtitle{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+<div id="cm1">
+<div class="cm-stage">
+<div class="cm-chapter">Chapter One</div>
+<div class="cm-title">The Beginning</div>
+<div class="cm-subtitle">Where it all started</div>
+</div>
+</div>
+<script>
+(function(){
+var w=document.getElementById("cm1");
+var titleEl=w.querySelector(".cm-title");
+var scrollMult=1.5;
+var trigger=0.2;
+var revealed=false;
+var chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+var finalText="The Beginning";
+var ti=null;
+
+function scramble(){
+    var it=0,mx=finalText.length*3;
+    titleEl.style.opacity=1;
+    ti=setInterval(function(){
+        var p=it/mx,rv=Math.floor(p*finalText.length),t="";
+        for(var i=0;i<finalText.length;i++){
+            if(finalText[i]===" ")t+=" ";
+            else if(i<rv)t+=finalText[i];
+            else t+=chars[Math.floor(Math.random()*chars.length)];
+        }
+        titleEl.textContent=t;
+        it++;
+        if(it>=mx){titleEl.textContent=finalText;clearInterval(ti);ti=null;}
+    },30);
+}
+
+function setH(){w.style.height=(w.querySelector(".cm-stage").offsetHeight*scrollMult)+"px";}
+setH();window.addEventListener("resize",setH);
+
+function upd(){
+    var r=w.getBoundingClientRect();
+    var scrolled=Math.max(0,-r.top);
+    var range=w.offsetHeight-window.innerHeight;
+    var progress=range>0?scrolled/range:0;
+    if(progress>=trigger&&!revealed){
+        w.classList.add("on");
+        revealed=true;
+        scramble();
+    }
+    if(progress<trigger*0.5&&revealed){
+        w.classList.remove("on");
+        revealed=false;
+        if(ti){clearInterval(ti);ti=null;}
+        titleEl.textContent=finalText;
+    }
+    requestAnimationFrame(upd);
+}
+upd();
+})();
+</script>
+</body>
+</html>

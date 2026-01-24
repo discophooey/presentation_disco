@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text Scroll Demo</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+#ts1{position:relative;background:#000}
+#ts1 .ts-stage{position:sticky;top:0;height:100vh;overflow:hidden}
+#ts1 .ts-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity 600ms,transform 3s}
+#ts1 .ts-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.4)}
+#ts1 .ts-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);padding:40px;max-width:900px;opacity:0;transition:opacity 0.4s;z-index:10}
+#ts1 .ts-text.on{opacity:1}
+#ts1 .ts-text p{font-size:42px;font-weight:600;color:#fff;line-height:1.3;text-shadow:2px 2px 8px rgba(0,0,0,0.8);margin:0;text-align:center}
+</style>
+</head>
+<body>
+<div id="ts1">
+<div class="ts-stage">
+<div class="ts-bg" id="ts1bg1"></div>
+<div class="ts-bg" id="ts1bg2" style="opacity:0"></div>
+<div class="ts-backdrop"></div>
+<div class="ts-text"><p></p></div>
+</div>
+</div>
+<script>
+(function(){
+var w=document.getElementById("ts1");
+var stage=w.querySelector(".ts-stage");
+var bg1=document.getElementById("ts1bg1");
+var bg2=document.getElementById("ts1bg2");
+var text=w.querySelector(".ts-text");
+var p=text.querySelector("p");
+var data=[
+    {text:"The story began in a small village",bg:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200",color:null},
+    {text:"Where secrets were kept for generations",bg:null,color:"#1a2634"},
+    {text:"Until one day, everything changed",bg:"https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200",color:null},
+    {text:"The truth could no longer be hidden",bg:null,color:"#2d1a1a"}
+];
+var n=data.length;
+var scrollMult=2.5;
+var effect="zoomLeft";
+var curIdx=-1;
+function setH(){w.style.height=(stage.offsetHeight*scrollMult)+"px";}
+setH();window.addEventListener("resize",setH);
+function upd(){
+var r=w.getBoundingClientRect();
+var scrolled=Math.max(0,-r.top);
+var range=w.offsetHeight-window.innerHeight;
+var progress=range>0?scrolled/range:0;
+var idx=Math.min(Math.floor(progress*n),n-1);
+var blockP=(progress*n)-idx;
+if(idx!==curIdx){
+var d=data[idx];
+var bgStyle=d.bg?"url("+d.bg+") center/cover":d.color;
+if(curIdx%2===0){bg2.style.background=bgStyle;bg2.style.opacity=1;bg1.style.opacity=0;}
+else{bg1.style.background=bgStyle;bg1.style.opacity=1;bg2.style.opacity=0;}
+p.textContent=d.text;
+curIdx=idx;
+}
+var activeBg=curIdx%2===0?bg2:bg1;
+if(effect==="zoomLeft")activeBg.style.transform="scale(1.1) translateX("+(-blockP*3)+"%)";
+else if(effect==="zoomRight")activeBg.style.transform="scale(1.1) translateX("+(blockP*3)+"%)";
+else activeBg.style.transform="scale(1)";
+text.classList.add("on");
+requestAnimationFrame(upd);
+}
+if(n>0){var d=data[0];bg1.style.background=d.bg?"url("+d.bg+") center/cover":d.color;bg1.style.opacity=1;p.textContent=d.text;curIdx=0;}
+upd();
+})();
+</script>
+</body>
+</html>

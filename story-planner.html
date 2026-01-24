@@ -222,6 +222,10 @@ const moduleTypes = [
     { id: 'collage', name: 'Collage', color: '#3498db' },
     { id: 'zoom-detail', name: 'Zoom Detail', color: '#2ecc71' },
     { id: 'matte', name: 'Matte', color: '#9b59b6' },
+    { id: 'text-scroll', name: 'Text Scroll', color: '#16a085' },
+    { id: 'chapter-marker', name: 'Chapter Marker', color: '#8e44ad' },
+    { id: 'key-facts', name: 'Key Facts', color: '#27ae60' },
+    { id: 'body-module', name: 'Body Module', color: '#7f8c8d' },
     { id: 'text', name: 'Text Block', color: '#95a5a6' },
 ];
 
@@ -687,6 +691,118 @@ function getModuleInputsHtml(section) {
                     <input type="text" value="${c.matteText || ''}" placeholder="REVEAL" onchange="updateContent(${id}, 'matteText', this.value)">
                 </div>`;
         
+        case 'text-scroll':
+            return `
+                <div class="input-row">
+                    <div class="edit-field" style="flex:2;">
+                        <label>Statement Text</label>
+                        <input type="text" id="input_${id}_text" placeholder="One punchy statement...">
+                    </div>
+                    <div class="edit-field" style="flex:1;">
+                        <label>BG Type</label>
+                        <select id="input_${id}_bgType">
+                            <option value="inherit">Inherit</option>
+                            <option value="color">Color</option>
+                            <option value="image">Image</option>
+                        </select>
+                    </div>
+                    <div class="edit-field" style="flex:1;">
+                        <label>BG Value</label>
+                        <input type="text" id="input_${id}_bgValue" placeholder="#1a1a1a or URL">
+                    </div>
+                    <button class="btn btn-secondary" onclick="addTextScrollItem(${id})">Add</button>
+                </div>
+                <div class="items-list">
+                    ${(c.blocks || []).map((b, i) => `
+                        <div class="item-row">
+                            <span class="item-text">${b.text}</span>
+                            <span class="item-sub">${b.bgType === 'inherit' ? '(inherits)' : b.bgValue.substring(0,20)}</span>
+                            <button onclick="removeContentItem(${id}, 'blocks', ${i})">×</button>
+                        </div>
+                    `).join('')}
+                </div>`;
+        
+        case 'chapter-marker':
+            return `
+                <div class="edit-field">
+                    <label>Chapter Number/Label</label>
+                    <input type="text" value="${c.chapterNum || ''}" placeholder="Chapter One" onchange="updateContent(${id}, 'chapterNum', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Title</label>
+                    <input type="text" value="${c.titleText || ''}" placeholder="The Beginning" onchange="updateContent(${id}, 'titleText', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Subtitle</label>
+                    <input type="text" value="${c.subtitleText || ''}" placeholder="Optional subtitle" onchange="updateContent(${id}, 'subtitleText', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Entry Effect</label>
+                    <select onchange="updateContent(${id}, 'entryEffect', this.value)">
+                        <option value="fadeUp" ${c.entryEffect === 'fadeUp' ? 'selected' : ''}>Fade Up</option>
+                        <option value="scaleIn" ${c.entryEffect === 'scaleIn' ? 'selected' : ''}>Scale In</option>
+                        <option value="blurReveal" ${c.entryEffect === 'blurReveal' ? 'selected' : ''}>Blur Reveal</option>
+                        <option value="randomLetters" ${c.entryEffect === 'randomLetters' ? 'selected' : ''}>Random Letters</option>
+                    </select>
+                </div>`;
+        
+        case 'key-facts':
+            return `
+                <div class="edit-field">
+                    <label>Panel Title</label>
+                    <input type="text" value="${c.panelTitle || ''}" placeholder="What You Need to Know" onchange="updateContent(${id}, 'panelTitle', this.value)">
+                </div>
+                <div class="input-row">
+                    <div class="edit-field" style="flex:2;">
+                        <label>Fact Text</label>
+                        <input type="text" id="input_${id}_factText" placeholder="Key fact goes here...">
+                    </div>
+                    <div class="edit-field" style="flex:0.5;">
+                        <label>Icon</label>
+                        <select id="input_${id}_factIcon">
+                            <option value="•">• Bullet</option>
+                            <option value="→">→ Arrow</option>
+                            <option value="✓">✓ Check</option>
+                            <option value="!">! Alert</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-secondary" onclick="addKeyFactItem(${id})">Add</button>
+                </div>
+                <div class="items-list">
+                    ${(c.facts || []).map((f, i) => `
+                        <div class="item-row">
+                            <span class="item-text">${f.icon} ${f.text}</span>
+                            <button onclick="removeContentItem(${id}, 'facts', ${i})">×</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="edit-field" style="margin-top:12px;">
+                    <label>Source Attribution</label>
+                    <input type="text" value="${c.sourceText || ''}" placeholder="Source: Reuters, 2024" onchange="updateContent(${id}, 'sourceText', this.value)">
+                </div>`;
+        
+        case 'body-module':
+            return `
+                <div class="edit-field">
+                    <label>Body Text (use **bold** and *italic*, ## for H2, ### for H3)</label>
+                    <textarea style="min-height:120px;" onchange="updateContent(${id}, 'bodyText', this.value)" placeholder="Write your body text here...">${c.bodyText || ''}</textarea>
+                </div>
+                <div class="edit-field">
+                    <label>Image URL (optional, floats beside text)</label>
+                    <input type="text" value="${c.imageUrl || ''}" placeholder="https://..." onchange="updateContent(${id}, 'imageUrl', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Image Caption</label>
+                    <input type="text" value="${c.imageCaption || ''}" placeholder="Photo credit / description" onchange="updateContent(${id}, 'imageCaption', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Image Position</label>
+                    <select onchange="updateContent(${id}, 'imagePosition', this.value)">
+                        <option value="right" ${c.imagePosition === 'right' ? 'selected' : ''}>Right of text</option>
+                        <option value="left" ${c.imagePosition === 'left' ? 'selected' : ''}>Left of text</option>
+                    </select>
+                </div>`;
+        
         case 'text':
         default:
             return `<p style="color:#666;font-size:12px;">Text blocks don't export to modules — use the notes field for planning.</p>`;
@@ -736,6 +852,24 @@ function addCardItem(sectionId) {
     addContentObject(sectionId, 'cards', { text, image });
     document.getElementById(`input_${sectionId}_text`).value = '';
     document.getElementById(`input_${sectionId}_image`).value = '';
+}
+
+function addTextScrollItem(sectionId) {
+    const text = document.getElementById(`input_${sectionId}_text`).value;
+    const bgType = document.getElementById(`input_${sectionId}_bgType`).value;
+    const bgValue = document.getElementById(`input_${sectionId}_bgValue`).value;
+    if (!text) return;
+    addContentObject(sectionId, 'blocks', { text, bgType, bgValue: bgValue || '#1a1a1a' });
+    document.getElementById(`input_${sectionId}_text`).value = '';
+    document.getElementById(`input_${sectionId}_bgValue`).value = '';
+}
+
+function addKeyFactItem(sectionId) {
+    const text = document.getElementById(`input_${sectionId}_factText`).value;
+    const icon = document.getElementById(`input_${sectionId}_factIcon`).value;
+    if (!text) return;
+    addContentObject(sectionId, 'facts', { text, icon });
+    document.getElementById(`input_${sectionId}_factText`).value = '';
 }
 
 function parseCoordinates(str) {
@@ -1198,6 +1332,76 @@ function buildModuleState(section) {
                 textAnim: 'random',
                 textPosition: 'center',
                 sizing: 'contain'
+            };
+        
+        case 'text-scroll':
+            if (!c.blocks || !c.blocks.length) return null;
+            return {
+                blocks: c.blocks.map(b => ({
+                    text: b.text,
+                    bgType: b.bgType === 'inherit' ? 'inherit' : (b.bgValue && b.bgValue.startsWith('#') ? 'color' : 'image'),
+                    bgColor: b.bgType === 'color' ? b.bgValue : '#1a1a1a',
+                    bgImage: b.bgType === 'image' ? b.bgValue : ''
+                })),
+                fontSize: 48,
+                textColor: '#ffffff',
+                textPosition: 'center',
+                backdropBlur: 0,
+                backdropDarken: 30,
+                bgEffect: 'static',
+                transitionSpeed: 600,
+                scrollDuration: 200,
+                desktopOffset: 50,
+                mobileOffset: 200
+            };
+        
+        case 'chapter-marker':
+            if (!c.titleText) return null;
+            return {
+                chapterNum: c.chapterNum || '',
+                titleText: c.titleText,
+                subtitleText: c.subtitleText || '',
+                titleSize: 72,
+                titleColor: '#ffffff',
+                bgType: 'solid',
+                bgColor1: '#0f0f0f',
+                bgColor2: '#1a1a2e',
+                entryEffect: c.entryEffect || 'fadeUp',
+                triggerPoint: 20,
+                scrollDuration: 150,
+                desktopOffset: 50,
+                mobileOffset: 200
+            };
+        
+        case 'key-facts':
+            if (!c.facts || !c.facts.length) return null;
+            return {
+                facts: c.facts,
+                panelTitle: c.panelTitle || 'What You Need to Know',
+                sourceText: c.sourceText || '',
+                accentColor: '#4a9eff',
+                panelBg: '#1a1a1a',
+                borderColor: '#2a2a2a',
+                maxWidth: 600,
+                staggerDelay: 100,
+                scrollDuration: 150,
+                desktopOffset: 50,
+                mobileOffset: 200
+            };
+        
+        case 'body-module':
+            if (!c.bodyText) return null;
+            return {
+                bodyText: c.bodyText,
+                textAlign: 'left',
+                imageUrl: c.imageUrl || '',
+                imageCaption: c.imageCaption || '',
+                imagePosition: c.imagePosition || 'right',
+                textColor: '#cccccc',
+                headlineColor: '#ffffff',
+                bgColor: '#0a0a0a',
+                fontSize: 17,
+                maxWidth: 650
             };
         
         default:

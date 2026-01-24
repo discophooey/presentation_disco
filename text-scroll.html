@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scrolltastic Text Scroll</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #e0e0e0; }
+.app { display: flex; height: 100vh; }
+.controls { width: 360px; background: #1a1a1a; overflow-y: auto; padding: 20px; border-right: 1px solid #2a2a2a; flex-shrink: 0; }
+.preview-wrap { flex: 1; display: flex; flex-direction: column; }
+.preview-header { padding: 10px 20px; background: #1a1a1a; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; }
+.preview-header span { color: #888; font-size: 12px; }
+#progressDisplay { color: #4a9eff; font-weight: bold; }
+.preview-scroll { flex: 1; overflow-y: auto; background: #000; }
+.preview-container { min-height: 300vh; position: relative; }
+.preview-stage { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.preview-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: opacity 0.6s; }
+.preview-text { position: relative; z-index: 10; text-align: center; padding: 40px; max-width: 900px; opacity: 0; transition: opacity 0.4s; }
+.preview-text.active { opacity: 1; }
+.preview-text p { font-weight: 600; line-height: 1.3; text-shadow: 2px 2px 8px rgba(0,0,0,0.8); }
+.preview-backdrop { position: absolute; inset: 0; pointer-events: none; }
+
+h1 { font-size: 18px; color: #4a9eff; margin-bottom: 20px; }
+h2 { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px; padding: 10px 0; border-bottom: 1px solid #2a2a2a; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+h2::after { content: '▼'; font-size: 8px; transition: transform 0.2s; }
+h2.collapsed::after { transform: rotate(-90deg); }
+.section { overflow: hidden; transition: max-height 0.3s; }
+.section.collapsed { max-height: 0 !important; }
+.control-group { margin-bottom: 12px; }
+.control-group label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; }
+.control-group input[type="text"], .control-group input[type="number"], .control-group select, .control-group textarea { width: 100%; padding: 8px 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 13px; }
+.control-group input[type="color"] { width: 50px; height: 32px; border: none; background: none; cursor: pointer; }
+.control-group input[type="range"] { width: 100%; }
+.inline-group { display: flex; gap: 10px; align-items: center; }
+.inline-group > * { flex: 1; }
+button { padding: 10px 16px; background: #4a9eff; border: none; color: #000; font-weight: 600; border-radius: 6px; cursor: pointer; font-size: 13px; width: 100%; margin-top: 8px; }
+button:hover { background: #357abd; }
+button.secondary { background: #2a2a2a; color: #888; }
+button.secondary:hover { background: #333; color: #fff; }
+button.danger { background: #c0392b; color: #fff; }
+button.danger:hover { background: #e74c3c; }
+
+.blocks-list { background: #0a0a0a; border-radius: 6px; padding: 10px; margin: 10px 0; max-height: 300px; overflow-y: auto; }
+.block-item { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 6px; padding: 10px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.2s; }
+.block-item:hover { border-color: #4a9eff; }
+.block-item.selected { border-color: #4a9eff; background: #1a2a3a; }
+.block-item .block-text { font-size: 12px; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+.block-item .block-bg { font-size: 10px; color: #666; }
+.block-actions { display: flex; gap: 6px; margin-top: 6px; }
+.block-actions button { flex: 1; padding: 4px 8px; font-size: 10px; margin: 0; }
+
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+.modal.active { display: flex; }
+.modal-content { background: #1a1a1a; border-radius: 12px; padding: 24px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; border: 1px solid #2a2a2a; }
+.modal-content h3 { color: #4a9eff; margin-bottom: 16px; }
+.modal-content textarea { height: 200px; font-family: monospace; font-size: 11px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+.modal-actions button { flex: 1; }
+</style>
+</head>
+<body>
+<div class="app">
+    <div class="controls">
+        <h1>📜 Text Scroll</h1>
+        
+        <h2 onclick="toggleSection(this)">Text Blocks</h2>
+        <div class="section">
+            <div class="blocks-list" id="blocksList"></div>
+            <button onclick="addBlock()">+ Add Text Block</button>
+        </div>
+        
+        <div id="blockEditor" style="display:none;">
+            <h2 onclick="toggleSection(this)">Edit Block</h2>
+            <div class="section">
+                <div class="control-group">
+                    <label>Text (one punchy statement)</label>
+                    <textarea id="blockText" rows="3" oninput="updateBlock()"></textarea>
+                </div>
+                <div class="control-group">
+                    <label>Background Type</label>
+                    <select id="bgType" onchange="updateBlock()">
+                        <option value="inherit">Inherit Previous</option>
+                        <option value="color">Solid Color</option>
+                        <option value="image">Image URL</option>
+                    </select>
+                </div>
+                <div class="control-group" id="bgColorGroup" style="display:none;">
+                    <label>Background Color</label>
+                    <input type="color" id="bgColor" value="#1a1a1a" onchange="updateBlock()">
+                </div>
+                <div class="control-group" id="bgImageGroup" style="display:none;">
+                    <label>Image URL</label>
+                    <input type="text" id="bgImage" placeholder="https://..." oninput="updateBlock()">
+                </div>
+                <button class="danger" onclick="deleteBlock()">Delete Block</button>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Text Style</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Text Position</label>
+                <select id="textPosition" onchange="updatePreview()">
+                    <option value="center">Center</option>
+                    <option value="bottom-left">Bottom Left</option>
+                    <option value="bottom-right">Bottom Right</option>
+                    <option value="bottom-center">Bottom Center</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Font Size (px)</label>
+                <input type="range" id="fontSize" min="24" max="80" value="48" oninput="updatePreview(); document.getElementById('fontSizeNum').value=this.value;">
+                <input type="number" id="fontSizeNum" value="48" style="width:60px;margin-top:4px;" oninput="document.getElementById('fontSize').value=this.value; updatePreview();">
+            </div>
+            <div class="control-group">
+                <label>Text Color</label>
+                <input type="color" id="textColor" value="#ffffff" onchange="updatePreview()">
+            </div>
+            <div class="control-group">
+                <label>Backdrop Blur</label>
+                <input type="range" id="backdropBlur" min="0" max="20" value="0" oninput="updatePreview();">
+            </div>
+            <div class="control-group">
+                <label>Backdrop Darken (%)</label>
+                <input type="range" id="backdropDarken" min="0" max="80" value="30" oninput="updatePreview();">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Background Effects</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Effect While Active</label>
+                <select id="bgEffect" onchange="updatePreview()">
+                    <option value="static">Static</option>
+                    <option value="zoomLeft">Subtle Zoom Left</option>
+                    <option value="zoomRight">Subtle Zoom Right</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Transition Speed (ms)</label>
+                <input type="range" id="transitionSpeed" min="300" max="1500" value="600" oninput="updatePreview();">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Layout</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Scroll Duration (%)</label>
+                <input type="range" id="scrollDuration" min="100" max="400" value="200" oninput="updatePreviewHeight();">
+            </div>
+            <div class="inline-group">
+                <div class="control-group">
+                    <label>Desktop Offset (px)</label>
+                    <input type="number" id="desktopOffset" value="50" min="0" max="200">
+                </div>
+                <div class="control-group">
+                    <label>Mobile Offset (px)</label>
+                    <input type="number" id="mobileOffset" value="200" min="0" max="300">
+                </div>
+            </div>
+        </div>
+        
+        <button onclick="generateExport()">Generate HTML</button>
+    </div>
+    
+    <div class="preview-wrap">
+        <div class="preview-header">
+            <span>Preview (scroll to animate)</span>
+            <span id="progressDisplay">0%</span>
+        </div>
+        <div class="preview-scroll" id="previewScroll">
+            <div class="preview-container" id="previewContainer">
+                <div class="preview-stage" id="previewStage">
+                    <div class="preview-bg" id="previewBg1"></div>
+                    <div class="preview-bg" id="previewBg2" style="opacity:0;"></div>
+                    <div class="preview-backdrop" id="previewBackdrop"></div>
+                    <div class="preview-text" id="previewText"><p></p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <h3>Export HTML</h3>
+        <div class="control-group">
+            <label>Generated Code</label>
+            <textarea id="exportCode" readonly></textarea>
+        </div>
+        <div class="modal-actions">
+            <button onclick="copyCode()">📋 Copy</button>
+            <button onclick="downloadCode()">⬇️ Download</button>
+            <button onclick="sendToStackBuilder()">📚 Stack</button>
+            <button class="secondary" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+var blocks = [];
+var selectedBlockIndex = -1;
+
+function toggleSection(el) {
+    el.classList.toggle('collapsed');
+    el.nextElementSibling.classList.toggle('collapsed');
+}
+
+function renderBlocksList() {
+    var html = '';
+    blocks.forEach(function(b, i) {
+        var bgText = b.bgType === 'inherit' ? '(inherits)' : b.bgType === 'color' ? b.bgColor : b.bgImage.substring(0, 30) + '...';
+        html += '<div class="block-item ' + (i === selectedBlockIndex ? 'selected' : '') + '" onclick="selectBlock(' + i + ')">';
+        html += '<div class="block-text">' + (b.text || '(empty)') + '</div>';
+        html += '<div class="block-bg">BG: ' + bgText + '</div>';
+        html += '</div>';
+    });
+    document.getElementById('blocksList').innerHTML = html || '<div style="color:#666;font-size:12px;text-align:center;padding:20px;">No blocks yet. Add one!</div>';
+}
+
+function addBlock() {
+    blocks.push({
+        text: 'Your statement here',
+        bgType: blocks.length === 0 ? 'color' : 'inherit',
+        bgColor: '#1a1a1a',
+        bgImage: ''
+    });
+    selectedBlockIndex = blocks.length - 1;
+    renderBlocksList();
+    loadBlockEditor();
+    updatePreview();
+    saveState();
+}
+
+function selectBlock(i) {
+    selectedBlockIndex = i;
+    renderBlocksList();
+    loadBlockEditor();
+}
+
+function loadBlockEditor() {
+    if (selectedBlockIndex < 0 || selectedBlockIndex >= blocks.length) {
+        document.getElementById('blockEditor').style.display = 'none';
+        return;
+    }
+    document.getElementById('blockEditor').style.display = 'block';
+    var b = blocks[selectedBlockIndex];
+    document.getElementById('blockText').value = b.text;
+    document.getElementById('bgType').value = b.bgType;
+    document.getElementById('bgColor').value = b.bgColor;
+    document.getElementById('bgImage').value = b.bgImage;
+    updateBgInputs();
+}
+
+function updateBgInputs() {
+    var type = document.getElementById('bgType').value;
+    document.getElementById('bgColorGroup').style.display = type === 'color' ? 'block' : 'none';
+    document.getElementById('bgImageGroup').style.display = type === 'image' ? 'block' : 'none';
+}
+
+function updateBlock() {
+    if (selectedBlockIndex < 0) return;
+    var b = blocks[selectedBlockIndex];
+    b.text = document.getElementById('blockText').value;
+    b.bgType = document.getElementById('bgType').value;
+    b.bgColor = document.getElementById('bgColor').value;
+    b.bgImage = document.getElementById('bgImage').value;
+    updateBgInputs();
+    renderBlocksList();
+    updatePreview();
+    saveState();
+}
+
+function deleteBlock() {
+    if (selectedBlockIndex < 0) return;
+    if (!confirm('Delete this block?')) return;
+    blocks.splice(selectedBlockIndex, 1);
+    selectedBlockIndex = Math.min(selectedBlockIndex, blocks.length - 1);
+    renderBlocksList();
+    loadBlockEditor();
+    updatePreview();
+    saveState();
+}
+
+function getResolvedBg(index) {
+    for (var i = index; i >= 0; i--) {
+        if (blocks[i].bgType !== 'inherit') {
+            return blocks[i];
+        }
+    }
+    return { bgType: 'color', bgColor: '#1a1a1a', bgImage: '' };
+}
+
+function updatePreviewHeight() {
+    var dur = parseInt(document.getElementById('scrollDuration').value) || 200;
+    document.getElementById('previewContainer').style.height = dur + 'vh';
+}
+
+var currentBgIndex = 0;
+function updatePreview() {
+    var scroll = document.getElementById('previewScroll');
+    var container = document.getElementById('previewContainer');
+    var text = document.getElementById('previewText');
+    var bg1 = document.getElementById('previewBg1');
+    var bg2 = document.getElementById('previewBg2');
+    var backdrop = document.getElementById('previewBackdrop');
+    
+    var scrollTop = scroll.scrollTop;
+    var maxScroll = container.offsetHeight - scroll.clientHeight;
+    var progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
+    
+    document.getElementById('progressDisplay').textContent = Math.round(progress * 100) + '%';
+    
+    var fontSize = document.getElementById('fontSize').value;
+    var textColor = document.getElementById('textColor').value;
+    var position = document.getElementById('textPosition').value;
+    var blur = document.getElementById('backdropBlur').value;
+    var darken = document.getElementById('backdropDarken').value;
+    var effect = document.getElementById('bgEffect').value;
+    var speed = document.getElementById('transitionSpeed').value;
+    
+    text.querySelector('p').style.fontSize = fontSize + 'px';
+    text.querySelector('p').style.color = textColor;
+    
+    // Position
+    text.style.position = 'absolute';
+    text.style.left = '50%';
+    text.style.transform = 'translateX(-50%)';
+    if (position === 'center') {
+        text.style.top = '50%';
+        text.style.transform = 'translate(-50%, -50%)';
+        text.style.bottom = 'auto';
+    } else if (position === 'bottom-left') {
+        text.style.top = 'auto';
+        text.style.bottom = '80px';
+        text.style.left = '40px';
+        text.style.transform = 'none';
+        text.querySelector('p').style.textAlign = 'left';
+    } else if (position === 'bottom-right') {
+        text.style.top = 'auto';
+        text.style.bottom = '80px';
+        text.style.left = 'auto';
+        text.style.right = '40px';
+        text.style.transform = 'none';
+        text.querySelector('p').style.textAlign = 'right';
+    } else {
+        text.style.top = 'auto';
+        text.style.bottom = '80px';
+        text.style.transform = 'translateX(-50%)';
+        text.querySelector('p').style.textAlign = 'center';
+    }
+    
+    backdrop.style.background = 'rgba(0,0,0,' + (darken / 100) + ')';
+    backdrop.style.backdropFilter = blur > 0 ? 'blur(' + blur + 'px)' : 'none';
+    
+    bg1.style.transition = 'opacity ' + speed + 'ms, transform 3s';
+    bg2.style.transition = 'opacity ' + speed + 'ms, transform 3s';
+    
+    if (blocks.length === 0) {
+        text.classList.remove('active');
+        bg1.style.background = '#1a1a1a';
+        return;
+    }
+    
+    var blockIndex = Math.min(Math.floor(progress * blocks.length), blocks.length - 1);
+    var blockProgress = (progress * blocks.length) - blockIndex;
+    
+    var resolved = getResolvedBg(blockIndex);
+    var bgStyle = resolved.bgType === 'image' && resolved.bgImage 
+        ? 'url(' + resolved.bgImage + ') center/cover'
+        : resolved.bgColor;
+    
+    // Crossfade backgrounds
+    if (blockIndex !== currentBgIndex) {
+        if (currentBgIndex % 2 === 0) {
+            bg2.style.background = bgStyle;
+            bg2.style.opacity = 1;
+            bg1.style.opacity = 0;
+        } else {
+            bg1.style.background = bgStyle;
+            bg1.style.opacity = 1;
+            bg2.style.opacity = 0;
+        }
+        currentBgIndex = blockIndex;
+    } else if (blockIndex === 0 && currentBgIndex === 0) {
+        bg1.style.background = bgStyle;
+        bg1.style.opacity = 1;
+    }
+    
+    // Effect
+    var activeBg = currentBgIndex % 2 === 0 ? bg1 : bg2;
+    if (effect === 'zoomLeft') {
+        activeBg.style.transform = 'scale(1.1) translateX(' + (-blockProgress * 3) + '%)';
+    } else if (effect === 'zoomRight') {
+        activeBg.style.transform = 'scale(1.1) translateX(' + (blockProgress * 3) + '%)';
+    } else {
+        activeBg.style.transform = 'scale(1)';
+    }
+    
+    text.querySelector('p').textContent = blocks[blockIndex].text;
+    text.classList.add('active');
+}
+
+document.getElementById('previewScroll').addEventListener('scroll', updatePreview);
+
+function generateExport() {
+    if (blocks.length === 0) { alert('Add at least one text block'); return; }
+    
+    var uid = 'ts' + Math.random().toString(36).substr(2, 9);
+    var fontSize = document.getElementById('fontSize').value;
+    var textColor = document.getElementById('textColor').value;
+    var position = document.getElementById('textPosition').value;
+    var blur = document.getElementById('backdropBlur').value;
+    var darken = document.getElementById('backdropDarken').value;
+    var effect = document.getElementById('bgEffect').value;
+    var speed = document.getElementById('transitionSpeed').value;
+    var scrollMult = parseInt(document.getElementById('scrollDuration').value) / 100;
+    var desktopOffset = document.getElementById('desktopOffset').value;
+    var mobileOffset = document.getElementById('mobileOffset').value;
+    
+    var posCSS = '', posMobileCSS = '';
+    if (position === 'center') {
+        posCSS = 'top:50%;left:50%;transform:translate(-50%,-50%);text-align:center';
+    } else if (position === 'bottom-left') {
+        posCSS = 'bottom:80px;left:40px;text-align:left';
+        posMobileCSS = 'bottom:60px;left:20px;';
+    } else if (position === 'bottom-right') {
+        posCSS = 'bottom:80px;right:40px;text-align:right';
+        posMobileCSS = 'bottom:60px;right:20px;';
+    } else {
+        posCSS = 'bottom:80px;left:50%;transform:translateX(-50%);text-align:center';
+        posMobileCSS = 'bottom:60px;';
+    }
+    
+    var blocksData = blocks.map(function(b, i) {
+        var resolved = getResolvedBg(i);
+        return {
+            text: b.text,
+            bg: resolved.bgType === 'image' && resolved.bgImage ? resolved.bgImage : null,
+            color: resolved.bgType === 'color' ? resolved.bgColor : null
+        };
+    });
+    
+    var code = '<style>\n' +
+'#' + uid + '{position:relative;background:#000}\n' +
+'#' + uid + ' .ts-stage{position:sticky;top:' + desktopOffset + 'px;height:calc(100vh - ' + desktopOffset + 'px);overflow:hidden}\n' +
+'#' + uid + ' .ts-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity ' + speed + 'ms,transform 3s}\n' +
+'#' + uid + ' .ts-backdrop{position:absolute;inset:0;background:rgba(0,0,0,' + (darken/100) + ');' + (blur > 0 ? 'backdrop-filter:blur(' + blur + 'px);-webkit-backdrop-filter:blur(' + blur + 'px);' : '') + '}\n' +
+'#' + uid + ' .ts-text{position:absolute;' + posCSS + ';padding:40px;max-width:900px;opacity:0;transition:opacity 0.4s;z-index:10}\n' +
+'#' + uid + ' .ts-text.on{opacity:1}\n' +
+'#' + uid + ' .ts-text p{font-size:' + fontSize + 'px;font-weight:600;color:' + textColor + ';line-height:1.3;text-shadow:2px 2px 8px rgba(0,0,0,0.8);margin:0}\n' +
+'@media(max-width:768px){#' + uid + ' .ts-stage{top:' + mobileOffset + 'px;height:calc(100vh - ' + mobileOffset + 'px)}#' + uid + ' .ts-text{padding:20px;' + posMobileCSS + '}#' + uid + ' .ts-text p{font-size:' + Math.round(fontSize * 0.6) + 'px}}\n' +
+'</style>\n' +
+'<div id="' + uid + '">\n' +
+'<div class="ts-stage">\n' +
+'<div class="ts-bg" id="' + uid + 'bg1"></div>\n' +
+'<div class="ts-bg" id="' + uid + 'bg2" style="opacity:0"></div>\n' +
+'<div class="ts-backdrop"></div>\n' +
+'<div class="ts-text"><p></p></div>\n' +
+'</div>\n' +
+'</div>\n' +
+'<scr' + 'ipt>\n' +
+'(function(){\n' +
+'var w=document.getElementById("' + uid + '");\n' +
+'var stage=w.querySelector(".ts-stage");\n' +
+'var bg1=document.getElementById("' + uid + 'bg1");\n' +
+'var bg2=document.getElementById("' + uid + 'bg2");\n' +
+'var text=w.querySelector(".ts-text");\n' +
+'var p=text.querySelector("p");\n' +
+'var data=' + JSON.stringify(blocksData) + ';\n' +
+'var n=data.length;\n' +
+'var scrollMult=' + scrollMult + ';\n' +
+'var effect="' + effect + '";\n' +
+'var curIdx=-1;\n' +
+'function setH(){w.style.height=(stage.offsetHeight*scrollMult)+"px";}\n' +
+'setH();window.addEventListener("resize",setH);\n' +
+'function upd(){\n' +
+'var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\n' +
+'var progress;\n' +
+'if(extP!==undefined){progress=extP;}else{\n' +
+'var r=w.getBoundingClientRect();\n' +
+'var scrolled=Math.max(0,-r.top);\n' +
+'var range=w.offsetHeight-window.innerHeight;\n' +
+'progress=range>0?scrolled/range:0;\n' +
+'}\n' +
+'var idx=Math.min(Math.floor(progress*n),n-1);\n' +
+'var blockP=(progress*n)-idx;\n' +
+'if(idx!==curIdx){\n' +
+'var d=data[idx];\n' +
+'var bgStyle=d.bg?"url("+d.bg+") center/cover":d.color;\n' +
+'if(curIdx%2===0){bg2.style.background=bgStyle;bg2.style.opacity=1;bg1.style.opacity=0;}\n' +
+'else{bg1.style.background=bgStyle;bg1.style.opacity=1;bg2.style.opacity=0;}\n' +
+'p.textContent=d.text;\n' +
+'curIdx=idx;\n' +
+'}\n' +
+'var activeBg=curIdx%2===0?bg2:bg1;\n' +
+'if(effect==="zoomLeft")activeBg.style.transform="scale(1.1) translateX("+(-blockP*3)+"%)";\n' +
+'else if(effect==="zoomRight")activeBg.style.transform="scale(1.1) translateX("+(blockP*3)+"%)";\n' +
+'else activeBg.style.transform="scale(1)";\n' +
+'text.classList.add("on");\n' +
+'requestAnimationFrame(upd);\n' +
+'}\n' +
+'if(n>0){var d=data[0];bg1.style.background=d.bg?"url("+d.bg+") center/cover":d.color;bg1.style.opacity=1;p.textContent=d.text;curIdx=0;}\n' +
+'upd();\n' +
+'})();\n' +
+'<\/scr' + 'ipt>';
+    
+    document.getElementById('exportCode').value = code;
+    document.getElementById('exportModal').classList.add('active');
+}
+
+function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
+
+function copyCode() {
+    var code = document.getElementById('exportCode');
+    code.select();
+    document.execCommand('copy');
+    alert('Copied!');
+}
+
+function downloadCode() {
+    var code = document.getElementById('exportCode').value;
+    var filename = prompt('Save as:', 'text-scroll');
+    if (!filename) return;
+    var blob = new Blob([code], { type: 'text/html' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename.replace(/[^a-z0-9_-]/gi, '_') + '.html';
+    a.click();
+}
+
+function sendToStackBuilder() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate HTML first'); return; }
+    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
+    queue.push({ name: 'Text Scroll', html: code, timestamp: Date.now() });
+    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
+    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
+        window.location.href = 'stack-builder-clean.html';
+    }
+}
+
+function saveState() {
+    localStorage.setItem('disco_text-scroll', JSON.stringify({
+        blocks: blocks,
+        fontSize: document.getElementById('fontSize').value,
+        textColor: document.getElementById('textColor').value,
+        textPosition: document.getElementById('textPosition').value,
+        backdropBlur: document.getElementById('backdropBlur').value,
+        backdropDarken: document.getElementById('backdropDarken').value,
+        bgEffect: document.getElementById('bgEffect').value,
+        transitionSpeed: document.getElementById('transitionSpeed').value,
+        scrollDuration: document.getElementById('scrollDuration').value,
+        desktopOffset: document.getElementById('desktopOffset').value,
+        mobileOffset: document.getElementById('mobileOffset').value
+    }));
+}
+
+function loadState() {
+    var saved = localStorage.getItem('disco_text-scroll');
+    if (saved) {
+        var s = JSON.parse(saved);
+        blocks = s.blocks || [];
+        document.getElementById('fontSize').value = s.fontSize || 48;
+        document.getElementById('fontSizeNum').value = s.fontSize || 48;
+        document.getElementById('textColor').value = s.textColor || '#ffffff';
+        document.getElementById('textPosition').value = s.textPosition || 'center';
+        document.getElementById('backdropBlur').value = s.backdropBlur || 0;
+        document.getElementById('backdropDarken').value = s.backdropDarken || 30;
+        document.getElementById('bgEffect').value = s.bgEffect || 'static';
+        document.getElementById('transitionSpeed').value = s.transitionSpeed || 600;
+        document.getElementById('scrollDuration').value = s.scrollDuration || 200;
+        document.getElementById('desktopOffset').value = s.desktopOffset || 50;
+        document.getElementById('mobileOffset').value = s.mobileOffset || 200;
+    }
+    renderBlocksList();
+    updatePreviewHeight();
+    updatePreview();
+}
+
+loadState();
+</script>
+</body>
+</html>

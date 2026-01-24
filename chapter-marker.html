@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scrolltastic Chapter Marker</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #e0e0e0; }
+.app { display: flex; height: 100vh; }
+.controls { width: 360px; background: #1a1a1a; overflow-y: auto; padding: 20px; border-right: 1px solid #2a2a2a; flex-shrink: 0; }
+.preview-wrap { flex: 1; display: flex; flex-direction: column; }
+.preview-header { padding: 10px 20px; background: #1a1a1a; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; }
+.preview-header span { color: #888; font-size: 12px; }
+#progressDisplay { color: #4a9eff; font-weight: bold; }
+.preview-scroll { flex: 1; overflow-y: auto; background: #000; }
+.preview-container { min-height: 300vh; position: relative; }
+.preview-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+.preview-chapter { font-size: 14px; color: #666; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 20px; opacity: 0; transform: translateY(20px); transition: all 0.6s; }
+.preview-title { font-weight: 700; line-height: 1.1; text-align: center; opacity: 0; transform: translateY(30px); transition: all 0.8s 0.2s; }
+.preview-subtitle { font-size: 20px; color: #888; margin-top: 20px; opacity: 0; transform: translateY(20px); transition: all 0.6s 0.4s; }
+.preview-stage.revealed .preview-chapter,
+.preview-stage.revealed .preview-title,
+.preview-stage.revealed .preview-subtitle { opacity: 1; transform: translateY(0); }
+
+h1 { font-size: 18px; color: #4a9eff; margin-bottom: 20px; }
+h2 { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px; padding: 10px 0; border-bottom: 1px solid #2a2a2a; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+h2::after { content: '▼'; font-size: 8px; transition: transform 0.2s; }
+h2.collapsed::after { transform: rotate(-90deg); }
+.section { overflow: hidden; transition: max-height 0.3s; }
+.section.collapsed { max-height: 0 !important; }
+.control-group { margin-bottom: 12px; }
+.control-group label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; }
+.control-group input[type="text"], .control-group input[type="number"], .control-group select, .control-group textarea { width: 100%; padding: 8px 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 13px; }
+.control-group input[type="color"] { width: 50px; height: 32px; border: none; background: none; cursor: pointer; }
+.control-group input[type="range"] { width: 100%; }
+.inline-group { display: flex; gap: 10px; align-items: center; }
+.inline-group > * { flex: 1; }
+button { padding: 10px 16px; background: #4a9eff; border: none; color: #000; font-weight: 600; border-radius: 6px; cursor: pointer; font-size: 13px; width: 100%; margin-top: 8px; }
+button:hover { background: #357abd; }
+button.secondary { background: #2a2a2a; color: #888; }
+button.secondary:hover { background: #333; color: #fff; }
+
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+.modal.active { display: flex; }
+.modal-content { background: #1a1a1a; border-radius: 12px; padding: 24px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; border: 1px solid #2a2a2a; }
+.modal-content h3 { color: #4a9eff; margin-bottom: 16px; }
+.modal-content textarea { height: 200px; font-family: monospace; font-size: 11px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+.modal-actions button { flex: 1; }
+</style>
+</head>
+<body>
+<div class="app">
+    <div class="controls">
+        <h1>📑 Chapter Marker</h1>
+        
+        <h2 onclick="toggleSection(this)">Content</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Chapter Number/Label (optional)</label>
+                <input type="text" id="chapterNum" value="Chapter One" oninput="updatePreview()">
+            </div>
+            <div class="control-group">
+                <label>Title</label>
+                <input type="text" id="titleText" value="The Beginning" oninput="updatePreview()">
+            </div>
+            <div class="control-group">
+                <label>Subtitle (optional)</label>
+                <input type="text" id="subtitleText" placeholder="Optional subtitle" oninput="updatePreview()">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Animation</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Entry Effect</label>
+                <select id="entryEffect" onchange="updatePreview()">
+                    <option value="fadeUp">Fade Up</option>
+                    <option value="scaleIn">Scale In</option>
+                    <option value="blurReveal">Blur Reveal</option>
+                    <option value="randomLetters">Random Letters</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Trigger Point (%)</label>
+                <input type="range" id="triggerPoint" min="10" max="50" value="20" oninput="updatePreview()">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Style</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Title Size (px)</label>
+                <input type="range" id="titleSize" min="40" max="120" value="72" oninput="updatePreview(); document.getElementById('titleSizeNum').value=this.value;">
+                <input type="number" id="titleSizeNum" value="72" style="width:60px;margin-top:4px;" oninput="document.getElementById('titleSize').value=this.value; updatePreview();">
+            </div>
+            <div class="control-group">
+                <label>Title Color</label>
+                <input type="color" id="titleColor" value="#ffffff" onchange="updatePreview()">
+            </div>
+            <div class="control-group">
+                <label>Background</label>
+                <select id="bgType" onchange="updatePreview()">
+                    <option value="solid">Solid Color</option>
+                    <option value="gradient">Gradient</option>
+                </select>
+            </div>
+            <div class="inline-group">
+                <div class="control-group">
+                    <label>Color 1</label>
+                    <input type="color" id="bgColor1" value="#0f0f0f" onchange="updatePreview()">
+                </div>
+                <div class="control-group" id="bgColor2Group">
+                    <label>Color 2</label>
+                    <input type="color" id="bgColor2" value="#1a1a2e" onchange="updatePreview()">
+                </div>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Layout</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Scroll Duration (%)</label>
+                <input type="range" id="scrollDuration" min="100" max="300" value="150" oninput="updatePreviewHeight()">
+            </div>
+            <div class="inline-group">
+                <div class="control-group">
+                    <label>Desktop Offset (px)</label>
+                    <input type="number" id="desktopOffset" value="50" min="0" max="200">
+                </div>
+                <div class="control-group">
+                    <label>Mobile Offset (px)</label>
+                    <input type="number" id="mobileOffset" value="200" min="0" max="300">
+                </div>
+            </div>
+        </div>
+        
+        <button onclick="generateExport()">Generate HTML</button>
+        <button class="secondary" onclick="testAnimation()">Test Animation</button>
+    </div>
+    
+    <div class="preview-wrap">
+        <div class="preview-header">
+            <span>Preview (scroll to animate)</span>
+            <span id="progressDisplay">0%</span>
+        </div>
+        <div class="preview-scroll" id="previewScroll">
+            <div class="preview-container" id="previewContainer">
+                <div class="preview-stage" id="previewStage">
+                    <div class="preview-chapter" id="previewChapter"></div>
+                    <div class="preview-title" id="previewTitle"></div>
+                    <div class="preview-subtitle" id="previewSubtitle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <h3>Export HTML</h3>
+        <div class="control-group">
+            <label>Generated Code</label>
+            <textarea id="exportCode" readonly></textarea>
+        </div>
+        <div class="modal-actions">
+            <button onclick="copyCode()">📋 Copy</button>
+            <button onclick="downloadCode()">⬇️ Download</button>
+            <button onclick="sendToStackBuilder()">📚 Stack</button>
+            <button class="secondary" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+var scrambleInterval = null;
+
+function toggleSection(el) {
+    el.classList.toggle('collapsed');
+    el.nextElementSibling.classList.toggle('collapsed');
+}
+
+function updatePreviewHeight() {
+    var dur = parseInt(document.getElementById('scrollDuration').value) || 150;
+    document.getElementById('previewContainer').style.height = dur + 'vh';
+}
+
+function updatePreview() {
+    var stage = document.getElementById('previewStage');
+    var chapter = document.getElementById('previewChapter');
+    var title = document.getElementById('previewTitle');
+    var subtitle = document.getElementById('previewSubtitle');
+    
+    var chapterText = document.getElementById('chapterNum').value;
+    var titleText = document.getElementById('titleText').value;
+    var subtitleText = document.getElementById('subtitleText').value;
+    var titleSize = document.getElementById('titleSize').value;
+    var titleColor = document.getElementById('titleColor').value;
+    var bgType = document.getElementById('bgType').value;
+    var bgColor1 = document.getElementById('bgColor1').value;
+    var bgColor2 = document.getElementById('bgColor2').value;
+    var effect = document.getElementById('entryEffect').value;
+    var trigger = parseInt(document.getElementById('triggerPoint').value) / 100;
+    
+    document.getElementById('bgColor2Group').style.display = bgType === 'gradient' ? 'block' : 'none';
+    
+    chapter.textContent = chapterText;
+    title.textContent = titleText;
+    title.style.fontSize = titleSize + 'px';
+    title.style.color = titleColor;
+    subtitle.textContent = subtitleText;
+    subtitle.style.display = subtitleText ? 'block' : 'none';
+    
+    if (bgType === 'gradient') {
+        stage.style.background = 'linear-gradient(135deg, ' + bgColor1 + ' 0%, ' + bgColor2 + ' 100%)';
+    } else {
+        stage.style.background = bgColor1;
+    }
+    
+    // Apply effect styles
+    stage.className = 'preview-stage';
+    if (effect === 'scaleIn') {
+        title.style.transition = 'all 0.8s 0.2s';
+    } else if (effect === 'blurReveal') {
+        title.style.transition = 'all 0.8s 0.2s';
+    }
+    
+    // Check scroll position
+    var scroll = document.getElementById('previewScroll');
+    var container = document.getElementById('previewContainer');
+    var scrollTop = scroll.scrollTop;
+    var maxScroll = container.offsetHeight - scroll.clientHeight;
+    var progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
+    
+    document.getElementById('progressDisplay').textContent = Math.round(progress * 100) + '%';
+    
+    if (progress >= trigger) {
+        stage.classList.add('revealed');
+        if (effect === 'randomLetters' && !scrambleInterval) {
+            scrambleText(title, titleText);
+        }
+    } else {
+        stage.classList.remove('revealed');
+        if (scrambleInterval) {
+            clearInterval(scrambleInterval);
+            scrambleInterval = null;
+        }
+    }
+    
+    saveState();
+}
+
+function scrambleText(el, finalText) {
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*';
+    var iterations = 0;
+    var maxIterations = finalText.length * 3;
+    
+    el.style.opacity = 1;
+    el.style.transform = 'translateY(0)';
+    
+    scrambleInterval = setInterval(function() {
+        var progress = iterations / maxIterations;
+        var revealed = Math.floor(progress * finalText.length);
+        
+        var text = '';
+        for (var i = 0; i < finalText.length; i++) {
+            if (finalText[i] === ' ') {
+                text += ' ';
+            } else if (i < revealed) {
+                text += finalText[i];
+            } else {
+                text += chars[Math.floor(Math.random() * chars.length)];
+            }
+        }
+        el.textContent = text;
+        
+        iterations++;
+        if (iterations >= maxIterations) {
+            el.textContent = finalText;
+            clearInterval(scrambleInterval);
+            scrambleInterval = null;
+        }
+    }, 30);
+}
+
+function testAnimation() {
+    var stage = document.getElementById('previewStage');
+    var title = document.getElementById('previewTitle');
+    var titleText = document.getElementById('titleText').value;
+    var effect = document.getElementById('entryEffect').value;
+    
+    stage.classList.remove('revealed');
+    if (scrambleInterval) {
+        clearInterval(scrambleInterval);
+        scrambleInterval = null;
+    }
+    
+    setTimeout(function() {
+        stage.classList.add('revealed');
+        if (effect === 'randomLetters') {
+            scrambleText(title, titleText);
+        }
+    }, 300);
+}
+
+document.getElementById('previewScroll').addEventListener('scroll', updatePreview);
+
+function generateExport() {
+    var uid = 'cm' + Math.random().toString(36).substr(2, 9);
+    var chapterText = document.getElementById('chapterNum').value;
+    var titleText = document.getElementById('titleText').value;
+    var subtitleText = document.getElementById('subtitleText').value;
+    var titleSize = document.getElementById('titleSize').value;
+    var titleColor = document.getElementById('titleColor').value;
+    var bgType = document.getElementById('bgType').value;
+    var bgColor1 = document.getElementById('bgColor1').value;
+    var bgColor2 = document.getElementById('bgColor2').value;
+    var effect = document.getElementById('entryEffect').value;
+    var trigger = parseInt(document.getElementById('triggerPoint').value) / 100;
+    var scrollMult = parseInt(document.getElementById('scrollDuration').value) / 100;
+    var desktopOffset = document.getElementById('desktopOffset').value;
+    var mobileOffset = document.getElementById('mobileOffset').value;
+    
+    var bgCSS = bgType === 'gradient' 
+        ? 'linear-gradient(135deg,' + bgColor1 + ' 0%,' + bgColor2 + ' 100%)'
+        : bgColor1;
+    
+    var effectCSS = '';
+    var effectJS = '';
+    
+    if (effect === 'fadeUp') {
+        effectCSS = '#' + uid + ' .cm-title{opacity:0;transform:translateY(30px);transition:all 0.8s}\n#' + uid + '.on .cm-title{opacity:1;transform:translateY(0)}';
+    } else if (effect === 'scaleIn') {
+        effectCSS = '#' + uid + ' .cm-title{opacity:0;transform:scale(0.8);transition:all 0.8s}\n#' + uid + '.on .cm-title{opacity:1;transform:scale(1)}';
+    } else if (effect === 'blurReveal') {
+        effectCSS = '#' + uid + ' .cm-title{opacity:0;filter:blur(20px);transition:all 0.8s}\n#' + uid + '.on .cm-title{opacity:1;filter:blur(0)}';
+    } else if (effect === 'randomLetters') {
+        effectCSS = '#' + uid + ' .cm-title{opacity:0;transition:opacity 0.1s}\n#' + uid + '.on .cm-title{opacity:1}';
+        effectJS = 'var chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";var finalText="' + titleText.replace(/"/g, '\\"') + '";var ti=null;function scramble(){var it=0,mx=finalText.length*3;titleEl.style.opacity=1;ti=setInterval(function(){var p=it/mx,rv=Math.floor(p*finalText.length),t="";for(var i=0;i<finalText.length;i++){if(finalText[i]===" ")t+=" ";else if(i<rv)t+=finalText[i];else t+=chars[Math.floor(Math.random()*chars.length)];}titleEl.textContent=t;it++;if(it>=mx){titleEl.textContent=finalText;clearInterval(ti);ti=null;}},30);}';
+    }
+    
+    var code = '<style>\n' +
+'#' + uid + '{position:relative;background:' + bgCSS + '}\n' +
+'#' + uid + ' .cm-stage{position:sticky;top:' + desktopOffset + 'px;height:calc(100vh - ' + desktopOffset + 'px);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}\n' +
+'#' + uid + ' .cm-chapter{font-size:14px;color:#666;letter-spacing:4px;text-transform:uppercase;margin-bottom:20px;opacity:0;transform:translateY(20px);transition:all 0.6s}\n' +
+'#' + uid + '.on .cm-chapter{opacity:1;transform:translateY(0)}\n' +
+'#' + uid + ' .cm-title{font-size:' + titleSize + 'px;font-weight:700;color:' + titleColor + ';line-height:1.1;text-align:center;padding:0 20px}\n' +
+effectCSS + '\n' +
+'#' + uid + ' .cm-subtitle{font-size:20px;color:#888;margin-top:20px;opacity:0;transform:translateY(20px);transition:all 0.6s 0.4s}\n' +
+'#' + uid + '.on .cm-subtitle{opacity:1;transform:translateY(0)}\n' +
+'@media(max-width:768px){#' + uid + ' .cm-stage{top:' + mobileOffset + 'px;height:calc(100vh - ' + mobileOffset + 'px)}#' + uid + ' .cm-title{font-size:' + Math.round(titleSize * 0.6) + 'px}}\n' +
+'</style>\n' +
+'<div id="' + uid + '">\n' +
+'<div class="cm-stage">\n' +
+(chapterText ? '<div class="cm-chapter">' + chapterText + '</div>\n' : '') +
+'<div class="cm-title">' + titleText + '</div>\n' +
+(subtitleText ? '<div class="cm-subtitle">' + subtitleText + '</div>\n' : '') +
+'</div>\n' +
+'</div>\n' +
+'<scr' + 'ipt>\n' +
+'(function(){\n' +
+'var w=document.getElementById("' + uid + '");\n' +
+'var titleEl=w.querySelector(".cm-title");\n' +
+'var scrollMult=' + scrollMult + ';\n' +
+'var trigger=' + trigger + ';\n' +
+'var revealed=false;\n' +
+effectJS + '\n' +
+'function setH(){w.style.height=(w.querySelector(".cm-stage").offsetHeight*scrollMult)+"px";}\n' +
+'setH();window.addEventListener("resize",setH);\n' +
+'function upd(){\n' +
+'var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\n' +
+'var progress;\n' +
+'if(extP!==undefined){progress=extP;}else{\n' +
+'var r=w.getBoundingClientRect();\n' +
+'var scrolled=Math.max(0,-r.top);\n' +
+'var range=w.offsetHeight-window.innerHeight;\n' +
+'progress=range>0?scrolled/range:0;\n' +
+'}\n' +
+'if(progress>=trigger&&!revealed){\n' +
+'w.classList.add("on");revealed=true;\n' +
+(effect === 'randomLetters' ? 'scramble();\n' : '') +
+'}\n' +
+'if(progress<trigger*0.5&&revealed){w.classList.remove("on");revealed=false;}\n' +
+'requestAnimationFrame(upd);\n' +
+'}\n' +
+'upd();\n' +
+'})();\n' +
+'<\/scr' + 'ipt>';
+    
+    document.getElementById('exportCode').value = code;
+    document.getElementById('exportModal').classList.add('active');
+}
+
+function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
+
+function copyCode() {
+    var code = document.getElementById('exportCode');
+    code.select();
+    document.execCommand('copy');
+    alert('Copied!');
+}
+
+function downloadCode() {
+    var code = document.getElementById('exportCode').value;
+    var filename = prompt('Save as:', 'chapter-marker');
+    if (!filename) return;
+    var blob = new Blob([code], { type: 'text/html' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename.replace(/[^a-z0-9_-]/gi, '_') + '.html';
+    a.click();
+}
+
+function sendToStackBuilder() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate HTML first'); return; }
+    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
+    queue.push({ name: 'Chapter Marker', html: code, timestamp: Date.now() });
+    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
+    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
+        window.location.href = 'stack-builder-clean.html';
+    }
+}
+
+function saveState() {
+    localStorage.setItem('disco_chapter-marker', JSON.stringify({
+        chapterNum: document.getElementById('chapterNum').value,
+        titleText: document.getElementById('titleText').value,
+        subtitleText: document.getElementById('subtitleText').value,
+        titleSize: document.getElementById('titleSize').value,
+        titleColor: document.getElementById('titleColor').value,
+        bgType: document.getElementById('bgType').value,
+        bgColor1: document.getElementById('bgColor1').value,
+        bgColor2: document.getElementById('bgColor2').value,
+        entryEffect: document.getElementById('entryEffect').value,
+        triggerPoint: document.getElementById('triggerPoint').value,
+        scrollDuration: document.getElementById('scrollDuration').value,
+        desktopOffset: document.getElementById('desktopOffset').value,
+        mobileOffset: document.getElementById('mobileOffset').value
+    }));
+}
+
+function loadState() {
+    var saved = localStorage.getItem('disco_chapter-marker');
+    if (saved) {
+        var s = JSON.parse(saved);
+        document.getElementById('chapterNum').value = s.chapterNum || 'Chapter One';
+        document.getElementById('titleText').value = s.titleText || 'The Beginning';
+        document.getElementById('subtitleText').value = s.subtitleText || '';
+        document.getElementById('titleSize').value = s.titleSize || 72;
+        document.getElementById('titleSizeNum').value = s.titleSize || 72;
+        document.getElementById('titleColor').value = s.titleColor || '#ffffff';
+        document.getElementById('bgType').value = s.bgType || 'solid';
+        document.getElementById('bgColor1').value = s.bgColor1 || '#0f0f0f';
+        document.getElementById('bgColor2').value = s.bgColor2 || '#1a1a2e';
+        document.getElementById('entryEffect').value = s.entryEffect || 'fadeUp';
+        document.getElementById('triggerPoint').value = s.triggerPoint || 20;
+        document.getElementById('scrollDuration').value = s.scrollDuration || 150;
+        document.getElementById('desktopOffset').value = s.desktopOffset || 50;
+        document.getElementById('mobileOffset').value = s.mobileOffset || 200;
+    }
+    updatePreviewHeight();
+    updatePreview();
+}
+
+loadState();
+</script>
+</body>
+</html>
