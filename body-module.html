@@ -199,6 +199,20 @@ Continue writing your story here. The text will automatically wrap and maintain 
             </div>
         </div>
         
+        <h2 class="ctrl" onclick="toggleSection(this)">Layout</h2>
+        <div class="section">
+            <div class="inline-group">
+                <div class="control-group">
+                    <label>Desktop Top Offset (px)</label>
+                    <input type="number" id="desktopOffset" value="50" min="0" max="200">
+                </div>
+                <div class="control-group">
+                    <label>Mobile Top Offset (px)</label>
+                    <input type="number" id="mobileOffset" value="200" min="0" max="300">
+                </div>
+            </div>
+        </div>
+        
         <button onclick="generateExport()">Generate HTML</button>
         <button class="danger" onclick="resetModule()">Reset</button>
     </div>
@@ -406,6 +420,8 @@ function resetModule() {
     document.getElementById('bgColor').value = '#0a0a0a';
     document.getElementById('fontSize').value = 17;
     document.getElementById('maxWidth').value = 650;
+    document.getElementById('desktopOffset').value = 50;
+    document.getElementById('mobileOffset').value = 200;
     loadedImageUrl = null;
     updatePreview();
 }
@@ -422,6 +438,8 @@ function generateExport() {
     var bgColor = document.getElementById('bgColor').value;
     var fontSize = document.getElementById('fontSize').value;
     var maxWidth = document.getElementById('maxWidth').value;
+    var desktopOffset = document.getElementById('desktopOffset').value || 50;
+    var mobileOffset = document.getElementById('mobileOffset').value || 200;
     
     var html = parseMarkdown(bodyText);
     var showImage = imageEnabled && loadedImageUrl;
@@ -453,7 +471,7 @@ function generateExport() {
     var flexDir = showImage ? (imagePosition === 'left' ? 'row' : 'row-reverse') : '';
     
     var code = '<style>\n' +
-'#' + uid + '{background:' + bgColor + ';padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
+'#' + uid + '{background:' + bgColor + ';padding:40px 20px;padding-top:' + desktopOffset + 'px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
 '#' + uid + ' .bm-body{max-width:' + maxWidth + 'px;margin:0 auto}\n' +
 '#' + uid + ' .bm-content{display:flex;gap:30px;' + (showImage ? 'flex-direction:' + flexDir : '') + '}\n' +
 '#' + uid + ' .bm-text{flex:1;line-height:1.7;color:' + textColor + ';font-size:' + fontSize + 'px;text-align:' + textAlign + '}\n' +
@@ -462,7 +480,7 @@ function generateExport() {
 '#' + uid + ' .bm-text p{margin-bottom:16px}\n' +
 '#' + uid + ' .bm-text strong{color:' + headlineColor + '}\n' +
 imgCSS +
-'@media(max-width:768px){#' + uid + ' .bm-content{flex-direction:column}' + (showImage ? '#' + uid + ' .bm-img-col{width:100%}' : '') + '}\n' +
+'@media(max-width:768px){#' + uid + '{padding-top:' + mobileOffset + 'px}#' + uid + ' .bm-content{flex-direction:column}' + (showImage ? '#' + uid + ' .bm-img-col{width:100%}' : '') + '}\n' +
 '</style>\n' +
 '<div id="' + uid + '">\n' +
 '<div class="bm-body">\n' +
@@ -574,6 +592,8 @@ function loadProject(id) {
     document.getElementById('bgColor').value = proj.bgColor || '#0a0a0a';
     document.getElementById('fontSize').value = proj.fontSize || 17;
     document.getElementById('maxWidth').value = proj.maxWidth || 650;
+    document.getElementById('desktopOffset').value = proj.desktopOffset || 50;
+    document.getElementById('mobileOffset').value = proj.mobileOffset || 200;
     loadedImageUrl = proj.loadedImageUrl || null;
     
     updatePreview();
@@ -601,6 +621,8 @@ function getCurrentState() {
         bgColor: document.getElementById('bgColor').value,
         fontSize: document.getElementById('fontSize').value,
         maxWidth: document.getElementById('maxWidth').value,
+        desktopOffset: document.getElementById('desktopOffset').value,
+        mobileOffset: document.getElementById('mobileOffset').value,
         loadedImageUrl: loadedImageUrl
     };
 }
@@ -624,6 +646,8 @@ function loadState() {
         document.getElementById('bgColor').value = s.bgColor || '#0a0a0a';
         document.getElementById('fontSize').value = s.fontSize || 17;
         document.getElementById('maxWidth').value = s.maxWidth || 650;
+        document.getElementById('desktopOffset').value = s.desktopOffset || 50;
+        document.getElementById('mobileOffset').value = s.mobileOffset || 200;
         loadedImageUrl = s.loadedImageUrl || null;
     }
     updatePreview();

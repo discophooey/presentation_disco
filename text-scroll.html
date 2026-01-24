@@ -528,7 +528,7 @@ function updatePreview() {
         currentBgIndex = 0;
     }
     
-    var activeBg = currentBgIndex % 2 === 0 ? (currentBgIndex === 0 ? bg1 : bg2) : bg1;
+    var activeBg = (currentBgIndex === 0 || currentBgIndex % 2 === 0) ? bg1 : bg2;
     if (effect === 'zoomLeft') {
         activeBg.style.transform = 'scale(1.1) translateX(' + (-blockProgress * 3) + '%)';
     } else if (effect === 'zoomRight') {
