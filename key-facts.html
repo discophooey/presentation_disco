@@ -46,6 +46,8 @@ button.secondary { background: #2a2a2a; color: #888; }
 button.secondary:hover { background: #333; color: #fff; }
 button.danger { background: #c0392b; color: #fff; }
 button.danger:hover { background: #e74c3c; }
+.save-load-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+.save-load-bar button { flex: 1; margin: 0; }
 
 .facts-list { background: #0a0a0a; border-radius: 6px; padding: 10px; margin: 10px 0; max-height: 250px; overflow-y: auto; }
 .fact-item { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 6px; padding: 10px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.2s; }
@@ -60,12 +62,49 @@ button.danger:hover { background: #e74c3c; }
 .modal-content textarea { height: 200px; font-family: monospace; font-size: 11px; }
 .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
 .modal-actions button { flex: 1; }
+.saved-list { max-height: 200px; overflow-y: auto; margin: 10px 0; }
+.saved-item { background: #2a2a2a; padding: 10px 12px; border-radius: 6px; margin-bottom: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.saved-item:hover { background: #3a3a3a; }
+.saved-item .name { color: #fff; }
+.saved-item .date { color: #666; font-size: 11px; }
+.saved-item .delete { background: none; border: none; color: #888; cursor: pointer; padding: 4px 8px; margin: 0; width: auto; }
+.saved-item .delete:hover { color: #e74c3c; }
 </style>
 </head>
 <body>
-<div class="app">
+<div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
+<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
+<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
+<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
+<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
+<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
+<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
+<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
+<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
+<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
+<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
+<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
+<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
+<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
+<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
+<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
+<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
+<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
+<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
+<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
+<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
+<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
+</div>
+<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
+<div class="app" style="margin-top:41px;height:calc(100vh - 41px);">
     <div class="controls">
         <h1>📋 Key Facts Panel</h1>
+        
+        <div class="save-load-bar">
+            <button class="secondary" onclick="openSaveModal()">💾 Save</button>
+            <button class="secondary" onclick="openLoadModal()">📂 Load</button>
+        </div>
         
         <h2 onclick="toggleSection(this)">Panel Content</h2>
         <div class="section">
@@ -75,7 +114,7 @@ button.danger:hover { background: #e74c3c; }
             </div>
             <div class="control-group">
                 <label>Source Attribution</label>
-                <input type="text" id="sourceText" placeholder="Source: Reuters, 2024" oninput="updatePreview()">
+                <input type="text" id="sourceText" placeholder="Source:" oninput="updatePreview()">
             </div>
         </div>
         
@@ -90,7 +129,7 @@ button.danger:hover { background: #e74c3c; }
             <div class="section">
                 <div class="control-group">
                     <label>Fact Text</label>
-                    <textarea id="factText" rows="2" oninput="updateFact()"></textarea>
+                    <textarea id="factText" rows="3" oninput="updateFact()"></textarea>
                 </div>
                 <div class="control-group">
                     <label>Icon</label>
@@ -123,6 +162,14 @@ button.danger:hover { background: #e74c3c; }
                 <input type="color" id="borderColor" value="#2a2a2a" onchange="updatePreview()">
             </div>
             <div class="control-group">
+                <label>Max Width (px)</label>
+                <input type="number" id="maxWidth" value="600" min="400" max="800" oninput="updatePreview()">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Animation</h2>
+        <div class="section">
+            <div class="control-group">
                 <label>Stagger Delay (ms)</label>
                 <input type="range" id="staggerDelay" min="50" max="300" value="100" oninput="updatePreview()">
             </div>
@@ -133,10 +180,6 @@ button.danger:hover { background: #e74c3c; }
             <div class="control-group">
                 <label>Scroll Duration (%)</label>
                 <input type="range" id="scrollDuration" min="100" max="300" value="150" oninput="updatePreviewHeight()">
-            </div>
-            <div class="control-group">
-                <label>Max Width (px)</label>
-                <input type="number" id="maxWidth" value="600" min="300" max="900" oninput="updatePreview()">
             </div>
             <div class="inline-group">
                 <div class="control-group">
@@ -162,7 +205,7 @@ button.danger:hover { background: #e74c3c; }
             <div class="preview-container" id="previewContainer">
                 <div class="preview-stage" id="previewStage">
                     <div class="preview-panel" id="previewPanel">
-                        <div class="preview-panel-title" id="previewTitle"></div>
+                        <div class="preview-panel-title" id="previewTitle">What You Need to Know</div>
                         <div id="previewFacts"></div>
                         <div class="preview-source" id="previewSource"></div>
                     </div>
@@ -184,7 +227,33 @@ button.danger:hover { background: #e74c3c; }
             <button onclick="copyCode()">📋 Copy</button>
             <button onclick="downloadCode()">⬇️ Download</button>
             <button onclick="sendToStackBuilder()">📚 Stack</button>
-            <button class="secondary" onclick="closeModal()">Close</button>
+            <button class="secondary" onclick="closeModal('exportModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Save Modal -->
+<div class="modal" id="saveModal">
+    <div class="modal-content">
+        <h3>Save Project</h3>
+        <div class="control-group">
+            <label>Project Name</label>
+            <input type="text" id="saveName" placeholder="My Key Facts">
+        </div>
+        <div class="modal-actions">
+            <button onclick="saveProject()">💾 Save</button>
+            <button class="secondary" onclick="closeModal('saveModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Load Modal -->
+<div class="modal" id="loadModal">
+    <div class="modal-content">
+        <h3>Load Project</h3>
+        <div class="saved-list" id="savedList"></div>
+        <div class="modal-actions">
+            <button class="secondary" onclick="closeModal('loadModal')">Cancel</button>
         </div>
     </div>
 </div>
@@ -192,6 +261,8 @@ button.danger:hover { background: #e74c3c; }
 <script>
 var facts = [];
 var selectedFactIndex = -1;
+var STORAGE_KEY = 'disco_key-facts';
+var PROJECTS_KEY = 'disco_key-facts_projects';
 
 function toggleSection(el) {
     el.classList.toggle('collapsed');
@@ -236,8 +307,9 @@ function loadFactEditor() {
 
 function updateFact() {
     if (selectedFactIndex < 0) return;
-    facts[selectedFactIndex].text = document.getElementById('factText').value;
-    facts[selectedFactIndex].icon = document.getElementById('factIcon').value;
+    var f = facts[selectedFactIndex];
+    f.text = document.getElementById('factText').value;
+    f.icon = document.getElementById('factIcon').value;
     renderFactsList();
     updatePreview();
     saveState();
@@ -256,15 +328,15 @@ function deleteFact() {
 
 function updatePreviewHeight() {
     var dur = parseInt(document.getElementById('scrollDuration').value) || 150;
-    document.getElementById('previewContainer').style.height = dur + 'vh';
+    document.getElementById('previewContainer').style.minHeight = dur + 'vh';
 }
 
 function updatePreview() {
     var panel = document.getElementById('previewPanel');
+    var stage = document.getElementById('previewStage');
     var title = document.getElementById('previewTitle');
     var factsEl = document.getElementById('previewFacts');
     var source = document.getElementById('previewSource');
-    var stage = document.getElementById('previewStage');
     
     var panelTitle = document.getElementById('panelTitle').value;
     var sourceText = document.getElementById('sourceText').value;
@@ -272,30 +344,27 @@ function updatePreview() {
     var panelBg = document.getElementById('panelBg').value;
     var borderColor = document.getElementById('borderColor').value;
     var maxWidth = document.getElementById('maxWidth').value;
-    var stagger = parseInt(document.getElementById('staggerDelay').value);
+    var staggerDelay = document.getElementById('staggerDelay').value;
     
-    title.textContent = panelTitle;
-    title.style.color = accentColor;
-    source.textContent = sourceText;
-    source.style.display = sourceText ? 'block' : 'none';
     panel.style.background = panelBg;
     panel.style.borderColor = borderColor;
     stage.style.maxWidth = maxWidth + 'px';
+    title.textContent = panelTitle;
+    title.style.color = accentColor;
     
-    var factsHTML = '';
+    var factsHtml = '';
     facts.forEach(function(f, i) {
-        factsHTML += '<div class="preview-fact" data-index="' + i + '" style="transition-delay:' + (i * stagger) + 'ms">';
-        factsHTML += '<div class="preview-fact-icon" style="background:' + accentColor + ';color:#000">' + f.icon + '</div>';
-        factsHTML += '<div class="preview-fact-text">' + f.text + '</div>';
-        factsHTML += '</div>';
+        factsHtml += '<div class="preview-fact" style="transition-delay:' + (i * staggerDelay) + 'ms;">';
+        factsHtml += '<div class="preview-fact-icon" style="background:' + accentColor + '22;color:' + accentColor + ';">' + f.icon + '</div>';
+        factsHtml += '<div class="preview-fact-text">' + f.text + '</div>';
+        factsHtml += '</div>';
     });
-    factsEl.innerHTML = factsHTML;
+    factsEl.innerHTML = factsHtml;
     
-    checkScroll();
-    saveState();
-}
-
-function checkScroll() {
+    source.textContent = sourceText;
+    source.style.display = sourceText ? 'block' : 'none';
+    
+    // Check scroll position
     var scroll = document.getElementById('previewScroll');
     var container = document.getElementById('previewContainer');
     var scrollTop = scroll.scrollTop;
@@ -304,32 +373,35 @@ function checkScroll() {
     
     document.getElementById('progressDisplay').textContent = Math.round(progress * 100) + '%';
     
-    var title = document.getElementById('previewTitle');
-    var factEls = document.querySelectorAll('.preview-fact');
-    var source = document.getElementById('previewSource');
+    // Animate based on progress
+    var threshold = 0.1;
+    var increment = 0.8 / (facts.length + 2);
     
-    if (progress > 0.1) {
+    if (progress > threshold) {
         title.classList.add('on');
-        factEls.forEach(function(el, i) {
-            if (progress > 0.15 + (i * 0.05)) {
-                el.classList.add('on');
-            } else {
-                el.classList.remove('on');
-            }
-        });
-        if (progress > 0.15 + (facts.length * 0.05)) {
-            source.classList.add('on');
-        } else {
-            source.classList.remove('on');
-        }
     } else {
         title.classList.remove('on');
-        factEls.forEach(function(el) { el.classList.remove('on'); });
+    }
+    
+    var factEls = factsEl.querySelectorAll('.preview-fact');
+    factEls.forEach(function(el, i) {
+        if (progress > threshold + increment * (i + 1)) {
+            el.classList.add('on');
+        } else {
+            el.classList.remove('on');
+        }
+    });
+    
+    if (progress > threshold + increment * (facts.length + 1)) {
+        source.classList.add('on');
+    } else {
         source.classList.remove('on');
     }
+    
+    saveState();
 }
 
-document.getElementById('previewScroll').addEventListener('scroll', checkScroll);
+document.getElementById('previewScroll').addEventListener('scroll', updatePreview);
 
 function generateExport() {
     if (facts.length === 0) { alert('Add at least one fact'); return; }
@@ -341,21 +413,21 @@ function generateExport() {
     var panelBg = document.getElementById('panelBg').value;
     var borderColor = document.getElementById('borderColor').value;
     var maxWidth = document.getElementById('maxWidth').value;
-    var stagger = parseInt(document.getElementById('staggerDelay').value);
+    var staggerDelay = document.getElementById('staggerDelay').value;
     var scrollMult = parseInt(document.getElementById('scrollDuration').value) / 100;
     var desktopOffset = document.getElementById('desktopOffset').value;
     var mobileOffset = document.getElementById('mobileOffset').value;
     
-    var factsHTML = '';
+    var factsHtml = '';
     facts.forEach(function(f, i) {
-        factsHTML += '<div class="kf-fact" style="transition-delay:' + (i * stagger) + 'ms">';
-        factsHTML += '<div class="kf-icon">' + f.icon + '</div>';
-        factsHTML += '<div class="kf-text">' + f.text + '</div>';
-        factsHTML += '</div>\n';
+        factsHtml += '<div class="kf-fact" style="transition-delay:' + (i * staggerDelay) + 'ms">\n';
+        factsHtml += '<div class="kf-icon">' + f.icon + '</div>\n';
+        factsHtml += '<div class="kf-text">' + f.text + '</div>\n';
+        factsHtml += '</div>\n';
     });
     
     var code = '<style>\n' +
-'#' + uid + '{position:relative;background:#0a0a0a;display:flex;align-items:center;justify-content:center}\n' +
+'#' + uid + '{position:relative;display:flex;align-items:center;justify-content:center}\n' +
 '#' + uid + ' .kf-stage{position:sticky;top:' + desktopOffset + 'px;width:100%;max-width:' + maxWidth + 'px;padding:20px}\n' +
 '#' + uid + ' .kf-panel{background:' + panelBg + ';border:1px solid ' + borderColor + ';border-radius:12px;padding:30px}\n' +
 '#' + uid + ' .kf-title{font-size:14px;color:' + accentColor + ';text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;opacity:0;transform:translateY(10px);transition:all 0.4s}\n' +
@@ -363,17 +435,17 @@ function generateExport() {
 '#' + uid + ' .kf-fact{display:flex;gap:12px;padding:16px 0;border-bottom:1px solid ' + borderColor + ';opacity:0;transform:translateX(-20px);transition:all 0.4s}\n' +
 '#' + uid + ' .kf-fact:last-child{border-bottom:none}\n' +
 '#' + uid + '.on .kf-fact{opacity:1;transform:translateX(0)}\n' +
-'#' + uid + ' .kf-icon{width:24px;height:24px;background:' + accentColor + ';border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#000;flex-shrink:0}\n' +
+'#' + uid + ' .kf-icon{width:24px;height:24px;border-radius:50%;background:' + accentColor + '22;color:' + accentColor + ';display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}\n' +
 '#' + uid + ' .kf-text{font-size:15px;line-height:1.5;color:#ccc}\n' +
-'#' + uid + ' .kf-source{font-size:12px;color:#666;margin-top:20px;padding-top:16px;border-top:1px solid ' + borderColor + ';opacity:0;transition:all 0.4s}\n' +
+'#' + uid + ' .kf-source{font-size:12px;color:#666;margin-top:20px;padding-top:16px;border-top:1px solid ' + borderColor + ';opacity:0;transition:all 0.4s 0.2s}\n' +
 '#' + uid + '.on .kf-source{opacity:1}\n' +
-'@media(max-width:768px){#' + uid + ' .kf-stage{top:' + mobileOffset + 'px;padding:10px}#' + uid + ' .kf-panel{padding:20px}}\n' +
+'@media(max-width:768px){#' + uid + ' .kf-stage{top:' + mobileOffset + 'px}}\n' +
 '</style>\n' +
 '<div id="' + uid + '">\n' +
 '<div class="kf-stage">\n' +
 '<div class="kf-panel">\n' +
 '<div class="kf-title">' + panelTitle + '</div>\n' +
-factsHTML +
+factsHtml +
 (sourceText ? '<div class="kf-source">' + sourceText + '</div>\n' : '') +
 '</div>\n' +
 '</div>\n' +
@@ -381,8 +453,9 @@ factsHTML +
 '<scr' + 'ipt>\n' +
 '(function(){\n' +
 'var w=document.getElementById("' + uid + '");\n' +
+'var stage=w.querySelector(".kf-stage");\n' +
 'var scrollMult=' + scrollMult + ';\n' +
-'function setH(){w.style.height=(w.querySelector(".kf-stage").offsetHeight*scrollMult)+"px";}\n' +
+'function setH(){w.style.height=(stage.offsetHeight*scrollMult)+"px";}\n' +
 'setH();window.addEventListener("resize",setH);\n' +
 'function upd(){\n' +
 'var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\n' +
@@ -393,7 +466,7 @@ factsHTML +
 'var range=w.offsetHeight-window.innerHeight;\n' +
 'progress=range>0?scrolled/range:0;\n' +
 '}\n' +
-'if(progress>0.1)w.classList.add("on");else w.classList.remove("on");\n' +
+'if(progress>0.1){w.classList.add("on");}else{w.classList.remove("on");}\n' +
 'requestAnimationFrame(upd);\n' +
 '}\n' +
 'upd();\n' +
@@ -404,7 +477,7 @@ factsHTML +
     document.getElementById('exportModal').classList.add('active');
 }
 
-function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
 function copyCode() {
     var code = document.getElementById('exportCode');
@@ -428,15 +501,94 @@ function sendToStackBuilder() {
     var code = document.getElementById('exportCode').value;
     if (!code) { alert('Generate HTML first'); return; }
     var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
-    queue.push({ name: 'Key Facts Panel', html: code, timestamp: Date.now() });
+    queue.push({ name: 'Key Facts', html: code, timestamp: Date.now() });
     localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
     if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
         window.location.href = 'stack-builder-clean.html';
     }
 }
 
-function saveState() {
-    localStorage.setItem('disco_key-facts', JSON.stringify({
+function openSaveModal() {
+    document.getElementById('saveName').value = '';
+    document.getElementById('saveModal').classList.add('active');
+}
+
+function openLoadModal() {
+    renderSavedList();
+    document.getElementById('loadModal').classList.add('active');
+}
+
+function saveProject() {
+    var name = document.getElementById('saveName').value.trim();
+    if (!name) { alert('Enter a project name'); return; }
+    
+    var projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+    var data = getCurrentState();
+    data.name = name;
+    data.savedAt = Date.now();
+    data.id = 'proj_' + Date.now();
+    
+    projects.unshift(data);
+    if (projects.length > 20) projects = projects.slice(0, 20);
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+    
+    closeModal('saveModal');
+    alert('Saved!');
+}
+
+function renderSavedList() {
+    var projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+    var html = '';
+    if (projects.length === 0) {
+        html = '<div style="color:#666;text-align:center;padding:20px;">No saved projects</div>';
+    } else {
+        projects.forEach(function(p) {
+            var date = new Date(p.savedAt).toLocaleDateString();
+            html += '<div class="saved-item">';
+            html += '<div onclick="loadProject(\'' + p.id + '\')"><span class="name">' + p.name + '</span><br><span class="date">' + date + '</span></div>';
+            html += '<button class="delete" onclick="event.stopPropagation();deleteProject(\'' + p.id + '\')">×</button>';
+            html += '</div>';
+        });
+    }
+    document.getElementById('savedList').innerHTML = html;
+}
+
+function loadProject(id) {
+    var projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+    var proj = projects.find(function(p) { return p.id === id; });
+    if (!proj) return;
+    
+    facts = proj.facts || [];
+    selectedFactIndex = facts.length > 0 ? 0 : -1;
+    
+    document.getElementById('panelTitle').value = proj.panelTitle || 'What You Need to Know';
+    document.getElementById('sourceText').value = proj.sourceText || '';
+    document.getElementById('accentColor').value = proj.accentColor || '#4a9eff';
+    document.getElementById('panelBg').value = proj.panelBg || '#1a1a1a';
+    document.getElementById('borderColor').value = proj.borderColor || '#2a2a2a';
+    document.getElementById('maxWidth').value = proj.maxWidth || 600;
+    document.getElementById('staggerDelay').value = proj.staggerDelay || 100;
+    document.getElementById('scrollDuration').value = proj.scrollDuration || 150;
+    document.getElementById('desktopOffset').value = proj.desktopOffset || 50;
+    document.getElementById('mobileOffset').value = proj.mobileOffset || 200;
+    
+    renderFactsList();
+    loadFactEditor();
+    updatePreviewHeight();
+    updatePreview();
+    closeModal('loadModal');
+}
+
+function deleteProject(id) {
+    if (!confirm('Delete this project?')) return;
+    var projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+    projects = projects.filter(function(p) { return p.id !== id; });
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+    renderSavedList();
+}
+
+function getCurrentState() {
+    return {
         facts: facts,
         panelTitle: document.getElementById('panelTitle').value,
         sourceText: document.getElementById('sourceText').value,
@@ -448,11 +600,15 @@ function saveState() {
         scrollDuration: document.getElementById('scrollDuration').value,
         desktopOffset: document.getElementById('desktopOffset').value,
         mobileOffset: document.getElementById('mobileOffset').value
-    }));
+    };
+}
+
+function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(getCurrentState()));
 }
 
 function loadState() {
-    var saved = localStorage.getItem('disco_key-facts');
+    var saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
         var s = JSON.parse(saved);
         facts = s.facts || [];
@@ -468,6 +624,10 @@ function loadState() {
         document.getElementById('mobileOffset').value = s.mobileOffset || 200;
     }
     renderFactsList();
+    if (facts.length > 0) {
+        selectedFactIndex = 0;
+        loadFactEditor();
+    }
     updatePreviewHeight();
     updatePreview();
 }

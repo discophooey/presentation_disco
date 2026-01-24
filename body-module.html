@@ -8,7 +8,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #e0e0e0; }
 .app { display: flex; height: 100vh; }
-.controls { width: 360px; background: #1a1a1a; overflow-y: auto; padding: 20px; border-right: 1px solid #2a2a2a; flex-shrink: 0; }
+.controls { width: 380px; background: #1a1a1a; overflow-y: auto; padding: 20px; border-right: 1px solid #2a2a2a; flex-shrink: 0; }
 .preview-wrap { flex: 1; display: flex; flex-direction: column; }
 .preview-header { padding: 10px 20px; background: #1a1a1a; border-bottom: 1px solid #2a2a2a; }
 .preview-header span { color: #888; font-size: 12px; }
@@ -21,7 +21,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .preview-text-col { flex: 1; }
 .preview-img-col { width: 280px; flex-shrink: 0; }
 .preview-img-wrap { position: relative; cursor: pointer; }
-.preview-img-wrap img { width: 100%; border-radius: 6px; }
+.preview-img-wrap img { width: 100%; border-radius: 6px; display: block; }
 .preview-img-wrap::after { content: '⤢'; position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; opacity: 0; transition: opacity 0.2s; }
 .preview-img-wrap:hover::after { opacity: 1; }
 .preview-caption { font-size: 12px; color: #666; margin-top: 8px; line-height: 1.4; }
@@ -48,6 +48,7 @@ h2.ctrl.collapsed::after { transform: rotate(-90deg); }
 .control-group label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; }
 .control-group input[type="text"], .control-group input[type="number"], .control-group select, .control-group textarea { width: 100%; padding: 8px 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 13px; }
 .control-group input[type="color"] { width: 50px; height: 32px; border: none; background: none; cursor: pointer; }
+.control-group input[type="checkbox"] { width: auto; margin-right: 8px; }
 .control-group textarea { min-height: 150px; line-height: 1.5; font-family: inherit; }
 .inline-group { display: flex; gap: 10px; align-items: center; }
 .inline-group > * { flex: 1; }
@@ -55,8 +56,15 @@ button { padding: 10px 16px; background: #4a9eff; border: none; color: #000; fon
 button:hover { background: #357abd; }
 button.secondary { background: #2a2a2a; color: #888; }
 button.secondary:hover { background: #333; color: #fff; }
+button.danger { background: #c0392b; color: #fff; }
+button.danger:hover { background: #e74c3c; }
+button.small { padding: 6px 10px; font-size: 11px; margin: 0; width: auto; }
 .toolbar { display: flex; gap: 4px; margin-bottom: 8px; }
 .toolbar button { width: auto; padding: 6px 10px; margin: 0; font-size: 12px; }
+.save-load-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+.save-load-bar button { flex: 1; margin: 0; }
+.checkbox-row { display: flex; align-items: center; margin-bottom: 12px; }
+.checkbox-row label { margin: 0; color: #ccc; font-size: 13px; }
 
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
 .modal.active { display: flex; }
@@ -65,6 +73,13 @@ button.secondary:hover { background: #333; color: #fff; }
 .modal-content textarea { height: 200px; font-family: monospace; font-size: 11px; }
 .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
 .modal-actions button { flex: 1; }
+.saved-list { max-height: 200px; overflow-y: auto; margin: 10px 0; }
+.saved-item { background: #2a2a2a; padding: 10px 12px; border-radius: 6px; margin-bottom: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.saved-item:hover { background: #3a3a3a; }
+.saved-item .name { color: #fff; }
+.saved-item .date { color: #666; font-size: 11px; }
+.saved-item .delete { background: none; border: none; color: #888; cursor: pointer; padding: 4px 8px; margin: 0; width: auto; }
+.saved-item .delete:hover { color: #e74c3c; }
 
 @media(max-width:768px) {
     .preview-content { flex-direction: column !important; }
@@ -73,9 +88,39 @@ button.secondary:hover { background: #333; color: #fff; }
 </style>
 </head>
 <body>
-<div class="app">
+<div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
+<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
+<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
+<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
+<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
+<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
+<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
+<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
+<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
+<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
+<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
+<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
+<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
+<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
+<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
+<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
+<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
+<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
+<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
+<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
+<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
+<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
+</div>
+<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
+<div class="app" style="margin-top:41px;height:calc(100vh - 41px);">
     <div class="controls">
         <h1>📝 Body Module</h1>
+        
+        <div class="save-load-bar">
+            <button class="secondary" onclick="openSaveModal()">💾 Save</button>
+            <button class="secondary" onclick="openLoadModal()">📂 Load</button>
+        </div>
         
         <h2 class="ctrl" onclick="toggleSection(this)">Text Content</h2>
         <div class="section">
@@ -93,9 +138,7 @@ This is your body text. You can write **bold text** and *italic text* using simp
 
 ### Subheading
 
-Continue writing your story here. The text will automatically wrap and maintain proper line height for readability.
-
-Another paragraph continues the narrative. This module is designed for traditional article prose between your visual scroll elements.</textarea>
+Continue writing your story here. The text will automatically wrap and maintain proper line height for readability.</textarea>
             </div>
             <div class="control-group">
                 <label>Text Alignment</label>
@@ -109,20 +152,29 @@ Another paragraph continues the narrative. This module is designed for tradition
         
         <h2 class="ctrl" onclick="toggleSection(this)">Image (Optional)</h2>
         <div class="section">
-            <div class="control-group">
-                <label>Image URL</label>
-                <input type="text" id="imageUrl" placeholder="https://... (leave empty for text-only)" oninput="updatePreview()">
+            <div class="checkbox-row">
+                <input type="checkbox" id="imageEnabled" checked onchange="updatePreview()">
+                <label for="imageEnabled">Enable Image</label>
             </div>
-            <div class="control-group">
-                <label>Image Caption</label>
-                <input type="text" id="imageCaption" placeholder="Photo credit / description" oninput="updatePreview()">
-            </div>
-            <div class="control-group">
-                <label>Image Position (Desktop)</label>
-                <select id="imagePosition" onchange="updatePreview()">
-                    <option value="right">Right of text</option>
-                    <option value="left">Left of text</option>
-                </select>
+            <div id="imageSettings">
+                <div class="control-group">
+                    <label>Image URL</label>
+                    <div class="inline-group">
+                        <input type="text" id="imageUrl" placeholder="https://..." oninput="updatePreview()">
+                        <button class="secondary small" onclick="loadImage()">Load</button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Image Caption</label>
+                    <input type="text" id="imageCaption" placeholder="Photo credit / description" oninput="updatePreview()">
+                </div>
+                <div class="control-group">
+                    <label>Image Position (Desktop)</label>
+                    <select id="imagePosition" onchange="updatePreview()">
+                        <option value="right">Right of text</option>
+                        <option value="left">Left of text</option>
+                    </select>
+                </div>
             </div>
         </div>
         
@@ -151,6 +203,7 @@ Another paragraph continues the narrative. This module is designed for tradition
         </div>
         
         <button onclick="generateExport()">Generate HTML</button>
+        <button class="danger" onclick="resetModule()">Reset</button>
     </div>
     
     <div class="preview-wrap">
@@ -165,7 +218,7 @@ Another paragraph continues the narrative. This module is designed for tradition
                     </div>
                     <div class="preview-img-col" id="previewImgCol" style="display:none;">
                         <div class="preview-img-wrap" onclick="openLightbox()">
-                            <img id="previewImg" src="">
+                            <img id="previewImg" src="" alt="">
                         </div>
                         <div class="preview-caption" id="previewCaption"></div>
                     </div>
@@ -178,7 +231,7 @@ Another paragraph continues the narrative. This module is designed for tradition
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
     <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-    <img id="lightboxImg" src="">
+    <img id="lightboxImg" src="" alt="">
     <div class="lightbox-caption" id="lightboxCaption"></div>
 </div>
 
@@ -194,12 +247,44 @@ Another paragraph continues the narrative. This module is designed for tradition
             <button onclick="copyCode()">📋 Copy</button>
             <button onclick="downloadCode()">⬇️ Download</button>
             <button onclick="sendToStackBuilder()">📚 Stack</button>
-            <button class="secondary" onclick="closeModal()">Close</button>
+            <button class="secondary" onclick="closeModal('exportModal')">Close</button>
         </div>
     </div>
 </div>
 
+<!-- Save Modal -->
+<div class="modal" id="saveModal">
+    <div class="modal-content">
+        <h3>Save Project</h3>
+        <div class="control-group">
+            <label>Project Name</label>
+            <input type="text" id="saveName" placeholder="My Body Module">
+        </div>
+        <div class="modal-actions">
+            <button onclick="saveProject()">💾 Save</button>
+            <button class="secondary" onclick="closeModal('saveModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Load Modal -->
+<div class="modal" id="loadModal">
+    <div class="modal-content">
+        <h3>Load Project</h3>
+        <div class="saved-list" id="savedList"></div>
+        <div class="modal-actions">
+            <button class="secondary" onclick="closeModal('loadModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Image Load Input -->
+<input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageLoad(event)">
+
 <script>
+var STORAGE_KEY = 'disco_body-module';
+var PROJECTS_KEY = 'disco_body-module_projects';
+
 function toggleSection(el) {
     el.classList.toggle('collapsed');
     el.nextElementSibling.classList.toggle('collapsed');
@@ -216,6 +301,22 @@ function insertTag(before, after) {
     ta.selectionStart = start + before.length;
     ta.selectionEnd = start + before.length + selected.length;
     updatePreview();
+}
+
+function loadImage() {
+    document.getElementById('imageInput').click();
+}
+
+function handleImageLoad(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+        document.getElementById('imageUrl').value = ev.target.result;
+        updatePreview();
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
 }
 
 function parseMarkdown(text) {
@@ -242,6 +343,7 @@ function updatePreview() {
     
     var bodyText = document.getElementById('bodyText').value;
     var textAlign = document.getElementById('textAlign').value;
+    var imageEnabled = document.getElementById('imageEnabled').checked;
     var imageUrl = document.getElementById('imageUrl').value;
     var imageCaption = document.getElementById('imageCaption').value;
     var imagePosition = document.getElementById('imagePosition').value;
@@ -250,6 +352,9 @@ function updatePreview() {
     var bgColor = document.getElementById('bgColor').value;
     var fontSize = document.getElementById('fontSize').value;
     var maxWidth = document.getElementById('maxWidth').value;
+    
+    // Toggle image settings visibility
+    document.getElementById('imageSettings').style.display = imageEnabled ? 'block' : 'none';
     
     scroll.style.background = bgColor;
     body.style.maxWidth = maxWidth + 'px';
@@ -266,9 +371,10 @@ function updatePreview() {
         s.style.color = headlineColor;
     });
     
-    if (imageUrl) {
+    if (imageEnabled && imageUrl) {
         imgCol.style.display = 'block';
         img.src = imageUrl;
+        img.onerror = function() { imgCol.style.display = 'none'; };
         caption.textContent = imageCaption;
         caption.style.display = imageCaption ? 'block' : 'none';
         content.className = 'preview-content img-' + imagePosition;
@@ -281,9 +387,10 @@ function updatePreview() {
 }
 
 function openLightbox() {
+    var imageEnabled = document.getElementById('imageEnabled').checked;
     var url = document.getElementById('imageUrl').value;
     var cap = document.getElementById('imageCaption').value;
-    if (!url) return;
+    if (!imageEnabled || !url) return;
     document.getElementById('lightboxImg').src = url;
     document.getElementById('lightboxCaption').textContent = cap;
     document.getElementById('lightbox').classList.add('active');
@@ -297,10 +404,27 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeLightbox();
 });
 
+function resetModule() {
+    if (!confirm('Reset all settings to defaults?')) return;
+    document.getElementById('bodyText').value = '## Headline Goes Here\n\nThis is your body text.';
+    document.getElementById('textAlign').value = 'left';
+    document.getElementById('imageEnabled').checked = true;
+    document.getElementById('imageUrl').value = '';
+    document.getElementById('imageCaption').value = '';
+    document.getElementById('imagePosition').value = 'right';
+    document.getElementById('textColor').value = '#cccccc';
+    document.getElementById('headlineColor').value = '#ffffff';
+    document.getElementById('bgColor').value = '#0a0a0a';
+    document.getElementById('fontSize').value = 17;
+    document.getElementById('maxWidth').value = 650;
+    updatePreview();
+}
+
 function generateExport() {
     var uid = 'bm' + Math.random().toString(36).substr(2, 9);
     var bodyText = document.getElementById('bodyText').value;
     var textAlign = document.getElementById('textAlign').value;
+    var imageEnabled = document.getElementById('imageEnabled').checked;
     var imageUrl = document.getElementById('imageUrl').value;
     var imageCaption = document.getElementById('imageCaption').value;
     var imagePosition = document.getElementById('imagePosition').value;
@@ -311,12 +435,12 @@ function generateExport() {
     var maxWidth = document.getElementById('maxWidth').value;
     
     var html = parseMarkdown(bodyText);
+    var showImage = imageEnabled && imageUrl;
     
     var imgHTML = '';
     var imgCSS = '';
-    var imgJS = '';
     
-    if (imageUrl) {
+    if (showImage) {
         imgHTML = '<div class="bm-img-col">\n' +
             '<div class="bm-img-wrap" onclick="document.getElementById(\'' + uid + 'lb\').classList.add(\'active\')">\n' +
             '<img src="' + imageUrl + '" alt="">\n' +
@@ -326,7 +450,7 @@ function generateExport() {
         
         imgCSS = '#' + uid + ' .bm-img-col{width:280px;flex-shrink:0}\n' +
             '#' + uid + ' .bm-img-wrap{position:relative;cursor:pointer}\n' +
-            '#' + uid + ' .bm-img-wrap img{width:100%;border-radius:6px}\n' +
+            '#' + uid + ' .bm-img-wrap img{width:100%;border-radius:6px;display:block}\n' +
             '#' + uid + ' .bm-img-wrap::after{content:"⤢";position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.7);color:#fff;width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;opacity:0;transition:opacity 0.2s}\n' +
             '#' + uid + ' .bm-img-wrap:hover::after{opacity:1}\n' +
             '#' + uid + ' .bm-caption{font-size:12px;color:#666;margin-top:8px;line-height:1.4}\n' +
@@ -337,19 +461,19 @@ function generateExport() {
             '#' + uid + 'lb .lb-close{position:absolute;top:20px;right:20px;background:#333;border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:20px}\n';
     }
     
-    var flexDir = imagePosition === 'left' ? 'row' : 'row-reverse';
+    var flexDir = showImage ? (imagePosition === 'left' ? 'row' : 'row-reverse') : '';
     
     var code = '<style>\n' +
 '#' + uid + '{background:' + bgColor + ';padding:40px 20px}\n' +
 '#' + uid + ' .bm-body{max-width:' + maxWidth + 'px;margin:0 auto}\n' +
-'#' + uid + ' .bm-content{display:flex;gap:30px;' + (imageUrl ? 'flex-direction:' + flexDir : '') + '}\n' +
+'#' + uid + ' .bm-content{display:flex;gap:30px;' + (showImage ? 'flex-direction:' + flexDir : '') + '}\n' +
 '#' + uid + ' .bm-text{flex:1;line-height:1.7;color:' + textColor + ';font-size:' + fontSize + 'px;text-align:' + textAlign + '}\n' +
 '#' + uid + ' .bm-text h2{font-size:24px;color:' + headlineColor + ';margin-bottom:16px;font-weight:600}\n' +
 '#' + uid + ' .bm-text h3{font-size:20px;color:' + headlineColor + ';margin:24px 0 12px;font-weight:600}\n' +
 '#' + uid + ' .bm-text p{margin-bottom:16px}\n' +
 '#' + uid + ' .bm-text strong{color:' + headlineColor + '}\n' +
 imgCSS +
-'@media(max-width:768px){#' + uid + ' .bm-content{flex-direction:column}#' + uid + ' .bm-img-col{width:100%}}\n' +
+'@media(max-width:768px){#' + uid + ' .bm-content{flex-direction:column}' + (showImage ? '#' + uid + ' .bm-img-col{width:100%}' : '') + '}\n' +
 '</style>\n' +
 '<div id="' + uid + '">\n' +
 '<div class="bm-body">\n' +
@@ -359,7 +483,7 @@ imgHTML +
 '</div>\n' +
 '</div>\n' +
 '</div>\n' +
-(imageUrl ? '<div id="' + uid + 'lb" onclick="this.classList.remove(\'active\')">\n' +
+(showImage ? '<div id="' + uid + 'lb" onclick="this.classList.remove(\'active\')">\n' +
 '<button class="lb-close">✕</button>\n' +
 '<img src="' + imageUrl + '">\n' +
 (imageCaption ? '<div class="lb-cap">' + imageCaption + '</div>\n' : '') +
@@ -369,7 +493,7 @@ imgHTML +
     document.getElementById('exportModal').classList.add('active');
 }
 
-function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
 function copyCode() {
     var code = document.getElementById('exportCode');
@@ -400,10 +524,85 @@ function sendToStackBuilder() {
     }
 }
 
-function saveState() {
-    localStorage.setItem('disco_body-module', JSON.stringify({
+function openSaveModal() {
+    document.getElementById('saveName').value = '';
+    document.getElementById('saveModal').classList.add('active');
+}
+
+function openLoadModal() {
+    renderSavedList();
+    document.getElementById('loadModal').classList.add('active');
+}
+
+function saveProject() {
+    var name = document.getElementById('saveName').value.trim();
+    if (!name) { alert('Enter a project name'); return; }
+    
+    var projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+    var data = getCurrentState();
+    data.name = name;
+    data.savedAt = Date.now();
+    data.id = 'proj_' + Date.now();
+    
+    projects.unshift(data);
+    if (projects.length > 20) projects = projects.slice(0, 20);
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+    
+    closeModal('saveModal');
+    alert('Saved!');
+}
+
+function renderSavedList() {
+    var projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+    var html = '';
+    if (projects.length === 0) {
+        html = '<div style="color:#666;text-align:center;padding:20px;">No saved projects</div>';
+    } else {
+        projects.forEach(function(p) {
+            var date = new Date(p.savedAt).toLocaleDateString();
+            html += '<div class="saved-item">';
+            html += '<div onclick="loadProject(\'' + p.id + '\')"><span class="name">' + p.name + '</span><br><span class="date">' + date + '</span></div>';
+            html += '<button class="delete" onclick="event.stopPropagation();deleteProject(\'' + p.id + '\')">×</button>';
+            html += '</div>';
+        });
+    }
+    document.getElementById('savedList').innerHTML = html;
+}
+
+function loadProject(id) {
+    var projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+    var proj = projects.find(function(p) { return p.id === id; });
+    if (!proj) return;
+    
+    document.getElementById('bodyText').value = proj.bodyText || '';
+    document.getElementById('textAlign').value = proj.textAlign || 'left';
+    document.getElementById('imageEnabled').checked = proj.imageEnabled !== false;
+    document.getElementById('imageUrl').value = proj.imageUrl || '';
+    document.getElementById('imageCaption').value = proj.imageCaption || '';
+    document.getElementById('imagePosition').value = proj.imagePosition || 'right';
+    document.getElementById('textColor').value = proj.textColor || '#cccccc';
+    document.getElementById('headlineColor').value = proj.headlineColor || '#ffffff';
+    document.getElementById('bgColor').value = proj.bgColor || '#0a0a0a';
+    document.getElementById('fontSize').value = proj.fontSize || 17;
+    document.getElementById('maxWidth').value = proj.maxWidth || 650;
+    
+    updatePreview();
+    closeModal('loadModal');
+}
+
+function deleteProject(id) {
+    if (!confirm('Delete this project?')) return;
+    var projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+    projects = projects.filter(function(p) { return p.id !== id; });
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+    renderSavedList();
+}
+
+function getCurrentState() {
+    return {
         bodyText: document.getElementById('bodyText').value,
         textAlign: document.getElementById('textAlign').value,
+        imageEnabled: document.getElementById('imageEnabled').checked,
         imageUrl: document.getElementById('imageUrl').value,
         imageCaption: document.getElementById('imageCaption').value,
         imagePosition: document.getElementById('imagePosition').value,
@@ -412,15 +611,20 @@ function saveState() {
         bgColor: document.getElementById('bgColor').value,
         fontSize: document.getElementById('fontSize').value,
         maxWidth: document.getElementById('maxWidth').value
-    }));
+    };
+}
+
+function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(getCurrentState()));
 }
 
 function loadState() {
-    var saved = localStorage.getItem('disco_body-module');
+    var saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
         var s = JSON.parse(saved);
         document.getElementById('bodyText').value = s.bodyText || '';
         document.getElementById('textAlign').value = s.textAlign || 'left';
+        document.getElementById('imageEnabled').checked = s.imageEnabled !== false;
         document.getElementById('imageUrl').value = s.imageUrl || '';
         document.getElementById('imageCaption').value = s.imageCaption || '';
         document.getElementById('imagePosition').value = s.imagePosition || 'right';

@@ -8,7 +8,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #e0e0e0; }
 .app { display: flex; height: 100vh; }
-.controls { width: 360px; background: #1a1a1a; overflow-y: auto; padding: 20px; border-right: 1px solid #2a2a2a; flex-shrink: 0; }
+.controls { width: 380px; background: #1a1a1a; overflow-y: auto; padding: 20px; border-right: 1px solid #2a2a2a; flex-shrink: 0; }
 .preview-wrap { flex: 1; display: flex; flex-direction: column; }
 .preview-header { padding: 10px 20px; background: #1a1a1a; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; }
 .preview-header span { color: #888; font-size: 12px; }
@@ -17,7 +17,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .preview-container { min-height: 300vh; position: relative; }
 .preview-stage { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .preview-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: opacity 0.6s; }
-.preview-text { position: relative; z-index: 10; text-align: center; padding: 40px; max-width: 900px; opacity: 0; transition: opacity 0.4s; }
+.preview-text { position: absolute; z-index: 10; padding: 40px; max-width: 900px; opacity: 0; transition: opacity 0.4s; }
 .preview-text.active { opacity: 1; }
 .preview-text p { font-weight: 600; line-height: 1.3; text-shadow: 2px 2px 8px rgba(0,0,0,0.8); }
 .preview-backdrop { position: absolute; inset: 0; pointer-events: none; }
@@ -41,6 +41,7 @@ button.secondary { background: #2a2a2a; color: #888; }
 button.secondary:hover { background: #333; color: #fff; }
 button.danger { background: #c0392b; color: #fff; }
 button.danger:hover { background: #e74c3c; }
+button.small { padding: 6px 10px; font-size: 11px; margin: 0; width: auto; }
 
 .blocks-list { background: #0a0a0a; border-radius: 6px; padding: 10px; margin: 10px 0; max-height: 300px; overflow-y: auto; }
 .block-item { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 6px; padding: 10px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.2s; }
@@ -48,8 +49,9 @@ button.danger:hover { background: #e74c3c; }
 .block-item.selected { border-color: #4a9eff; background: #1a2a3a; }
 .block-item .block-text { font-size: 12px; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
 .block-item .block-bg { font-size: 10px; color: #666; }
-.block-actions { display: flex; gap: 6px; margin-top: 6px; }
-.block-actions button { flex: 1; padding: 4px 8px; font-size: 10px; margin: 0; }
+
+.save-load-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+.save-load-bar button { flex: 1; margin: 0; }
 
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
 .modal.active { display: flex; }
@@ -58,12 +60,49 @@ button.danger:hover { background: #e74c3c; }
 .modal-content textarea { height: 200px; font-family: monospace; font-size: 11px; }
 .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
 .modal-actions button { flex: 1; }
+.saved-list { max-height: 200px; overflow-y: auto; margin: 10px 0; }
+.saved-item { background: #2a2a2a; padding: 10px 12px; border-radius: 6px; margin-bottom: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.saved-item:hover { background: #3a3a3a; }
+.saved-item .name { color: #fff; }
+.saved-item .date { color: #666; font-size: 11px; }
+.saved-item .delete { background: none; border: none; color: #888; cursor: pointer; padding: 4px 8px; margin: 0; width: auto; }
+.saved-item .delete:hover { color: #e74c3c; }
 </style>
 </head>
 <body>
-<div class="app">
+<div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
+<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
+<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
+<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
+<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
+<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
+<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
+<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
+<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
+<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
+<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
+<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
+<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
+<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
+<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
+<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
+<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
+<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
+<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
+<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
+<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
+<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
+</div>
+<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
+<div class="app" style="margin-top:41px;height:calc(100vh - 41px);">
     <div class="controls">
         <h1>📜 Text Scroll</h1>
+        
+        <div class="save-load-bar">
+            <button class="secondary" onclick="openSaveModal()">💾 Save</button>
+            <button class="secondary" onclick="openLoadModal()">📂 Load</button>
+        </div>
         
         <h2 onclick="toggleSection(this)">Text Blocks</h2>
         <div class="section">
@@ -78,9 +117,10 @@ button.danger:hover { background: #e74c3c; }
                     <label>Text (one punchy statement)</label>
                     <textarea id="blockText" rows="3" oninput="updateBlock()"></textarea>
                 </div>
+                
                 <div class="control-group">
                     <label>Background Type</label>
-                    <select id="bgType" onchange="updateBlock()">
+                    <select id="bgType" onchange="updateBgInputs(); updateBlock();">
                         <option value="inherit">Inherit Previous</option>
                         <option value="color">Solid Color</option>
                         <option value="image">Image URL</option>
@@ -90,10 +130,32 @@ button.danger:hover { background: #e74c3c; }
                     <label>Background Color</label>
                     <input type="color" id="bgColor" value="#1a1a1a" onchange="updateBlock()">
                 </div>
-                <div class="control-group" id="bgImageGroup" style="display:none;">
-                    <label>Image URL</label>
-                    <input type="text" id="bgImage" placeholder="https://..." oninput="updateBlock()">
+                <div id="bgImageGroup" style="display:none;">
+                    <div class="control-group">
+                        <label>Image URL</label>
+                        <div class="inline-group">
+                            <input type="text" id="bgImage" placeholder="https://..." oninput="updateBlock()">
+                            <button class="secondary small" onclick="loadImage()">Load</button>
+                        </div>
+                    </div>
+                    <div class="inline-group">
+                        <div class="control-group">
+                            <label>Image X Position (%)</label>
+                            <input type="range" id="bgPosX" min="0" max="100" value="50" oninput="updateBlock()">
+                        </div>
+                        <div class="control-group">
+                            <label>Image Y Position (%)</label>
+                            <input type="range" id="bgPosY" min="0" max="100" value="50" oninput="updateBlock()">
+                        </div>
+                    </div>
                 </div>
+                
+                <div class="control-group">
+                    <label>Scroll Timing (1 = normal)</label>
+                    <input type="range" id="blockTiming" min="0.5" max="2" step="0.1" value="1" oninput="updateBlock(); document.getElementById('blockTimingVal').textContent=this.value+'x';">
+                    <span id="blockTimingVal" style="color:#888;font-size:11px;">1x</span>
+                </div>
+                
                 <button class="danger" onclick="deleteBlock()">Delete Block</button>
             </div>
         </div>
@@ -117,6 +179,16 @@ button.danger:hover { background: #e74c3c; }
             <div class="control-group">
                 <label>Text Color</label>
                 <input type="color" id="textColor" value="#ffffff" onchange="updatePreview()">
+            </div>
+            <div class="inline-group">
+                <div class="control-group">
+                    <label>Fade In (%)</label>
+                    <input type="range" id="fadeIn" min="0" max="30" value="10" oninput="updatePreview()">
+                </div>
+                <div class="control-group">
+                    <label>Fade Out (%)</label>
+                    <input type="range" id="fadeOut" min="0" max="30" value="10" oninput="updatePreview()">
+                </div>
             </div>
             <div class="control-group">
                 <label>Backdrop Blur</label>
@@ -147,7 +219,7 @@ button.danger:hover { background: #e74c3c; }
         <h2 onclick="toggleSection(this)">Layout</h2>
         <div class="section">
             <div class="control-group">
-                <label>Scroll Duration (%)</label>
+                <label>Base Scroll Duration (%)</label>
                 <input type="range" id="scrollDuration" min="100" max="400" value="200" oninput="updatePreviewHeight();">
             </div>
             <div class="inline-group">
@@ -195,27 +267,74 @@ button.danger:hover { background: #e74c3c; }
             <button onclick="copyCode()">📋 Copy</button>
             <button onclick="downloadCode()">⬇️ Download</button>
             <button onclick="sendToStackBuilder()">📚 Stack</button>
-            <button class="secondary" onclick="closeModal()">Close</button>
+            <button class="secondary" onclick="closeModal('exportModal')">Close</button>
         </div>
     </div>
 </div>
 
+<!-- Save Modal -->
+<div class="modal" id="saveModal">
+    <div class="modal-content">
+        <h3>Save Project</h3>
+        <div class="control-group">
+            <label>Project Name</label>
+            <input type="text" id="saveName" placeholder="My Text Scroll">
+        </div>
+        <div class="modal-actions">
+            <button onclick="saveProject()">💾 Save</button>
+            <button class="secondary" onclick="closeModal('saveModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Load Modal -->
+<div class="modal" id="loadModal">
+    <div class="modal-content">
+        <h3>Load Project</h3>
+        <div class="saved-list" id="savedList"></div>
+        <div class="modal-actions">
+            <button class="secondary" onclick="closeModal('loadModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Image Load Input -->
+<input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageLoad(event)">
+
 <script>
 var blocks = [];
 var selectedBlockIndex = -1;
+var STORAGE_KEY = 'disco_text-scroll';
+var PROJECTS_KEY = 'disco_text-scroll_projects';
 
 function toggleSection(el) {
     el.classList.toggle('collapsed');
     el.nextElementSibling.classList.toggle('collapsed');
 }
 
+function loadImage() {
+    document.getElementById('imageInput').click();
+}
+
+function handleImageLoad(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+        document.getElementById('bgImage').value = ev.target.result;
+        updateBlock();
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+}
+
 function renderBlocksList() {
     var html = '';
     blocks.forEach(function(b, i) {
-        var bgText = b.bgType === 'inherit' ? '(inherits)' : b.bgType === 'color' ? b.bgColor : b.bgImage.substring(0, 30) + '...';
+        var bgText = b.bgType === 'inherit' ? '(inherits)' : b.bgType === 'color' ? b.bgColor : 'image';
         html += '<div class="block-item ' + (i === selectedBlockIndex ? 'selected' : '') + '" onclick="selectBlock(' + i + ')">';
         html += '<div class="block-text">' + (b.text || '(empty)') + '</div>';
-        html += '<div class="block-bg">BG: ' + bgText + '</div>';
+        html += '<div class="block-bg">BG: ' + bgText + ' | Timing: ' + (b.timing || 1) + 'x</div>';
         html += '</div>';
     });
     document.getElementById('blocksList').innerHTML = html || '<div style="color:#666;font-size:12px;text-align:center;padding:20px;">No blocks yet. Add one!</div>';
@@ -226,7 +345,10 @@ function addBlock() {
         text: 'Your statement here',
         bgType: blocks.length === 0 ? 'color' : 'inherit',
         bgColor: '#1a1a1a',
-        bgImage: ''
+        bgImage: '',
+        bgPosX: 50,
+        bgPosY: 50,
+        timing: 1
     });
     selectedBlockIndex = blocks.length - 1;
     renderBlocksList();
@@ -250,8 +372,12 @@ function loadBlockEditor() {
     var b = blocks[selectedBlockIndex];
     document.getElementById('blockText').value = b.text;
     document.getElementById('bgType').value = b.bgType;
-    document.getElementById('bgColor').value = b.bgColor;
-    document.getElementById('bgImage').value = b.bgImage;
+    document.getElementById('bgColor').value = b.bgColor || '#1a1a1a';
+    document.getElementById('bgImage').value = b.bgImage || '';
+    document.getElementById('bgPosX').value = b.bgPosX || 50;
+    document.getElementById('bgPosY').value = b.bgPosY || 50;
+    document.getElementById('blockTiming').value = b.timing || 1;
+    document.getElementById('blockTimingVal').textContent = (b.timing || 1) + 'x';
     updateBgInputs();
 }
 
@@ -268,7 +394,9 @@ function updateBlock() {
     b.bgType = document.getElementById('bgType').value;
     b.bgColor = document.getElementById('bgColor').value;
     b.bgImage = document.getElementById('bgImage').value;
-    updateBgInputs();
+    b.bgPosX = parseInt(document.getElementById('bgPosX').value) || 50;
+    b.bgPosY = parseInt(document.getElementById('bgPosY').value) || 50;
+    b.timing = parseFloat(document.getElementById('blockTiming').value) || 1;
     renderBlocksList();
     updatePreview();
     saveState();
@@ -291,15 +419,17 @@ function getResolvedBg(index) {
             return blocks[i];
         }
     }
-    return { bgType: 'color', bgColor: '#1a1a1a', bgImage: '' };
+    return { bgType: 'color', bgColor: '#1a1a1a', bgImage: '', bgPosX: 50, bgPosY: 50 };
 }
 
 function updatePreviewHeight() {
     var dur = parseInt(document.getElementById('scrollDuration').value) || 200;
-    document.getElementById('previewContainer').style.height = dur + 'vh';
+    var totalTiming = blocks.reduce(function(sum, b) { return sum + (b.timing || 1); }, 0) || 1;
+    var avgTiming = totalTiming / (blocks.length || 1);
+    document.getElementById('previewContainer').style.height = (dur * avgTiming) + 'vh';
 }
 
-var currentBgIndex = 0;
+var currentBgIndex = -1;
 function updatePreview() {
     var scroll = document.getElementById('previewScroll');
     var container = document.getElementById('previewContainer');
@@ -321,36 +451,36 @@ function updatePreview() {
     var darken = document.getElementById('backdropDarken').value;
     var effect = document.getElementById('bgEffect').value;
     var speed = document.getElementById('transitionSpeed').value;
+    var fadeIn = parseInt(document.getElementById('fadeIn').value) / 100;
+    var fadeOut = parseInt(document.getElementById('fadeOut').value) / 100;
     
     text.querySelector('p').style.fontSize = fontSize + 'px';
     text.querySelector('p').style.color = textColor;
     
-    // Position
-    text.style.position = 'absolute';
     text.style.left = '50%';
+    text.style.right = 'auto';
     text.style.transform = 'translateX(-50%)';
+    text.style.textAlign = 'center';
     if (position === 'center') {
         text.style.top = '50%';
-        text.style.transform = 'translate(-50%, -50%)';
         text.style.bottom = 'auto';
+        text.style.transform = 'translate(-50%, -50%)';
     } else if (position === 'bottom-left') {
         text.style.top = 'auto';
         text.style.bottom = '80px';
         text.style.left = '40px';
         text.style.transform = 'none';
-        text.querySelector('p').style.textAlign = 'left';
+        text.style.textAlign = 'left';
     } else if (position === 'bottom-right') {
         text.style.top = 'auto';
         text.style.bottom = '80px';
         text.style.left = 'auto';
         text.style.right = '40px';
         text.style.transform = 'none';
-        text.querySelector('p').style.textAlign = 'right';
+        text.style.textAlign = 'right';
     } else {
         text.style.top = 'auto';
         text.style.bottom = '80px';
-        text.style.transform = 'translateX(-50%)';
-        text.querySelector('p').style.textAlign = 'center';
     }
     
     backdrop.style.background = 'rgba(0,0,0,' + (darken / 100) + ')';
@@ -365,15 +495,32 @@ function updatePreview() {
         return;
     }
     
-    var blockIndex = Math.min(Math.floor(progress * blocks.length), blocks.length - 1);
-    var blockProgress = (progress * blocks.length) - blockIndex;
+    var totalTiming = blocks.reduce(function(sum, b) { return sum + (b.timing || 1); }, 0);
+    var progressPoint = progress * totalTiming;
+    var accum = 0;
+    var blockIndex = 0;
+    var blockProgress = 0;
+    for (var i = 0; i < blocks.length; i++) {
+        var t = blocks[i].timing || 1;
+        if (accum + t > progressPoint) {
+            blockIndex = i;
+            blockProgress = (progressPoint - accum) / t;
+            break;
+        }
+        accum += t;
+        blockIndex = i;
+        blockProgress = 1;
+    }
     
     var resolved = getResolvedBg(blockIndex);
-    var bgStyle = resolved.bgType === 'image' && resolved.bgImage 
-        ? 'url(' + resolved.bgImage + ') center/cover'
-        : resolved.bgColor;
+    var bgStyle, bgPos;
+    if (resolved.bgType === 'image' && resolved.bgImage) {
+        bgPos = (resolved.bgPosX || 50) + '% ' + (resolved.bgPosY || 50) + '%';
+        bgStyle = 'url(' + resolved.bgImage + ') ' + bgPos + '/cover no-repeat';
+    } else {
+        bgStyle = resolved.bgColor || '#1a1a1a';
+    }
     
-    // Crossfade backgrounds
     if (blockIndex !== currentBgIndex) {
         if (currentBgIndex % 2 === 0) {
             bg2.style.background = bgStyle;
@@ -385,13 +532,13 @@ function updatePreview() {
             bg2.style.opacity = 0;
         }
         currentBgIndex = blockIndex;
-    } else if (blockIndex === 0 && currentBgIndex === 0) {
+    } else if (currentBgIndex === 0 || currentBgIndex === -1) {
         bg1.style.background = bgStyle;
         bg1.style.opacity = 1;
+        currentBgIndex = 0;
     }
     
-    // Effect
-    var activeBg = currentBgIndex % 2 === 0 ? bg1 : bg2;
+    var activeBg = currentBgIndex % 2 === 0 ? (currentBgIndex === 0 ? bg1 : bg2) : bg1;
     if (effect === 'zoomLeft') {
         activeBg.style.transform = 'scale(1.1) translateX(' + (-blockProgress * 3) + '%)';
     } else if (effect === 'zoomRight') {
@@ -400,7 +547,15 @@ function updatePreview() {
         activeBg.style.transform = 'scale(1)';
     }
     
+    var textOpacity = 1;
+    if (fadeIn > 0 && blockProgress < fadeIn) {
+        textOpacity = blockProgress / fadeIn;
+    } else if (fadeOut > 0 && blockProgress > (1 - fadeOut)) {
+        textOpacity = (1 - blockProgress) / fadeOut;
+    }
+    
     text.querySelector('p').textContent = blocks[blockIndex].text;
+    text.style.opacity = textOpacity;
     text.classList.add('active');
 }
 
@@ -417,7 +572,9 @@ function generateExport() {
     var darken = document.getElementById('backdropDarken').value;
     var effect = document.getElementById('bgEffect').value;
     var speed = document.getElementById('transitionSpeed').value;
-    var scrollMult = parseInt(document.getElementById('scrollDuration').value) / 100;
+    var fadeIn = parseInt(document.getElementById('fadeIn').value) / 100;
+    var fadeOut = parseInt(document.getElementById('fadeOut').value) / 100;
+    var baseDur = parseInt(document.getElementById('scrollDuration').value) / 100;
     var desktopOffset = document.getElementById('desktopOffset').value;
     var mobileOffset = document.getElementById('mobileOffset').value;
     
@@ -440,17 +597,19 @@ function generateExport() {
         return {
             text: b.text,
             bg: resolved.bgType === 'image' && resolved.bgImage ? resolved.bgImage : null,
-            color: resolved.bgType === 'color' ? resolved.bgColor : null
+            color: resolved.bgType === 'color' ? resolved.bgColor : null,
+            posX: resolved.bgPosX || 50,
+            posY: resolved.bgPosY || 50,
+            timing: b.timing || 1
         };
     });
     
     var code = '<style>\n' +
 '#' + uid + '{position:relative;background:#000}\n' +
 '#' + uid + ' .ts-stage{position:sticky;top:' + desktopOffset + 'px;height:calc(100vh - ' + desktopOffset + 'px);overflow:hidden}\n' +
-'#' + uid + ' .ts-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity ' + speed + 'ms,transform 3s}\n' +
+'#' + uid + ' .ts-bg{position:absolute;inset:0;background-size:cover;transition:opacity ' + speed + 'ms,transform 3s}\n' +
 '#' + uid + ' .ts-backdrop{position:absolute;inset:0;background:rgba(0,0,0,' + (darken/100) + ');' + (blur > 0 ? 'backdrop-filter:blur(' + blur + 'px);-webkit-backdrop-filter:blur(' + blur + 'px);' : '') + '}\n' +
-'#' + uid + ' .ts-text{position:absolute;' + posCSS + ';padding:40px;max-width:900px;opacity:0;transition:opacity 0.4s;z-index:10}\n' +
-'#' + uid + ' .ts-text.on{opacity:1}\n' +
+'#' + uid + ' .ts-text{position:absolute;' + posCSS + ';padding:40px;max-width:900px;transition:opacity 0.3s;z-index:10}\n' +
 '#' + uid + ' .ts-text p{font-size:' + fontSize + 'px;font-weight:600;color:' + textColor + ';line-height:1.3;text-shadow:2px 2px 8px rgba(0,0,0,0.8);margin:0}\n' +
 '@media(max-width:768px){#' + uid + ' .ts-stage{top:' + mobileOffset + 'px;height:calc(100vh - ' + mobileOffset + 'px)}#' + uid + ' .ts-text{padding:20px;' + posMobileCSS + '}#' + uid + ' .ts-text p{font-size:' + Math.round(fontSize * 0.6) + 'px}}\n' +
 '</style>\n' +
@@ -472,10 +631,12 @@ function generateExport() {
 'var p=text.querySelector("p");\n' +
 'var data=' + JSON.stringify(blocksData) + ';\n' +
 'var n=data.length;\n' +
-'var scrollMult=' + scrollMult + ';\n' +
+'var baseDur=' + baseDur + ';\n' +
 'var effect="' + effect + '";\n' +
+'var fadeIn=' + fadeIn + ',fadeOut=' + fadeOut + ';\n' +
 'var curIdx=-1;\n' +
-'function setH(){w.style.height=(stage.offsetHeight*scrollMult)+"px";}\n' +
+'var totalTiming=data.reduce(function(s,b){return s+(b.timing||1);},0);\n' +
+'function setH(){w.style.height=(stage.offsetHeight*baseDur*(totalTiming/n))+"px";}\n' +
 'setH();window.addEventListener("resize",setH);\n' +
 'function upd(){\n' +
 'var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\n' +
@@ -486,24 +647,25 @@ function generateExport() {
 'var range=w.offsetHeight-window.innerHeight;\n' +
 'progress=range>0?scrolled/range:0;\n' +
 '}\n' +
-'var idx=Math.min(Math.floor(progress*n),n-1);\n' +
-'var blockP=(progress*n)-idx;\n' +
-'if(idx!==curIdx){\n' +
+'var pt=progress*totalTiming,accum=0,idx=0,blockP=0;\n' +
+'for(var i=0;i<n;i++){var t=data[i].timing||1;if(accum+t>pt){idx=i;blockP=(pt-accum)/t;break;}accum+=t;idx=i;blockP=1;}\n' +
 'var d=data[idx];\n' +
-'var bgStyle=d.bg?"url("+d.bg+") center/cover":d.color;\n' +
+'if(idx!==curIdx){\n' +
+'var bgStyle=d.bg?"url("+d.bg+") "+d.posX+"% "+d.posY+"%/cover no-repeat":d.color;\n' +
 'if(curIdx%2===0){bg2.style.background=bgStyle;bg2.style.opacity=1;bg1.style.opacity=0;}\n' +
 'else{bg1.style.background=bgStyle;bg1.style.opacity=1;bg2.style.opacity=0;}\n' +
 'p.textContent=d.text;\n' +
 'curIdx=idx;\n' +
 '}\n' +
-'var activeBg=curIdx%2===0?bg2:bg1;\n' +
+'var activeBg=curIdx%2===0?bg2:bg1;if(curIdx===0)activeBg=bg1;\n' +
 'if(effect==="zoomLeft")activeBg.style.transform="scale(1.1) translateX("+(-blockP*3)+"%)";\n' +
 'else if(effect==="zoomRight")activeBg.style.transform="scale(1.1) translateX("+(blockP*3)+"%)";\n' +
 'else activeBg.style.transform="scale(1)";\n' +
-'text.classList.add("on");\n' +
+'var op=1;if(fadeIn>0&&blockP<fadeIn)op=blockP/fadeIn;else if(fadeOut>0&&blockP>(1-fadeOut))op=(1-blockP)/fadeOut;\n' +
+'text.style.opacity=op;\n' +
 'requestAnimationFrame(upd);\n' +
 '}\n' +
-'if(n>0){var d=data[0];bg1.style.background=d.bg?"url("+d.bg+") center/cover":d.color;bg1.style.opacity=1;p.textContent=d.text;curIdx=0;}\n' +
+'if(n>0){var d=data[0];bg1.style.background=d.bg?"url("+d.bg+") "+d.posX+"% "+d.posY+"%/cover no-repeat":d.color;bg1.style.opacity=1;p.textContent=d.text;curIdx=0;}\n' +
 'upd();\n' +
 '})();\n' +
 '<\/scr' + 'ipt>';
@@ -512,7 +674,7 @@ function generateExport() {
     document.getElementById('exportModal').classList.add('active');
 }
 
-function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
 function copyCode() {
     var code = document.getElementById('exportCode');
@@ -543,12 +705,96 @@ function sendToStackBuilder() {
     }
 }
 
-function saveState() {
-    localStorage.setItem('disco_text-scroll', JSON.stringify({
+function openSaveModal() {
+    document.getElementById('saveName').value = '';
+    document.getElementById('saveModal').classList.add('active');
+}
+
+function openLoadModal() {
+    renderSavedList();
+    document.getElementById('loadModal').classList.add('active');
+}
+
+function saveProject() {
+    var name = document.getElementById('saveName').value.trim();
+    if (!name) { alert('Enter a project name'); return; }
+    
+    var projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+    var data = getCurrentState();
+    data.name = name;
+    data.savedAt = Date.now();
+    data.id = 'proj_' + Date.now();
+    
+    projects.unshift(data);
+    if (projects.length > 20) projects = projects.slice(0, 20);
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+    
+    closeModal('saveModal');
+    alert('Saved!');
+}
+
+function renderSavedList() {
+    var projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+    var html = '';
+    if (projects.length === 0) {
+        html = '<div style="color:#666;text-align:center;padding:20px;">No saved projects</div>';
+    } else {
+        projects.forEach(function(p) {
+            var date = new Date(p.savedAt).toLocaleDateString();
+            html += '<div class="saved-item">';
+            html += '<div onclick="loadProject(\'' + p.id + '\')"><span class="name">' + p.name + '</span><br><span class="date">' + date + '</span></div>';
+            html += '<button class="delete" onclick="event.stopPropagation();deleteProject(\'' + p.id + '\')">×</button>';
+            html += '</div>';
+        });
+    }
+    document.getElementById('savedList').innerHTML = html;
+}
+
+function loadProject(id) {
+    var projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+    var proj = projects.find(function(p) { return p.id === id; });
+    if (!proj) return;
+    
+    blocks = proj.blocks || [];
+    selectedBlockIndex = blocks.length > 0 ? 0 : -1;
+    
+    document.getElementById('fontSize').value = proj.fontSize || 48;
+    document.getElementById('fontSizeNum').value = proj.fontSize || 48;
+    document.getElementById('textColor').value = proj.textColor || '#ffffff';
+    document.getElementById('textPosition').value = proj.textPosition || 'center';
+    document.getElementById('fadeIn').value = proj.fadeIn || 10;
+    document.getElementById('fadeOut').value = proj.fadeOut || 10;
+    document.getElementById('backdropBlur').value = proj.backdropBlur || 0;
+    document.getElementById('backdropDarken').value = proj.backdropDarken || 30;
+    document.getElementById('bgEffect').value = proj.bgEffect || 'static';
+    document.getElementById('transitionSpeed').value = proj.transitionSpeed || 600;
+    document.getElementById('scrollDuration').value = proj.scrollDuration || 200;
+    document.getElementById('desktopOffset').value = proj.desktopOffset || 50;
+    document.getElementById('mobileOffset').value = proj.mobileOffset || 200;
+    
+    renderBlocksList();
+    loadBlockEditor();
+    updatePreviewHeight();
+    updatePreview();
+    closeModal('loadModal');
+}
+
+function deleteProject(id) {
+    if (!confirm('Delete this project?')) return;
+    var projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+    projects = projects.filter(function(p) { return p.id !== id; });
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+    renderSavedList();
+}
+
+function getCurrentState() {
+    return {
         blocks: blocks,
         fontSize: document.getElementById('fontSize').value,
         textColor: document.getElementById('textColor').value,
         textPosition: document.getElementById('textPosition').value,
+        fadeIn: document.getElementById('fadeIn').value,
+        fadeOut: document.getElementById('fadeOut').value,
         backdropBlur: document.getElementById('backdropBlur').value,
         backdropDarken: document.getElementById('backdropDarken').value,
         bgEffect: document.getElementById('bgEffect').value,
@@ -556,11 +802,15 @@ function saveState() {
         scrollDuration: document.getElementById('scrollDuration').value,
         desktopOffset: document.getElementById('desktopOffset').value,
         mobileOffset: document.getElementById('mobileOffset').value
-    }));
+    };
+}
+
+function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(getCurrentState()));
 }
 
 function loadState() {
-    var saved = localStorage.getItem('disco_text-scroll');
+    var saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
         var s = JSON.parse(saved);
         blocks = s.blocks || [];
@@ -568,6 +818,8 @@ function loadState() {
         document.getElementById('fontSizeNum').value = s.fontSize || 48;
         document.getElementById('textColor').value = s.textColor || '#ffffff';
         document.getElementById('textPosition').value = s.textPosition || 'center';
+        document.getElementById('fadeIn').value = s.fadeIn || 10;
+        document.getElementById('fadeOut').value = s.fadeOut || 10;
         document.getElementById('backdropBlur').value = s.backdropBlur || 0;
         document.getElementById('backdropDarken').value = s.backdropDarken || 30;
         document.getElementById('bgEffect').value = s.bgEffect || 'static';
@@ -577,6 +829,10 @@ function loadState() {
         document.getElementById('mobileOffset').value = s.mobileOffset || 200;
     }
     renderBlocksList();
+    if (blocks.length > 0) {
+        selectedBlockIndex = 0;
+        loadBlockEditor();
+    }
     updatePreviewHeight();
     updatePreview();
 }
