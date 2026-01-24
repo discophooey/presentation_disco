@@ -323,7 +323,12 @@ function loadBgImage() {
         document.getElementById('bgImage').value = url;
     }
     var img = new Image();
-    img.onload = function() { updateBlock(); };
+    img.onload = function() { 
+        // Auto-switch to image type when successfully loading
+        document.getElementById('bgType').value = 'image';
+        updateBgInputs();
+        updateBlock(); 
+    };
     img.onerror = function() { alert('Could not load image. Check the URL.'); };
     img.src = url;
 }
