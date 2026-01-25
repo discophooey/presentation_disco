@@ -268,193 +268,61 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            bottom: 0;
             background: rgba(0, 0, 0, 0.95);
             z-index: 1000;
-            align-items: center;
-            justify-content: center;
             padding: 20px;
         }
 
         .preview-modal.active {
-            display: flex;
+            display: block;
         }
 
         .preview-modal-content {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
             background: #1a1a1a;
             border-radius: 12px;
-            width: 100%;
-            max-width: 1400px;
-            height: 90vh;
-            display: flex;
-            flex-direction: column;
             border: 1px solid #2a2a2a;
             overflow: hidden;
         }
 
         .preview-modal-header {
-            padding: 12px 24px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            padding: 0 24px;
             border-bottom: 1px solid #2a2a2a;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-shrink: 0;
+            background: #1a1a1a;
         }
 
         .preview-modal-header h3 {
             font-size: 16px;
             color: #fff;
         }
-        
-        .preview-controls {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        
-        .preview-mode-btn {
-            background: #2a2a2a;
-            border: 1px solid #3a3a3a;
-            color: #888;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
-        .preview-mode-btn.active {
-            background: #4a9eff;
-            border-color: #4a9eff;
-            color: #000;
-        }
 
         .preview-modal-body {
-            flex: 1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .preview-cms-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        
-        .preview-fake-nav {
-            height: 50px;
-            background: linear-gradient(180deg, #222 0%, #1a1a1a 100%);
-            border-bottom: 1px solid #333;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            flex-shrink: 0;
-        }
-        
-        .preview-fake-nav .nav-logo {
-            width: 100px;
-            height: 24px;
-            background: #444;
-            border-radius: 4px;
-        }
-        
-        .preview-fake-nav .nav-links {
-            display: flex;
-            gap: 20px;
-            margin-left: 40px;
-        }
-        
-        .preview-fake-nav .nav-link {
-            width: 50px;
-            height: 12px;
-            background: #3a3a3a;
-            border-radius: 2px;
-        }
-        
-        .preview-content-area {
-            flex: 1;
-            display: flex;
-            background: #555;
-            overflow: hidden;
-        }
-        
-        .preview-gutter {
-            width: 80px;
-            background: #444;
-            flex-shrink: 0;
-        }
-        
-        .preview-iframe-wrap {
-            flex: 1;
-            max-width: 1200px;
-            margin: 0 auto;
+            position: absolute;
+            top: 50px;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: #000;
-            overflow: hidden;
         }
         
-        .preview-iframe-wrap iframe {
+        .preview-modal-body iframe {
             width: 100%;
             height: 100%;
             border: none;
-            display: block;
-        }
-        
-        .preview-iframe-wrap.mobile-frame {
-            position: relative;
-            flex: none;
-            width: 375px;
-            max-height: 812px;
-            border-radius: 40px;
-            border: 12px solid #1a1a1a;
-            box-shadow: 0 0 0 2px #333, inset 0 0 0 2px #000;
-            overflow: hidden;
-        }
-        
-        .preview-iframe-wrap.mobile-frame::before {
-            content: '';
-            position: absolute;
-            top: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 24px;
-            background: #000;
-            border-radius: 12px;
-            z-index: 10;
-        }
-        
-        /* Raw mode - no chrome */
-        .preview-cms-wrapper.raw-mode .preview-fake-nav,
-        .preview-cms-wrapper.raw-mode .preview-gutter {
-            display: none;
-        }
-        
-        .preview-cms-wrapper.raw-mode .preview-content-area {
-            height: 100%;
-        }
-        
-        .preview-cms-wrapper.raw-mode .preview-iframe-wrap {
-            max-width: 100%;
-        }
-        
-        .preview-cms-wrapper.raw-mode .preview-iframe-wrap::before {
-            display: none;
-        }
-        
-        /* Mobile mode - hide nav/gutters, center phone */
-        .preview-cms-wrapper.mobile-mode .preview-fake-nav,
-        .preview-cms-wrapper.mobile-mode .preview-gutter {
-            display: none;
-        }
-        
-        .preview-cms-wrapper.mobile-mode .preview-content-area {
-            height: 100%;
-            background: #333;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
         }
 
         .close-preview {
@@ -612,32 +480,10 @@
         <div class="preview-modal-content">
             <div class="preview-modal-header">
                 <h3>Preview - Combined Stack</h3>
-                <div class="preview-controls">
-                    <button class="preview-mode-btn active" onclick="setPreviewMode('cms')" id="btnCms">CMS</button>
-                    <button class="preview-mode-btn" onclick="setPreviewMode('mobile')" id="btnMobile">📱 Mobile</button>
-                    <button class="preview-mode-btn" onclick="setPreviewMode('raw')" id="btnRaw">Raw</button>
-                    <button onclick="closePreview()" class="close-preview">✕ Close</button>
-                </div>
+                <button onclick="closePreview()" class="close-preview">✕ Close</button>
             </div>
             <div class="preview-modal-body">
-                <div class="preview-cms-wrapper" id="previewWrapper">
-                    <div class="preview-fake-nav">
-                        <div class="nav-logo"></div>
-                        <div class="nav-links">
-                            <div class="nav-link"></div>
-                            <div class="nav-link"></div>
-                            <div class="nav-link"></div>
-                            <div class="nav-link"></div>
-                        </div>
-                    </div>
-                    <div class="preview-content-area">
-                        <div class="preview-gutter"></div>
-                        <div class="preview-iframe-wrap" id="previewIframeWrap">
-                            <iframe id="previewIframe"></iframe>
-                        </div>
-                        <div class="preview-gutter"></div>
-                    </div>
-                </div>
+                <iframe id="previewIframe"></iframe>
             </div>
         </div>
     </div>
@@ -888,79 +734,11 @@
 
             document.getElementById('previewIframe').src = url;
             document.getElementById('previewModal').classList.add('active');
-            
-            // Force size calculation after modal is visible
-            setTimeout(sizePreviewIframe, 50);
-        }
-        
-        function sizePreviewIframe() {
-            var modal = document.getElementById('previewModal');
-            var modalContent = modal.querySelector('.preview-modal-content');
-            var header = modal.querySelector('.preview-modal-header');
-            var wrapper = document.getElementById('previewWrapper');
-            var contentArea = modal.querySelector('.preview-content-area');
-            var iframeWrap = document.getElementById('previewIframeWrap');
-            var iframe = document.getElementById('previewIframe');
-            
-            // Get actual dimensions
-            var modalRect = modalContent.getBoundingClientRect();
-            var headerRect = header.getBoundingClientRect();
-            var fakeNavHeight = wrapper.classList.contains('raw-mode') || wrapper.classList.contains('mobile-mode') ? 0 : 50;
-            var gutterWidth = wrapper.classList.contains('raw-mode') || wrapper.classList.contains('mobile-mode') ? 0 : 80;
-            
-            // Calculate available space
-            var availHeight = modalRect.height - headerRect.height - fakeNavHeight;
-            var availWidth = modalRect.width - (gutterWidth * 2);
-            if (availWidth > 1200) availWidth = 1200;
-            
-            // Apply to content area and iframe
-            contentArea.style.height = availHeight + 'px';
-            
-            if (!iframeWrap.classList.contains('mobile-frame')) {
-                iframeWrap.style.height = availHeight + 'px';
-                iframe.style.height = availHeight + 'px';
-            }
         }
 
         function closePreview() {
             document.getElementById('previewModal').classList.remove('active');
             document.getElementById('previewIframe').src = '';
-        }
-        
-        function setPreviewMode(mode) {
-            var wrapper = document.getElementById('previewWrapper');
-            var iframeWrap = document.getElementById('previewIframeWrap');
-            var btnCms = document.getElementById('btnCms');
-            var btnMobile = document.getElementById('btnMobile');
-            var btnRaw = document.getElementById('btnRaw');
-            
-            // Reset classes
-            wrapper.classList.remove('raw-mode', 'mobile-mode');
-            iframeWrap.classList.remove('mobile-frame');
-            btnCms.classList.remove('active');
-            btnMobile.classList.remove('active');
-            btnRaw.classList.remove('active');
-            
-            // Clear inline styles
-            var contentArea = document.querySelector('.preview-content-area');
-            var iframe = document.getElementById('previewIframe');
-            contentArea.style.height = '';
-            iframeWrap.style.height = '';
-            iframe.style.height = '';
-            
-            if (mode === 'raw') {
-                wrapper.classList.add('raw-mode');
-                btnRaw.classList.add('active');
-            } else if (mode === 'mobile') {
-                wrapper.classList.add('mobile-mode');
-                iframeWrap.classList.add('mobile-frame');
-                btnMobile.classList.add('active');
-            } else {
-                btnCms.classList.add('active');
-            }
-            
-            // Recalculate sizes
-            setTimeout(sizePreviewIframe, 50);
         }
 
         function generateCombinedHTML() {
@@ -1365,13 +1143,6 @@ upd();
         loadSettings();
         updateMode(); // Apply mode visibility
         checkQueue();
-        
-        // Resize handler for preview
-        window.addEventListener('resize', function() {
-            if (document.getElementById('previewModal').classList.contains('active')) {
-                sizePreviewIframe();
-            }
-        });
     </script>
 <script>
 (function(){
