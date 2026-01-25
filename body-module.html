@@ -12,15 +12,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .preview-wrap { flex: 1; display: flex; flex-direction: column; }
 .preview-header { padding: 10px 20px; background: #1a1a1a; border-bottom: 1px solid #2a2a2a; }
 .preview-header span { color: #888; font-size: 12px; }
-.preview-scroll { flex: 1; overflow-y: auto; background: #0a0a0a; padding: 40px 20px; }
-.preview-body { max-width: 650px; margin: 0 auto; transition: max-width 0.3s; }
-.preview-body.with-image { max-width: 950px; }
+.preview-scroll { flex: 1; overflow-y: auto; background: #0a0a0a; }
+.preview-container { position: relative; }
+.preview-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.preview-body { max-width: 800px; margin: 0 auto; padding: 40px 20px; transition: max-width 0.3s; }
+.preview-body.with-image { max-width: 1100px; }
 .preview-content { display: flex; gap: 40px; align-items: flex-start; }
 .preview-content.img-left { flex-direction: row; }
 .preview-content.img-right { flex-direction: row-reverse; }
 .preview-content.no-image { display: block; }
-.preview-text-col { flex: 1; max-width: 550px; }
-.preview-img-col { width: 360px; flex-shrink: 0; }
+.preview-text-col { flex: 1; max-width: 650px; }
+.preview-img-col { width: 400px; flex-shrink: 0; }
 .preview-img-wrap { position: relative; cursor: pointer; }
 .preview-img-wrap img { width: 100%; border-radius: 6px; display: block; }
 .preview-img-wrap::after { content: '⤢'; position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; opacity: 0; transition: opacity 0.2s; }
@@ -198,12 +200,16 @@ Continue writing your story here. The text will automatically wrap and maintain 
             </div>
             <div class="control-group">
                 <label>Max Width (px)</label>
-                <input type="number" id="maxWidth" value="650" min="400" max="900" oninput="updatePreview()">
+                <input type="number" id="maxWidth" value="800" min="400" max="1200" oninput="updatePreview()">
             </div>
         </div>
         
         <h2 class="ctrl" onclick="toggleSection(this)">Layout</h2>
         <div class="section">
+            <div class="control-group">
+                <label>Scroll Duration <span class="range-val" id="scrollDurVal">200%</span></label>
+                <input type="range" id="scrollDuration" min="100" max="500" value="200" oninput="document.getElementById('scrollDurVal').textContent=this.value+'%'; updatePreview();">
+            </div>
             <div class="control-group">
                 <label>Minimum Height <span class="range-val" id="minHeightVal">50vh</span></label>
                 <input type="range" id="minHeight" min="0" max="100" value="50" oninput="document.getElementById('minHeightVal').textContent=this.value+'vh'; updatePreview();">
@@ -245,19 +251,23 @@ Continue writing your story here. The text will automatically wrap and maintain 
             <span>Preview</span>
         </div>
         <div class="preview-scroll" id="previewScroll">
-            <div class="preview-body" id="previewBody">
-                <div class="preview-content" id="previewContent">
-                    <div class="preview-text-col">
-                        <div class="preview-text" id="previewText"></div>
-                    </div>
-                    <div class="preview-img-col" id="previewImgCol" style="display:none;">
-                        <div class="preview-img-wrap" onclick="openLightbox()">
-                            <img id="previewImg" src="" alt="">
+            <div class="preview-container" id="previewContainer">
+                <div class="preview-stage" id="previewStage">
+                    <div class="preview-body" id="previewBody">
+                        <div class="preview-content" id="previewContent">
+                            <div class="preview-text-col">
+                                <div class="preview-text" id="previewText"></div>
+                            </div>
+                            <div class="preview-img-col" id="previewImgCol" style="display:none;">
+                                <div class="preview-img-wrap" onclick="openLightbox()">
+                                    <img id="previewImg" src="" alt="">
+                                </div>
+                                <div class="preview-caption" id="previewCaption"></div>
+                            </div>
                         </div>
-                        <div class="preview-caption" id="previewCaption"></div>
+                        <div class="preview-module-caption" id="previewModuleCaption"></div>
                     </div>
                 </div>
-                <div class="preview-module-caption" id="previewModuleCaption"></div>
             </div>
         </div>
     </div>
@@ -365,6 +375,8 @@ function parseMarkdown(text) {
 }
 
 function updatePreview() {
+    var container = document.getElementById('previewContainer');
+    var stage = document.getElementById('previewStage');
     var body = document.getElementById('previewBody');
     var content = document.getElementById('previewContent');
     var textEl = document.getElementById('previewText');
@@ -387,10 +399,11 @@ function updatePreview() {
     var captionText = document.getElementById('captionText').value;
     var captionCredit = document.getElementById('captionCredit').value;
     var captionSize = document.getElementById('captionSize').value;
+    var scrollDuration = parseInt(document.getElementById('scrollDuration').value) / 100;
     
     document.getElementById('imageSettings').style.display = imageEnabled ? 'block' : 'none';
     
-    scroll.style.background = bgColor;
+    stage.style.background = bgColor;
     textEl.style.textAlign = textAlign;
     textEl.style.color = textColor;
     textEl.style.fontSize = fontSize + 'px';
@@ -399,7 +412,7 @@ function updatePreview() {
     var showImage = imageEnabled && loadedImageUrl;
     if (showImage) {
         body.classList.add('with-image');
-        body.style.maxWidth = '950px';
+        body.style.maxWidth = '1100px';
     } else {
         body.classList.remove('with-image');
         body.style.maxWidth = maxWidth + 'px';
@@ -431,8 +444,53 @@ function updatePreview() {
     moduleCaption.style.fontSize = captionSize + 'px';
     moduleCaption.style.display = fullCaption ? 'block' : 'none';
     
+    // Set container height for scroll behavior
+    setTimeout(function() {
+        var bodyHeight = body.offsetHeight;
+        var stageHeight = stage.offsetHeight;
+        var scrollHeight = Math.max(stageHeight, bodyHeight * scrollDuration);
+        container.style.height = scrollHeight + 'px';
+    }, 50);
+    
     saveState();
 }
+
+// Scroll-driven text position in preview
+var previewScrollHandler = null;
+function setupPreviewScroll() {
+    var scroll = document.getElementById('previewScroll');
+    if (previewScrollHandler) {
+        scroll.removeEventListener('scroll', previewScrollHandler);
+    }
+    previewScrollHandler = function() {
+        var container = document.getElementById('previewContainer');
+        var body = document.getElementById('previewBody');
+        var stage = document.getElementById('previewStage');
+        
+        var scrollTop = scroll.scrollTop;
+        var containerTop = container.offsetTop;
+        var scrolled = scrollTop - containerTop;
+        var scrollRange = container.offsetHeight - stage.offsetHeight;
+        
+        if (scrollRange <= 0) return;
+        
+        var progress = Math.max(0, Math.min(1, scrolled / scrollRange));
+        
+        // Calculate how much the body needs to scroll up
+        var bodyHeight = body.offsetHeight;
+        var stageHeight = stage.offsetHeight;
+        var overflow = bodyHeight - stageHeight;
+        
+        if (overflow > 0) {
+            var translateY = -progress * overflow;
+            body.style.transform = 'translateY(' + translateY + 'px)';
+        } else {
+            body.style.transform = 'translateY(0)';
+        }
+    };
+    scroll.addEventListener('scroll', previewScrollHandler);
+}
+setupPreviewScroll();
 
 function openLightbox() {
     var imageEnabled = document.getElementById('imageEnabled').checked;
@@ -462,9 +520,11 @@ function resetModule() {
     document.getElementById('headlineColor').value = '#ffffff';
     document.getElementById('bgColor').value = '#0a0a0a';
     document.getElementById('fontSize').value = 17;
-    document.getElementById('maxWidth').value = 650;
+    document.getElementById('maxWidth').value = 800;
     document.getElementById('desktopOffset').value = 50;
     document.getElementById('mobileOffset').value = 200;
+    document.getElementById('scrollDuration').value = 200;
+    document.getElementById('scrollDurVal').textContent = '200%';
     document.getElementById('minHeight').value = 50;
     document.getElementById('minHeightVal').textContent = '50vh';
     document.getElementById('captionText').value = 'Article-style text with optional inline image. Supports markdown formatting with expandable lightbox for images.';
@@ -488,7 +548,7 @@ function generateExport() {
     var maxWidth = document.getElementById('maxWidth').value;
     var desktopOffset = document.getElementById('desktopOffset').value || 50;
     var mobileOffset = document.getElementById('mobileOffset').value || 200;
-    var minHeight = document.getElementById('minHeight').value || 50;
+    var scrollDuration = parseInt(document.getElementById('scrollDuration').value) / 100;
     var captionText = document.getElementById('captionText').value;
     var captionCredit = document.getElementById('captionCredit').value;
     var captionSize = document.getElementById('captionSize').value;
@@ -499,7 +559,7 @@ function generateExport() {
     
     var imgHTML = '';
     var imgCSS = '';
-    var bodyMaxWidth = showImage ? '950' : maxWidth;
+    var bodyMaxWidth = showImage ? '1100' : maxWidth;
     
     if (showImage) {
         imgHTML = '<div class="bm-img-col">\n' +
@@ -509,7 +569,7 @@ function generateExport() {
             (imageCaption ? '<div class="bm-caption">' + imageCaption + '</div>\n' : '') +
             '</div>';
         
-        imgCSS = '#' + uid + ' .bm-img-col{width:360px;flex-shrink:0}\n' +
+        imgCSS = '#' + uid + ' .bm-img-col{width:400px;flex-shrink:0}\n' +
             '#' + uid + ' .bm-img-wrap{position:relative;cursor:pointer}\n' +
             '#' + uid + ' .bm-img-wrap img{width:100%;border-radius:6px;display:block}\n' +
             '#' + uid + ' .bm-img-wrap::after{content:"⤢";position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.7);color:#fff;width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;opacity:0;transition:opacity 0.2s}\n' +
@@ -524,23 +584,25 @@ function generateExport() {
     
     var flexDir = showImage ? (imagePosition === 'left' ? 'row' : 'row-reverse') : '';
     
-var moduleCaptionCSS = fullCaption ? '#' + uid + ' .bm-module-caption{font-size:' + captionSize + 'px;color:#666;margin-top:20px;padding-top:20px;border-top:1px solid #333}\n' : '';
+    var moduleCaptionCSS = fullCaption ? '#' + uid + ' .bm-module-caption{font-size:' + captionSize + 'px;color:#666;margin-top:20px;padding-top:20px;border-top:1px solid #333}\n' : '';
     var moduleCaptionHTML = fullCaption ? '<div class="bm-module-caption">' + fullCaption + '</div>\n' : '';
     
     var code = '<style>\n' +
-'#' + uid + '{background:' + bgColor + ';padding:40px 20px;padding-top:' + desktopOffset + 'px;min-height:' + minHeight + 'vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
-'#' + uid + ' .bm-body{max-width:' + bodyMaxWidth + 'px;margin:0 auto}\n' +
+'#' + uid + '{position:relative;background:' + bgColor + '}\n' +
+'#' + uid + ' .bm-stage{position:-webkit-sticky;position:sticky;top:' + desktopOffset + 'px;height:calc(100vh - ' + desktopOffset + 'px);overflow:hidden;display:flex;align-items:center;justify-content:center}\n' +
+'#' + uid + ' .bm-body{max-width:' + bodyMaxWidth + 'px;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;will-change:transform}\n' +
 '#' + uid + ' .bm-content{display:flex;gap:40px;align-items:flex-start;' + (showImage ? 'flex-direction:' + flexDir : '') + '}\n' +
-'#' + uid + ' .bm-text{flex:1;' + (showImage ? 'max-width:550px;' : '') + 'line-height:1.7;color:' + textColor + ';font-size:' + fontSize + 'px;text-align:' + textAlign + '}\n' +
+'#' + uid + ' .bm-text{flex:1;' + (showImage ? 'max-width:650px;' : '') + 'line-height:1.7;color:' + textColor + ';font-size:' + fontSize + 'px;text-align:' + textAlign + '}\n' +
 '#' + uid + ' .bm-text h2{font-size:24px;color:' + headlineColor + ';margin-bottom:16px;font-weight:600}\n' +
 '#' + uid + ' .bm-text h3{font-size:20px;color:' + headlineColor + ';margin:24px 0 12px;font-weight:600}\n' +
 '#' + uid + ' .bm-text p{margin-bottom:16px}\n' +
 '#' + uid + ' .bm-text strong{color:' + headlineColor + '}\n' +
 imgCSS +
 moduleCaptionCSS +
-'@media(max-width:768px){#' + uid + '{padding-top:' + mobileOffset + 'px}#' + uid + ' .bm-content{flex-direction:column}' + (showImage ? '#' + uid + ' .bm-img-col{width:100%}#' + uid + ' .bm-text{max-width:none}' : '') + '}\n' +
+'@media(max-width:768px){#' + uid + ' .bm-stage{top:' + mobileOffset + 'px;height:calc(100vh - ' + mobileOffset + 'px)}#' + uid + ' .bm-content{flex-direction:column}' + (showImage ? '#' + uid + ' .bm-img-col{width:100%}#' + uid + ' .bm-text{max-width:none}' : '') + '}\n' +
 '</style>\n' +
 '<div id="' + uid + '">\n' +
+'<div class="bm-stage">\n' +
 '<div class="bm-body">\n' +
 '<div class="bm-content">\n' +
 '<div class="bm-text">' + html + '</div>\n' +
@@ -549,11 +611,49 @@ imgHTML +
 moduleCaptionHTML +
 '</div>\n' +
 '</div>\n' +
+'</div>\n' +
 (showImage ? '<div id="' + uid + 'lb" onclick="this.classList.remove(\'active\')">\n' +
 '<button class="lb-close">✕</button>\n' +
 '<img src="' + loadedImageUrl + '">\n' +
 (imageCaption ? '<div class="lb-cap">' + imageCaption + '</div>\n' : '') +
-'</div>\n' : '');
+'</div>\n' : '') +
+'<scr' + 'ipt>\n' +
+'(function(){\n' +
+'var wrap=document.getElementById("' + uid + '");\n' +
+'var stage=wrap.querySelector(".bm-stage");\n' +
+'var body=wrap.querySelector(".bm-body");\n' +
+'var scrollMult=' + scrollDuration + ';\n' +
+'function setHeight(){\n' +
+'var bodyH=body.offsetHeight;\n' +
+'var stageH=stage.offsetHeight;\n' +
+'var scrollH=Math.max(stageH,bodyH*scrollMult);\n' +
+'wrap.style.height=scrollH+"px";\n' +
+'}\n' +
+'setHeight();window.addEventListener("resize",setHeight);\n' +
+'function upd(){\n' +
+'var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\n' +
+'var progress;\n' +
+'if(extP!==undefined){progress=extP;}else{\n' +
+'var rect=wrap.getBoundingClientRect();\n' +
+'var scrolled=Math.max(0,-rect.top);\n' +
+'var scrollRange=wrap.offsetHeight-window.innerHeight;\n' +
+'progress=scrollRange>0?scrolled/scrollRange:0;\n' +
+'}\n' +
+'progress=Math.max(0,Math.min(1,progress));\n' +
+'var bodyH=body.offsetHeight;\n' +
+'var stageH=stage.offsetHeight;\n' +
+'var overflow=bodyH-stageH;\n' +
+'if(overflow>0){\n' +
+'var translateY=-progress*overflow;\n' +
+'body.style.transform="translateY("+translateY+"px)";\n' +
+'}else{\n' +
+'body.style.transform="translateY(0)";\n' +
+'}\n' +
+'requestAnimationFrame(upd);\n' +
+'}\n' +
+'upd();\n' +
+'})();\n' +
+'<\/scr' + 'ipt>';
     
     document.getElementById('exportCode').value = code;
     document.getElementById('exportModal').classList.add('active');
@@ -650,7 +750,7 @@ function loadProject(id) {
     document.getElementById('headlineColor').value = proj.headlineColor || '#ffffff';
     document.getElementById('bgColor').value = proj.bgColor || '#0a0a0a';
     document.getElementById('fontSize').value = proj.fontSize || 17;
-    document.getElementById('maxWidth').value = proj.maxWidth || 650;
+    document.getElementById('maxWidth').value = proj.maxWidth || 800;
     document.getElementById('desktopOffset').value = proj.desktopOffset || 50;
     document.getElementById('mobileOffset').value = proj.mobileOffset || 200;
     document.getElementById('minHeight').value = proj.minHeight || 50;
@@ -687,6 +787,7 @@ function getCurrentState() {
         maxWidth: document.getElementById('maxWidth').value,
         desktopOffset: document.getElementById('desktopOffset').value,
         mobileOffset: document.getElementById('mobileOffset').value,
+        scrollDuration: document.getElementById('scrollDuration').value,
         minHeight: document.getElementById('minHeight').value,
         captionText: document.getElementById('captionText').value,
         captionCredit: document.getElementById('captionCredit').value,
@@ -713,9 +814,11 @@ function loadState() {
         document.getElementById('headlineColor').value = s.headlineColor || '#ffffff';
         document.getElementById('bgColor').value = s.bgColor || '#0a0a0a';
         document.getElementById('fontSize').value = s.fontSize || 17;
-        document.getElementById('maxWidth').value = s.maxWidth || 650;
+        document.getElementById('maxWidth').value = s.maxWidth || 800;
         document.getElementById('desktopOffset').value = s.desktopOffset || 50;
         document.getElementById('mobileOffset').value = s.mobileOffset || 200;
+        document.getElementById('scrollDuration').value = s.scrollDuration || 200;
+        document.getElementById('scrollDurVal').textContent = (s.scrollDuration || 200) + '%';
         document.getElementById('minHeight').value = s.minHeight || 50;
         document.getElementById('minHeightVal').textContent = (s.minHeight || 50) + 'vh';
         document.getElementById('captionText').value = s.captionText || '';
