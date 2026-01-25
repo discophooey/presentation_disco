@@ -272,7 +272,6 @@
             bottom: 0;
             background: rgba(0, 0, 0, 0.95);
             z-index: 1000;
-            padding: 20px;
         }
 
         .preview-modal.active {
@@ -281,10 +280,10 @@
 
         .preview-modal-content {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
+            top: 60px;
+            left: 60px;
+            right: 60px;
+            bottom: 60px;
             background: #1a1a1a;
             border-radius: 12px;
             border: 1px solid #2a2a2a;
@@ -303,6 +302,7 @@
             justify-content: space-between;
             align-items: center;
             background: #1a1a1a;
+            border-radius: 12px 12px 0 0;
         }
 
         .preview-modal-header h3 {
@@ -811,12 +811,12 @@
                 '        ' + combinedStyles + '\n' +
                 '        /* Wrapper isolates from CMS overflow issues */\n' +
                 '        .nm-wrap { position: relative; width: 100%; background: ' + bgColor + '; overflow: clip; }\n' +
-                '        .nm-scroll { position: -webkit-sticky; position: sticky; top: ' + desktopOffset + 'px; height: calc(100vh - ' + desktopOffset + 'px); overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }\n' +
+                '        .nm-scroll { position: -webkit-sticky; position: sticky; top: ' + desktopOffset + 'px; height: ' + (desktopOffset == 0 ? '100%' : 'calc(100vh - ' + desktopOffset + 'px)') + '; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }\n' +
                 '        .nm-scroll::-webkit-scrollbar { width: 0; background: transparent; }\n' +
                 '        /* Override module stages to be sticky within scroll container */\n' +
                 '        .nm-scroll [class*="-stage"] { position: -webkit-sticky; position: sticky; top: 0; }\n' +
                 '        @media(max-width:768px){\n' +
-                '            .nm-scroll { top: ' + desktopOffset + 'px; height: calc(100vh - ' + desktopOffset + 'px); }\n' +
+                '            .nm-scroll { top: ' + desktopOffset + 'px; height: ' + (desktopOffset == 0 ? '100%' : 'calc(100vh - ' + desktopOffset + 'px)') + '; }\n' +
                 '            .nm-scroll [class*="-stage"] { top: 0 !important; height: 100vh !important; }\n' +
                 '        }\n' +
                 '    </style>\n' +
@@ -1038,11 +1038,11 @@ upd();
                 '    <title>' + title + '</title>\n' +
                 '    <style>\n' +
                 '        * { margin: 0; padding: 0; box-sizing: border-box; }\n' +
-                '        html, body { height: 100%; }\n' +
+                '        html, body { height: 100%; overflow: hidden; }\n' +
                 '        body { background: #000; }\n' +
                 '        ' + combinedStyles + '\n' +
                 '        .vp-wrap { position: relative; width: 100%; height: ' + totalHeight + 'px; background: #000; overflow: clip; }\n' +
-                '        .vp-container { position: -webkit-sticky; position: sticky; top: ' + topOffset + 'px; width: 100%; height: calc(100vh - ' + topOffset + 'px); overflow: hidden; }\n' +
+                '        .vp-container { position: -webkit-sticky; position: sticky; top: ' + topOffset + 'px; width: 100%; height: ' + (topOffset == 0 ? '100%' : 'calc(100vh - ' + topOffset + 'px)') + '; overflow: hidden; }\n' +
                 '        .vp-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.1s; overflow: hidden; }\n' +
                 '        .vp-layer:first-child { opacity: 1; }\n' +
                 '        .vp-blackout { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; opacity: 0; pointer-events: none; z-index: 9999; }\n' +
@@ -1051,7 +1051,7 @@ upd();
                 '        .vp-layer [class*="-stage"] { position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100% !important; height: 100% !important; }\n' +
                 '        /* Mobile: same framing as desktop */\n' +
                 '        @media(max-width:768px){\n' +
-                '          .vp-container { top: ' + topOffset + 'px; height: calc(100vh - ' + topOffset + 'px); }\n' +
+                '          .vp-container { top: ' + topOffset + 'px; height: ' + (topOffset == 0 ? '100%' : 'calc(100vh - ' + topOffset + 'px)') + '; }\n' +
                 '          .vp-layer > div { height: 100% !important; }\n' +
                 '          .vp-layer [class*="-stage"] { position: absolute !important; top: 0 !important; height: 100% !important; }\n' +
                 '        }\n' +
