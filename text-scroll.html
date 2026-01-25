@@ -138,6 +138,14 @@ button.danger:hover { background: #e74c3c; }
                         <button class="secondary" onclick="loadBgImage()" style="margin-top:8px;">Load Image</button>
                     </div>
                     <div class="control-group">
+                        <label>Image Fit</label>
+                        <select id="bgFit" onchange="updateBlock()">
+                            <option value="cover" selected>Cover (fill, crop)</option>
+                            <option value="contain">Contain (fit inside)</option>
+                            <option value="fill">Fill (stretch)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
                         <label>Image Caption</label>
                         <input type="text" id="bgCaption" oninput="updateBlock()">
                     </div>
@@ -233,6 +241,18 @@ button.danger:hover { background: #e74c3c; }
         
         <h2 onclick="toggleSection(this)">Layout</h2>
         <div class="section">
+            <div class="control-group">
+                <label>Output Aspect Ratio</label>
+                <select id="aspectRatio" onchange="updatePreview()">
+                    <option value="full" selected>Full Viewport (no edges)</option>
+                    <option value="16:9">16:9 Widescreen</option>
+                    <option value="4:3">4:3 Standard</option>
+                    <option value="1:1">1:1 Square</option>
+                    <option value="21:9">21:9 Ultrawide</option>
+                    <option value="9:16">9:16 Vertical</option>
+                    <option value="3:2">3:2 Photo</option>
+                </select>
+            </div>
             <div class="control-group">
                 <label>Base Scroll Duration (%)</label>
                 <input type="range" id="scrollDuration" min="100" max="400" value="200" oninput="updatePreviewHeight();">
@@ -394,6 +414,7 @@ function addBlock() {
         bgType: blocks.length === 0 ? 'color' : 'inherit',
         bgColor: '#1a1a1a',
         bgImage: '',
+        bgFit: 'cover',
         bgCaption: '',
         bgCredit: '',
         bgPosX: 50,
@@ -426,6 +447,7 @@ function loadBlockEditor() {
     document.getElementById('bgType').value = b.bgType;
     document.getElementById('bgColor').value = b.bgColor || '#1a1a1a';
     document.getElementById('bgImage').value = b.bgImage || '';
+    document.getElementById('bgFit').value = b.bgFit || 'cover';
     document.getElementById('bgCaption').value = b.bgCaption || '';
     document.getElementById('bgCredit').value = b.bgCredit || '';
     document.getElementById('bgPosX').value = b.bgPosX || 50;
@@ -453,6 +475,7 @@ function updateBlock() {
     b.bgColor = document.getElementById('bgColor').value;
     // Don't overwrite bgImage from input - only loadBgImage should set this
     // b.bgImage is set by loadBgImage() after validation
+    b.bgFit = document.getElementById('bgFit').value;
     b.bgCaption = document.getElementById('bgCaption').value;
     b.bgCredit = document.getElementById('bgCredit').value;
     b.bgPosX = parseInt(document.getElementById('bgPosX').value) || 50;
@@ -484,7 +507,7 @@ function getResolvedBg(index) {
             return blocks[i];
         }
     }
-    return { bgType: 'color', bgColor: '#1a1a1a', bgImage: '', bgPosX: 50, bgPosY: 50 };
+    return { bgType: 'color', bgColor: '#1a1a1a', bgImage: '', bgFit: 'cover', bgPosX: 50, bgPosY: 50, bgCaption: '', bgCredit: '' };
 }
 
 function updatePreviewHeight() {
@@ -500,6 +523,7 @@ var lastBgImage = '';
 function updatePreview() {
     var scroll = document.getElementById('previewScroll');
     var container = document.getElementById('previewContainer');
+    var stage = document.getElementById('previewStage');
     var text = document.getElementById('previewText');
     var bg1 = document.getElementById('previewBg1');
     var bg2 = document.getElementById('previewBg2');
@@ -521,6 +545,21 @@ function updatePreview() {
     var fadeIn = parseInt(document.getElementById('fadeIn').value) / 100;
     var fadeOut = parseInt(document.getElementById('fadeOut').value) / 100;
     var captionSize = document.getElementById('captionSize').value;
+    var aspectRatio = document.getElementById('aspectRatio').value;
+    
+    // Apply aspect ratio to stage
+    if (aspectRatio === 'full') {
+        stage.style.aspectRatio = '';
+        stage.style.height = '100vh';
+        stage.style.maxHeight = '';
+        stage.style.width = '100%';
+    } else {
+        var ratioMap = {'16:9': '16/9', '4:3': '4/3', '1:1': '1/1', '21:9': '21/9', '9:16': '9/16', '3:2': '3/2'};
+        stage.style.aspectRatio = ratioMap[aspectRatio] || '';
+        stage.style.height = 'auto';
+        stage.style.maxHeight = '100vh';
+        stage.style.width = '100%';
+    }
     
     text.querySelector('p').style.fontSize = fontSize + 'px';
     text.querySelector('p').style.color = textColor;
@@ -565,6 +604,7 @@ function updatePreview() {
     var bgColor = resolved.bgColor || '#1a1a1a';
     var bgPosX = resolved.bgPosX || 50;
     var bgPosY = resolved.bgPosY || 50;
+    var bgFit = resolved.bgFit || 'cover';
     
     // Use alternating backgrounds for crossfade effect
     var activeBg = (blockIndex % 2 === 0) ? bg1 : bg2;
@@ -574,9 +614,9 @@ function updatePreview() {
     if (hasImage) {
         activeBg.style.backgroundImage = 'url("' + bgImageUrl + '")';
         activeBg.style.backgroundPosition = bgPosX + '% ' + bgPosY + '%';
-        activeBg.style.backgroundSize = 'cover';
+        activeBg.style.backgroundSize = bgFit === 'fill' ? '100% 100%' : bgFit;
         activeBg.style.backgroundRepeat = 'no-repeat';
-        activeBg.style.backgroundColor = 'transparent';
+        activeBg.style.backgroundColor = '#000';
     } else {
         activeBg.style.backgroundImage = 'none';
         activeBg.style.backgroundColor = bgColor;
@@ -664,6 +704,7 @@ function generateExport() {
     var captionText = document.getElementById('captionText').value;
     var captionCredit = document.getElementById('captionCredit').value;
     var captionSize = document.getElementById('captionSize').value;
+    var aspectRatio = document.getElementById('aspectRatio').value;
     
     var blocksData = blocks.map(function(b, i) {
         var resolved = getResolvedBg(i);
@@ -671,6 +712,7 @@ function generateExport() {
             text: b.text,
             bg: resolved.bgType === 'image' && resolved.bgImage ? resolved.bgImage : null,
             color: resolved.bgType === 'color' ? resolved.bgColor : null,
+            fit: resolved.bgFit || 'cover',
             posX: resolved.bgPosX || 50,
             posY: resolved.bgPosY || 50,
             caption: resolved.bgCaption || '',
@@ -684,15 +726,24 @@ function generateExport() {
     var globalCaption = captionText + (captionText && captionCredit ? ' · ' : '') + captionCredit;
     var captionCSS = '#' + uid + ' .ts-caption{position:absolute;bottom:20px;left:20px;font-size:' + captionSize + 'px;color:#888;z-index:10;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n';
     
+    // Build aspect ratio CSS
+    var ratioMap = {'16:9': '16/9', '4:3': '4/3', '1:1': '1/1', '21:9': '21/9', '9:16': '9/16', '3:2': '3/2'};
+    var stageCSS;
+    if (aspectRatio === 'full') {
+        stageCSS = '#' + uid + ' .ts-stage{position:sticky;top:' + desktopOffset + 'px;height:calc(100vh - ' + desktopOffset + 'px);overflow:hidden}\n';
+    } else {
+        stageCSS = '#' + uid + ' .ts-stage{position:sticky;top:' + desktopOffset + 'px;width:100%;max-height:calc(100vh - ' + desktopOffset + 'px);aspect-ratio:' + ratioMap[aspectRatio] + ';overflow:hidden;margin:0 auto}\n';
+    }
+    
     var code = '<style>\n' +
 '#' + uid + '{position:relative;background:#000}\n' +
-'#' + uid + ' .ts-stage{position:sticky;top:' + desktopOffset + 'px;height:calc(100vh - ' + desktopOffset + 'px);overflow:hidden}\n' +
-'#' + uid + ' .ts-bg{position:absolute;inset:0;background-size:cover;transition:opacity ' + speed + 'ms,transform 3s}\n' +
+stageCSS +
+'#' + uid + ' .ts-bg{position:absolute;inset:0;background-color:#000;transition:opacity ' + speed + 'ms,transform 3s}\n' +
 '#' + uid + ' .ts-backdrop{position:absolute;inset:0;background:rgba(0,0,0,' + (darken/100) + ');' + (blur > 0 ? 'backdrop-filter:blur(' + blur + 'px);-webkit-backdrop-filter:blur(' + blur + 'px);' : '') + '}\n' +
 '#' + uid + ' .ts-text{position:absolute;padding:40px;max-width:900px;transition:opacity 0.3s;z-index:10}\n' +
 '#' + uid + ' .ts-text p{font-size:' + fontSize + 'px;font-weight:600;color:' + textColor + ';line-height:1.3;text-shadow:2px 2px 8px rgba(0,0,0,0.8);margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
 captionCSS +
-'@media(max-width:768px){#' + uid + ' .ts-stage{top:' + mobileOffset + 'px;height:calc(100vh - ' + mobileOffset + 'px)}#' + uid + ' .ts-text{padding:20px}#' + uid + ' .ts-text p{font-size:' + Math.round(fontSize * 0.6) + 'px}}\n' +
+'@media(max-width:768px){#' + uid + ' .ts-stage{top:' + mobileOffset + 'px;' + (aspectRatio === 'full' ? 'height:calc(100vh - ' + mobileOffset + 'px)' : 'max-height:calc(100vh - ' + mobileOffset + 'px)') + '}#' + uid + ' .ts-text{padding:20px}#' + uid + ' .ts-text p{font-size:' + Math.round(fontSize * 0.6) + 'px}}\n' +
 '</style>\n' +
 '<div id="' + uid + '">\n' +
 '<div class="ts-stage">\n' +
@@ -726,6 +777,12 @@ captionCSS +
 'function setTextPos(px,py){\n' +
 'text.style.left=px+"%";text.style.top=py+"%";text.style.right="auto";text.style.bottom="auto";text.style.transform="translate(-50%,-50%)";text.style.textAlign="center";\n' +
 '}\n' +
+'function getBgStyle(d){\n' +
+'if(!d.bg)return d.color||"#1a1a1a";\n' +
+'var fit=d.fit||"cover";\n' +
+'var size=fit==="fill"?"100% 100%":fit;\n' +
+'return "url("+d.bg+") "+d.posX+"% "+d.posY+"%/"+size+" no-repeat";\n' +
+'}\n' +
 'function upd(){\n' +
 'var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\n' +
 'var progress;\n' +
@@ -739,7 +796,7 @@ captionCSS +
 'for(var i=0;i<n;i++){var t=data[i].timing||1;if(accum+t>pt){idx=i;blockP=(pt-accum)/t;break;}accum+=t;idx=i;blockP=1;}\n' +
 'var d=data[idx];\n' +
 'if(idx!==curIdx){\n' +
-'var bgStyle=d.bg?"url("+d.bg+") "+d.posX+"% "+d.posY+"%/cover no-repeat":d.color;\n' +
+'var bgStyle=getBgStyle(d);\n' +
 'if(curIdx%2===0){bg2.style.background=bgStyle;bg2.style.opacity=1;bg1.style.opacity=0;}\n' +
 'else{bg1.style.background=bgStyle;bg1.style.opacity=1;bg2.style.opacity=0;}\n' +
 'p.textContent=d.text;\n' +
@@ -759,7 +816,7 @@ captionCSS +
 'text.style.opacity=op;\n' +
 'requestAnimationFrame(upd);\n' +
 '}\n' +
-'if(n>0){var d=data[0];bg1.style.background=d.bg?"url("+d.bg+") "+d.posX+"% "+d.posY+"%/cover no-repeat":d.color;bg1.style.opacity=1;p.textContent=d.text;setTextPos(d.textOffsetX!==undefined?d.textOffsetX:50,d.textOffsetY!==undefined?d.textOffsetY:50);var bc=d.caption||"";var bk=d.credit||"";var sc=bc||bk?bc+(bc&&bk?" · ":"")+bk:globalCap;cap.textContent=sc;cap.style.display=sc?"block":"none";curIdx=0;}\n' +
+'if(n>0){var d=data[0];bg1.style.background=getBgStyle(d);bg1.style.opacity=1;p.textContent=d.text;setTextPos(d.textOffsetX!==undefined?d.textOffsetX:50,d.textOffsetY!==undefined?d.textOffsetY:50);var bc=d.caption||"";var bk=d.credit||"";var sc=bc||bk?bc+(bc&&bk?" · ":"")+bk:globalCap;cap.textContent=sc;cap.style.display=sc?"block":"none";curIdx=0;}\n' +
 'upd();\n' +
 '})();\n' +
 '<\/scr' + 'ipt>';
@@ -863,6 +920,7 @@ function loadProject(id) {
     document.getElementById('bgEffect').value = proj.bgEffect || 'static';
     document.getElementById('transitionSpeed').value = proj.transitionSpeed || 600;
     document.getElementById('scrollDuration').value = proj.scrollDuration || 200;
+    document.getElementById('aspectRatio').value = proj.aspectRatio || 'full';
     document.getElementById('desktopOffset').value = proj.desktopOffset || 50;
     document.getElementById('mobileOffset').value = proj.mobileOffset || 200;
     
@@ -894,6 +952,7 @@ function getCurrentState() {
         bgEffect: document.getElementById('bgEffect').value,
         transitionSpeed: document.getElementById('transitionSpeed').value,
         scrollDuration: document.getElementById('scrollDuration').value,
+        aspectRatio: document.getElementById('aspectRatio').value,
         desktopOffset: document.getElementById('desktopOffset').value,
         mobileOffset: document.getElementById('mobileOffset').value,
         captionText: document.getElementById('captionText').value,
@@ -922,6 +981,7 @@ function loadState() {
         document.getElementById('bgEffect').value = s.bgEffect || 'static';
         document.getElementById('transitionSpeed').value = s.transitionSpeed || 600;
         document.getElementById('scrollDuration').value = s.scrollDuration || 200;
+        document.getElementById('aspectRatio').value = s.aspectRatio || 'full';
         document.getElementById('desktopOffset').value = s.desktopOffset || 50;
         document.getElementById('mobileOffset').value = s.mobileOffset || 200;
         document.getElementById('captionText').value = s.captionText || '';
