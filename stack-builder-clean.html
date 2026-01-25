@@ -332,11 +332,15 @@
         .preview-modal-body {
             flex: 1;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
         .preview-cms-wrapper {
-            width: 100%;
-            height: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
         
         .preview-fake-nav {
@@ -346,6 +350,7 @@
             display: flex;
             align-items: center;
             padding: 0 20px;
+            flex-shrink: 0;
         }
         
         .preview-fake-nav .nav-logo {
@@ -369,14 +374,16 @@
         }
         
         .preview-content-area {
-            height: calc(100% - 50px);
+            flex: 1;
             display: flex;
             background: #555;
+            overflow: hidden;
         }
         
         .preview-gutter {
             width: 80px;
             background: #444;
+            flex-shrink: 0;
         }
         
         .preview-iframe-wrap {
@@ -384,12 +391,14 @@
             max-width: 1200px;
             margin: 0 auto;
             background: #000;
+            overflow: hidden;
         }
         
         .preview-iframe-wrap iframe {
             width: 100%;
             height: 100%;
             border: none;
+            display: block;
         }
         
         .preview-iframe-wrap.mobile-frame {
@@ -879,6 +888,38 @@
 
             document.getElementById('previewIframe').src = url;
             document.getElementById('previewModal').classList.add('active');
+            
+            // Force size calculation after modal is visible
+            setTimeout(sizePreviewIframe, 50);
+        }
+        
+        function sizePreviewIframe() {
+            var modal = document.getElementById('previewModal');
+            var modalContent = modal.querySelector('.preview-modal-content');
+            var header = modal.querySelector('.preview-modal-header');
+            var wrapper = document.getElementById('previewWrapper');
+            var contentArea = modal.querySelector('.preview-content-area');
+            var iframeWrap = document.getElementById('previewIframeWrap');
+            var iframe = document.getElementById('previewIframe');
+            
+            // Get actual dimensions
+            var modalRect = modalContent.getBoundingClientRect();
+            var headerRect = header.getBoundingClientRect();
+            var fakeNavHeight = wrapper.classList.contains('raw-mode') || wrapper.classList.contains('mobile-mode') ? 0 : 50;
+            var gutterWidth = wrapper.classList.contains('raw-mode') || wrapper.classList.contains('mobile-mode') ? 0 : 80;
+            
+            // Calculate available space
+            var availHeight = modalRect.height - headerRect.height - fakeNavHeight;
+            var availWidth = modalRect.width - (gutterWidth * 2);
+            if (availWidth > 1200) availWidth = 1200;
+            
+            // Apply to content area and iframe
+            contentArea.style.height = availHeight + 'px';
+            
+            if (!iframeWrap.classList.contains('mobile-frame')) {
+                iframeWrap.style.height = availHeight + 'px';
+                iframe.style.height = availHeight + 'px';
+            }
         }
 
         function closePreview() {
@@ -900,6 +941,13 @@
             btnMobile.classList.remove('active');
             btnRaw.classList.remove('active');
             
+            // Clear inline styles
+            var contentArea = document.querySelector('.preview-content-area');
+            var iframe = document.getElementById('previewIframe');
+            contentArea.style.height = '';
+            iframeWrap.style.height = '';
+            iframe.style.height = '';
+            
             if (mode === 'raw') {
                 wrapper.classList.add('raw-mode');
                 btnRaw.classList.add('active');
@@ -910,6 +958,9 @@
             } else {
                 btnCms.classList.add('active');
             }
+            
+            // Recalculate sizes
+            setTimeout(sizePreviewIframe, 50);
         }
 
         function generateCombinedHTML() {
@@ -1314,6 +1365,13 @@ upd();
         loadSettings();
         updateMode(); // Apply mode visibility
         checkQueue();
+        
+        // Resize handler for preview
+        window.addEventListener('resize', function() {
+            if (document.getElementById('previewModal').classList.contains('active')) {
+                sizePreviewIframe();
+            }
+        });
     </script>
 <script>
 (function(){
