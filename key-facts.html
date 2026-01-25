@@ -26,6 +26,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .preview-fact-text { font-size: 15px; line-height: 1.5; color: #ccc; }
 .preview-source { font-size: 12px; color: #666; margin-top: 20px; padding-top: 16px; border-top: 1px solid #2a2a2a; opacity: 0; transition: all 0.4s; }
 .preview-source.on { opacity: 1; }
+.range-val { color: #4a9eff; margin-left: 8px; }
 
 h1 { font-size: 18px; color: #4a9eff; margin-bottom: 20px; }
 h2 { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px; padding: 10px 0; border-bottom: 1px solid #2a2a2a; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
@@ -177,6 +178,10 @@ button.danger:hover { background: #e74c3c; }
         
         <h2 onclick="toggleSection(this)">Layout</h2>
         <div class="section">
+            <div class="control-group">
+                <label>Container Height <span class="range-val" id="containerHeightVal">100vh</span></label>
+                <input type="range" id="containerHeight" min="30" max="100" value="100" oninput="document.getElementById('containerHeightVal').textContent=this.value+'vh'; updatePreview();">
+            </div>
             <div class="control-group">
                 <label>Scroll Duration (%)</label>
                 <input type="range" id="scrollDuration" min="100" max="300" value="150" oninput="updatePreviewHeight()">
@@ -345,10 +350,12 @@ function updatePreview() {
     var borderColor = document.getElementById('borderColor').value;
     var maxWidth = document.getElementById('maxWidth').value;
     var staggerDelay = document.getElementById('staggerDelay').value;
+    var containerHeight = document.getElementById('containerHeight').value;
     
     panel.style.background = panelBg;
     panel.style.borderColor = borderColor;
     stage.style.maxWidth = maxWidth + 'px';
+    stage.style.minHeight = containerHeight + 'vh';
     title.textContent = panelTitle;
     title.style.color = accentColor;
     
@@ -415,6 +422,7 @@ function generateExport() {
     var scrollMult = parseInt(document.getElementById('scrollDuration').value) / 100;
     var desktopOffset = document.getElementById('desktopOffset').value;
     var mobileOffset = document.getElementById('mobileOffset').value;
+    var containerHeight = document.getElementById('containerHeight').value;
     
     var factsHtml = '';
     facts.forEach(function(f, i) {
@@ -425,7 +433,7 @@ function generateExport() {
     });
     
     var code = '<style>\n' +
-'#' + uid + '{position:relative;display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
+'#' + uid + '{position:relative;display:flex;align-items:center;justify-content:center;min-height:' + containerHeight + 'vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
 '#' + uid + ' .kf-stage{position:sticky;top:' + desktopOffset + 'px;width:100%;max-width:' + maxWidth + 'px;padding:20px}\n' +
 '#' + uid + ' .kf-panel{background:' + panelBg + ';border:1px solid ' + borderColor + ';border-radius:12px;padding:30px}\n' +
 '#' + uid + ' .kf-title{font-size:14px;color:' + accentColor + ';text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;opacity:0;transform:translateY(10px);transition:all 0.4s}\n' +
@@ -570,6 +578,8 @@ function loadProject(id) {
     document.getElementById('scrollDuration').value = proj.scrollDuration || 150;
     document.getElementById('desktopOffset').value = proj.desktopOffset || 50;
     document.getElementById('mobileOffset').value = proj.mobileOffset || 200;
+    document.getElementById('containerHeight').value = proj.containerHeight || 100;
+    document.getElementById('containerHeightVal').textContent = (proj.containerHeight || 100) + 'vh';
     
     renderFactsList();
     loadFactEditor();
@@ -598,7 +608,8 @@ function getCurrentState() {
         staggerDelay: document.getElementById('staggerDelay').value,
         scrollDuration: document.getElementById('scrollDuration').value,
         desktopOffset: document.getElementById('desktopOffset').value,
-        mobileOffset: document.getElementById('mobileOffset').value
+        mobileOffset: document.getElementById('mobileOffset').value,
+        containerHeight: document.getElementById('containerHeight').value
     };
 }
 
@@ -621,6 +632,8 @@ function loadState() {
         document.getElementById('scrollDuration').value = s.scrollDuration || 150;
         document.getElementById('desktopOffset').value = s.desktopOffset || 50;
         document.getElementById('mobileOffset').value = s.mobileOffset || 200;
+        document.getElementById('containerHeight').value = s.containerHeight || 100;
+        document.getElementById('containerHeightVal').textContent = (s.containerHeight || 100) + 'vh';
     }
     renderFactsList();
     if (facts.length > 0) {

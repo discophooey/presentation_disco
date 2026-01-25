@@ -21,6 +21,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .preview-text.active { opacity: 1; }
 .preview-text p { font-weight: 600; line-height: 1.3; text-shadow: 2px 2px 8px rgba(0,0,0,0.8); }
 .preview-backdrop { position: absolute; inset: 0; pointer-events: none; }
+.preview-caption { position: absolute; bottom: 20px; left: 20px; color: #888; font-size: 12px; z-index: 10; }
 
 h1 { font-size: 18px; color: #4a9eff; margin-bottom: 20px; }
 h2 { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px; padding: 10px 0; border-bottom: 1px solid #2a2a2a; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
@@ -240,6 +241,22 @@ button.danger:hover { background: #e74c3c; }
             </div>
         </div>
         
+        <h2 onclick="toggleSection(this)">Caption</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Caption Text</label>
+                <input type="text" id="captionText" value="Full-viewport text blocks over background images with crossfade transitions. Each block can position text anywhere on screen with independent scroll timing." oninput="updatePreview()">
+            </div>
+            <div class="control-group">
+                <label>Credit</label>
+                <input type="text" id="captionCredit" value="Marshall Ritzel" oninput="updatePreview()">
+            </div>
+            <div class="control-group">
+                <label>Caption Size (px)</label>
+                <input type="range" id="captionSize" min="10" max="16" value="12" oninput="updatePreview();">
+            </div>
+        </div>
+        
         <button onclick="generateExport()">Generate HTML</button>
     </div>
     
@@ -255,6 +272,7 @@ button.danger:hover { background: #e74c3c; }
                     <div class="preview-bg" id="previewBg2" style="opacity:0;"></div>
                     <div class="preview-backdrop" id="previewBackdrop"></div>
                     <div class="preview-text" id="previewText"><p></p></div>
+                    <div class="preview-caption" id="previewCaption"></div>
                 </div>
             </div>
         </div>
@@ -320,13 +338,19 @@ function loadBgImage() {
     if (!url) { alert('Enter an image URL first'); return; }
     if (url.includes('github.com') && url.includes('/blob/')) {
         url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
-        document.getElementById('bgImage').value = url;
     }
     var img = new Image();
     img.onload = function() { 
+        // Set the converted URL back to input
+        document.getElementById('bgImage').value = url;
         // Auto-switch to image type when successfully loading
         document.getElementById('bgType').value = 'image';
         updateBgInputs();
+        // Directly update the block to ensure image is saved
+        if (selectedBlockIndex >= 0) {
+            blocks[selectedBlockIndex].bgType = 'image';
+            blocks[selectedBlockIndex].bgImage = url;
+        }
         updateBlock(); 
     };
     img.onerror = function() { alert('Could not load image. Check the URL.'); };
@@ -452,6 +476,7 @@ function updatePreview() {
     var bg1 = document.getElementById('previewBg1');
     var bg2 = document.getElementById('previewBg2');
     var backdrop = document.getElementById('previewBackdrop');
+    var captionEl = document.getElementById('previewCaption');
     
     var scrollTop = scroll.scrollTop;
     var maxScroll = container.offsetHeight - scroll.clientHeight;
@@ -468,9 +493,17 @@ function updatePreview() {
     var speed = document.getElementById('transitionSpeed').value;
     var fadeIn = parseInt(document.getElementById('fadeIn').value) / 100;
     var fadeOut = parseInt(document.getElementById('fadeOut').value) / 100;
+    var captionText = document.getElementById('captionText').value;
+    var captionCredit = document.getElementById('captionCredit').value;
+    var captionSize = document.getElementById('captionSize').value;
     
     text.querySelector('p').style.fontSize = fontSize + 'px';
     text.querySelector('p').style.color = textColor;
+    
+    var fullCaption = captionText + (captionText && captionCredit ? ' · ' : '') + captionCredit;
+    captionEl.textContent = fullCaption;
+    captionEl.style.fontSize = captionSize + 'px';
+    captionEl.style.display = fullCaption ? 'block' : 'none';
     
     backdrop.style.background = 'rgba(0,0,0,' + (darken / 100) + ')';
     backdrop.style.backdropFilter = blur > 0 ? 'blur(' + blur + 'px)' : 'none';
@@ -511,24 +544,22 @@ function updatePreview() {
         bgStyle = resolved.bgColor || '#1a1a1a';
     }
     
+    // Determine which bg element to use for this block
+    var activeBg = (blockIndex % 2 === 0) ? bg1 : bg2;
+    var inactiveBg = (blockIndex % 2 === 0) ? bg2 : bg1;
+    
     if (blockIndex !== currentBgIndex) {
-        if (currentBgIndex % 2 === 0) {
-            bg2.style.background = bgStyle;
-            bg2.style.opacity = 1;
-            bg1.style.opacity = 0;
-        } else {
-            bg1.style.background = bgStyle;
-            bg1.style.opacity = 1;
-            bg2.style.opacity = 0;
-        }
+        // Transitioning to a new block - crossfade
+        activeBg.style.background = bgStyle;
+        activeBg.style.opacity = 1;
+        inactiveBg.style.opacity = 0;
         currentBgIndex = blockIndex;
-    } else if (currentBgIndex === 0 || currentBgIndex === -1) {
-        bg1.style.background = bgStyle;
-        bg1.style.opacity = 1;
-        currentBgIndex = 0;
+    } else {
+        // Same block - just update the background (for when image changes)
+        activeBg.style.background = bgStyle;
+        activeBg.style.opacity = 1;
     }
     
-    var activeBg = (currentBgIndex === 0 || currentBgIndex % 2 === 0) ? bg1 : bg2;
     if (effect === 'zoomLeft') {
         activeBg.style.transform = 'scale(1.1) translateX(' + (-blockProgress * 3) + '%)';
     } else if (effect === 'zoomRight') {
@@ -578,6 +609,9 @@ function generateExport() {
     var baseDur = parseInt(document.getElementById('scrollDuration').value) / 100;
     var desktopOffset = document.getElementById('desktopOffset').value;
     var mobileOffset = document.getElementById('mobileOffset').value;
+    var captionText = document.getElementById('captionText').value;
+    var captionCredit = document.getElementById('captionCredit').value;
+    var captionSize = document.getElementById('captionSize').value;
     
     var blocksData = blocks.map(function(b, i) {
         var resolved = getResolvedBg(i);
@@ -593,6 +627,10 @@ function generateExport() {
         };
     });
     
+    var fullCaption = captionText + (captionText && captionCredit ? ' · ' : '') + captionCredit;
+    var captionCSS = fullCaption ? '#' + uid + ' .ts-caption{position:absolute;bottom:20px;left:20px;font-size:' + captionSize + 'px;color:#888;z-index:10;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' : '';
+    var captionHTML = fullCaption ? '<div class="ts-caption">' + fullCaption + '</div>\n' : '';
+    
     var code = '<style>\n' +
 '#' + uid + '{position:relative;background:#000}\n' +
 '#' + uid + ' .ts-stage{position:sticky;top:' + desktopOffset + 'px;height:calc(100vh - ' + desktopOffset + 'px);overflow:hidden}\n' +
@@ -600,6 +638,7 @@ function generateExport() {
 '#' + uid + ' .ts-backdrop{position:absolute;inset:0;background:rgba(0,0,0,' + (darken/100) + ');' + (blur > 0 ? 'backdrop-filter:blur(' + blur + 'px);-webkit-backdrop-filter:blur(' + blur + 'px);' : '') + '}\n' +
 '#' + uid + ' .ts-text{position:absolute;padding:40px;max-width:900px;transition:opacity 0.3s;z-index:10}\n' +
 '#' + uid + ' .ts-text p{font-size:' + fontSize + 'px;font-weight:600;color:' + textColor + ';line-height:1.3;text-shadow:2px 2px 8px rgba(0,0,0,0.8);margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
+captionCSS +
 '@media(max-width:768px){#' + uid + ' .ts-stage{top:' + mobileOffset + 'px;height:calc(100vh - ' + mobileOffset + 'px)}#' + uid + ' .ts-text{padding:20px}#' + uid + ' .ts-text p{font-size:' + Math.round(fontSize * 0.6) + 'px}}\n' +
 '</style>\n' +
 '<div id="' + uid + '">\n' +
@@ -608,6 +647,7 @@ function generateExport() {
 '<div class="ts-bg" id="' + uid + 'bg2" style="opacity:0"></div>\n' +
 '<div class="ts-backdrop"></div>\n' +
 '<div class="ts-text"><p></p></div>\n' +
+captionHTML +
 '</div>\n' +
 '</div>\n' +
 '<scr' + 'ipt>\n' +
@@ -795,7 +835,10 @@ function getCurrentState() {
         transitionSpeed: document.getElementById('transitionSpeed').value,
         scrollDuration: document.getElementById('scrollDuration').value,
         desktopOffset: document.getElementById('desktopOffset').value,
-        mobileOffset: document.getElementById('mobileOffset').value
+        mobileOffset: document.getElementById('mobileOffset').value,
+        captionText: document.getElementById('captionText').value,
+        captionCredit: document.getElementById('captionCredit').value,
+        captionSize: document.getElementById('captionSize').value
     };
 }
 
@@ -821,6 +864,9 @@ function loadState() {
         document.getElementById('scrollDuration').value = s.scrollDuration || 200;
         document.getElementById('desktopOffset').value = s.desktopOffset || 50;
         document.getElementById('mobileOffset').value = s.mobileOffset || 200;
+        document.getElementById('captionText').value = s.captionText || '';
+        document.getElementById('captionCredit').value = s.captionCredit || '';
+        document.getElementById('captionSize').value = s.captionSize || 12;
     }
     renderBlocksList();
     if (blocks.length > 0) {

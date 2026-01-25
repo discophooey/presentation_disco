@@ -29,6 +29,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .preview-stage.revealed .preview-title.scaleIn { opacity: 1; transform: scale(1); }
 .preview-stage.revealed .preview-title.blurReveal { opacity: 1; filter: blur(0); transform: scale(1); }
 .preview-stage.revealed .preview-title.randomLetters { opacity: 1; }
+.preview-caption { position: absolute; bottom: 20px; left: 20px; color: #888; font-size: 12px; }
+.range-val { color: #4a9eff; margin-left: 8px; }
 
 h1 { font-size: 18px; color: #4a9eff; margin-bottom: 20px; }
 h2 { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px; padding: 10px 0; border-bottom: 1px solid #2a2a2a; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
@@ -167,6 +169,10 @@ button.secondary:hover { background: #333; color: #fff; }
         <h2 onclick="toggleSection(this)">Layout</h2>
         <div class="section">
             <div class="control-group">
+                <label>Container Height <span class="range-val" id="containerHeightVal">100vh</span></label>
+                <input type="range" id="containerHeight" min="30" max="100" value="100" oninput="document.getElementById('containerHeightVal').textContent=this.value+'vh'; updatePreview();">
+            </div>
+            <div class="control-group">
                 <label>Scroll Duration (%)</label>
                 <input type="range" id="scrollDuration" min="100" max="300" value="150" oninput="updatePreviewHeight()">
             </div>
@@ -179,6 +185,18 @@ button.secondary:hover { background: #333; color: #fff; }
                     <label>Mobile Offset (px)</label>
                     <input type="number" id="mobileOffset" value="200" min="0" max="300">
                 </div>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Caption</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Caption Text</label>
+                <input type="text" id="captionText" placeholder="Photo credit or description" oninput="updatePreview()">
+            </div>
+            <div class="control-group">
+                <label>Caption Size (px)</label>
+                <input type="range" id="captionSize" min="10" max="16" value="12" oninput="updatePreview();">
             </div>
         </div>
         
@@ -197,6 +215,7 @@ button.secondary:hover { background: #333; color: #fff; }
                     <div class="preview-chapter" id="previewChapter">Chapter One</div>
                     <div class="preview-title fadeUp" id="previewTitle">The Beginning</div>
                     <div class="preview-subtitle" id="previewSubtitle"></div>
+                    <div class="preview-caption" id="previewCaption"></div>
                 </div>
             </div>
         </div>
@@ -266,6 +285,7 @@ function updatePreview() {
     var chapter = document.getElementById('previewChapter');
     var title = document.getElementById('previewTitle');
     var subtitle = document.getElementById('previewSubtitle');
+    var captionEl = document.getElementById('previewCaption');
     
     var chapterText = document.getElementById('chapterNum').value;
     var titleText = document.getElementById('titleText').value;
@@ -277,8 +297,13 @@ function updatePreview() {
     var bgColor2 = document.getElementById('bgColor2').value;
     var effect = document.getElementById('entryEffect').value;
     var trigger = parseInt(document.getElementById('triggerPoint').value) / 100;
+    var captionText = document.getElementById('captionText').value;
+    var captionSize = document.getElementById('captionSize').value;
+    var containerHeight = document.getElementById('containerHeight').value;
     
     document.getElementById('bgColor2Group').style.display = bgType === 'gradient' ? 'block' : 'none';
+    
+    stage.style.height = containerHeight + 'vh';
     
     chapter.textContent = chapterText;
     chapter.style.display = chapterText ? 'block' : 'none';
@@ -287,6 +312,10 @@ function updatePreview() {
     title.style.color = titleColor;
     subtitle.textContent = subtitleText;
     subtitle.style.display = subtitleText ? 'block' : 'none';
+    
+    captionEl.textContent = captionText;
+    captionEl.style.fontSize = captionSize + 'px';
+    captionEl.style.display = captionText ? 'block' : 'none';
     
     if (bgType === 'gradient') {
         stage.style.background = 'linear-gradient(135deg, ' + bgColor1 + ' 0%, ' + bgColor2 + ' 100%)';
@@ -391,6 +420,9 @@ function generateExport() {
     var scrollMult = parseInt(document.getElementById('scrollDuration').value) / 100;
     var desktopOffset = document.getElementById('desktopOffset').value;
     var mobileOffset = document.getElementById('mobileOffset').value;
+    var captionText = document.getElementById('captionText').value;
+    var captionSize = document.getElementById('captionSize').value;
+    var containerHeight = document.getElementById('containerHeight').value;
     
     var bgCSS = bgType === 'gradient' 
         ? 'linear-gradient(135deg,' + bgColor1 + ' 0%,' + bgColor2 + ' 100%)'
@@ -410,21 +442,26 @@ function generateExport() {
         effectJS = 'var chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";var finalText="' + titleText.replace(/"/g, '\\"') + '";var ti=null;function scramble(){var it=0,mx=finalText.length*3;titleEl.style.opacity=1;ti=setInterval(function(){var p=it/mx,rv=Math.floor(p*finalText.length),t="";for(var i=0;i<finalText.length;i++){if(finalText[i]===" ")t+=" ";else if(i<rv)t+=finalText[i];else t+=chars[Math.floor(Math.random()*chars.length)];}titleEl.textContent=t;it++;if(it>=mx){titleEl.textContent=finalText;clearInterval(ti);ti=null;}},30);}';
     }
     
+    var captionCSS = captionText ? '#' + uid + ' .cm-caption{position:absolute;bottom:20px;left:20px;font-size:' + captionSize + 'px;color:#888}\n' : '';
+    var captionHTML = captionText ? '<div class="cm-caption">' + captionText + '</div>\n' : '';
+    
     var code = '<style>\n' +
 '#' + uid + '{position:relative;background:' + bgCSS + ';font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
-'#' + uid + ' .cm-stage{position:sticky;top:' + desktopOffset + 'px;height:calc(100vh - ' + desktopOffset + 'px);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}\n' +
+'#' + uid + ' .cm-stage{position:sticky;top:' + desktopOffset + 'px;height:calc(' + containerHeight + 'vh - ' + desktopOffset + 'px);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}\n' +
 '#' + uid + ' .cm-chapter{font-size:14px;color:#666;letter-spacing:4px;text-transform:uppercase;margin-bottom:20px;opacity:0;transform:translateY(20px);transition:all 0.6s}\n' +
 '#' + uid + ' .cm-title{font-size:' + titleSize + 'px;font-weight:700;color:' + titleColor + ';line-height:1.1;text-align:center;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
 '#' + uid + ' .cm-subtitle{font-size:20px;color:#888;margin-top:20px;opacity:0;transform:translateY(20px);transition:all 0.6s 0.4s}\n' +
 '#' + uid + '.on .cm-chapter,#' + uid + '.on .cm-subtitle{opacity:1;transform:translateY(0)}\n' +
 effectCSS + '\n' +
-'@media(max-width:768px){#' + uid + ' .cm-stage{top:' + mobileOffset + 'px;height:calc(100vh - ' + mobileOffset + 'px)}#' + uid + ' .cm-title{font-size:' + Math.round(titleSize * 0.6) + 'px}}\n' +
+captionCSS +
+'@media(max-width:768px){#' + uid + ' .cm-stage{top:' + mobileOffset + 'px;height:calc(' + containerHeight + 'vh - ' + mobileOffset + 'px)}#' + uid + ' .cm-title{font-size:' + Math.round(titleSize * 0.6) + 'px}}\n' +
 '</style>\n' +
 '<div id="' + uid + '">\n' +
 '<div class="cm-stage">\n' +
 (chapterText ? '<div class="cm-chapter">' + chapterText + '</div>\n' : '') +
 '<div class="cm-title">' + titleText + '</div>\n' +
 (subtitleText ? '<div class="cm-subtitle">' + subtitleText + '</div>\n' : '') +
+captionHTML +
 '</div>\n' +
 '</div>\n' +
 '<scr' + 'ipt>\n' +
@@ -582,7 +619,10 @@ function getCurrentState() {
         triggerPoint: document.getElementById('triggerPoint').value,
         scrollDuration: document.getElementById('scrollDuration').value,
         desktopOffset: document.getElementById('desktopOffset').value,
-        mobileOffset: document.getElementById('mobileOffset').value
+        mobileOffset: document.getElementById('mobileOffset').value,
+        containerHeight: document.getElementById('containerHeight').value,
+        captionText: document.getElementById('captionText').value,
+        captionSize: document.getElementById('captionSize').value
     };
 }
 
@@ -608,6 +648,10 @@ function loadState() {
         document.getElementById('scrollDuration').value = s.scrollDuration || 150;
         document.getElementById('desktopOffset').value = s.desktopOffset || 50;
         document.getElementById('mobileOffset').value = s.mobileOffset || 200;
+        document.getElementById('containerHeight').value = s.containerHeight || 100;
+        document.getElementById('containerHeightVal').textContent = (s.containerHeight || 100) + 'vh';
+        document.getElementById('captionText').value = s.captionText || '';
+        document.getElementById('captionSize').value = s.captionSize || 12;
     }
     updatePreviewHeight();
     updatePreview();
