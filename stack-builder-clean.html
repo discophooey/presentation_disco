@@ -317,6 +317,8 @@
             right: 0;
             bottom: 0;
             background: #000;
+            border-radius: 0 0 12px 12px;
+            overflow: hidden;
         }
         
         .preview-modal-body iframe {
@@ -726,10 +728,20 @@
                 return;
             }
 
-            const combinedHTML = generateCombinedHTML();
-            document.getElementById('embedCode').value = combinedHTML;
+            // Save current offset, set to 0 for preview (no nav in iframe)
+            const offsetInput = document.getElementById('vpDesktopOffset');
+            const savedOffset = offsetInput.value;
+            offsetInput.value = '0';
+            
+            // Generate preview HTML with 0 offset
+            const previewHTML = generateCombinedHTML();
+            
+            // Restore offset and generate export HTML
+            offsetInput.value = savedOffset;
+            const exportHTML = generateCombinedHTML();
+            document.getElementById('embedCode').value = exportHTML;
 
-            const blob = new Blob([combinedHTML], { type: 'text/html' });
+            const blob = new Blob([previewHTML], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
 
             document.getElementById('previewIframe').src = url;
@@ -794,6 +806,7 @@
                 '    <title>' + title + '</title>\n' +
                 '    <style>\n' +
                 '        * { margin: 0; padding: 0; box-sizing: border-box; }\n' +
+                '        html, body { height: 100%; }\n' +
                 '        body { background: ' + bgColor + '; overflow-x: hidden; }\n' +
                 '        ' + combinedStyles + '\n' +
                 '        /* Wrapper isolates from CMS overflow issues */\n' +
@@ -1025,6 +1038,7 @@ upd();
                 '    <title>' + title + '</title>\n' +
                 '    <style>\n' +
                 '        * { margin: 0; padding: 0; box-sizing: border-box; }\n' +
+                '        html, body { height: 100%; }\n' +
                 '        body { background: #000; }\n' +
                 '        ' + combinedStyles + '\n' +
                 '        .vp-wrap { position: relative; width: 100%; height: ' + totalHeight + 'px; background: #000; overflow: clip; }\n' +
