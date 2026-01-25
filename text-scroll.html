@@ -21,7 +21,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .preview-text.active { opacity: 1; }
 .preview-text p { font-weight: 600; line-height: 1.3; text-shadow: 2px 2px 8px rgba(0,0,0,0.8); }
 .preview-backdrop { position: absolute; inset: 0; pointer-events: none; }
-.preview-caption { position: absolute; bottom: 20px; left: 20px; color: #888; font-size: 12px; z-index: 10; }
+.preview-caption { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 700px; padding: 12px 16px; background: rgba(0,0,0,0.8); border-radius: 8px; font-size: 13px; line-height: 1.5; color: #e0e0e0; opacity: 0; transition: opacity 0.6s; z-index: 100; }
+.preview-caption.on { opacity: 1; }
+.preview-cred { color: #999; font-size: 11px; font-style: italic; margin-top: 4px; }
 
 h1 { font-size: 18px; color: #4a9eff; margin-bottom: 20px; }
 h2 { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px; padding: 10px 0; border-bottom: 1px solid #2a2a2a; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
@@ -145,14 +147,6 @@ button.danger:hover { background: #e74c3c; }
                             <option value="fill">Fill (stretch)</option>
                         </select>
                     </div>
-                    <div class="control-group">
-                        <label>Image Caption</label>
-                        <input type="text" id="bgCaption" oninput="updateBlock()">
-                    </div>
-                    <div class="control-group">
-                        <label>Credit / Source</label>
-                        <input type="text" id="bgCredit" oninput="updateBlock()">
-                    </div>
                     <div class="inline-group">
                         <div class="control-group">
                             <label>Image X (%)</label>
@@ -228,9 +222,10 @@ button.danger:hover { background: #e74c3c; }
             <div class="control-group">
                 <label>Effect While Active</label>
                 <select id="bgEffect" onchange="updatePreview()">
-                    <option value="static">Static</option>
-                    <option value="zoomLeft">Subtle Zoom Left</option>
-                    <option value="zoomRight">Subtle Zoom Right</option>
+                    <option value="static" selected>Static</option>
+                    <option value="zoomAlt">Subtle Zoom L/R</option>
+                    <option value="kenburns">Ken Burns</option>
+                    <option value="drift">Drift</option>
                 </select>
             </div>
             <div class="control-group">
@@ -271,21 +266,19 @@ button.danger:hover { background: #e74c3c; }
         
         <h2 onclick="toggleSection(this)">Caption</h2>
         <div class="section">
+            <div class="control-group"><label><input type="checkbox" id="captionEnabled" onchange="updatePreview();">Enable Caption</label></div>
             <div class="control-group">
                 <label>Caption Text</label>
-                <input type="text" id="captionText" value="Full-viewport text blocks over background images with crossfade transitions. Each block can position text anywhere on screen with independent scroll timing." oninput="updatePreview()">
+                <textarea id="captionText" oninput="updatePreview();"></textarea>
             </div>
             <div class="control-group">
-                <label>Credit</label>
-                <input type="text" id="captionCredit" value="Marshall Ritzel" oninput="updatePreview()">
-            </div>
-            <div class="control-group">
-                <label>Caption Size (px)</label>
-                <input type="range" id="captionSize" min="10" max="16" value="12" oninput="updatePreview();">
+                <label>Credit / Source</label>
+                <input type="text" id="captionCredit" oninput="updatePreview();">
             </div>
         </div>
         
         <button onclick="generateExport()">Generate HTML</button>
+        <button class="secondary" onclick="resetModule()" style="margin-top:8px;">🔄 Reset Module</button>
     </div>
     
     <div class="preview-wrap">
@@ -345,8 +338,10 @@ button.danger:hover { background: #e74c3c; }
         <h3>Load Project</h3>
         <div class="saved-list" id="savedList"></div>
         <div class="modal-actions">
+            <button onclick="loadFromJSON()">📄 Load JSON</button>
             <button class="secondary" onclick="closeModal('loadModal')">Cancel</button>
         </div>
+        <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="handleJSONFile(event)">
     </div>
 </div>
 
@@ -415,8 +410,6 @@ function addBlock() {
         bgColor: '#1a1a1a',
         bgImage: '',
         bgFit: 'cover',
-        bgCaption: '',
-        bgCredit: '',
         bgPosX: 50,
         bgPosY: 50,
         textOffsetX: 50,
@@ -448,8 +441,6 @@ function loadBlockEditor() {
     document.getElementById('bgColor').value = b.bgColor || '#1a1a1a';
     document.getElementById('bgImage').value = b.bgImage || '';
     document.getElementById('bgFit').value = b.bgFit || 'cover';
-    document.getElementById('bgCaption').value = b.bgCaption || '';
-    document.getElementById('bgCredit').value = b.bgCredit || '';
     document.getElementById('bgPosX').value = b.bgPosX || 50;
     document.getElementById('bgPosY').value = b.bgPosY || 50;
     document.getElementById('textOffsetX').value = b.textOffsetX !== undefined ? b.textOffsetX : 50;
@@ -476,8 +467,6 @@ function updateBlock() {
     // Don't overwrite bgImage from input - only loadBgImage should set this
     // b.bgImage is set by loadBgImage() after validation
     b.bgFit = document.getElementById('bgFit').value;
-    b.bgCaption = document.getElementById('bgCaption').value;
-    b.bgCredit = document.getElementById('bgCredit').value;
     b.bgPosX = parseInt(document.getElementById('bgPosX').value) || 50;
     b.bgPosY = parseInt(document.getElementById('bgPosY').value) || 50;
     b.textOffsetX = parseInt(document.getElementById('textOffsetX').value);
@@ -507,7 +496,7 @@ function getResolvedBg(index) {
             return blocks[i];
         }
     }
-    return { bgType: 'color', bgColor: '#1a1a1a', bgImage: '', bgFit: 'cover', bgPosX: 50, bgPosY: 50, bgCaption: '', bgCredit: '' };
+    return { bgType: 'color', bgColor: '#1a1a1a', bgImage: '', bgFit: 'cover', bgPosX: 50, bgPosY: 50 };
 }
 
 function updatePreviewHeight() {
@@ -544,7 +533,6 @@ function updatePreview() {
     var speed = document.getElementById('transitionSpeed').value;
     var fadeIn = parseInt(document.getElementById('fadeIn').value) / 100;
     var fadeOut = parseInt(document.getElementById('fadeOut').value) / 100;
-    var captionSize = document.getElementById('captionSize').value;
     var aspectRatio = document.getElementById('aspectRatio').value;
     
     // Apply aspect ratio to stage
@@ -648,29 +636,32 @@ function updatePreview() {
         }
     }
     
-    // Apply zoom effect
-    if (effect === 'zoomLeft') {
-        activeBg.style.transform = 'scale(1.1) translateX(' + (-blockProgress * 3) + '%)';
-    } else if (effect === 'zoomRight') {
-        activeBg.style.transform = 'scale(1.1) translateX(' + (blockProgress * 3) + '%)';
+    // Apply background effect
+    if (effect === 'zoomAlt') {
+        // Alternating zoom left/right per block
+        var dir = (blockIndex % 2 === 0) ? -1 : 1;
+        activeBg.style.transform = 'scale(1.1) translateX(' + (dir * blockProgress * 3) + '%)';
+    } else if (effect === 'kenburns') {
+        // Slow zoom in
+        var scale = 1 + (blockProgress * 0.15);
+        activeBg.style.transform = 'scale(' + scale + ')';
+    } else if (effect === 'drift') {
+        // Slow horizontal pan
+        activeBg.style.transform = 'scale(1.05) translateX(' + ((blockProgress - 0.5) * 6) + '%)';
     } else {
         activeBg.style.transform = 'scale(1)';
     }
     
-    // Per-block caption (from image) or fall back to global caption
-    var blockCaption = resolved.bgCaption || '';
-    var blockCredit = resolved.bgCredit || '';
-    captionEl.style.fontSize = captionSize + 'px';
-    if (blockCaption || blockCredit) {
-        var fullCaption = blockCaption + (blockCaption && blockCredit ? ' · ' : '') + blockCredit;
-        captionEl.textContent = fullCaption;
-        captionEl.style.display = 'block';
+    // Global caption (single caption for whole module)
+    var captionEnabled = document.getElementById('captionEnabled').checked;
+    var captionText = document.getElementById('captionText').value;
+    var captionCredit = document.getElementById('captionCredit').value;
+    
+    if (captionEnabled && captionText) {
+        captionEl.innerHTML = captionText + (captionCredit ? '<div class="preview-cred">' + captionCredit + '</div>' : '');
+        captionEl.classList.add('on');
     } else {
-        var globalCaption = document.getElementById('captionText').value;
-        var globalCredit = document.getElementById('captionCredit').value;
-        var fullCaption = globalCaption + (globalCaption && globalCredit ? ' · ' : '') + globalCredit;
-        captionEl.textContent = fullCaption;
-        captionEl.style.display = fullCaption ? 'block' : 'none';
+        captionEl.classList.remove('on');
     }
     
     // Text position
@@ -715,9 +706,9 @@ function generateExport() {
     var baseDur = parseInt(document.getElementById('scrollDuration').value) / 100;
     var desktopOffset = document.getElementById('desktopOffset').value;
     var mobileOffset = document.getElementById('mobileOffset').value;
+    var captionEnabled = document.getElementById('captionEnabled').checked;
     var captionText = document.getElementById('captionText').value;
     var captionCredit = document.getElementById('captionCredit').value;
-    var captionSize = document.getElementById('captionSize').value;
     var aspectRatio = document.getElementById('aspectRatio').value;
     
     var blocksData = blocks.map(function(b, i) {
@@ -729,16 +720,14 @@ function generateExport() {
             fit: resolved.bgFit || 'cover',
             posX: resolved.bgPosX || 50,
             posY: resolved.bgPosY || 50,
-            caption: resolved.bgCaption || '',
-            credit: resolved.bgCredit || '',
             textOffsetX: b.textOffsetX !== undefined ? b.textOffsetX : 50,
             textOffsetY: b.textOffsetY !== undefined ? b.textOffsetY : 50,
             timing: b.timing || 1
         };
     });
     
-    var globalCaption = captionText + (captionText && captionCredit ? ' · ' : '') + captionCredit;
-    var captionCSS = '#' + uid + ' .ts-caption{position:absolute;bottom:20px;left:20px;font-size:' + captionSize + 'px;color:#888;z-index:10;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n';
+    var captionHTML = captionEnabled && captionText ? '<div class="ts-caption">' + captionText + (captionCredit ? '<div class="ts-cred">' + captionCredit + '</div>' : '') + '</div>' : '';
+    var captionCSS = '#' + uid + ' .ts-caption{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);width:85%;max-width:700px;padding:12px 16px;background:rgba(0,0,0,0.8);border-radius:8px;font-size:13px;line-height:1.5;color:#e0e0e0;opacity:0;transition:opacity 0.6s;z-index:100}\n#' + uid + ' .ts-caption.on{opacity:1}\n#' + uid + ' .ts-cred{color:#999;font-size:11px;font-style:italic;margin-top:4px}\n';
     
     // Build aspect ratio CSS
     var ratioMap = {'16:9': '16/9', '4:3': '4/3', '1:1': '1/1', '21:9': '21/9', '9:16': '9/16', '3:2': '3/2'};
@@ -757,7 +746,7 @@ stageCSS +
 '#' + uid + ' .ts-text{position:absolute;padding:40px;max-width:900px;transition:opacity 0.3s;z-index:10}\n' +
 '#' + uid + ' .ts-text p{font-size:' + fontSize + 'px;font-weight:600;color:' + textColor + ';line-height:1.3;text-shadow:2px 2px 8px rgba(0,0,0,0.8);margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
 captionCSS +
-'@media(max-width:768px){#' + uid + ' .ts-stage{top:' + mobileOffset + 'px;' + (aspectRatio === 'full' ? 'height:calc(100vh - ' + mobileOffset + 'px)' : 'max-height:calc(100vh - ' + mobileOffset + 'px)') + '}#' + uid + ' .ts-text{padding:20px}#' + uid + ' .ts-text p{font-size:' + Math.round(fontSize * 0.6) + 'px}}\n' +
+'@media(max-width:768px){#' + uid + ' .ts-stage{top:' + mobileOffset + 'px;' + (aspectRatio === 'full' ? 'height:calc(100vh - ' + mobileOffset + 'px)' : 'max-height:calc(100vh - ' + mobileOffset + 'px)') + '}#' + uid + ' .ts-text{padding:20px}#' + uid + ' .ts-text p{font-size:' + Math.round(fontSize * 0.6) + 'px}#' + uid + ' .ts-caption{width:92%;bottom:20px}}\n' +
 '</style>\n' +
 '<div id="' + uid + '">\n' +
 '<div class="ts-stage">\n' +
@@ -765,7 +754,7 @@ captionCSS +
 '<div class="ts-bg" id="' + uid + 'bg2" style="opacity:0"></div>\n' +
 '<div class="ts-backdrop"></div>\n' +
 '<div class="ts-text"><p></p></div>\n' +
-'<div class="ts-caption"></div>\n' +
+captionHTML + '\n' +
 '</div>\n' +
 '</div>\n' +
 '<scr' + 'ipt>\n' +
@@ -777,7 +766,6 @@ captionCSS +
 'var text=w.querySelector(".ts-text");\n' +
 'var p=text.querySelector("p");\n' +
 'var cap=w.querySelector(".ts-caption");\n' +
-'var globalCap="' + globalCaption.replace(/"/g, '\\"') + '";\n' +
 'var data=' + JSON.stringify(blocksData) + ';\n' +
 'var n=data.length;\n' +
 'var baseDur=' + baseDur + ';\n' +
@@ -815,22 +803,19 @@ captionCSS +
 'else{bg1.style.background=bgStyle;bg1.style.opacity=1;bg2.style.opacity=0;}\n' +
 'p.textContent=d.text;\n' +
 'setTextPos(d.textOffsetX!==undefined?d.textOffsetX:50,d.textOffsetY!==undefined?d.textOffsetY:50);\n' +
-'var blockCap=d.caption||"";\n' +
-'var blockCred=d.credit||"";\n' +
-'var showCap=blockCap||blockCred?blockCap+(blockCap&&blockCred?" · ":"")+blockCred:globalCap;\n' +
-'cap.textContent=showCap;\n' +
-'cap.style.display=showCap?"block":"none";\n' +
 'curIdx=idx;\n' +
 '}\n' +
 'var activeBg=curIdx%2===0?bg2:bg1;if(curIdx===0)activeBg=bg1;\n' +
-'if(effect==="zoomLeft")activeBg.style.transform="scale(1.1) translateX("+(-blockP*3)+"%)";\n' +
-'else if(effect==="zoomRight")activeBg.style.transform="scale(1.1) translateX("+(blockP*3)+"%)";\n' +
-'else activeBg.style.transform="scale(1)";\n' +
+'if(effect==="zoomAlt"){var dir=(idx%2===0)?-1:1;activeBg.style.transform="scale(1.1) translateX("+(dir*blockP*3)+")%";}\n' +
+'else if(effect==="kenburns"){var sc=1+(blockP*0.15);activeBg.style.transform="scale("+sc+")";}\n' +
+'else if(effect==="drift"){activeBg.style.transform="scale(1.05) translateX("+((blockP-0.5)*6)+"%)";}\n' +
+'else{activeBg.style.transform="scale(1)";}\n' +
 'var op=1;if(fadeIn>0&&blockP<fadeIn)op=blockP/fadeIn;else if(fadeOut>0&&blockP>(1-fadeOut))op=(1-blockP)/fadeOut;\n' +
 'text.style.opacity=op;\n' +
+'if(cap&&progress>0.05)cap.classList.add("on");else if(cap)cap.classList.remove("on");\n' +
 'requestAnimationFrame(upd);\n' +
 '}\n' +
-'if(n>0){var d=data[0];bg1.style.background=getBgStyle(d);bg1.style.opacity=1;p.textContent=d.text;setTextPos(d.textOffsetX!==undefined?d.textOffsetX:50,d.textOffsetY!==undefined?d.textOffsetY:50);var bc=d.caption||"";var bk=d.credit||"";var sc=bc||bk?bc+(bc&&bk?" · ":"")+bk:globalCap;cap.textContent=sc;cap.style.display=sc?"block":"none";curIdx=0;}\n' +
+'if(n>0){var d=data[0];bg1.style.background=getBgStyle(d);bg1.style.opacity=1;p.textContent=d.text;setTextPos(d.textOffsetX!==undefined?d.textOffsetX:50,d.textOffsetY!==undefined?d.textOffsetY:50);curIdx=0;}\n' +
 'upd();\n' +
 '})();\n' +
 '<\/scr' + 'ipt>';
@@ -868,6 +853,64 @@ function sendToStackBuilder() {
     if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
         window.location.href = 'stack-builder-clean.html';
     }
+}
+
+function resetModule() {
+    if (!confirm('Reset all settings to defaults? This will clear your current work.')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+}
+
+function loadFromJSON() {
+    document.getElementById('jsonFileInput').click();
+}
+
+function handleJSONFile(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            var proj = JSON.parse(e.target.result);
+            applyProjectData(proj);
+            closeModal('loadModal');
+            alert('Loaded: ' + (proj.name || 'Project'));
+        } catch (err) {
+            alert('Invalid JSON file');
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+function applyProjectData(proj) {
+    blocks = proj.blocks || [];
+    document.getElementById('fontSize').value = proj.fontSize || 48;
+    document.getElementById('fontSizeNum').value = proj.fontSize || 48;
+    document.getElementById('textColor').value = proj.textColor || '#ffffff';
+    document.getElementById('textPosition').value = proj.textPosition || 'center';
+    document.getElementById('fadeIn').value = proj.fadeIn || 10;
+    document.getElementById('fadeOut').value = proj.fadeOut || 10;
+    document.getElementById('backdropBlur').value = proj.backdropBlur || 0;
+    document.getElementById('backdropDarken').value = proj.backdropDarken || 30;
+    document.getElementById('bgEffect').value = proj.bgEffect || 'static';
+    document.getElementById('transitionSpeed').value = proj.transitionSpeed || 600;
+    document.getElementById('scrollDuration').value = proj.scrollDuration || 200;
+    document.getElementById('aspectRatio').value = proj.aspectRatio || 'full';
+    document.getElementById('desktopOffset').value = proj.desktopOffset || 50;
+    document.getElementById('mobileOffset').value = proj.mobileOffset || 200;
+    document.getElementById('captionEnabled').checked = proj.captionEnabled || false;
+    document.getElementById('captionText').value = proj.captionText || '';
+    document.getElementById('captionCredit').value = proj.captionCredit || '';
+    currentBgIndex = -1;
+    renderBlocksList();
+    if (blocks.length > 0) {
+        selectedBlockIndex = 0;
+        loadBlockEditor();
+    }
+    updatePreviewHeight();
+    updatePreview();
+    saveState();
 }
 
 function openSaveModal() {
@@ -969,9 +1012,9 @@ function getCurrentState() {
         aspectRatio: document.getElementById('aspectRatio').value,
         desktopOffset: document.getElementById('desktopOffset').value,
         mobileOffset: document.getElementById('mobileOffset').value,
+        captionEnabled: document.getElementById('captionEnabled').checked,
         captionText: document.getElementById('captionText').value,
-        captionCredit: document.getElementById('captionCredit').value,
-        captionSize: document.getElementById('captionSize').value
+        captionCredit: document.getElementById('captionCredit').value
     };
 }
 
@@ -987,8 +1030,6 @@ function loadState() {
         // Ensure all blocks have required properties
         blocks.forEach(function(b) {
             if (b.bgFit === undefined) b.bgFit = 'cover';
-            if (b.bgCaption === undefined) b.bgCaption = '';
-            if (b.bgCredit === undefined) b.bgCredit = '';
         });
         document.getElementById('fontSize').value = s.fontSize || 48;
         document.getElementById('fontSizeNum').value = s.fontSize || 48;
@@ -1004,9 +1045,9 @@ function loadState() {
         document.getElementById('aspectRatio').value = s.aspectRatio || 'full';
         document.getElementById('desktopOffset').value = s.desktopOffset || 50;
         document.getElementById('mobileOffset').value = s.mobileOffset || 200;
+        document.getElementById('captionEnabled').checked = s.captionEnabled || false;
         document.getElementById('captionText').value = s.captionText || '';
         document.getElementById('captionCredit').value = s.captionCredit || '';
-        document.getElementById('captionSize').value = s.captionSize || 12;
     }
     currentBgIndex = -1; // Reset to ensure first block displays
     renderBlocksList();
