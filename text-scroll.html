@@ -606,32 +606,46 @@ function updatePreview() {
     var bgPosY = resolved.bgPosY || 50;
     var bgFit = resolved.bgFit || 'cover';
     
-    // Use alternating backgrounds for crossfade effect
+    // Determine which bg element is active
     var activeBg = (blockIndex % 2 === 0) ? bg1 : bg2;
     var inactiveBg = (blockIndex % 2 === 0) ? bg2 : bg1;
     
-    // Apply background to active element
-    if (hasImage) {
-        activeBg.style.backgroundImage = 'url("' + bgImageUrl + '")';
-        activeBg.style.backgroundPosition = bgPosX + '% ' + bgPosY + '%';
-        activeBg.style.backgroundSize = bgFit === 'fill' ? '100% 100%' : bgFit;
-        activeBg.style.backgroundRepeat = 'no-repeat';
-        activeBg.style.backgroundColor = '#000';
-    } else {
-        activeBg.style.backgroundImage = 'none';
-        activeBg.style.backgroundColor = bgColor;
-    }
-    
-    // Handle crossfade on block change
-    if (blockIndex !== currentBgIndex) {
-        activeBg.style.opacity = '1';
-        inactiveBg.style.opacity = '0';
-        currentBgIndex = blockIndex;
-    }
-    
-    // For first block, ensure bg1 is visible
+    // For first block, ALWAYS apply background to bg1 to ensure it displays
     if (blockIndex === 0) {
+        activeBg = bg1;
+        inactiveBg = bg2;
+        if (hasImage) {
+            bg1.style.backgroundImage = 'url("' + bgImageUrl + '")';
+            bg1.style.backgroundPosition = bgPosX + '% ' + bgPosY + '%';
+            bg1.style.backgroundSize = bgFit === 'fill' ? '100% 100%' : bgFit;
+            bg1.style.backgroundRepeat = 'no-repeat';
+            bg1.style.backgroundColor = '#000';
+        } else {
+            bg1.style.backgroundImage = 'none';
+            bg1.style.backgroundColor = bgColor;
+        }
         bg1.style.opacity = '1';
+        bg2.style.opacity = '0';
+        currentBgIndex = 0;
+    } else {
+        // Apply background to active element
+        if (hasImage) {
+            activeBg.style.backgroundImage = 'url("' + bgImageUrl + '")';
+            activeBg.style.backgroundPosition = bgPosX + '% ' + bgPosY + '%';
+            activeBg.style.backgroundSize = bgFit === 'fill' ? '100% 100%' : bgFit;
+            activeBg.style.backgroundRepeat = 'no-repeat';
+            activeBg.style.backgroundColor = '#000';
+        } else {
+            activeBg.style.backgroundImage = 'none';
+            activeBg.style.backgroundColor = bgColor;
+        }
+        
+        // Handle crossfade on block change
+        if (blockIndex !== currentBgIndex) {
+            activeBg.style.opacity = '1';
+            inactiveBg.style.opacity = '0';
+            currentBgIndex = blockIndex;
+        }
     }
     
     // Apply zoom effect
@@ -970,6 +984,12 @@ function loadState() {
     if (saved) {
         var s = JSON.parse(saved);
         blocks = s.blocks || [];
+        // Ensure all blocks have required properties
+        blocks.forEach(function(b) {
+            if (b.bgFit === undefined) b.bgFit = 'cover';
+            if (b.bgCaption === undefined) b.bgCaption = '';
+            if (b.bgCredit === undefined) b.bgCredit = '';
+        });
         document.getElementById('fontSize').value = s.fontSize || 48;
         document.getElementById('fontSizeNum').value = s.fontSize || 48;
         document.getElementById('textColor').value = s.textColor || '#ffffff';
@@ -988,6 +1008,7 @@ function loadState() {
         document.getElementById('captionCredit').value = s.captionCredit || '';
         document.getElementById('captionSize').value = s.captionSize || 12;
     }
+    currentBgIndex = -1; // Reset to ensure first block displays
     renderBlocksList();
     if (blocks.length > 0) {
         selectedBlockIndex = 0;
