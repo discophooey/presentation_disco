@@ -331,16 +331,12 @@
 
         .preview-modal-body {
             flex: 1;
-            position: relative;
-            background: #444;
+            overflow: hidden;
         }
         
         .preview-cms-wrapper {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            width: 100%;
+            height: 100%;
         }
         
         .preview-fake-nav {
@@ -373,31 +369,18 @@
         }
         
         .preview-content-area {
-            position: absolute;
-            top: 50px;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            height: calc(100% - 50px);
+            display: flex;
             background: #555;
         }
         
         .preview-gutter {
-            position: absolute;
-            top: 0;
-            bottom: 0;
             width: 80px;
             background: #444;
         }
         
-        .preview-gutter.left { left: 0; }
-        .preview-gutter.right { right: 0; }
-        
         .preview-iframe-wrap {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 80px;
-            right: 80px;
+            flex: 1;
             max-width: 1200px;
             margin: 0 auto;
             background: #000;
@@ -407,21 +390,13 @@
             width: 100%;
             height: 100%;
             border: none;
-            background: #000;
         }
         
         .preview-iframe-wrap.mobile-frame {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            right: auto;
-            bottom: auto;
-            transform: translate(-50%, -50%);
+            position: relative;
+            flex: none;
             width: 375px;
-            max-width: 375px;
-            height: calc(100% - 40px);
             max-height: 812px;
-            margin: 0;
             border-radius: 40px;
             border: 12px solid #1a1a1a;
             box-shadow: 0 0 0 2px #333, inset 0 0 0 2px #000;
@@ -448,12 +423,10 @@
         }
         
         .preview-cms-wrapper.raw-mode .preview-content-area {
-            top: 0;
+            height: 100%;
         }
         
         .preview-cms-wrapper.raw-mode .preview-iframe-wrap {
-            left: 0;
-            right: 0;
             max-width: 100%;
         }
         
@@ -468,13 +441,11 @@
         }
         
         .preview-cms-wrapper.mobile-mode .preview-content-area {
-            top: 0;
+            height: 100%;
             background: #333;
-        }
-        
-        .preview-cms-wrapper.mobile-mode .preview-iframe-wrap {
-            left: 0;
-            right: 0;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
         .close-preview {
@@ -651,11 +622,11 @@
                         </div>
                     </div>
                     <div class="preview-content-area">
-                        <div class="preview-gutter left"></div>
+                        <div class="preview-gutter"></div>
                         <div class="preview-iframe-wrap" id="previewIframeWrap">
                             <iframe id="previewIframe"></iframe>
                         </div>
-                        <div class="preview-gutter right"></div>
+                        <div class="preview-gutter"></div>
                     </div>
                 </div>
             </div>
