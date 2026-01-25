@@ -137,6 +137,14 @@ button.danger:hover { background: #e74c3c; }
                         <input type="url" id="bgImage" placeholder="https://..." oninput="updateBlock()">
                         <button class="secondary" onclick="loadBgImage()" style="margin-top:8px;">Load Image</button>
                     </div>
+                    <div class="control-group">
+                        <label>Image Caption</label>
+                        <input type="text" id="bgCaption" placeholder="Describe the image..." oninput="updateBlock()">
+                    </div>
+                    <div class="control-group">
+                        <label>Credit / Source</label>
+                        <input type="text" id="bgCredit" placeholder="Photo credit..." oninput="updateBlock()">
+                    </div>
                     <div class="inline-group">
                         <div class="control-group">
                             <label>Image X (%)</label>
@@ -375,6 +383,8 @@ function addBlock() {
         bgType: blocks.length === 0 ? 'color' : 'inherit',
         bgColor: '#1a1a1a',
         bgImage: '',
+        bgCaption: '',
+        bgCredit: '',
         bgPosX: 50,
         bgPosY: 50,
         textOffsetX: 50,
@@ -405,6 +415,8 @@ function loadBlockEditor() {
     document.getElementById('bgType').value = b.bgType;
     document.getElementById('bgColor').value = b.bgColor || '#1a1a1a';
     document.getElementById('bgImage').value = b.bgImage || '';
+    document.getElementById('bgCaption').value = b.bgCaption || '';
+    document.getElementById('bgCredit').value = b.bgCredit || '';
     document.getElementById('bgPosX').value = b.bgPosX || 50;
     document.getElementById('bgPosY').value = b.bgPosY || 50;
     document.getElementById('textOffsetX').value = b.textOffsetX !== undefined ? b.textOffsetX : 50;
@@ -429,6 +441,8 @@ function updateBlock() {
     b.bgType = document.getElementById('bgType').value;
     b.bgColor = document.getElementById('bgColor').value;
     b.bgImage = document.getElementById('bgImage').value;
+    b.bgCaption = document.getElementById('bgCaption').value;
+    b.bgCredit = document.getElementById('bgCredit').value;
     b.bgPosX = parseInt(document.getElementById('bgPosX').value) || 50;
     b.bgPosY = parseInt(document.getElementById('bgPosY').value) || 50;
     b.textOffsetX = parseInt(document.getElementById('textOffsetX').value);
@@ -500,11 +514,6 @@ function updatePreview() {
     text.querySelector('p').style.fontSize = fontSize + 'px';
     text.querySelector('p').style.color = textColor;
     
-    var fullCaption = captionText + (captionText && captionCredit ? ' · ' : '') + captionCredit;
-    captionEl.textContent = fullCaption;
-    captionEl.style.fontSize = captionSize + 'px';
-    captionEl.style.display = fullCaption ? 'block' : 'none';
-    
     backdrop.style.background = 'rgba(0,0,0,' + (darken / 100) + ')';
     backdrop.style.backdropFilter = blur > 0 ? 'blur(' + blur + 'px)' : 'none';
     
@@ -536,28 +545,47 @@ function updatePreview() {
     
     var currentBlock = blocks[blockIndex];
     var resolved = getResolvedBg(blockIndex);
-    var bgStyle, bgPos;
-    if (resolved.bgType === 'image' && resolved.bgImage) {
-        bgPos = (resolved.bgPosX || 50) + '% ' + (resolved.bgPosY || 50) + '%';
-        bgStyle = 'url(' + resolved.bgImage + ') ' + bgPos + '/cover no-repeat';
-    } else {
-        bgStyle = resolved.bgColor || '#1a1a1a';
-    }
     
     // Determine which bg element to use for this block
     var activeBg = (blockIndex % 2 === 0) ? bg1 : bg2;
     var inactiveBg = (blockIndex % 2 === 0) ? bg2 : bg1;
     
+    // Apply background - use separate properties for images for better compatibility
+    if (resolved.bgType === 'image' && resolved.bgImage) {
+        activeBg.style.backgroundImage = 'url(' + resolved.bgImage + ')';
+        activeBg.style.backgroundPosition = (resolved.bgPosX || 50) + '% ' + (resolved.bgPosY || 50) + '%';
+        activeBg.style.backgroundSize = 'cover';
+        activeBg.style.backgroundRepeat = 'no-repeat';
+        activeBg.style.backgroundColor = '';
+    } else {
+        activeBg.style.backgroundImage = '';
+        activeBg.style.backgroundColor = resolved.bgColor || '#1a1a1a';
+    }
+    
     if (blockIndex !== currentBgIndex) {
         // Transitioning to a new block - crossfade
-        activeBg.style.background = bgStyle;
         activeBg.style.opacity = 1;
         inactiveBg.style.opacity = 0;
         currentBgIndex = blockIndex;
     } else {
-        // Same block - just update the background (for when image changes)
-        activeBg.style.background = bgStyle;
         activeBg.style.opacity = 1;
+    }
+    
+    // Per-block caption from image (overrides global caption when present)
+    var blockCaption = resolved.bgCaption || '';
+    var blockCredit = resolved.bgCredit || '';
+    captionEl.style.fontSize = captionSize + 'px';
+    if (blockCaption || blockCredit) {
+        var fullCaption = blockCaption + (blockCaption && blockCredit ? ' · ' : '') + blockCredit;
+        captionEl.textContent = fullCaption;
+        captionEl.style.display = 'block';
+    } else {
+        // Fall back to global caption
+        var globalCaption = document.getElementById('captionText').value;
+        var globalCredit = document.getElementById('captionCredit').value;
+        var fullCaption = globalCaption + (globalCaption && globalCredit ? ' · ' : '') + globalCredit;
+        captionEl.textContent = fullCaption;
+        captionEl.style.display = fullCaption ? 'block' : 'none';
     }
     
     if (effect === 'zoomLeft') {
@@ -621,15 +649,16 @@ function generateExport() {
             color: resolved.bgType === 'color' ? resolved.bgColor : null,
             posX: resolved.bgPosX || 50,
             posY: resolved.bgPosY || 50,
+            caption: resolved.bgCaption || '',
+            credit: resolved.bgCredit || '',
             textOffsetX: b.textOffsetX !== undefined ? b.textOffsetX : 50,
             textOffsetY: b.textOffsetY !== undefined ? b.textOffsetY : 50,
             timing: b.timing || 1
         };
     });
     
-    var fullCaption = captionText + (captionText && captionCredit ? ' · ' : '') + captionCredit;
-    var captionCSS = fullCaption ? '#' + uid + ' .ts-caption{position:absolute;bottom:20px;left:20px;font-size:' + captionSize + 'px;color:#888;z-index:10;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' : '';
-    var captionHTML = fullCaption ? '<div class="ts-caption">' + fullCaption + '</div>\n' : '';
+    var globalCaption = captionText + (captionText && captionCredit ? ' · ' : '') + captionCredit;
+    var captionCSS = '#' + uid + ' .ts-caption{position:absolute;bottom:20px;left:20px;font-size:' + captionSize + 'px;color:#888;z-index:10;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n';
     
     var code = '<style>\n' +
 '#' + uid + '{position:relative;background:#000}\n' +
@@ -647,7 +676,7 @@ captionCSS +
 '<div class="ts-bg" id="' + uid + 'bg2" style="opacity:0"></div>\n' +
 '<div class="ts-backdrop"></div>\n' +
 '<div class="ts-text"><p></p></div>\n' +
-captionHTML +
+'<div class="ts-caption"></div>\n' +
 '</div>\n' +
 '</div>\n' +
 '<scr' + 'ipt>\n' +
@@ -658,6 +687,8 @@ captionHTML +
 'var bg2=document.getElementById("' + uid + 'bg2");\n' +
 'var text=w.querySelector(".ts-text");\n' +
 'var p=text.querySelector("p");\n' +
+'var cap=w.querySelector(".ts-caption");\n' +
+'var globalCap="' + globalCaption.replace(/"/g, '\\"') + '";\n' +
 'var data=' + JSON.stringify(blocksData) + ';\n' +
 'var n=data.length;\n' +
 'var baseDur=' + baseDur + ';\n' +
@@ -689,6 +720,11 @@ captionHTML +
 'else{bg1.style.background=bgStyle;bg1.style.opacity=1;bg2.style.opacity=0;}\n' +
 'p.textContent=d.text;\n' +
 'setTextPos(d.textOffsetX!==undefined?d.textOffsetX:50,d.textOffsetY!==undefined?d.textOffsetY:50);\n' +
+'var blockCap=d.caption||"";\n' +
+'var blockCred=d.credit||"";\n' +
+'var showCap=blockCap||blockCred?blockCap+(blockCap&&blockCred?" · ":"")+blockCred:globalCap;\n' +
+'cap.textContent=showCap;\n' +
+'cap.style.display=showCap?"block":"none";\n' +
 'curIdx=idx;\n' +
 '}\n' +
 'var activeBg=curIdx%2===0?bg2:bg1;if(curIdx===0)activeBg=bg1;\n' +
@@ -699,7 +735,7 @@ captionHTML +
 'text.style.opacity=op;\n' +
 'requestAnimationFrame(upd);\n' +
 '}\n' +
-'if(n>0){var d=data[0];bg1.style.background=d.bg?"url("+d.bg+") "+d.posX+"% "+d.posY+"%/cover no-repeat":d.color;bg1.style.opacity=1;p.textContent=d.text;setTextPos(d.textOffsetX!==undefined?d.textOffsetX:50,d.textOffsetY!==undefined?d.textOffsetY:50);curIdx=0;}\n' +
+'if(n>0){var d=data[0];bg1.style.background=d.bg?"url("+d.bg+") "+d.posX+"% "+d.posY+"%/cover no-repeat":d.color;bg1.style.opacity=1;p.textContent=d.text;setTextPos(d.textOffsetX!==undefined?d.textOffsetX:50,d.textOffsetY!==undefined?d.textOffsetY:50);var bc=d.caption||"";var bk=d.credit||"";var sc=bc||bk?bc+(bc&&bk?" · ":"")+bk:globalCap;cap.textContent=sc;cap.style.display=sc?"block":"none";curIdx=0;}\n' +
 'upd();\n' +
 '})();\n' +
 '<\/scr' + 'ipt>';
