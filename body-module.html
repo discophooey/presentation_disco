@@ -13,13 +13,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .preview-header { padding: 10px 20px; background: #1a1a1a; border-bottom: 1px solid #2a2a2a; }
 .preview-header span { color: #888; font-size: 12px; }
 .preview-scroll { flex: 1; overflow-y: auto; background: #0a0a0a; padding: 40px 20px; }
-.preview-body { max-width: 650px; margin: 0 auto; }
-.preview-content { display: flex; gap: 30px; }
+.preview-body { max-width: 650px; margin: 0 auto; transition: max-width 0.3s; }
+.preview-body.with-image { max-width: 950px; }
+.preview-content { display: flex; gap: 40px; align-items: flex-start; }
 .preview-content.img-left { flex-direction: row; }
 .preview-content.img-right { flex-direction: row-reverse; }
 .preview-content.no-image { display: block; }
-.preview-text-col { flex: 1; }
-.preview-img-col { width: 280px; flex-shrink: 0; }
+.preview-text-col { flex: 1; max-width: 550px; }
+.preview-img-col { width: 360px; flex-shrink: 0; }
 .preview-img-wrap { position: relative; cursor: pointer; }
 .preview-img-wrap img { width: 100%; border-radius: 6px; display: block; }
 .preview-img-wrap::after { content: '⤢'; position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; opacity: 0; transition: opacity 0.2s; }
@@ -363,10 +364,19 @@ function updatePreview() {
     document.getElementById('imageSettings').style.display = imageEnabled ? 'block' : 'none';
     
     scroll.style.background = bgColor;
-    body.style.maxWidth = maxWidth + 'px';
     textEl.style.textAlign = textAlign;
     textEl.style.color = textColor;
     textEl.style.fontSize = fontSize + 'px';
+    
+    // Toggle layout based on image
+    var showImage = imageEnabled && loadedImageUrl;
+    if (showImage) {
+        body.classList.add('with-image');
+        body.style.maxWidth = '950px';
+    } else {
+        body.classList.remove('with-image');
+        body.style.maxWidth = maxWidth + 'px';
+    }
     
     var html = parseMarkdown(bodyText);
     textEl.innerHTML = html;
@@ -377,7 +387,7 @@ function updatePreview() {
         s.style.color = headlineColor;
     });
     
-    if (imageEnabled && loadedImageUrl) {
+    if (showImage) {
         imgCol.style.display = 'block';
         img.src = loadedImageUrl;
         caption.textContent = imageCaption;
@@ -446,6 +456,7 @@ function generateExport() {
     
     var imgHTML = '';
     var imgCSS = '';
+    var bodyMaxWidth = showImage ? '950' : maxWidth;
     
     if (showImage) {
         imgHTML = '<div class="bm-img-col">\n' +
@@ -455,7 +466,7 @@ function generateExport() {
             (imageCaption ? '<div class="bm-caption">' + imageCaption + '</div>\n' : '') +
             '</div>';
         
-        imgCSS = '#' + uid + ' .bm-img-col{width:280px;flex-shrink:0}\n' +
+        imgCSS = '#' + uid + ' .bm-img-col{width:360px;flex-shrink:0}\n' +
             '#' + uid + ' .bm-img-wrap{position:relative;cursor:pointer}\n' +
             '#' + uid + ' .bm-img-wrap img{width:100%;border-radius:6px;display:block}\n' +
             '#' + uid + ' .bm-img-wrap::after{content:"⤢";position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.7);color:#fff;width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;opacity:0;transition:opacity 0.2s}\n' +
@@ -472,15 +483,15 @@ function generateExport() {
     
     var code = '<style>\n' +
 '#' + uid + '{background:' + bgColor + ';padding:40px 20px;padding-top:' + desktopOffset + 'px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
-'#' + uid + ' .bm-body{max-width:' + maxWidth + 'px;margin:0 auto}\n' +
-'#' + uid + ' .bm-content{display:flex;gap:30px;' + (showImage ? 'flex-direction:' + flexDir : '') + '}\n' +
-'#' + uid + ' .bm-text{flex:1;line-height:1.7;color:' + textColor + ';font-size:' + fontSize + 'px;text-align:' + textAlign + '}\n' +
+'#' + uid + ' .bm-body{max-width:' + bodyMaxWidth + 'px;margin:0 auto}\n' +
+'#' + uid + ' .bm-content{display:flex;gap:40px;align-items:flex-start;' + (showImage ? 'flex-direction:' + flexDir : '') + '}\n' +
+'#' + uid + ' .bm-text{flex:1;' + (showImage ? 'max-width:550px;' : '') + 'line-height:1.7;color:' + textColor + ';font-size:' + fontSize + 'px;text-align:' + textAlign + '}\n' +
 '#' + uid + ' .bm-text h2{font-size:24px;color:' + headlineColor + ';margin-bottom:16px;font-weight:600}\n' +
 '#' + uid + ' .bm-text h3{font-size:20px;color:' + headlineColor + ';margin:24px 0 12px;font-weight:600}\n' +
 '#' + uid + ' .bm-text p{margin-bottom:16px}\n' +
 '#' + uid + ' .bm-text strong{color:' + headlineColor + '}\n' +
 imgCSS +
-'@media(max-width:768px){#' + uid + '{padding-top:' + mobileOffset + 'px}#' + uid + ' .bm-content{flex-direction:column}' + (showImage ? '#' + uid + ' .bm-img-col{width:100%}' : '') + '}\n' +
+'@media(max-width:768px){#' + uid + '{padding-top:' + mobileOffset + 'px}#' + uid + ' .bm-content{flex-direction:column}' + (showImage ? '#' + uid + ' .bm-img-col{width:100%}#' + uid + ' .bm-text{max-width:none}' : '') + '}\n' +
 '</style>\n' +
 '<div id="' + uid + '">\n' +
 '<div class="bm-body">\n' +
