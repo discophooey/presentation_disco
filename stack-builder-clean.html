@@ -381,7 +381,7 @@
         .preview-content-area {
             flex: 1;
             min-height: 0;
-            height: 100%;
+            position: relative;
             display: flex;
             overflow: hidden;
             background: #555;
@@ -391,30 +391,45 @@
             width: 80px;
             background: #444;
             flex-shrink: 0;
-            height: 100%;
         }
         
         .preview-iframe-wrap {
-            flex: 1;
-            min-height: 0;
-            height: 100%;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 80px;
+            right: 80px;
             max-width: 1200px;
             margin: 0 auto;
             background: #000;
             overflow: hidden;
         }
         
+        .preview-iframe-wrap iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #000;
+        }
+        
         .preview-iframe-wrap.mobile-frame {
-            flex: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            right: auto;
+            bottom: auto;
+            transform: translate(-50%, -50%);
             width: 375px;
             max-width: 375px;
             height: calc(100% - 40px);
             max-height: 812px;
-            margin: 20px auto;
+            margin: 0;
             border-radius: 40px;
             border: 12px solid #1a1a1a;
             box-shadow: 0 0 0 2px #333, inset 0 0 0 2px #000;
-            position: relative;
         }
         
         .preview-iframe-wrap.mobile-frame::before {
@@ -429,14 +444,6 @@
             border-radius: 12px;
             z-index: 10;
         }
-
-        .preview-iframe-wrap iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: #000;
-            display: block;
-        }
         
         /* Raw mode - no chrome */
         .preview-cms-wrapper.raw-mode .preview-fake-nav,
@@ -445,11 +452,9 @@
         }
         
         .preview-cms-wrapper.raw-mode .preview-iframe-wrap {
-            flex: 1;
+            left: 0;
+            right: 0;
             max-width: 100%;
-            height: 100%;
-            max-height: none;
-            margin: 0;
             border-radius: 0;
             border: none;
             box-shadow: none;
@@ -460,17 +465,18 @@
         }
         
         /* Mobile mode - hide nav/gutters, center phone */
-        .preview-cms-wrapper.mobile-mode .preview-fake-nav {
-            display: none;
-        }
-        
+        .preview-cms-wrapper.mobile-mode .preview-fake-nav,
         .preview-cms-wrapper.mobile-mode .preview-gutter {
-            background: #333;
+            display: none;
         }
         
         .preview-cms-wrapper.mobile-mode .preview-content-area {
             background: #333;
-            align-items: center;
+        }
+        
+        .preview-cms-wrapper.mobile-mode .preview-iframe-wrap {
+            left: 0;
+            right: 0;
         }
 
         .close-preview {
