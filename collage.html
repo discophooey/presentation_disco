@@ -439,7 +439,7 @@ function generateExport() {
     
     var code = `<style>
 #${uid}{position:relative}
-#${uid} .c-stage{position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;background:${bgColor}}
+#${uid} .c-stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;background:${bgColor}}
 #${uid} .c-area{position:relative;width:90%;max-width:1000px;aspect-ratio:16/10;background:${bgColor};border-radius:8px;overflow:hidden}
 #${uid} .c-item{position:absolute;overflow:hidden;border-radius:4px;opacity:0;transform:translateY(30px);transition:all 0.5s;cursor:pointer}
 #${uid} .c-item.on{opacity:1;transform:translateY(0)}

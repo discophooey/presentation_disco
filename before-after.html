@@ -476,7 +476,7 @@ function generateExport() {
 
     var code = `<style>
 #${uid}{position:relative;background:#000}
-#${uid} .wrap{position:sticky;top:${offset}px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+#${uid} .wrap{position:-webkit-sticky;position:sticky;top:${offset}px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
 #${uid} .matte{position:relative;width:100%;max-width:${maxW};aspect-ratio:${ar[0]}/${ar[1]};overflow:hidden;background:#000}
 #${uid} .img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
 #${uid} .b{z-index:1}

@@ -1321,7 +1321,7 @@ document.head.appendChild(sc);
     
     const code = `<style>
 #${uid}.globe-wrap{position:relative}
-#${uid} .globe-stage{position:sticky;top:${desktopOffset}px;height:100vh;width:100%;background:#000;overflow:hidden}
+#${uid} .globe-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;height:100vh;width:100%;background:#000;overflow:hidden}
 #${uid} .globe-inner{position:absolute;top:0;left:0;width:100%;height:100%}
 #${uid} canvas{display:block;${filterCSS}}
 #${uid} .labels-container{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden}

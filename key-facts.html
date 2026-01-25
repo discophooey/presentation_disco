@@ -434,7 +434,7 @@ function generateExport() {
     
     var code = '<style>\n' +
 '#' + uid + '{position:relative;display:flex;align-items:center;justify-content:center;min-height:' + containerHeight + 'vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
-'#' + uid + ' .kf-stage{position:sticky;top:' + desktopOffset + 'px;width:100%;max-width:' + maxWidth + 'px;padding:20px}\n' +
+'#' + uid + ' .kf-stage{position:-webkit-sticky;position:sticky;top:' + desktopOffset + 'px;width:100%;max-width:' + maxWidth + 'px;padding:20px}\n' +
 '#' + uid + ' .kf-panel{background:' + panelBg + ';border:1px solid ' + borderColor + ';border-radius:12px;padding:30px}\n' +
 '#' + uid + ' .kf-title{font-size:14px;color:' + accentColor + ';text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;opacity:0;transform:translateY(10px);transition:all 0.4s}\n' +
 '#' + uid + '.on .kf-title{opacity:1;transform:translateY(0)}\n' +

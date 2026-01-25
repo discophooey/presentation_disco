@@ -730,9 +730,9 @@ function generateExport() {
     var ratioMap = {'16:9': '16/9', '4:3': '4/3', '1:1': '1/1', '21:9': '21/9', '9:16': '9/16', '3:2': '3/2'};
     var stageCSS;
     if (aspectRatio === 'full') {
-        stageCSS = '#' + uid + ' .ts-stage{position:sticky;top:' + desktopOffset + 'px;height:calc(100vh - ' + desktopOffset + 'px);overflow:hidden}\n';
+        stageCSS = '#' + uid + ' .ts-stage{position:-webkit-sticky;position:sticky;top:' + desktopOffset + 'px;height:calc(100vh - ' + desktopOffset + 'px);overflow:hidden}\n';
     } else {
-        stageCSS = '#' + uid + ' .ts-stage{position:sticky;top:' + desktopOffset + 'px;width:100%;max-height:calc(100vh - ' + desktopOffset + 'px);aspect-ratio:' + ratioMap[aspectRatio] + ';overflow:hidden;margin:0 auto}\n';
+        stageCSS = '#' + uid + ' .ts-stage{position:-webkit-sticky;position:sticky;top:' + desktopOffset + 'px;width:100%;max-height:calc(100vh - ' + desktopOffset + 'px);aspect-ratio:' + ratioMap[aspectRatio] + ';overflow:hidden;margin:0 auto}\n';
     }
     
     var code = '<style>\n' +

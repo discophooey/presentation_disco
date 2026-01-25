@@ -293,7 +293,7 @@ function generateExport() {
     // New approach: check each event's position in viewport
     var code = `<style>
 #${uid}{position:relative}
-#${uid} .tl-stage{position:sticky;top:0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;background:${bgColor}}
+#${uid} .tl-stage{position:-webkit-sticky;position:sticky;top:0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;background:${bgColor}}
 #${uid} .tl-wrap{position:relative;max-width:800px;width:100%;padding:20px 0}
 #${uid} .tl-line{position:absolute;left:50%;top:0;bottom:0;width:3px;background:${lineColor};transform:translateX(-50%)}
 #${uid} .tl-prog{position:absolute;left:50%;top:0;width:3px;background:${progressColor};transform:translateX(-50%);height:0%}
