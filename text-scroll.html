@@ -652,14 +652,18 @@ function updatePreview() {
         activeBg.style.transform = 'scale(1)';
     }
     
-    // Global caption (single caption for whole module)
+    // Global caption (single caption for whole module) - shows at 90% scroll
     var captionEnabled = document.getElementById('captionEnabled').checked;
     var captionText = document.getElementById('captionText').value;
     var captionCredit = document.getElementById('captionCredit').value;
     
     if (captionEnabled && captionText) {
         captionEl.innerHTML = captionText + (captionCredit ? '<div class="preview-cred">' + captionCredit + '</div>' : '');
-        captionEl.classList.add('on');
+        if (progress > 0.9) {
+            captionEl.classList.add('on');
+        } else {
+            captionEl.classList.remove('on');
+        }
     } else {
         captionEl.classList.remove('on');
     }
@@ -812,7 +816,7 @@ captionHTML + '\n' +
 'else{activeBg.style.transform="scale(1)";}\n' +
 'var op=1;if(fadeIn>0&&blockP<fadeIn)op=blockP/fadeIn;else if(fadeOut>0&&blockP>(1-fadeOut))op=(1-blockP)/fadeOut;\n' +
 'text.style.opacity=op;\n' +
-'if(cap&&progress>0.05)cap.classList.add("on");else if(cap)cap.classList.remove("on");\n' +
+'if(cap&&progress>0.9)cap.classList.add("on");else if(cap)cap.classList.remove("on");\n' +
 'requestAnimationFrame(upd);\n' +
 '}\n' +
 'if(n>0){var d=data[0];bg1.style.background=getBgStyle(d);bg1.style.opacity=1;p.textContent=d.text;setTextPos(d.textOffsetX!==undefined?d.textOffsetX:50,d.textOffsetY!==undefined?d.textOffsetY:50);curIdx=0;}\n' +
