@@ -575,20 +575,23 @@ function generateExport() {
         factsHtml += '<div class="kf-fact' + expandClass + '" style="transition-delay:' + (i * staggerDelay) + 'ms"' + clickAttr + '>\n';
         factsHtml += '<div class="kf-icon">' + f.icon + '</div>\n';
         factsHtml += '<div class="kf-text">' + f.text + '</div>\n';
-        if (f.expandable) factsHtml += '<span class="kf-hint">+</span>\n';
+        if (f.expandable) factsHtml += '<span class="kf-hint">more</span>\n';
         factsHtml += '</div>\n';
         if (f.expandable) {
             factsData.push({
-                type: f.expandType || 'text',
-                text: (f.detailText || f.text).replace(/"/g, '\\"').replace(/\n/g, '\\n'),
-                img: f.imageUrl || '',
-                fit: f.imageFit || 'contain',
-                cap: f.imageCaption || ''
+                t: f.expandType || 'text',
+                x: (f.detailText || f.text),
+                i: f.imageUrl || '',
+                f: f.imageFit || 'contain',
+                c: f.imageCaption || ''
             });
         } else {
             factsData.push(null);
         }
     });
+    
+    // Escape the JSON for safe embedding
+    var factsDataJson = JSON.stringify(factsData).replace(/'/g, "\\'").replace(/</g, '\\x3c').replace(/>/g, '\\x3e');
     
     var lightboxCss = hasExpandable ? 
         '#' + uid + ' .kf-expand{cursor:pointer}#' + uid + ' .kf-expand:hover{background:rgba(74,158,255,.1);margin:0 -10px;padding:16px 10px;border-radius:6px}#' + uid + ' .kf-hint{margin-left:auto;color:' + accentColor + ';font-size:12px;opacity:.7}\n' +
@@ -600,13 +603,28 @@ function generateExport() {
     
     var lightboxHtml = hasExpandable ? 
         '<div id="' + uid + '-lb" onclick="this.classList.remove(\'on\')">\n' +
-        '<button class="lb-close" onclick="this.parentNode.classList.remove(\'on\')">✕</button>\n' +
+        '<button class="lb-close" onclick="event.stopPropagation();this.parentNode.classList.remove(\'on\')">✕</button>\n' +
         '<div id="' + uid + '-lbc" onclick="event.stopPropagation()"></div>\n' +
         '</div>\n' : '';
     
     var lightboxJs = hasExpandable ?
-        'var fd=' + JSON.stringify(factsData) + ';\n' +
-        'w.querySelectorAll(".kf-expand").forEach(function(el){el.onclick=function(){var d=fd[this.dataset.idx];if(!d)return;var lb=document.getElementById("' + uid + '-lb"),c=document.getElementById("' + uid + '-lbc");if(d.type==="image"&&d.img){c.innerHTML=\'<img class="lb-img fit-\'+d.fit+\'" src="\'+d.img+\'">\'+((d.cap)?\'<div class="lb-cap">\'+d.cap+\'</div>\':\'\');}else{c.innerHTML=\'<div class="lb-txt">\'+d.text.replace(/\\\\n/g,"<br>")+\'</div>\';}lb.classList.add("on");}});\n' : '';
+        'var fd=JSON.parse(\'' + factsDataJson + '\');\n' +
+        'var lbEl=document.getElementById("' + uid + '-lb");\n' +
+        'var lbC=document.getElementById("' + uid + '-lbc");\n' +
+        'w.querySelectorAll(".kf-expand").forEach(function(el){\n' +
+        'el.addEventListener("click",function(e){\n' +
+        'e.stopPropagation();\n' +
+        'var idx=parseInt(this.getAttribute("data-idx"));\n' +
+        'var d=fd[idx];\n' +
+        'if(!d)return;\n' +
+        'if(d.t==="image"&&d.i){\n' +
+        'lbC.innerHTML=\'<img class="lb-img fit-\'+d.f+\'" src="\'+d.i+\'">\'+((d.c)?\'<div class="lb-cap">\'+d.c+\'</div>\':\'\');\n' +
+        '}else{\n' +
+        'lbC.innerHTML=\'<div class="lb-txt">\'+d.x.replace(/\\n/g,"<br>")+\'</div>\';\n' +
+        '}\n' +
+        'lbEl.classList.add("on");\n' +
+        '});\n' +
+        '});\n' : '';
     
     var code = '<style>\n' +
 '#' + uid + '{position:relative;min-height:' + containerHeight + 'vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
