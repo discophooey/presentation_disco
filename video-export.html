@@ -90,7 +90,7 @@ button.secondary:hover { background: #3a3a3a; }
             <label>Paste Exported HTML</label>
             <textarea id="htmlInput" placeholder="Paste your exported module or stack HTML here..."></textarea>
         </div>
-        <button class="secondary" onclick="loadPreview()" style="width:100%;">Load Preview</button>
+        <button class="primary" onclick="loadPreview()" style="width:100%;">Load Preview</button>
         
         <h2>Video Settings</h2>
         <div class="control-group">
@@ -149,8 +149,8 @@ button.secondary:hover { background: #3a3a3a; }
             <span id="previewInfo">No content loaded</span>
         </div>
         <div class="preview-container" id="previewContainer">
-            <div class="preview-frame" id="previewFrame">
-                <iframe id="previewIframe"></iframe>
+            <div class="preview-frame" id="previewFrame" style="width:480px;height:270px;">
+                <iframe id="previewIframe" style="width:1920px;height:1080px;transform:scale(0.25);transform-origin:top left;border:none;background:#fff;"></iframe>
             </div>
         </div>
     </div>
@@ -255,20 +255,26 @@ function loadPreview() {
     
     loadedHTML = html;
     
-    const iframe = document.getElementById('previewIframe');
+    const frame = document.getElementById('previewFrame');
     
-    // Set size before loading
-    updatePreviewSize();
+    // Clear and create fresh iframe
+    frame.innerHTML = '';
     
-    iframe.onload = function() {
-        document.getElementById('previewInfo').textContent = 'Content loaded';
+    const iframe = document.createElement('iframe');
+    iframe.id = 'previewIframe';
+    iframe.style.cssText = 'border:none;background:#fff;display:block;';
+    frame.appendChild(iframe);
+    
+    // Use srcdoc 
+    iframe.srcdoc = html;
+    
+    // Update after short delay (srcdoc should be instant)
+    setTimeout(function() {
         updatePreviewSize();
+        document.getElementById('previewInfo').textContent = 'Content loaded';
         updateRenderButton();
         showStatus('success', 'Preview loaded. Ready to render.');
-    };
-    
-    // Use srcdoc for better compatibility
-    iframe.srcdoc = html;
+    }, 300);
 }
 
 // Update preview size based on aspect ratio
@@ -276,7 +282,9 @@ function updatePreviewSize() {
     const s = getSettings();
     const container = document.getElementById('previewContainer');
     const frame = document.getElementById('previewFrame');
-    const iframe = document.getElementById('previewIframe');
+    const iframe = frame.querySelector('iframe') || document.getElementById('previewIframe');
+    
+    if (!iframe) return;
     
     const containerRect = container.getBoundingClientRect();
     const maxW = containerRect.width - 40;
@@ -339,14 +347,10 @@ async function startRender() {
         document.body.appendChild(renderFrame);
         
         // Load HTML into render frame using srcdoc
-        await new Promise((resolve, reject) => {
-            renderFrame.onload = resolve;
-            renderFrame.onerror = reject;
-            renderFrame.srcdoc = loadedHTML;
-        });
+        renderFrame.srcdoc = loadedHTML;
         
         // Wait for content to settle
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, 1500));
         
         const renderDoc = renderFrame.contentDocument || renderFrame.contentWindow.document;
         const renderBody = renderDoc.body;
