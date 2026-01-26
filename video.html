@@ -79,446 +79,52 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 </head>
 <body>
 <div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
-<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
-<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
-<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
-<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
-<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
-<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
-<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
-<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
-<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
-<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
-<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
-<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
-<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
-<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
-<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
-<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
-<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
-<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
-<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
-<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
-<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
+<a href="index.html" style="padding:8px 12px;color:#4a9eff;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">← Hub</a>
+<a href="before-after.html" data-module="before-after" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Before/After<span class="dot"></span></a>
+<a href="card-stack.html" data-module="card-stack" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Card Stack<span class="dot"></span></a>
+<a href="chart.html" data-module="chart" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chart<span class="dot"></span></a>
+<a href="collage.html" data-module="collage" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Collage<span class="dot"></span></a>
+<a href="doc-module.html" data-module="doc-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Doc Module<span class="dot"></span></a>
+<a href="gallery.html" data-module="gallery" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Gallery<span class="dot"></span></a>
+<a href="globe.html" data-module="globe" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Globe<span class="dot"></span></a>
+<a href="hotspots.html" data-module="hotspots" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Hotspots<span class="dot"></span></a>
+<a href="layers.html" data-module="layers" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Layers<span class="dot"></span></a>
+<a href="matte.html" data-module="matte" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Matte<span class="dot"></span></a>
+<a href="pull-quote.html" data-module="pull-quote" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Pull Quote<span class="dot"></span></a>
+<a href="single-image.html" data-module="single-image" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Single Image<span class="dot"></span></a>
+<a href="stat-counter.html" data-module="stat-counter" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Stat Counter<span class="dot"></span></a>
+<a href="timeline.html" data-module="timeline" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Timeline<span class="dot"></span></a>
+<a href="video.html" data-module="video" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Video<span class="dot"></span></a>
+<a href="zoom-detail.html" data-module="zoom-detail" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Zoom Detail<span class="dot"></span></a>
+<a href="text-scroll.html" data-module="text-scroll" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Text Scroll<span class="dot"></span></a>
+<a href="chapter-marker.html" data-module="chapter-marker" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chapter Marker<span class="dot"></span></a>
+<a href="key-facts.html" data-module="key-facts" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Key Facts<span class="dot"></span></a>
+<a href="body-module.html" data-module="body-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Body Module<span class="dot"></span></a>
+<a href="stack-builder-clean.html" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;">Stack Builder</a>
 </div>
-<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
-
-<div class="app">
-    <div class="controls">
-        <h1>🎬 Video</h1>
-        
-        <h2 onclick="toggleSection(this)">Video Source</h2>
-        <div class="section">
-            <div class="control-group">
-                <label>Video URL</label>
-                <input type="url" id="videoUrl" placeholder="https://...">
-                <button onclick="loadVideo()" style="margin-top:8px;">Load Video</button>
-                <div class="hint">Any direct video URL (CDN, S3, GitHub raw, your server)</div>
-                <div id="videoStatus" style="margin-top:8px;font-size:11px;"></div>
-            </div>
-            <div class="control-group">
-                <label>Video Fit</label>
-                <select id="videoFit" onchange="updatePreview();">
-                    <option value="cover" selected>Cover (fill, crop)</option>
-                    <option value="contain">Contain (fit inside)</option>
-                </select>
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Scroll Settings</h2>
-        <div class="section">
-            <div class="control-group">
-                <label>Scroll Duration (vh) <span class="range-val" id="scrollDurVal">400</span></label>
-                <div class="range-row">
-                    <input type="range" id="scrollDuration" min="200" max="600" value="400" oninput="document.getElementById('scrollDurVal').textContent=this.value; updatePreviewHeight();">
-                </div>
-            </div>
-            <div class="control-group">
-                <label>Smoothing <span class="range-val" id="smoothVal">0.12</span></label>
-                <input type="range" id="smoothing" min="0.05" max="0.25" step="0.01" value="0.12" oninput="document.getElementById('smoothVal').textContent=this.value;">
-            </div>
-            <div class="control-group">
-                <label>Desktop Top Offset <span class="range-val" id="desktopOffsetVal">50px</span></label>
-                <input type="range" id="desktopOffset" min="0" max="150" value="50" oninput="document.getElementById('desktopOffsetVal').textContent=this.value+'px';">
-            </div>
-            <div class="control-group">
-                <label>Mobile Top Offset <span class="range-val" id="mobileOffsetVal">0px</span></label>
-                <input type="range" id="mobileOffset" min="0" max="300" value="0" oninput="document.getElementById('mobileOffsetVal').textContent=this.value+'px';">
-                <div class="hint">For mobile nav/banners</div>
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Text Layers</h2>
-        <div class="section">
-            <div class="row">
-                <div class="control-group">
-                    <label>Font Size <span class="range-val" id="fontSizeVal">32px</span></label>
-                    <input type="range" id="fontSize" min="16" max="72" value="32" oninput="document.getElementById('fontSizeVal').textContent=this.value+'px'; updatePreview();">
-                </div>
-                <div class="control-group">
-                    <label>Color</label>
-                    <input type="color" id="textColor" value="#ffffff" onchange="updatePreview();">
-                </div>
-            </div>
-            <div class="control-group">
-                <label><input type="checkbox" id="textBgEnabled" checked onchange="updatePreview();"> Text Background</label>
-            </div>
-            <div class="row">
-                <div class="control-group">
-                    <label>BG Opacity <span class="range-val" id="bgOpVal">70%</span></label>
-                    <input type="range" id="bgOpacity" min="0" max="100" value="70" oninput="document.getElementById('bgOpVal').textContent=this.value+'%'; updatePreview();">
-                </div>
-                <div class="control-group">
-                    <label>BG Blur <span class="range-val" id="bgBlurVal">8px</span></label>
-                    <input type="range" id="bgBlur" min="0" max="30" value="8" oninput="document.getElementById('bgBlurVal').textContent=this.value+'px'; updatePreview();">
-                </div>
-            </div>
-            <button onclick="addTextLayer()" style="margin-bottom:12px;">➕ Add Text Layer</button>
-            <div id="textLayerList"></div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Mobile</h2>
-        <div class="section">
-            <div class="control-group">
-                <label>Tap to Activate Text</label>
-                <input type="text" id="tapText" value="Tap to activate video">
-                <div class="hint">Shown on iOS/Android before video can be scrubbed</div>
-            </div>
-            <div class="control-group">
-                <label>Button Position</label>
-                <select id="tapPosition">
-                    <option value="center" selected>Center</option>
-                    <option value="top">Top</option>
-                    <option value="bottom">Bottom</option>
-                </select>
-            </div>
-            <div class="row">
-                <div class="control-group">
-                    <label>Button Scale <span class="range-val" id="tapScaleVal">1.0</span></label>
-                    <input type="range" id="tapScale" min="0.5" max="2" step="0.1" value="1" oninput="document.getElementById('tapScaleVal').textContent=this.value;">
-                </div>
-                <div class="control-group">
-                    <label>Button Color</label>
-                    <input type="color" id="tapColor" value="#4a9eff">
-                </div>
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Export</h2>
-        <div class="section">
-            <button onclick="generateExport()">Generate HTML</button>
-            <button class="secondary" onclick="resetModule()" style="margin-top:8px;">↺ Reset</button>
-        </div>
-    </div>
-    
-    <div class="preview-area">
-        <div class="preview-header">
-            <span>Preview (scroll to scrub)</span>
-            <span id="progressDisplay">0%</span>
-        </div>
-        <div class="preview-scroll" id="previewScroll">
-            <div class="preview-container" id="previewContainer">
-                <div class="preview-stage">
-                    <video class="preview-video" id="previewVideo" muted playsinline preload="auto"></video>
-                    <div class="preview-texts" id="previewTexts"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="exportModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Export HTML</h3>
-            <button class="modal-close" onclick="closeModal()">×</button>
-        </div>
-        <textarea class="code" id="exportCode" readonly></textarea>
-        <div style="display:flex;gap:10px;margin-top:12px;">
-            <button onclick="copyCode()">📋 Copy</button>
-            <button class="secondary" onclick="downloadCode()">💾 Download</button>
-            <button class="secondary" onclick="sendToStackBuilder()">📚 Stack</button>
-        </div>
-    </div>
-</div>
-
-<script>
-let videoUrl = null;
-let videoDuration = 0;
-let textLayers = [];
-
-function loadVideo() {
-    let url = document.getElementById('videoUrl').value.trim();
-    if (!url) { alert('Enter video URL'); return; }
-    if (url.includes('github.com') && url.includes('/blob/')) {
-        url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
-    }
-    
-    document.getElementById('videoStatus').textContent = 'Loading...';
-    
-    const v = document.getElementById('previewVideo');
-    v.onloadedmetadata = function() {
-        videoUrl = url;
-        videoDuration = v.duration;
-        document.getElementById('videoStatus').innerHTML = '<span class="success">✓ Loaded (' + videoDuration.toFixed(1) + 's)</span>';
-        v.currentTime = 0;
-        updatePreview();
-        updatePreviewHeight();
-    };
-    v.onerror = function() {
-        document.getElementById('videoStatus').innerHTML = '<span style="color:#e74c3c;">✗ Failed to load</span>';
-    };
-    v.src = url;
-}
-
-function toggleSection(el) { el.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('collapsed'); }
-
-function updatePreviewHeight() {
-    document.getElementById('previewContainer').style.height = (parseInt(document.getElementById('scrollDuration').value) || 400) + 'vh';
-}
-
-function addTextLayer() {
-    textLayers.push({
-        id: Date.now(),
-        text: 'Your Text',
-        x: 50,
-        y: 50,
-        fadeIn: 0,
-        fadeOut: 100
-    });
-    renderTextLayerList();
-    updatePreview();
-}
-
-function removeTextLayer(id) {
-    textLayers = textLayers.filter(t => t.id !== id);
-    renderTextLayerList();
-    updatePreview();
-}
-
-function updateTextLayer(id, prop, value) {
-    const layer = textLayers.find(t => t.id === id);
-    if (layer) {
-        layer[prop] = prop === 'text' ? value : parseFloat(value);
-        updatePreview();
-    }
-}
-
-function renderTextLayerList() {
-    let html = '';
-    textLayers.forEach((t, i) => {
-        html += '<div class="text-layer">';
-        html += '<div class="text-layer-header"><span class="text-layer-title">Text ' + (i+1) + '</span><button class="small danger" onclick="removeTextLayer(' + t.id + ')">✕</button></div>';
-        html += '<div class="control-group"><label>Text</label><input type="text" value="' + t.text + '" onchange="updateTextLayer(' + t.id + ',\'text\',this.value)"></div>';
-        html += '<div class="text-layer-grid">';
-        html += '<div class="control-group"><label>X <span class="range-val">' + t.x + '%</span></label><input type="range" min="0" max="100" value="' + t.x + '" oninput="updateTextLayer(' + t.id + ',\'x\',this.value); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
-        html += '<div class="control-group"><label>Y <span class="range-val">' + t.y + '%</span></label><input type="range" min="0" max="100" value="' + t.y + '" oninput="updateTextLayer(' + t.id + ',\'y\',this.value); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
-        html += '<div class="control-group"><label>In <span class="range-val">' + t.fadeIn + '%</span></label><input type="range" min="0" max="100" value="' + t.fadeIn + '" oninput="updateTextLayer(' + t.id + ',\'fadeIn\',this.value); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
-        html += '<div class="control-group"><label>Out <span class="range-val">' + t.fadeOut + '%</span></label><input type="range" min="0" max="100" value="' + t.fadeOut + '" oninput="updateTextLayer(' + t.id + ',\'fadeOut\',this.value); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
-        html += '</div></div>';
-    });
-    document.getElementById('textLayerList').innerHTML = html;
-}
-
-function updatePreview() {
-    const v = document.getElementById('previewVideo');
-    v.style.objectFit = document.getElementById('videoFit').value;
-    
-    // Render text overlays
-    const fontSize = document.getElementById('fontSize').value;
-    const color = document.getElementById('textColor').value;
-    const hasBg = document.getElementById('textBgEnabled').checked;
-    const bgOp = document.getElementById('bgOpacity').value / 100;
-    const bgBlur = document.getElementById('bgBlur').value;
-    
-    let html = '';
-    textLayers.forEach((t, i) => {
-        let style = 'left:' + t.x + '%;top:' + t.y + '%;transform:translate(-50%,-50%);';
-        style += 'font-size:' + fontSize + 'px;color:' + color + ';';
-        if (hasBg) style += 'background:rgba(0,0,0,' + bgOp + ');padding:10px 16px;border-radius:6px;backdrop-filter:blur(' + bgBlur + 'px);';
-        html += '<div class="preview-text" data-fadein="' + t.fadeIn + '" data-fadeout="' + t.fadeOut + '" style="' + style + '">' + t.text + '</div>';
-    });
-    document.getElementById('previewTexts').innerHTML = html;
-    
-    applyScroll();
-}
-
-function applyScroll() {
-    const scroll = document.getElementById('previewScroll');
-    const container = document.getElementById('previewContainer');
-    const v = document.getElementById('previewVideo');
-    const progressEl = document.getElementById('progressDisplay');
-    
-    const scrollTop = scroll.scrollTop;
-    const maxScroll = container.offsetHeight - scroll.clientHeight;
-    const progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
-    progressEl.textContent = Math.round(progress * 100) + '%';
-    
-    // Scrub video
-    if (videoDuration > 0) {
-        v.currentTime = progress * videoDuration;
-    }
-    
-    // Show/hide text layers
-    const pct = progress * 100;
-    document.querySelectorAll('.preview-text').forEach(el => {
-        const fadeIn = parseFloat(el.dataset.fadein);
-        const fadeOut = parseFloat(el.dataset.fadeout);
-        el.classList.toggle('visible', pct >= fadeIn && pct <= fadeOut);
-    });
-}
-
-let rafId = null;
-function onPreviewScroll() {
-    if (rafId) cancelAnimationFrame(rafId);
-    rafId = requestAnimationFrame(applyScroll);
-}
-document.getElementById('previewScroll').addEventListener('scroll', onPreviewScroll, { passive: true });
-
-function generateExport() {
-    if (!videoUrl) { alert('Load video first'); return; }
-    
-    const uid = 'vid' + Math.random().toString(36).substr(2, 9);
-    const fit = document.getElementById('videoFit').value;
-    const dur = document.getElementById('scrollDuration').value;
-    const smooth = document.getElementById('smoothing').value;
-    const desktopOffset = document.getElementById('desktopOffset').value;
-    const mobileOffset = document.getElementById('mobileOffset').value;
-    const fontSize = document.getElementById('fontSize').value;
-    const color = document.getElementById('textColor').value;
-    const hasBg = document.getElementById('textBgEnabled').checked;
-    const bgOp = document.getElementById('bgOpacity').value / 100;
-    const bgBlur = document.getElementById('bgBlur').value;
-    const tapText = document.getElementById('tapText').value || 'Tap to activate video';
-    const tapPosition = document.getElementById('tapPosition').value;
-    const tapScale = document.getElementById('tapScale').value;
-    const tapColor = document.getElementById('tapColor').value;
-    const scrollMult = dur / 100;
-    
-    const bgStyle = hasBg ? 'background:rgba(0,0,0,' + bgOp + ');padding:10px 16px;border-radius:6px;backdrop-filter:blur(' + bgBlur + 'px);-webkit-backdrop-filter:blur(' + bgBlur + 'px);' : '';
-    
-    // Tap button position CSS
-    let tapAlignItems = 'center';
-    if (tapPosition === 'top') tapAlignItems = 'flex-start';
-    else if (tapPosition === 'bottom') tapAlignItems = 'flex-end';
-    const tapPadding = tapPosition === 'center' ? '0' : '60px 0';
-    
-    let txtHtml = '';
-    let txtData = [];
-    textLayers.forEach(t => {
-        txtData.push({ fadeIn: t.fadeIn, fadeOut: t.fadeOut });
-        txtHtml += '<div class="v-txt" style="left:' + t.x + '%;top:' + t.y + '%;transform:translate(-50%,-50%)">' + t.text + '</div>\n';
-    });
-    
-    const code = `<style>
-#${uid}.v-wrap{position:relative}
-#${uid} .v-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;height:100vh;background:#000;overflow:hidden}
-#${uid} .v-inner{position:relative;width:100%;height:100%}
-#${uid} video{width:100%;height:100%;object-fit:${fit};position:absolute;top:0;left:0;-webkit-transform:translateZ(0);transform:translateZ(0)}
-#${uid} .v-txt{position:absolute;pointer-events:none;font-size:${fontSize}px;color:${color};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;transition:opacity 0.3s}
-#${uid} .v-txt.on{opacity:1}
-#${uid} .v-tap{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:${tapAlignItems};justify-content:center;padding:${tapPadding};z-index:100;cursor:pointer;box-sizing:border-box}
-#${uid} .v-tap span{color:#fff;font-size:${18 * tapScale}px;padding:${16 * tapScale}px ${32 * tapScale}px;background:${tapColor};border-radius:8px;font-weight:600}
-#${uid} .v-tap.hidden{display:none}
-@media(max-width:768px){#${uid} .v-stage{top:${mobileOffset}px}}
+<style>
+#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}
+#disco-nav .dot{width:6px;height:6px;border-radius:50%;display:none;}
+#disco-nav .dot.orange{display:inline-block;background:#f90;}
+#disco-nav .dot.green{display:inline-block;background:#4a4;}
 </style>
-<div id="${uid}" class="v-wrap">
-<div class="v-stage">
-<div class="v-inner">
-<video muted playsinline webkit-playsinline preload="auto" src="${videoUrl}"></video>
-<div class="v-tap"><span>${tapText}</span></div>
-${txtHtml}</div>
-</div>
-</div>
 <script>
 (function(){
-var wrap=document.getElementById("${uid}");
-var v=wrap.querySelector("video");
-var txts=wrap.querySelectorAll(".v-txt");
-var tap=wrap.querySelector(".v-tap");
-var data=${JSON.stringify(txtData)};
-var vidDur=0,curP=0,tarP=0,raf=null,activated=false;
-var scrollMult=${scrollMult};
-function setHeight(){
-var stage=wrap.querySelector(".v-stage");
-wrap.style.height=(stage.offsetHeight*scrollMult)+"px";
-}
-setHeight();window.addEventListener("resize",setHeight);
-function activate(){
-if(activated)return;
-v.play().then(function(){
-v.pause();
-v.currentTime=0;
-activated=true;
-tap.classList.add("hidden");
-upd();
-}).catch(function(e){console.log("Activation failed:",e);});
-}
-tap.addEventListener("click",activate);
-tap.addEventListener("touchend",activate);
-v.addEventListener("loadedmetadata",function(){vidDur=v.duration;});
-if(v.readyState>=1){vidDur=v.duration;}
-function lerp(a,b,t){return a+(b-a)*t;}
-function upd(){
-if(!activated)return;
-var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["${uid}"];
-if(extP!==undefined){tarP=extP;}else{
-var r=wrap.getBoundingClientRect();
-var wh=window.innerHeight;
-var scrolled=Math.max(0,-r.top);
-var scrollRange=wrap.offsetHeight-wh;
-if(scrollRange<=0)scrollRange=1;
-tarP=Math.max(0,Math.min(1,scrolled/scrollRange));
-}
-curP=lerp(curP,tarP,${smooth});
-if(Math.abs(curP-tarP)>0.001){raf=requestAnimationFrame(upd);}
-if(vidDur>0&&v.readyState>=2){v.currentTime=curP*vidDur;}
-var pct=curP*100;
-for(var i=0;i<txts.length;i++){
-var d=data[i];
-txts[i].classList.toggle("on",pct>=d.fadeIn&&pct<=d.fadeOut);
-}
-}
-function onScroll(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(upd);}
-window.addEventListener("scroll",onScroll,{passive:true});
-if(!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)){
-tap.classList.add("hidden");
-activated=true;
-upd();
-}
-})();
-<\/script>`;
-    
-    document.getElementById('exportCode').value = code;
-    document.getElementById('exportModal').classList.add('active');
-}
-
-function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
-function copyCode() { document.getElementById('exportCode').select(); document.execCommand('copy'); alert('Copied!'); }
-function downloadCode() {
-    var filename = prompt('Save export as:', 'video');
-    if (!filename) return;
-    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
-    const blob = new Blob([document.getElementById('exportCode').value], {type:'text/html'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = safeName + '.html'; a.click();
-}
-function sendToStackBuilder() {
-    var code = document.getElementById('exportCode').value;
-    if (!code) { alert('Generate HTML first'); return; }
-    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
-    queue.push({ name: 'Video', html: code, timestamp: Date.now() });
-    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
-    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
-        window.location.href = 'stack-builder-clean.html';
+  document.querySelectorAll('#disco-nav a[data-module]').forEach(function(a){
+    var mod = a.getAttribute('data-module');
+    var key = 'disco_' + mod;
+    var dot = a.querySelector('.dot');
+    if(!dot) return;
+    var hasContent = localStorage.getItem(key);
+    var fromPlanner = localStorage.getItem(key + '_from_planner');
+    if(hasContent){
+      if(fromPlanner === 'true'){
+        dot.className = 'dot orange';
+      } else {
+        dot.className = 'dot green';
+      }
     }
-}
-
-updatePreviewHeight();
-</script>
-<script>
-(function(){
+  });
   var path = location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('#disco-nav a').forEach(function(a){
     if(a.getAttribute('href') === path){
@@ -528,6 +134,7 @@ updatePreviewHeight();
   });
 })();
 </script>
+
 <script>
 // Persistence for video
 (function() {
@@ -543,7 +150,7 @@ updatePreviewHeight();
             else if (el.type === 'file') return;
             else state.inputs[el.id] = el.value;
         });
-        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+        try { localStorage.setItem(KEY, JSON.stringify(state)); localStorage.removeItem(KEY + '_from_planner'); } catch(e) {}
     }
     
     function loadState() {

@@ -70,439 +70,52 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 </head>
 <body>
 <div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
-<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
-<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
-<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
-<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
-<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
-<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
-<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
-<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
-<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
-<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
-<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
-<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
-<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
-<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
-<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
-<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
-<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
-<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
-<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
-<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
-<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
+<a href="index.html" style="padding:8px 12px;color:#4a9eff;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">← Hub</a>
+<a href="before-after.html" data-module="before-after" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Before/After<span class="dot"></span></a>
+<a href="card-stack.html" data-module="card-stack" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Card Stack<span class="dot"></span></a>
+<a href="chart.html" data-module="chart" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chart<span class="dot"></span></a>
+<a href="collage.html" data-module="collage" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Collage<span class="dot"></span></a>
+<a href="doc-module.html" data-module="doc-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Doc Module<span class="dot"></span></a>
+<a href="gallery.html" data-module="gallery" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Gallery<span class="dot"></span></a>
+<a href="globe.html" data-module="globe" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Globe<span class="dot"></span></a>
+<a href="hotspots.html" data-module="hotspots" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Hotspots<span class="dot"></span></a>
+<a href="layers.html" data-module="layers" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Layers<span class="dot"></span></a>
+<a href="matte.html" data-module="matte" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Matte<span class="dot"></span></a>
+<a href="pull-quote.html" data-module="pull-quote" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Pull Quote<span class="dot"></span></a>
+<a href="single-image.html" data-module="single-image" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Single Image<span class="dot"></span></a>
+<a href="stat-counter.html" data-module="stat-counter" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Stat Counter<span class="dot"></span></a>
+<a href="timeline.html" data-module="timeline" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Timeline<span class="dot"></span></a>
+<a href="video.html" data-module="video" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Video<span class="dot"></span></a>
+<a href="zoom-detail.html" data-module="zoom-detail" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Zoom Detail<span class="dot"></span></a>
+<a href="text-scroll.html" data-module="text-scroll" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Text Scroll<span class="dot"></span></a>
+<a href="chapter-marker.html" data-module="chapter-marker" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chapter Marker<span class="dot"></span></a>
+<a href="key-facts.html" data-module="key-facts" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Key Facts<span class="dot"></span></a>
+<a href="body-module.html" data-module="body-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Body Module<span class="dot"></span></a>
+<a href="stack-builder-clean.html" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;">Stack Builder</a>
 </div>
-<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
-
-<div class="app">
-    <div class="controls">
-        <h1>💬 Pull Quote</h1>
-        
-        <h2 onclick="toggleSection(this)">Quote Content</h2>
-        <div class="section">
-            <div class="control-group">
-                <label>Quote Text</label>
-                <textarea id="quoteText" oninput="updatePreview()">How you expect to run with the wolves come night, when you spend all day sparring with the puppies?</textarea>
-            </div>
-            <div class="control-group">
-                <label>Attribution</label>
-                <input type="text" id="attribution" value="— Omar Little" oninput="updatePreview()">
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Text Effect</h2>
-        <div class="section">
-            <div class="control-group">
-                <label>Effect Type</label>
-                <select id="textEffect" onchange="updatePreview()">
-                    <option value="fade">Fade In</option>
-                    <option value="typewriter">Typewriter</option>
-                    <option value="word">Word by Word</option>
-                </select>
-            </div>
-            <div class="control-group" id="speedGroup">
-                <label>Effect Speed <span class="range-val" id="speedVal">30ms</span></label>
-                <input type="range" id="effectSpeed" min="10" max="100" value="30" oninput="document.getElementById('speedVal').textContent=this.value+'ms';">
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Background Image</h2>
-        <div class="section">
-            <div class="control-group">
-                <label>Image URL</label>
-                <input type="url" id="bgImageUrl" placeholder="https://...">
-                <button onclick="loadBgImage()" style="margin-top:8px;">Load Image</button>
-                <div class="hint">Any direct image URL (CDN, S3, GitHub, your server)</div>
-            </div>
-            <div class="control-group">
-                <label>Darken <span class="range-val" id="darkenVal">50%</span></label>
-                <input type="range" id="bgDarken" min="0" max="90" value="50" oninput="document.getElementById('darkenVal').textContent=this.value+'%'; updatePreview();">
-            </div>
-            <div class="control-group">
-                <label>Blur <span class="range-val" id="blurVal">0px</span></label>
-                <input type="range" id="bgBlur" min="0" max="20" value="0" oninput="document.getElementById('blurVal').textContent=this.value+'px'; updatePreview();">
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Colors & Typography</h2>
-        <div class="section">
-            <div class="control-group">
-                <label>Background Color <input type="color" id="bgColor" value="#1a1a1a" onchange="updatePreview()"></label>
-            </div>
-            <div class="control-group">
-                <label>Quote Color <input type="color" id="quoteColor" value="#ffffff" onchange="updatePreview()"></label>
-            </div>
-            <div class="control-group">
-                <label>Attribution Color <input type="color" id="attrColor" value="#888888" onchange="updatePreview()"></label>
-            </div>
-            <div class="control-group">
-                <label>Font Size <span class="range-val" id="fontSizeVal">42px</span></label>
-                <input type="range" id="fontSize" min="24" max="72" value="42" oninput="document.getElementById('fontSizeVal').textContent=this.value+'px'; updatePreview();">
-            </div>
-            <div class="control-group">
-                <label>Font Weight <span class="range-val" id="fontWeightVal">600</span></label>
-                <input type="range" id="fontWeight" min="300" max="900" step="100" value="600" oninput="document.getElementById('fontWeightVal').textContent=this.value; updatePreview();">
-            </div>
-            <div class="control-group">
-                <label>Text Alignment</label>
-                <select id="textAlign" onchange="updatePreview()">
-                    <option value="left">Left</option>
-                    <option value="center" selected>Center</option>
-                    <option value="right">Right</option>
-                </select>
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Export Settings</h2>
-        <div class="section">
-            <div class="control-group">
-                <label>Scroll Duration (vh)</label>
-                <div class="range-row">
-                    <input type="range" id="scrollDuration" min="150" max="400" value="200" oninput="document.getElementById('scrollDurationNum').value=this.value; updatePreviewHeight();">
-                    <input type="number" id="scrollDurationNum" min="150" max="400" value="200" oninput="document.getElementById('scrollDuration').value=this.value; updatePreviewHeight();">
-                </div>
-            </div>
-            <div class="control-group">
-                <label>Quote Appears At <span class="range-val" id="quoteRevealVal">20%</span></label>
-                <input type="range" id="quoteReveal" min="0" max="50" value="20" oninput="document.getElementById('quoteRevealVal').textContent=this.value+'%';">
-            </div>
-            <button onclick="generateExport()" style="margin-top:10px;">Generate HTML</button>
-            <button class="secondary" onclick="resetModule()" style="margin-top:8px;">↺ Reset</button>
-        </div>
-    </div>
-    
-    <div class="preview-area">
-        <div class="preview-header"><span>Preview (scroll to test)</span><span id="progressDisplay">0%</span></div>
-        <div class="preview-scroll" id="previewScroll">
-            <div class="preview-container" id="previewContainer">
-                <div class="preview-stage" id="previewStage">
-                    <div class="preview-bg" id="previewBg"></div>
-                    <div class="preview-overlay" id="previewOverlay"></div>
-                    <div class="preview-content" id="previewContent">
-                        <div class="preview-quote" id="previewQuote"></div>
-                        <div class="preview-attr" id="previewAttr"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="exportModal">
-    <div class="modal-content">
-        <div class="modal-header"><h2 style="margin:0;border:0;padding:0;background:none;">Export HTML</h2><button class="modal-close" onclick="closeModal()">×</button></div>
-        <textarea class="code" id="exportCode" readonly></textarea>
-        <div class="row" style="margin-top:12px;"><button onclick="copyCode()">📋 Copy</button><button onclick="downloadCode()" class="secondary">💾 Download</button><button onclick="sendToStackBuilder()" class="secondary">📚 Stack</button></div>
-    </div>
-</div>
-
-<script>
-var bgImageData = '';
-
-function toggleSection(el) { el.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('collapsed'); }
-
-function loadBgImage() {
-    var url = document.getElementById('bgImageUrl').value.trim();
-    if (!url) { alert('Enter image URL'); return; }
-    if (url.includes('github.com') && url.includes('/blob/')) {
-        url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
-    }
-    var img = new Image();
-    img.onload = function() { bgImageData = url; updatePreview(); };
-    img.onerror = function() { alert('Failed to load image'); };
-    img.src = url;
-}
-
-function updatePreviewHeight() {
-    document.getElementById('previewContainer').style.height = document.getElementById('scrollDuration').value + 'vh';
-}
-
-var previewRevealed = false;
-var previewAnimating = false;
-
-function updatePreview() {
-    var quote = document.getElementById('quoteText').value;
-    var attr = document.getElementById('attribution').value;
-    var bgColor = document.getElementById('bgColor').value;
-    var quoteColor = document.getElementById('quoteColor').value;
-    var attrColor = document.getElementById('attrColor').value;
-    var fontSize = document.getElementById('fontSize').value;
-    var fontWeight = document.getElementById('fontWeight').value;
-    var textAlign = document.getElementById('textAlign').value;
-    var darken = document.getElementById('bgDarken').value / 100;
-    var blur = document.getElementById('bgBlur').value;
-    var textEffect = document.getElementById('textEffect').value;
-    
-    document.getElementById('previewStage').style.background = bgColor;
-    // Only set text directly for fade effect, others will animate
-    if (textEffect === 'fade') {
-        document.getElementById('previewQuote').textContent = quote;
-    }
-    document.getElementById('previewQuote').style.color = quoteColor;
-    document.getElementById('previewQuote').style.fontSize = fontSize + 'px';
-    document.getElementById('previewQuote').style.fontWeight = fontWeight;
-    document.getElementById('previewAttr').textContent = attr;
-    document.getElementById('previewAttr').style.color = attrColor;
-    document.getElementById('previewContent').style.textAlign = textAlign;
-    
-    if (bgImageData) {
-        document.getElementById('previewBg').style.backgroundImage = 'url(' + bgImageData + ')';
-        document.getElementById('previewBg').style.filter = blur > 0 ? 'blur(' + blur + 'px)' : '';
-        document.getElementById('previewOverlay').style.background = 'rgba(0,0,0,' + darken + ')';
-    } else {
-        document.getElementById('previewBg').style.backgroundImage = '';
-        document.getElementById('previewOverlay').style.background = '';
-    }
-    
-    // Reset reveal state when settings change
-    previewRevealed = false;
-    previewAnimating = false;
-    document.getElementById('previewQuote').textContent = '';
-    document.getElementById('previewQuote').classList.remove('on');
-    document.getElementById('previewAttr').classList.remove('on');
-    
-    updatePreviewHeight();
-}
-
-function previewTypewriter() {
-    var quote = document.getElementById('previewQuote');
-    var fullText = document.getElementById('quoteText').value;
-    var speed = parseInt(document.getElementById('effectSpeed').value);
-    var i = 0;
-    previewAnimating = true;
-    function type() {
-        if (i <= fullText.length) {
-            quote.textContent = fullText.substring(0, i) + (i < fullText.length ? "|" : "");
-            i++;
-            setTimeout(type, speed);
-        } else {
-            previewAnimating = false;
-        }
-    }
-    type();
-}
-
-function previewWordByWord() {
-    var quote = document.getElementById('previewQuote');
-    var fullText = document.getElementById('quoteText').value;
-    var words = fullText.split(" ");
-    var speed = parseInt(document.getElementById('effectSpeed').value);
-    var i = 0;
-    previewAnimating = true;
-    function show() {
-        if (i <= words.length) {
-            quote.textContent = words.slice(0, i).join(" ");
-            i++;
-            setTimeout(show, speed * 3);
-        } else {
-            previewAnimating = false;
-        }
-    }
-    show();
-}
-
-function applyScrollEffect() {
-    var container = document.getElementById('previewContainer');
-    var scrollEl = document.getElementById('previewScroll');
-    var quote = document.getElementById('previewQuote');
-    var attr = document.getElementById('previewAttr');
-    var quoteReveal = document.getElementById('quoteReveal').value / 100;
-    var textEffect = document.getElementById('textEffect').value;
-    
-    var rect = container.getBoundingClientRect();
-    var scrolled = Math.max(0, -rect.top);
-    var scrollRange = container.offsetHeight - scrollEl.offsetHeight;
-    if (scrollRange <= 0) scrollRange = 1;
-    var progress = Math.max(0, Math.min(1, scrolled / scrollRange));
-    
-    document.getElementById('progressDisplay').textContent = Math.round(progress * 100) + '%';
-    
-    var shouldShow = progress >= quoteReveal;
-    
-    if (shouldShow && !previewRevealed) {
-        previewRevealed = true;
-        quote.classList.add('on');
-        // Delay attribution fade
-        setTimeout(function() {
-            attr.classList.add('on');
-        }, 600);
-        if (textEffect === 'typewriter') {
-            previewTypewriter();
-        } else if (textEffect === 'word') {
-            previewWordByWord();
-        } else {
-            quote.textContent = document.getElementById('quoteText').value;
-        }
-    }
-    
-    if (!previewRevealed) {
-        quote.classList.toggle('on', false);
-        attr.classList.toggle('on', false);
-    }
-}
-
-document.getElementById('previewScroll').addEventListener('scroll', function() {
-    requestAnimationFrame(applyScrollEffect);
-}, { passive: true });
-
-function generateExport() {
-    var uid = 'pq' + Math.random().toString(36).substr(2, 9);
-    var quoteRaw = document.getElementById('quoteText').value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, ' ');
-    var quoteHtml = document.getElementById('quoteText').value.replace(/'/g, "\\'").replace(/\n/g, '<br>');
-    var attr = document.getElementById('attribution').value.replace(/'/g, "\\'");
-    var bgColor = document.getElementById('bgColor').value;
-    var quoteColor = document.getElementById('quoteColor').value;
-    var attrColor = document.getElementById('attrColor').value;
-    var fontSize = document.getElementById('fontSize').value;
-    var fontWeight = document.getElementById('fontWeight').value;
-    var textAlign = document.getElementById('textAlign').value;
-    var scrollMult = document.getElementById('scrollDuration').value / 100;
-    var quoteReveal = document.getElementById('quoteReveal').value / 100;
-    var textEffect = document.getElementById('textEffect').value;
-    var effectSpeed = document.getElementById('effectSpeed').value;
-    var darken = document.getElementById('bgDarken').value / 100;
-    var blur = document.getElementById('bgBlur').value;
-    
-    var bgHtml = '';
-    if (bgImageData) {
-        var filterStyle = blur > 0 ? 'filter:blur(' + blur + 'px);' : '';
-        bgHtml = '<div style="position:absolute;inset:0;background:url(' + bgImageData + ') center/cover;' + filterStyle + 'z-index:0"></div>' +
-                 '<div style="position:absolute;inset:0;background:rgba(0,0,0,' + darken + ');z-index:1"></div>';
-    }
-    
-    var code = '<style>\n' +
-'#' + uid + '{position:relative}\n' +
-'#' + uid + ' .pq-stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:' + bgColor + '}\n' +
-'#' + uid + ' .pq-content{position:relative;z-index:10;text-align:' + textAlign + ';padding:40px;max-width:900px}\n' +
-'#' + uid + ' .pq-quote{font-size:' + fontSize + 'px;font-weight:' + fontWeight + ';line-height:1.3;color:' + quoteColor + ';margin-bottom:30px;opacity:0;transition:opacity 0.6s}\n' +
-'#' + uid + ' .pq-quote.on{opacity:1}\n' +
-'#' + uid + ' .pq-attr{font-size:18px;font-style:italic;color:' + attrColor + ';opacity:0;transition:opacity 0.6s}\n' +
-'#' + uid + ' .pq-attr.on{opacity:1}\n' +
-'@media(max-width:768px){#' + uid + ' .pq-quote{font-size:' + Math.round(fontSize*0.6) + 'px}}\n' +
-'</style>\n' +
-'<div id="' + uid + '">\n' +
-'<div class="pq-stage">\n' +
-bgHtml +
-'<div class="pq-content">\n' +
-'<div class="pq-quote">' + (textEffect === 'fade' ? quoteHtml : '') + '</div>\n' +
-'<div class="pq-attr">' + attr + '</div>\n' +
-'</div>\n' +
-'</div>\n' +
-'</div>\n' +
-'<script>\n' +
-'(function(){\n' +
-'var w=document.getElementById("' + uid + '");\n' +
-'var s=w.querySelector(".pq-stage");\n' +
-'var q=w.querySelector(".pq-quote");\n' +
-'var a=w.querySelector(".pq-attr");\n' +
-'var scrollMult=' + scrollMult + ';\n' +
-'var qr=' + quoteReveal + ';\n' +
-'var effect="' + textEffect + '";\n' +
-'var speed=' + effectSpeed + ';\n' +
-'var fullText="' + quoteRaw + '";\n' +
-'var revealed=false;\n' +
-'function setH(){w.style.height=(s.offsetHeight*scrollMult)+"px";}\n' +
-'setH();window.addEventListener("resize",setH);\n' +
-'function typewriter(){\n' +
-'var i=0;\n' +
-'function type(){if(i<=fullText.length){q.innerHTML=fullText.substring(0,i)+(i<fullText.length?"|":"");i++;setTimeout(type,speed);}}\n' +
-'type();\n' +
-'}\n' +
-'function wordByWord(){\n' +
-'var words=fullText.split(" ");\n' +
-'var i=0;\n' +
-'function show(){if(i<=words.length){q.innerHTML=words.slice(0,i).join(" ");i++;setTimeout(show,speed*3);}}\n' +
-'show();\n' +
-'}\n' +
-'function upd(){\n' +
-'var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\n' +
-'var p;\n' +
-'if(extP!==undefined){p=extP;}else{\n' +
-'var r=w.getBoundingClientRect();\n' +
-'var wh=window.innerHeight;\n' +
-'var scrolled=Math.max(0,-r.top);\n' +
-'var scrollRange=w.offsetHeight-wh;\n' +
-'if(scrollRange<=0)scrollRange=1;\n' +
-'p=Math.max(0,Math.min(1,scrolled/scrollRange));\n' +
-'}\n' +
-'var show=p>=qr||revealed;\n' +
-'if(p>=qr&&!revealed){\n' +
-'revealed=true;\n' +
-'q.classList.add("on");\n' +
-'setTimeout(function(){a.classList.add("on");},600);\n' +
-'if(effect==="typewriter")typewriter();\n' +
-'else if(effect==="word")wordByWord();\n' +
-'else q.innerHTML=fullText;\n' +
-'}\n' +
-'if(!revealed){q.classList.toggle("on",false);a.classList.toggle("on",false);}\n' +
-'requestAnimationFrame(upd);\n' +
-'}\n' +
-'upd();\n' +
-'})();\n' +
-'<\/script>';
-    
-    document.getElementById('exportCode').value = code;
-    document.getElementById('exportModal').classList.add('active');
-}
-
-function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
-
-function copyCode() {
-    document.getElementById('exportCode').select();
-    document.execCommand('copy');
-    alert('Copied!');
-}
-
-function downloadCode() {
-    var code = document.getElementById('exportCode').value;
-    if (!code) { generateExport(); return; }
-    var filename = prompt('Save export as:', 'pull-quote');
-    if (!filename) return;
-    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
-    var blob = new Blob([code], { type: 'text/html' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = safeName + '.html';
-    a.click();
-}
-
-function sendToStackBuilder() {
-    var code = document.getElementById('exportCode').value;
-    if (!code) { alert('Generate HTML first'); return; }
-    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
-    queue.push({ name: 'Pull Quote', html: code, timestamp: Date.now() });
-    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
-    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
-        window.location.href = 'stack-builder-clean.html';
-    }
-}
-
-updatePreview();
-applyScrollEffect();
-</script>
+<style>
+#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}
+#disco-nav .dot{width:6px;height:6px;border-radius:50%;display:none;}
+#disco-nav .dot.orange{display:inline-block;background:#f90;}
+#disco-nav .dot.green{display:inline-block;background:#4a4;}
+</style>
 <script>
 (function(){
+  document.querySelectorAll('#disco-nav a[data-module]').forEach(function(a){
+    var mod = a.getAttribute('data-module');
+    var key = 'disco_' + mod;
+    var dot = a.querySelector('.dot');
+    if(!dot) return;
+    var hasContent = localStorage.getItem(key);
+    var fromPlanner = localStorage.getItem(key + '_from_planner');
+    if(hasContent){
+      if(fromPlanner === 'true'){
+        dot.className = 'dot orange';
+      } else {
+        dot.className = 'dot green';
+      }
+    }
+  });
   var path = location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('#disco-nav a').forEach(function(a){
     if(a.getAttribute('href') === path){
@@ -512,6 +125,7 @@ applyScrollEffect();
   });
 })();
 </script>
+
 <script>
 // Persistence for pull-quote
 (function() {
@@ -526,7 +140,7 @@ applyScrollEffect();
             else if (el.type === 'file') return;
             else state.inputs[el.id] = el.value;
         });
-        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+        try { localStorage.setItem(KEY, JSON.stringify(state)); localStorage.removeItem(KEY + '_from_planner'); } catch(e) {}
     }
     
     function loadState() {

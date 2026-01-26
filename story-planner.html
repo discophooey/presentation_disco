@@ -1080,6 +1080,7 @@ function exportToModules() {
             const key = 'disco_' + section.moduleType;
             try {
                 localStorage.setItem(key, JSON.stringify(state));
+                localStorage.setItem(key + '_from_planner', 'true');
                 results.push({ module: getModuleInfo(section.moduleType).name, success: true });
             } catch(e) {
                 results.push({ module: getModuleInfo(section.moduleType).name, success: false, error: e.message });

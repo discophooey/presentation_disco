@@ -75,395 +75,52 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 </head>
 <body>
 <div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
-<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
-<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
-<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
-<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
-<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
-<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
-<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
-<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
-<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
-<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
-<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
-<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
-<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
-<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
-<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
-<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
-<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
-<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
-<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
-<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
-<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
+<a href="index.html" style="padding:8px 12px;color:#4a9eff;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">← Hub</a>
+<a href="before-after.html" data-module="before-after" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Before/After<span class="dot"></span></a>
+<a href="card-stack.html" data-module="card-stack" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Card Stack<span class="dot"></span></a>
+<a href="chart.html" data-module="chart" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chart<span class="dot"></span></a>
+<a href="collage.html" data-module="collage" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Collage<span class="dot"></span></a>
+<a href="doc-module.html" data-module="doc-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Doc Module<span class="dot"></span></a>
+<a href="gallery.html" data-module="gallery" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Gallery<span class="dot"></span></a>
+<a href="globe.html" data-module="globe" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Globe<span class="dot"></span></a>
+<a href="hotspots.html" data-module="hotspots" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Hotspots<span class="dot"></span></a>
+<a href="layers.html" data-module="layers" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Layers<span class="dot"></span></a>
+<a href="matte.html" data-module="matte" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Matte<span class="dot"></span></a>
+<a href="pull-quote.html" data-module="pull-quote" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Pull Quote<span class="dot"></span></a>
+<a href="single-image.html" data-module="single-image" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Single Image<span class="dot"></span></a>
+<a href="stat-counter.html" data-module="stat-counter" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Stat Counter<span class="dot"></span></a>
+<a href="timeline.html" data-module="timeline" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Timeline<span class="dot"></span></a>
+<a href="video.html" data-module="video" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Video<span class="dot"></span></a>
+<a href="zoom-detail.html" data-module="zoom-detail" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Zoom Detail<span class="dot"></span></a>
+<a href="text-scroll.html" data-module="text-scroll" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Text Scroll<span class="dot"></span></a>
+<a href="chapter-marker.html" data-module="chapter-marker" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chapter Marker<span class="dot"></span></a>
+<a href="key-facts.html" data-module="key-facts" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Key Facts<span class="dot"></span></a>
+<a href="body-module.html" data-module="body-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Body Module<span class="dot"></span></a>
+<a href="stack-builder-clean.html" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;">Stack Builder</a>
 </div>
-<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
-
-<div class="app">
-    <div class="controls">
-        <h1>🔍 Zoom Detail</h1>
-        
-        <h2 onclick="toggleSection(this)">Image Source</h2>
-        <div class="section">
-            <div class="control-group">
-                <label>Image URL</label>
-                <input type="url" id="imageUrl" placeholder="https://...">
-                <button onclick="loadImage()" style="margin-top:8px;">Load Image</button>
-            </div>
-            <div class="control-group">
-                <label>Image Fit</label>
-                <select id="imageFit" onchange="updatePreview()">
-                    <option value="contain" selected>Contain (fit, no crop)</option>
-                    <option value="cover">Cover (fill, may crop)</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label>Aspect Ratio</label>
-                <select id="aspectRatio" onchange="updatePreview()">
-                    <option value="16:9" selected>16:9 Widescreen</option>
-                    <option value="4:3">4:3 Standard</option>
-                    <option value="1:1">1:1 Square</option>
-                    <option value="21:9">21:9 Ultrawide</option>
-                </select>
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Zoom Target</h2>
-        <div class="section">
-            <div class="hint blue" style="margin-bottom:12px;">💡 Click on the image to set zoom target</div>
-            <div class="control-group">
-                <label>Target X <span class="range-val" id="targetXVal">50%</span></label>
-                <input type="range" id="targetX" min="0" max="100" value="50" oninput="document.getElementById('targetXVal').textContent=this.value+'%'; applyEffect();">
-            </div>
-            <div class="control-group">
-                <label>Target Y <span class="range-val" id="targetYVal">50%</span></label>
-                <input type="range" id="targetY" min="0" max="100" value="50" oninput="document.getElementById('targetYVal').textContent=this.value+'%'; applyEffect();">
-            </div>
-            <div class="control-group">
-                <label>Start Zoom <span class="range-val" id="startZoomVal">1.0x</span></label>
-                <input type="range" id="startZoom" min="1" max="3" step="0.1" value="1" oninput="document.getElementById('startZoomVal').textContent=this.value+'x'; applyEffect();">
-            </div>
-            <div class="control-group">
-                <label>End Zoom <span class="range-val" id="endZoomVal">2.5x</span></label>
-                <input type="range" id="endZoom" min="1.5" max="8" step="0.1" value="2.5" oninput="document.getElementById('endZoomVal').textContent=this.value+'x'; applyEffect();">
-            </div>
-            <div class="control-group">
-                <label><input type="checkbox" id="showMarker" checked onchange="applyEffect()"> Show Target Marker</label>
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Annotation</h2>
-        <div class="section">
-            <div class="control-group">
-                <label><input type="checkbox" id="annotationEnabled" checked onchange="applyEffect()"> Enable Annotation</label>
-            </div>
-            <div class="control-group">
-                <label>Annotation Text</label>
-                <input type="text" id="annotationText" value="Detail revealed here" oninput="applyEffect()">
-            </div>
-            <div class="control-group">
-                <label>Position</label>
-                <select id="annotationPos" onchange="applyEffect()">
-                    <option value="right" selected>Right of marker</option>
-                    <option value="left">Left of marker</option>
-                    <option value="top">Above marker</option>
-                    <option value="bottom">Below marker</option>
-                </select>
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Caption</h2>
-        <div class="section">
-            <div class="control-group">
-                <label><input type="checkbox" id="captionEnabled" onchange="applyEffect()"> Enable Caption</label>
-            </div>
-            <div class="control-group">
-                <label>Caption Text</label>
-                <textarea id="captionText" oninput="applyEffect()" placeholder="Describe the image...">Image that zooms into specific regions with callout annotations on scroll.</textarea>
-            </div>
-            <div class="control-group">
-                <label>Credit</label>
-                <input type="text" id="captionCredit" placeholder="Credit" value="Marshall Ritzel" oninput="applyEffect()">
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Appearance</h2>
-        <div class="section">
-            <div class="control-group">
-                <label>Background Color</label>
-                <input type="color" id="bgColor" value="#000000" onchange="document.getElementById('previewStage').style.background=this.value;">
-            </div>
-            <div class="control-group">
-                <label>Marker Color</label>
-                <input type="color" id="markerColor" value="#4a9eff" onchange="applyEffect();">
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Export Settings</h2>
-        <div class="section">
-            <div class="control-group">
-                <label>Scroll Duration (vh)</label>
-                <div class="row">
-                    <input type="range" id="scrollDuration" min="150" max="400" value="250" oninput="document.getElementById('scrollDurationNum').value=this.value; updatePreviewHeight();">
-                    <input type="number" id="scrollDurationNum" value="250" style="width:70px;" oninput="document.getElementById('scrollDuration').value=this.value; updatePreviewHeight();">
-                </div>
-            </div>
-            <button onclick="generateExport()">Generate HTML</button>
-            <button class="secondary" onclick="copyCode()" style="margin-top:8px;">📋 Copy Code</button>
-            <button class="secondary" onclick="resetModule()">↺ Reset</button>
-        </div>
-    </div>
-    
-    <div class="preview-area">
-        <div class="preview-header">
-            <span>Preview (click image to set target, scroll to test)</span>
-            <span id="progressDisplay">0%</span>
-        </div>
-        <div class="preview-scroll" id="previewScroll">
-            <div class="preview-container" id="previewContainer">
-                <div class="preview-stage" id="previewStage">
-                    <div class="zoom-wrapper">
-                        <div class="zoom-matte" id="zoomMatte" onclick="setTarget(event)">
-                            <div style="color:#444;text-align:center;padding:60px;">Load an image to begin</div>
-                        </div>
-                        <div class="zoom-caption" id="zoomCaption">
-                            <div id="captionTextEl"></div>
-                            <div class="zoom-credit" id="captionCreditEl"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="exportModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 style="margin:0;border:0;padding:0;background:none;">Export HTML</h2>
-            <button class="modal-close" onclick="closeModal()">×</button>
-        </div>
-        <textarea class="code" id="exportCode" readonly></textarea>
-        <div class="row" style="margin-top:12px;">
-            <button onclick="copyCode()">📋 Copy</button>
-            <button onclick="downloadCode()" class="secondary">💾 Download</button>
-            <button onclick="sendToStackBuilder()" class="secondary">📚 Stack</button>
-        </div>
-    </div>
-</div>
-
-<script>
-var imageUrl = null;
-
-function toggleSection(el) {
-    el.classList.toggle('collapsed');
-    el.nextElementSibling.classList.toggle('collapsed');
-}
-
-function loadImage() {
-    var url = document.getElementById('imageUrl').value.trim();
-    if (!url) { alert('Enter an image URL'); return; }
-    if (url.includes('github.com') && url.includes('/blob/')) {
-        url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
-    }
-    var img = new Image();
-    img.onload = function() { imageUrl = url; updatePreview(); };
-    img.onerror = function() { alert('Failed to load image'); };
-    img.src = url;
-}
-
-function updatePreviewHeight() {
-    document.getElementById('previewContainer').style.height = (parseInt(document.getElementById('scrollDuration').value) || 250) + 'vh';
-}
-
-function setTarget(e) {
-    if (!imageUrl) return;
-    var matte = document.getElementById('zoomMatte');
-    var img = document.getElementById('zoomImg');
-    // Temporarily reset transform to get accurate click position
-    var oldTransform = img.style.transform;
-    img.style.transform = 'none';
-    var rect = matte.getBoundingClientRect();
-    var x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
-    var y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
-    img.style.transform = oldTransform;
-    document.getElementById('targetX').value = x;
-    document.getElementById('targetY').value = y;
-    document.getElementById('targetXVal').textContent = x + '%';
-    document.getElementById('targetYVal').textContent = y + '%';
-    applyEffect();
-}
-
-function updatePreview() {
-    var matte = document.getElementById('zoomMatte');
-    var wrapper = matte.parentElement;
-    var aspect = document.getElementById('aspectRatio').value;
-    var fit = document.getElementById('imageFit').value;
-    var parts = aspect.split(':');
-    var ratio = parts[0] + ' / ' + parts[1];
-    
-    matte.style.aspectRatio = ratio;
-    matte.style.height = 'auto';
-    
-    if (!imageUrl) {
-        matte.innerHTML = '<div style="color:#444;text-align:center;padding:60px;">Load an image to begin</div>';
-        return;
-    }
-    matte.innerHTML = '<img id="zoomImg" src="' + imageUrl + '" style="object-fit:' + fit + ';position:absolute;top:0;left:0;width:100%;height:100%;"><div class="zoom-marker" id="zoomMarker"></div><div class="zoom-annotation" id="zoomAnnotation"></div>';
-    updatePreviewHeight();
-    applyEffect();
-}
-
-var currentProgress = 0;
-var targetProgress = 0;
-var animFrame = null;
-
-function applyEffect() {
-    var img = document.getElementById('zoomImg');
-    var marker = document.getElementById('zoomMarker');
-    var annotation = document.getElementById('zoomAnnotation');
-    var caption = document.getElementById('zoomCaption');
-    if (!img) return;
-    
-    var scroll = document.getElementById('previewScroll');
-    var container = document.getElementById('previewContainer');
-    var scrollTop = scroll.scrollTop;
-    var maxScroll = container.offsetHeight - scroll.clientHeight;
-    targetProgress = maxScroll > 0 ? scrollTop / maxScroll : 0;
-    
-    // Lerp for smooth easing
-    currentProgress += (targetProgress - currentProgress) * 0.08;
-    var progress = currentProgress;
-    
-    document.getElementById('progressDisplay').textContent = Math.round(targetProgress * 100) + '%';
-    
-    var targetX = parseInt(document.getElementById('targetX').value);
-    var targetY = parseInt(document.getElementById('targetY').value);
-    var startZoom = parseFloat(document.getElementById('startZoom').value);
-    var endZoom = parseFloat(document.getElementById('endZoom').value);
-    var showMarker = document.getElementById('showMarker').checked;
-    var markerColor = document.getElementById('markerColor').value;
-    
-    var zoom = startZoom + (endZoom - startZoom) * progress;
-    var panX = (50 - targetX) * (zoom - 1) / zoom;
-    var panY = (50 - targetY) * (zoom - 1) / zoom;
-    
-    img.style.transformOrigin = targetX + '% ' + targetY + '%';
-    img.style.transform = 'scale(' + zoom + ') translate(' + panX + '%, ' + panY + '%)';
-    
-    marker.style.left = targetX + '%';
-    marker.style.top = targetY + '%';
-    marker.style.borderColor = markerColor;
-    marker.style.boxShadow = '0 0 0 4px ' + markerColor + '40';
-    marker.classList.toggle('visible', showMarker && progress > 0.5);
-    
-    var annotationEnabled = document.getElementById('annotationEnabled').checked;
-    var annotationText = document.getElementById('annotationText').value;
-    var annotationPos = document.getElementById('annotationPos').value;
-    annotation.textContent = annotationText;
-    annotation.style.left = targetX + '%';
-    annotation.style.top = targetY + '%';
-    if (annotationPos === 'right') annotation.style.transform = 'translate(20px, -50%)';
-    else if (annotationPos === 'left') annotation.style.transform = 'translate(-100%, -50%) translateX(-20px)';
-    else if (annotationPos === 'top') annotation.style.transform = 'translate(-50%, -100%) translateY(-20px)';
-    else if (annotationPos === 'bottom') annotation.style.transform = 'translate(-50%, 20px)';
-    annotation.classList.toggle('visible', annotationEnabled && progress > 0.6);
-    
-    var captionEnabled = document.getElementById('captionEnabled').checked;
-    document.getElementById('captionTextEl').textContent = document.getElementById('captionText').value;
-    document.getElementById('captionCreditEl').textContent = document.getElementById('captionCredit').value;
-    caption.classList.toggle('visible', captionEnabled && progress > 0.3);
-}
-
-var rafId = null;
-function onScroll() { 
-    if (rafId) cancelAnimationFrame(rafId); 
-    function animate() {
-        applyEffect();
-        if (Math.abs(currentProgress - targetProgress) > 0.001) {
-            rafId = requestAnimationFrame(animate);
-        }
-    }
-    animate();
-}
-document.getElementById('previewScroll').addEventListener('scroll', onScroll, { passive: true });
-
-function generateExport() {
-    if (!imageUrl) { alert('Load an image first'); return; }
-    var uid = 'zd' + Math.random().toString(36).substr(2, 9);
-    var targetX = document.getElementById('targetX').value;
-    var targetY = document.getElementById('targetY').value;
-    var startZoom = document.getElementById('startZoom').value;
-    var endZoom = document.getElementById('endZoom').value;
-    var showMarker = document.getElementById('showMarker').checked;
-    var markerColor = document.getElementById('markerColor').value;
-    var annotationEnabled = document.getElementById('annotationEnabled').checked;
-    var annotationText = document.getElementById('annotationText').value;
-    var annotationPos = document.getElementById('annotationPos').value;
-    var captionEnabled = document.getElementById('captionEnabled').checked;
-    var captionText = document.getElementById('captionText').value;
-    var captionCredit = document.getElementById('captionCredit').value;
-    var bgColor = document.getElementById('bgColor').value;
-    var aspect = document.getElementById('aspectRatio').value;
-    var aspectParts = aspect.split(':');
-    var fit = document.getElementById('imageFit').value;
-    var scrollDur = document.getElementById('scrollDuration').value;
-    var scrollMult = scrollDur / 100;
-    
-    var annTransform = 'translate(20px,-50%)';
-    if (annotationPos === 'left') annTransform = 'translate(-100%,-50%) translateX(-20px)';
-    if (annotationPos === 'top') annTransform = 'translate(-50%,-100%) translateY(-20px)';
-    if (annotationPos === 'bottom') annTransform = 'translate(-50%,20px)';
-    
-    var markerHtml = showMarker ? '<div class="zd-mk"></div>' : '';
-    var annHtml = annotationEnabled ? '<div class="zd-ann">' + annotationText + '</div>' : '';
-    var capHtml = captionEnabled ? '<div class="zd-cap"><div>' + captionText + '</div>' + (captionCredit ? '<div class="zd-cred">' + captionCredit + '</div>' : '') + '</div>' : '';
-    
-    var code = '<style>\n#' + uid + '{position:relative}\n#' + uid + ' .zd-stage{position:-webkit-sticky;position:sticky;top:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:' + bgColor + ';overflow:hidden}\n#' + uid + ' .zd-wrap{position:relative;width:100%;max-width:1200px}\n#' + uid + ' .zd-matte{position:relative;width:100%;aspect-ratio:' + aspectParts[0] + '/' + aspectParts[1] + ';overflow:hidden;background:#000}\n#' + uid + ' .zd-matte img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:' + fit + ';display:block;will-change:transform}\n#' + uid + ' .zd-mk{position:absolute;left:' + targetX + '%;top:' + targetY + '%;width:24px;height:24px;border:3px solid ' + markerColor + ';border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.3s;box-shadow:0 0 0 4px ' + markerColor + '40}\n#' + uid + ' .zd-mk.on{opacity:1}\n#' + uid + ' .zd-ann{position:absolute;left:' + targetX + '%;top:' + targetY + '%;background:rgba(0,0,0,0.9);color:#fff;padding:10px 14px;border-radius:6px;font-size:13px;opacity:0;transition:opacity 0.3s;transform:' + annTransform + ';max-width:280px;white-space:normal;line-height:1.4;box-sizing:border-box}\n#' + uid + ' .zd-ann.on{opacity:1}\n#' + uid + ' .zd-cap{width:85%;max-width:700px;padding:12px 0;font-size:13px;line-height:1.5;color:#ccc;text-align:left;margin-top:12px}\n#' + uid + ' .zd-cred{color:#888;font-size:11px;font-style:italic;margin-top:4px}\n@media(max-width:768px){#' + uid + ' .zd-stage{top:200px;padding:10px}#' + uid + ' .zd-ann{font-size:11px;padding:6px 10px;max-width:200px}#' + uid + ' .zd-cap{width:95%;font-size:12px}}\n</style>\n<div id="' + uid + '">\n<div class="zd-stage">\n<div class="zd-wrap">\n<div class="zd-matte"><img src="' + imageUrl + '" alt="">' + markerHtml + annHtml + '</div>\n</div>\n' + capHtml + '\n</div>\n</div>\n<script>\n(function(){\nvar w=document.getElementById("' + uid + '");\nvar s=w.querySelector(".zd-stage");\nvar img=w.querySelector("img");\nvar mk=w.querySelector(".zd-mk");\nvar ann=w.querySelector(".zd-ann");\nvar cap=w.querySelector(".zd-cap");\nvar tx=' + targetX + ',ty=' + targetY + ',sz=' + startZoom + ',ez=' + endZoom + ';\nvar scrollMult=' + scrollMult + ';\nvar curP=0,tarP=0;\nfunction setH(){w.style.height=(s.offsetHeight*scrollMult)+"px";}\nsetH();window.addEventListener("resize",setH);\nfunction lerp(a,b,t){return a+(b-a)*t;}\nfunction upd(){\nvar extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\nif(extP!==undefined){tarP=extP;}else{\nvar r=w.getBoundingClientRect();\nvar wh=window.innerHeight;\nvar scrolled=Math.max(0,-r.top);\nvar scrollRange=w.offsetHeight-wh;\nif(scrollRange<=0)scrollRange=1;\ntarP=Math.max(0,Math.min(1,scrolled/scrollRange));\n}\ncurP=lerp(curP,tarP,0.1);\nvar zm=sz+(ez-sz)*curP;\nvar px=(50-tx)*(zm-1)/zm;\nvar py=(50-ty)*(zm-1)/zm;\nimg.style.transformOrigin=tx+"% "+ty+"%";\nimg.style.transform="scale("+zm+") translate("+px+"%,"+py+"%)";\nif(mk)mk.classList.toggle("on",curP>0.5);\nif(ann)ann.classList.toggle("on",curP>0.6);\nif(cap)cap.classList.toggle("on",curP>0.3);\nrequestAnimationFrame(upd);\n}\nupd();\n})();\n<\/script>';
-    
-    document.getElementById('exportCode').value = code;
-    document.getElementById('exportModal').classList.add('active');
-}
-
-function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
-
-function copyCode() {
-    var code = document.getElementById('exportCode');
-    if (!code.value) { generateExport(); return; }
-    code.select();
-    document.execCommand('copy');
-    alert('Copied!');
-}
-
-function downloadCode() {
-    var code = document.getElementById('exportCode').value;
-    if (!code) { generateExport(); return; }
-    var filename = prompt('Save export as:', 'zoom-detail');
-    if (!filename) return;
-    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
-    var blob = new Blob([code], { type: 'text/html' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = safeName + '.html';
-    a.click();
-}
-
-function sendToStackBuilder() {
-    var code = document.getElementById('exportCode').value;
-    if (!code) { alert('Generate HTML first'); return; }
-    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
-    queue.push({ name: 'Zoom Detail', html: code, timestamp: Date.now() });
-    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
-    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
-        window.location.href = 'stack-builder-clean.html';
-    }
-}
-
-updatePreviewHeight();
-</script>
+<style>
+#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}
+#disco-nav .dot{width:6px;height:6px;border-radius:50%;display:none;}
+#disco-nav .dot.orange{display:inline-block;background:#f90;}
+#disco-nav .dot.green{display:inline-block;background:#4a4;}
+</style>
 <script>
 (function(){
+  document.querySelectorAll('#disco-nav a[data-module]').forEach(function(a){
+    var mod = a.getAttribute('data-module');
+    var key = 'disco_' + mod;
+    var dot = a.querySelector('.dot');
+    if(!dot) return;
+    var hasContent = localStorage.getItem(key);
+    var fromPlanner = localStorage.getItem(key + '_from_planner');
+    if(hasContent){
+      if(fromPlanner === 'true'){
+        dot.className = 'dot orange';
+      } else {
+        dot.className = 'dot green';
+      }
+    }
+  });
   var path = location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('#disco-nav a').forEach(function(a){
     if(a.getAttribute('href') === path){
@@ -473,6 +130,7 @@ updatePreviewHeight();
   });
 })();
 </script>
+
 <script>
 // Persistence for zoom-detail
 (function() {
@@ -487,7 +145,7 @@ updatePreviewHeight();
             else if (el.type === 'file') return;
             else state.inputs[el.id] = el.value;
         });
-        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+        try { localStorage.setItem(KEY, JSON.stringify(state)); localStorage.removeItem(KEY + '_from_planner'); } catch(e) {}
     }
     
     function loadState() {

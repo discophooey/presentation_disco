@@ -68,318 +68,52 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 </head>
 <body>
 <div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
-<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
-<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
-<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
-<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
-<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
-<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
-<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
-<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
-<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
-<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
-<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
-<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
-<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
-<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
-<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
-<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
-<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
-<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
-<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
-<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
-<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
+<a href="index.html" style="padding:8px 12px;color:#4a9eff;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">← Hub</a>
+<a href="before-after.html" data-module="before-after" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Before/After<span class="dot"></span></a>
+<a href="card-stack.html" data-module="card-stack" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Card Stack<span class="dot"></span></a>
+<a href="chart.html" data-module="chart" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chart<span class="dot"></span></a>
+<a href="collage.html" data-module="collage" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Collage<span class="dot"></span></a>
+<a href="doc-module.html" data-module="doc-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Doc Module<span class="dot"></span></a>
+<a href="gallery.html" data-module="gallery" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Gallery<span class="dot"></span></a>
+<a href="globe.html" data-module="globe" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Globe<span class="dot"></span></a>
+<a href="hotspots.html" data-module="hotspots" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Hotspots<span class="dot"></span></a>
+<a href="layers.html" data-module="layers" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Layers<span class="dot"></span></a>
+<a href="matte.html" data-module="matte" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Matte<span class="dot"></span></a>
+<a href="pull-quote.html" data-module="pull-quote" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Pull Quote<span class="dot"></span></a>
+<a href="single-image.html" data-module="single-image" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Single Image<span class="dot"></span></a>
+<a href="stat-counter.html" data-module="stat-counter" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Stat Counter<span class="dot"></span></a>
+<a href="timeline.html" data-module="timeline" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Timeline<span class="dot"></span></a>
+<a href="video.html" data-module="video" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Video<span class="dot"></span></a>
+<a href="zoom-detail.html" data-module="zoom-detail" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Zoom Detail<span class="dot"></span></a>
+<a href="text-scroll.html" data-module="text-scroll" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Text Scroll<span class="dot"></span></a>
+<a href="chapter-marker.html" data-module="chapter-marker" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chapter Marker<span class="dot"></span></a>
+<a href="key-facts.html" data-module="key-facts" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Key Facts<span class="dot"></span></a>
+<a href="body-module.html" data-module="body-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Body Module<span class="dot"></span></a>
+<a href="stack-builder-clean.html" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;">Stack Builder</a>
 </div>
-<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
-
-<div class="app">
-    <div class="controls">
-        <h1>📊 Stat Counter</h1>
-        
-        <h2 onclick="toggleSection(this)">Stats</h2>
-        <div class="section">
-            <button onclick="addStat()">+ Add Stat</button>
-            <div id="statList"></div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Container Size</h2>
-        <div class="section">
-            <div class="control-group">
-                <label>Container Height <span class="range-val" id="containerHeightVal">100vh</span></label>
-                <input type="range" id="containerHeight" min="30" max="100" value="100" oninput="document.getElementById('containerHeightVal').textContent=this.value+'vh'; updatePreview();">
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Cite / Source</h2>
-        <div class="section">
-            <div class="control-group">
-                <label><input type="checkbox" id="captionEnabled" onchange="updatePreview()"> Enable Cite</label>
-            </div>
-            <div class="control-group">
-                <label>Cite Text</label>
-                <textarea id="captionText" style="min-height:60px;resize:vertical;background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:4px;padding:8px;font-size:12px;width:100%;" oninput="updatePreview()">Interactive statistics that animate as you scroll through the story.</textarea>
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Appearance</h2>
-        <div class="section">
-            <div class="control-group">
-                <label>Gap Between Stats <span class="range-val" id="gapVal">40px</span></label>
-                <input type="range" id="statGap" min="20" max="100" value="40" oninput="document.getElementById('gapVal').textContent=this.value+'px'; updatePreview();">
-            </div>
-            <div class="control-group">
-                <label>Number Size <span class="range-val" id="numSizeVal">60px</span></label>
-                <input type="range" id="numSize" min="32" max="120" value="60" oninput="document.getElementById('numSizeVal').textContent=this.value+'px'; updatePreview();">
-            </div>
-            <div class="control-group">
-                <label>Number Font</label>
-                <select id="numFont" onchange="updatePreview()">
-                    <option value="system-ui, -apple-system, sans-serif" selected>System Default</option>
-                    <option value="Georgia, serif">Georgia (Serif)</option>
-                    <option value="'Courier New', monospace">Courier (Mono)</option>
-                    <option value="Impact, sans-serif">Impact</option>
-                    <option value="'Arial Black', sans-serif">Arial Black</option>
-                </select>
-            </div>
-            <div class="row">
-                <div class="control-group"><label>Number Color</label><input type="color" id="numColor" value="#4a9eff" onchange="updatePreview()"></div>
-                <div class="control-group"><label>Label Color</label><input type="color" id="labelColor" value="#888888" onchange="updatePreview()"></div>
-            </div>
-            <div class="control-group">
-                <label>Background Color</label>
-                <input type="color" id="bgColor" value="#000000" onchange="document.getElementById('previewStage').style.background=this.value;">
-            </div>
-        </div>
-        
-        <h2 onclick="toggleSection(this)">Export Settings</h2>
-        <div class="section">
-            <div class="control-group">
-                <label>Scroll Duration (vh)</label>
-                <div class="row">
-                    <input type="range" id="scrollDuration" min="100" max="300" value="150" oninput="document.getElementById('scrollDurationNum').value=this.value; updatePreviewHeight();">
-                    <input type="number" id="scrollDurationNum" value="150" style="width:70px;" oninput="document.getElementById('scrollDuration').value=this.value; updatePreviewHeight();">
-                </div>
-            </div>
-            <button onclick="generateExport()">Generate HTML</button>
-            <button class="secondary" onclick="copyCode()">📋 Copy Code</button>
-            <button class="secondary" onclick="resetModule()">↺ Reset</button>
-        </div>
-    </div>
-    
-    <div class="preview-area">
-        <div class="preview-header">
-            <span>Preview (scroll to animate)</span>
-            <span id="progressDisplay">0%</span>
-        </div>
-        <div class="preview-scroll" id="previewScroll">
-            <div class="preview-container" id="previewContainer">
-                <div class="preview-stage" id="previewStage">
-                    <div class="stats-wrapper" id="statsWrapper"></div>
-                    <div class="preview-caption" id="previewCaption" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);width:85%;max-width:700px;padding:12px 0;font-size:13px;line-height:1.5;color:#ccc;text-align:center;opacity:0;transition:opacity 0.4s;"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="exportModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 style="margin:0;border:0;padding:0;background:none;">Export HTML</h2>
-            <button class="modal-close" onclick="closeModal()">×</button>
-        </div>
-        <textarea class="code" id="exportCode" readonly></textarea>
-        <div class="row" style="margin-top:12px;">
-            <button onclick="copyCode()">📋 Copy</button>
-            <button onclick="downloadCode()" class="secondary">💾 Download</button>
-            <button onclick="sendToStackBuilder()" class="secondary">📚 Stack</button>
-        </div>
-    </div>
-</div>
-
-<script>
-var stats = [
-    { value: 500, prefix: '', suffix: 'M+', label: 'Users Worldwide', decimals: 0 },
-    { value: 99.9, prefix: '', suffix: '%', label: 'Uptime', decimals: 1 },
-    { value: 24, prefix: '', suffix: '/7', label: 'Support', decimals: 0 }
-];
-
-function toggleSection(el) {
-    el.classList.toggle('collapsed');
-    el.nextElementSibling.classList.toggle('collapsed');
-}
-
-function addStat() {
-    if (stats.length >= 8) { alert('Maximum 8 stats'); return; }
-    stats.push({ value: 100, prefix: '', suffix: '', label: 'New Stat', decimals: 0 });
-    updateStatList();
-    updatePreview();
-}
-
-function removeStat(i) {
-    stats.splice(i, 1);
-    updateStatList();
-    updatePreview();
-}
-
-function updateStat(i, prop, val) {
-    stats[i][prop] = prop === 'value' || prop === 'decimals' ? parseFloat(val) : val;
-    updatePreview();
-}
-
-function updateStatList() {
-    var html = '';
-    for (var i = 0; i < stats.length; i++) {
-        var s = stats[i];
-        html += '<div class="stat-item"><div class="stat-header"><span>Stat ' + (i+1) + '</span><button class="small" style="background:#c0392b;color:#fff;" onclick="removeStat(' + i + ')">✕</button></div>';
-        html += '<div class="control-group"><label>Value</label><input type="number" value="' + s.value + '" onchange="updateStat(' + i + ',\'value\',this.value)"></div>';
-        html += '<div class="row"><div class="control-group"><label>Prefix</label><input type="text" value="' + s.prefix + '" placeholder="$" onchange="updateStat(' + i + ',\'prefix\',this.value)"></div>';
-        html += '<div class="control-group"><label>Suffix</label><input type="text" value="' + s.suffix + '" placeholder="%" onchange="updateStat(' + i + ',\'suffix\',this.value)"></div></div>';
-        html += '<div class="control-group"><label>Label</label><input type="text" value="' + s.label + '" onchange="updateStat(' + i + ',\'label\',this.value)"></div>';
-        html += '<div class="control-group"><label>Decimals</label><select onchange="updateStat(' + i + ',\'decimals\',this.value)"><option value="0"' + (s.decimals===0?' selected':'') + '>0</option><option value="1"' + (s.decimals===1?' selected':'') + '>1</option><option value="2"' + (s.decimals===2?' selected':'') + '>2</option></select></div></div>';
-    }
-    document.getElementById('statList').innerHTML = html;
-}
-
-function updatePreviewHeight() {
-    document.getElementById('previewContainer').style.height = (parseInt(document.getElementById('scrollDuration').value) || 150) + 'vh';
-}
-
-function updatePreview() {
-    var wrapper = document.getElementById('statsWrapper');
-    var stage = document.getElementById('previewStage');
-    var caption = document.getElementById('previewCaption');
-    var numColor = document.getElementById('numColor').value;
-    var numSize = document.getElementById('numSize').value;
-    var numFont = document.getElementById('numFont').value;
-    var labelColor = document.getElementById('labelColor').value;
-    var gap = document.getElementById('statGap').value;
-    var containerHeight = document.getElementById('containerHeight').value;
-    var captionEnabled = document.getElementById('captionEnabled').checked;
-    var captionText = document.getElementById('captionText').value;
-    
-    stage.style.height = containerHeight + 'vh';
-    
-    wrapper.style.gap = gap + 'px';
-    
-    // Caption
-    caption.textContent = captionText;
-    caption.style.opacity = captionEnabled ? '1' : '0';
-    
-    var html = '';
-    for (var i = 0; i < stats.length; i++) {
-        var s = stats[i];
-        html += '<div class="stat-box" data-i="' + i + '">';
-        html += '<div class="stat-number" style="color:' + numColor + ';font-size:' + numSize + 'px;font-family:' + numFont + ';">';
-        html += '<span class="pre">' + s.prefix + '</span><span class="val">0</span><span class="suf">' + s.suffix + '</span></div>';
-        html += '<div class="stat-label" style="color:' + labelColor + ';">' + s.label + '</div></div>';
-    }
-    wrapper.innerHTML = html;
-    applyEffect();
-}
-
-function formatNum(n, d) {
-    return d > 0 ? n.toFixed(d) : Math.round(n).toLocaleString();
-}
-
-function easeOut(t) { return 1 - Math.pow(1 - t, 4); }
-
-function applyEffect() {
-    var scroll = document.getElementById('previewScroll');
-    var container = document.getElementById('previewContainer');
-    var scrollTop = scroll.scrollTop;
-    var maxScroll = container.offsetHeight - scroll.clientHeight;
-    var progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
-    document.getElementById('progressDisplay').textContent = Math.round(progress * 100) + '%';
-    
-    var boxes = document.querySelectorAll('.stat-box');
-    for (var i = 0; i < boxes.length; i++) {
-        var box = boxes[i];
-        var s = stats[i];
-        if (!s) continue;
-        var countProgress = Math.max(0, Math.min(1, (progress - i * 0.1) / 0.6));
-        var currentVal = s.value * easeOut(countProgress);
-        var valEl = box.querySelector('.val');
-        if (valEl) valEl.textContent = formatNum(currentVal, s.decimals);
-    }
-}
-
-var rafId = null;
-function onScroll() { if (rafId) cancelAnimationFrame(rafId); rafId = requestAnimationFrame(applyEffect); }
-document.getElementById('previewScroll').addEventListener('scroll', onScroll, { passive: true });
-
-function generateExport() {
-    if (stats.length === 0) { alert('Add at least one stat'); return; }
-    var uid = 'sc' + Math.random().toString(36).substr(2, 9);
-    var numColor = document.getElementById('numColor').value;
-    var numSize = document.getElementById('numSize').value;
-    var labelColor = document.getElementById('labelColor').value;
-    var bgColor = document.getElementById('bgColor').value;
-    var containerHeight = document.getElementById('containerHeight').value;
-    var scrollDur = document.getElementById('scrollDuration').value;
-    var scrollMult = scrollDur / 100;
-    var captionEnabled = document.getElementById('captionEnabled').checked;
-    var captionText = document.getElementById('captionText').value;
-    
-    var statsHtml = '';
-    var statsData = [];
-    for (var i = 0; i < stats.length; i++) {
-        var s = stats[i];
-        statsHtml += '<div class="sc-box"><div class="sc-num"><span class="sc-pre">' + s.prefix + '</span><span class="sc-val">0</span><span class="sc-suf">' + s.suffix + '</span></div><div class="sc-lbl">' + s.label + '</div></div>';
-        statsData.push({ value: s.value, decimals: s.decimals });
-    }
-    
-    var captionHtml = captionEnabled ? '<div class="sc-cap">' + captionText + '</div>' : '';
-    var captionCss = captionEnabled ? '#' + uid + ' .sc-cap{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);width:85%;max-width:700px;padding:12px 0;font-size:13px;line-height:1.5;color:#ccc;text-align:center}\n' : '';
-    var captionMobile = captionEnabled ? '#' + uid + ' .sc-cap{width:95%;font-size:12px;bottom:15px}' : '';
-    
-    var code = '<style>\n#' + uid + '{position:relative}\n#' + uid + ' .sc-stage{position:-webkit-sticky;position:sticky;top:0;height:' + containerHeight + 'vh;display:flex;align-items:center;justify-content:center;background:' + bgColor + ';padding:20px;box-sizing:border-box}\n#' + uid + ' .sc-wrap{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;max-width:1000px;width:100%}\n#' + uid + ' .sc-box{text-align:center;min-width:120px;flex:1;max-width:250px}\n#' + uid + ' .sc-num{font-size:' + numSize + 'px;font-weight:700;color:' + numColor + ';line-height:1;font-variant-numeric:tabular-nums}\n#' + uid + ' .sc-lbl{font-size:14px;color:' + labelColor + ';margin-top:10px}\n' + captionCss + '@media(max-width:768px){#' + uid + ' .sc-wrap{gap:25px}#' + uid + ' .sc-box{min-width:100px}#' + uid + ' .sc-num{font-size:' + Math.round(numSize * 0.7) + 'px!important}#' + uid + ' .sc-lbl{font-size:12px}' + captionMobile + '}</style>\n<div id="' + uid + '">\n<div class="sc-stage"><div class="sc-wrap">' + statsHtml + '</div>' + captionHtml + '</div>\n</div>\n<script>\n(function(){\nvar w=document.getElementById("' + uid + '");\nvar s=w.querySelector(".sc-stage");\nvar boxes=w.querySelectorAll(".sc-box");\nvar data=' + JSON.stringify(statsData) + ';\nvar scrollMult=' + scrollMult + ';\nvar curP=0,tarP=0;\nfunction setH(){w.style.height=(s.offsetHeight*scrollMult)+"px";}\nsetH();window.addEventListener("resize",setH);\nfunction lerp(a,b,t){return a+(b-a)*t;}\nfunction ease(t){return 1-Math.pow(1-t,4);}\nfunction fmt(n,d){return d>0?n.toFixed(d):Math.round(n).toLocaleString();}\nfunction upd(){\nvar extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\nif(extP!==undefined){tarP=extP;}else{\nvar r=w.getBoundingClientRect();\nvar wh=window.innerHeight;\nvar scrolled=Math.max(0,-r.top);\nvar scrollRange=w.offsetHeight-wh;\nif(scrollRange<=0)scrollRange=1;\ntarP=Math.max(0,Math.min(1,scrolled/scrollRange));\n}\ncurP=lerp(curP,tarP,0.12);\nfor(var i=0;i<boxes.length;i++){\nvar cp=Math.max(0,Math.min(1,(curP-i*0.1)/0.6));\nvar val=data[i].value*ease(cp);\nvar el=boxes[i].querySelector(".sc-val");\nif(el)el.textContent=fmt(val,data[i].decimals);\n}\nrequestAnimationFrame(upd);\n}\nupd();\n})();\n<\/script>';
-    
-    document.getElementById('exportCode').value = code;
-    document.getElementById('exportModal').classList.add('active');
-}
-
-function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
-
-function copyCode() {
-    var code = document.getElementById('exportCode');
-    if (!code.value) { generateExport(); return; }
-    code.select();
-    document.execCommand('copy');
-    alert('Copied!');
-}
-
-function downloadCode() {
-    var code = document.getElementById('exportCode').value;
-    if (!code) { generateExport(); return; }
-    var filename = prompt('Save export as:', 'stat-counter');
-    if (!filename) return;
-    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
-    var blob = new Blob([code], { type: 'text/html' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = safeName + '.html';
-    a.click();
-}
-
-function sendToStackBuilder() {
-    var code = document.getElementById('exportCode').value;
-    if (!code) { alert('Generate HTML first'); return; }
-    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
-    queue.push({ name: 'Stat Counter', html: code, timestamp: Date.now() });
-    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
-    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
-        window.location.href = 'stack-builder-clean.html';
-    }
-}
-
-updatePreviewHeight();
-updateStatList();
-updatePreview();
-</script>
+<style>
+#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}
+#disco-nav .dot{width:6px;height:6px;border-radius:50%;display:none;}
+#disco-nav .dot.orange{display:inline-block;background:#f90;}
+#disco-nav .dot.green{display:inline-block;background:#4a4;}
+</style>
 <script>
 (function(){
+  document.querySelectorAll('#disco-nav a[data-module]').forEach(function(a){
+    var mod = a.getAttribute('data-module');
+    var key = 'disco_' + mod;
+    var dot = a.querySelector('.dot');
+    if(!dot) return;
+    var hasContent = localStorage.getItem(key);
+    var fromPlanner = localStorage.getItem(key + '_from_planner');
+    if(hasContent){
+      if(fromPlanner === 'true'){
+        dot.className = 'dot orange';
+      } else {
+        dot.className = 'dot green';
+      }
+    }
+  });
   var path = location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('#disco-nav a').forEach(function(a){
     if(a.getAttribute('href') === path){
@@ -389,6 +123,7 @@ updatePreview();
   });
 })();
 </script>
+
 <script>
 // Persistence for stat-counter
 (function() {
@@ -403,7 +138,7 @@ updatePreview();
             else if (el.type === 'file') return;
             else state.inputs[el.id] = el.value;
         });
-        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+        try { localStorage.setItem(KEY, JSON.stringify(state)); localStorage.removeItem(KEY + '_from_planner'); } catch(e) {}
     }
     
     function loadState() {
