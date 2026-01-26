@@ -77,6 +77,7 @@ button.danger:hover { background: #e74c3c; }
 .kf-lightbox-close { position: absolute; top: 20px; right: 20px; background: #333; border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; }
 .kf-lightbox-close:hover { background: #4a9eff; }
 .kf-lightbox-content { max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+.kf-lightbox-title { color: #fff; font-size: 18px; font-weight: 600; margin-bottom: 20px; width: 100%; text-align: left; padding-bottom: 16px; border-bottom: 1px solid #333; }
 .kf-lightbox-text { color: #e0e0e0; font-size: 16px; line-height: 1.8; width: 100%; }
 .kf-lightbox-img { max-width: 100%; max-height: 60vh; border-radius: 8px; display: block; }
 .kf-lightbox-img.fit-contain { object-fit: contain; }
@@ -84,6 +85,9 @@ button.danger:hover { background: #e74c3c; }
 .kf-lightbox-img.fit-fill { object-fit: fill; width: 100%; height: 60vh; }
 .kf-lightbox-caption { color: #ccc; font-size: 14px; margin-top: 16px; width: 100%; text-align: left; }
 .kf-lightbox-credit { color: #666; font-size: 12px; margin-top: 4px; width: 100%; text-align: left; }
+.kf-lightbox-nav { position: absolute; bottom: 20px; display: flex; gap: 20px; color: #666; font-size: 12px; }
+.kf-lightbox-nav span { cursor: pointer; padding: 8px 16px; background: #333; border-radius: 4px; }
+.kf-lightbox-nav span:hover { background: #4a9eff; color: #000; }
 .preview-fact.expandable { cursor: pointer; }
 .preview-fact.expandable:hover { background: rgba(74,158,255,0.1); margin: 0 -10px; padding: 16px 10px; border-radius: 6px; }
 .preview-fact .expand-hint { font-size: 10px; color: #4a9eff; margin-left: auto; opacity: 0.7; }
@@ -286,6 +290,10 @@ button.danger:hover { background: #e74c3c; }
 <div class="kf-lightbox" id="kfLightbox" onclick="closeLightbox()">
     <button class="kf-lightbox-close" onclick="closeLightbox()">✕</button>
     <div class="kf-lightbox-content" id="kfLightboxContent" onclick="event.stopPropagation()"></div>
+    <div class="kf-lightbox-nav">
+        <span onclick="event.stopPropagation();navigateLightbox(-1)">← Prev</span>
+        <span onclick="event.stopPropagation();navigateLightbox(1)">Next →</span>
+    </div>
 </div>
 
 <!-- Export Modal -->
@@ -541,13 +549,19 @@ function updatePreview() {
 
 document.getElementById('previewScroll').addEventListener('scroll', updatePreview);
 
+var currentLightboxIndex = -1;
+
 function openFactLightbox(index) {
     var f = facts[index];
     if (!f || !f.expandable) return;
+    currentLightboxIndex = index;
     var content = document.getElementById('kfLightboxContent');
     var html = '';
     var caption = f.imageCaption ? '<div class="kf-lightbox-caption">' + f.imageCaption + '</div>' : '';
     var credit = f.imageCredit ? '<div class="kf-lightbox-credit">' + f.imageCredit + '</div>' : '';
+    
+    // Add fact text as title
+    html += '<div class="kf-lightbox-title">' + f.text + '</div>';
     
     // Text + Image mode
     if (f.expandType === 'both') {
@@ -562,15 +576,15 @@ function openFactLightbox(index) {
     // Image only mode
     else if (f.expandType === 'image') {
         if (f.imageUrl) {
-            html = '<img class="kf-lightbox-img fit-' + (f.imageFit || 'contain') + '" src="' + f.imageUrl + '" alt="" style="display:block;">';
+            html += '<img class="kf-lightbox-img fit-' + (f.imageFit || 'contain') + '" src="' + f.imageUrl + '" alt="" style="display:block;">';
             html += caption + credit;
         } else {
-            html = '<div class="kf-lightbox-text">No image URL set</div>';
+            html += '<div class="kf-lightbox-text">No image URL set</div>';
         }
     }
     // Text only mode (default)
     else {
-        html = '<div class="kf-lightbox-text">' + (f.detailText || f.text).replace(/\n/g, '<br>') + '</div>';
+        html += '<div class="kf-lightbox-text">' + (f.detailText || '').replace(/\n/g, '<br>') + '</div>';
     }
     
     content.innerHTML = html;
@@ -579,7 +593,38 @@ function openFactLightbox(index) {
 
 function closeLightbox() {
     document.getElementById('kfLightbox').classList.remove('active');
+    currentLightboxIndex = -1;
 }
+
+function navigateLightbox(direction) {
+    if (currentLightboxIndex < 0) return;
+    
+    // Find next/prev expandable fact
+    var newIndex = currentLightboxIndex;
+    var attempts = 0;
+    do {
+        newIndex = newIndex + direction;
+        if (newIndex < 0) newIndex = facts.length - 1;
+        if (newIndex >= facts.length) newIndex = 0;
+        attempts++;
+    } while (!facts[newIndex].expandable && attempts < facts.length);
+    
+    if (facts[newIndex].expandable) {
+        openFactLightbox(newIndex);
+    }
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+    if (currentLightboxIndex < 0) return;
+    if (e.key === 'Escape') {
+        closeLightbox();
+    } else if (e.key === 'ArrowLeft') {
+        navigateLightbox(-1);
+    } else if (e.key === 'ArrowRight') {
+        navigateLightbox(1);
+    }
+});
 
 function generateExport() {
     if (facts.length === 0) { alert('Add at least one fact'); return; }
@@ -611,8 +656,9 @@ function generateExport() {
         factsHtml += '</div>\n';
         if (f.expandable) {
             factsData.push({
+                n: f.text,
                 t: f.expandType || 'text',
-                x: (f.detailText || f.text),
+                x: (f.detailText || ''),
                 i: f.imageUrl || '',
                 f: f.imageFit || 'contain',
                 c: f.imageCaption || '',
@@ -632,40 +678,63 @@ function generateExport() {
         '.kf-lb-' + uid + '.on{display:flex}\n' +
         '.kf-lb-' + uid + ' .lb-close{position:absolute;top:20px;right:20px;background:#333;border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:20px}\n' +
         '.kf-lb-' + uid + ' .lb-close:hover{background:' + accentColor + '}\n' +
-        '.kf-lb-' + uid + ' .lb-txt{max-width:800px;width:90%;color:#e0e0e0;font-size:16px;line-height:1.8;max-height:80vh;overflow-y:auto;padding:20px}\n' +
-        '.kf-lb-' + uid + ' .lb-img{max-width:100%;max-height:70vh;border-radius:8px}\n' +
-        '.kf-lb-' + uid + ' .lb-img.fit-cover{object-fit:cover;width:100%;max-height:70vh}\n' +
-        '.kf-lb-' + uid + ' .lb-img.fit-fill{object-fit:fill;width:100%;max-height:70vh}\n' +
-        '.kf-lb-' + uid + ' .lb-cap{color:#ccc;font-size:14px;margin-top:16px;max-width:600px;text-align:left}\n' +
+        '.kf-lb-' + uid + ' .lb-content{max-width:800px;width:90%;max-height:80vh;overflow-y:auto;padding:20px;display:flex;flex-direction:column}\n' +
+        '.kf-lb-' + uid + ' .lb-title{color:#fff;font-size:18px;font-weight:600;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #333}\n' +
+        '.kf-lb-' + uid + ' .lb-txt{color:#e0e0e0;font-size:16px;line-height:1.8}\n' +
+        '.kf-lb-' + uid + ' .lb-img{max-width:100%;max-height:60vh;border-radius:8px;margin-top:16px}\n' +
+        '.kf-lb-' + uid + ' .lb-img.fit-cover{object-fit:cover;width:100%;height:60vh}\n' +
+        '.kf-lb-' + uid + ' .lb-img.fit-fill{object-fit:fill;width:100%;height:60vh}\n' +
+        '.kf-lb-' + uid + ' .lb-cap{color:#ccc;font-size:14px;margin-top:16px;text-align:left}\n' +
         '.kf-lb-' + uid + ' .lb-credit{color:#666;font-size:12px;margin-top:4px;text-align:left}\n' +
-        '.kf-lb-' + uid + ' .lb-combo{max-width:800px;width:90%;max-height:80vh;overflow-y:auto;padding:20px}\n' +
-        '.kf-lb-' + uid + ' .lb-combo img{max-width:100%;border-radius:8px;margin-top:16px}\n' : '';
+        '.kf-lb-' + uid + ' .lb-nav{position:absolute;bottom:20px;display:flex;gap:20px}\n' +
+        '.kf-lb-' + uid + ' .lb-nav span{cursor:pointer;padding:8px 16px;background:#333;border-radius:4px;color:#888;font-size:12px}\n' +
+        '.kf-lb-' + uid + ' .lb-nav span:hover{background:' + accentColor + ';color:#000}\n' : '';
     
     var lightboxJs = hasExpandable ?
         'var fd=' + JSON.stringify(factsData) + ';\n' +
+        'var curIdx=-1;\n' +
         'var lbEl=document.createElement("div");lbEl.className="kf-lb-' + uid + '";\n' +
-        'lbEl.innerHTML=\'<button class="lb-close">✕</button><div class="lb-content"></div>\';\n' +
+        'lbEl.innerHTML=\'<button class="lb-close">✕</button><div class="lb-content"></div><div class="lb-nav"><span class="lb-prev">← Prev</span><span class="lb-next">Next →</span></div>\';\n' +
         'document.body.appendChild(lbEl);\n' +
         'var lbC=lbEl.querySelector(".lb-content");\n' +
-        'lbEl.querySelector(".lb-close").onclick=function(e){e.stopPropagation();lbEl.classList.remove("on");};\n' +
-        'lbEl.onclick=function(){lbEl.classList.remove("on");};\n' +
+        'function closeLb(){lbEl.classList.remove("on");curIdx=-1;}\n' +
+        'function showFact(idx){\n' +
+        'var d=fd[idx];if(!d)return;\n' +
+        'curIdx=idx;\n' +
+        'var html=\'<div class="lb-title">\'+d.n+\'</div>\';\n' +
+        'if(d.t==="both"){\n' +
+        'if(d.x)html+=\'<div class="lb-txt">\'+d.x.replace(/\\n/g,"<br>")+\'</div>\';\n' +
+        'if(d.i)html+=\'<img class="lb-img fit-\'+d.f+\'" src="\'+d.i+\'">\'+(d.c?\'<div class="lb-cap">\'+d.c+\'</div>\':\'\')+(d.r?\'<div class="lb-credit">\'+d.r+\'</div>\':\'\');\n' +
+        '}else if(d.t==="image"&&d.i){\n' +
+        'html+=\'<img class="lb-img fit-\'+d.f+\'" src="\'+d.i+\'">\'+(d.c?\'<div class="lb-cap">\'+d.c+\'</div>\':\'\')+(d.r?\'<div class="lb-credit">\'+d.r+\'</div>\':\'\');\n' +
+        '}else{\n' +
+        'if(d.x)html+=\'<div class="lb-txt">\'+d.x.replace(/\\n/g,"<br>")+\'</div>\';\n' +
+        '}\n' +
+        'lbC.innerHTML=html;\n' +
+        'lbEl.classList.add("on");\n' +
+        '}\n' +
+        'function navLb(dir){\n' +
+        'if(curIdx<0)return;\n' +
+        'var n=curIdx,a=0;\n' +
+        'do{n+=dir;if(n<0)n=fd.length-1;if(n>=fd.length)n=0;a++;}while(!fd[n]&&a<fd.length);\n' +
+        'if(fd[n])showFact(n);\n' +
+        '}\n' +
+        'lbEl.querySelector(".lb-close").onclick=function(e){e.stopPropagation();closeLb();};\n' +
+        'lbEl.querySelector(".lb-prev").onclick=function(e){e.stopPropagation();navLb(-1);};\n' +
+        'lbEl.querySelector(".lb-next").onclick=function(e){e.stopPropagation();navLb(1);};\n' +
+        'lbEl.onclick=closeLb;\n' +
         'lbC.onclick=function(e){e.stopPropagation();};\n' +
+        'document.addEventListener("keydown",function(e){\n' +
+        'if(curIdx<0)return;\n' +
+        'if(e.key==="Escape")closeLb();\n' +
+        'else if(e.key==="ArrowLeft")navLb(-1);\n' +
+        'else if(e.key==="ArrowRight")navLb(1);\n' +
+        '});\n' +
         'w.querySelectorAll(".kf-expand").forEach(function(el){\n' +
         'el.addEventListener("click",function(e){\n' +
         'e.stopPropagation();\n' +
         'var idx=parseInt(this.getAttribute("data-idx"));\n' +
-        'var d=fd[idx];\n' +
-        'if(!d)return;\n' +
-        'var html="";\n' +
-        'if(d.t==="both"&&d.i){\n' +
-        'html=\'<div class="lb-combo">\'+((d.x)?\'<div class="lb-txt">\'+d.x.replace(/\\n/g,"<br>")+\'</div>\':\'\')+\'<img class="lb-img fit-\'+d.f+\'" src="\'+d.i+\'">\'+((d.c)?\'<div class="lb-cap">\'+d.c+\'</div>\':\'\')+(d.r?\'<div class="lb-credit">\'+d.r+\'</div>\':\'\')+\'</div>\';\n' +
-        '}else if(d.t==="image"&&d.i){\n' +
-        'html=\'<img class="lb-img fit-\'+d.f+\'" src="\'+d.i+\'">\'+((d.c)?\'<div class="lb-cap">\'+d.c+\'</div>\':\'\')+(d.r?\'<div class="lb-credit">\'+d.r+\'</div>\':\'\');\n' +
-        '}else{\n' +
-        'html=\'<div class="lb-txt">\'+(d.x||"").replace(/\\n/g,"<br>")+\'</div>\';\n' +
-        '}\n' +
-        'lbC.innerHTML=html;\n' +
-        'lbEl.classList.add("on");\n' +
+        'showFact(idx);\n' +
         '});\n' +
         '});\n' : '';
     
