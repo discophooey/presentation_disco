@@ -72,18 +72,18 @@ button.danger:hover { background: #e74c3c; }
 .saved-item .delete:hover { color: #e74c3c; }
 
 /* Lightbox for expandable facts */
-.kf-lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; flex-direction: column; }
+.kf-lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100000; align-items: center; justify-content: center; flex-direction: column; }
 .kf-lightbox.active { display: flex; }
 .kf-lightbox-close { position: absolute; top: 20px; right: 20px; background: #333; border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; }
 .kf-lightbox-close:hover { background: #4a9eff; }
-.kf-lightbox-content { max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 40px; }
-.kf-lightbox-text { color: #e0e0e0; font-size: 16px; line-height: 1.8; }
-.kf-lightbox-img { max-width: 100%; max-height: 70vh; border-radius: 8px; }
+.kf-lightbox-content { max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+.kf-lightbox-text { color: #e0e0e0; font-size: 16px; line-height: 1.8; width: 100%; }
+.kf-lightbox-img { max-width: 100%; max-height: 60vh; border-radius: 8px; display: block; }
 .kf-lightbox-img.fit-contain { object-fit: contain; }
-.kf-lightbox-img.fit-cover { object-fit: cover; width: 100%; max-height: 70vh; }
-.kf-lightbox-img.fit-fill { object-fit: fill; width: 100%; max-height: 70vh; }
-.kf-lightbox-caption { color: #ccc; font-size: 14px; margin-top: 16px; max-width: 600px; text-align: left; }
-.kf-lightbox-credit { color: #666; font-size: 12px; margin-top: 4px; text-align: left; }
+.kf-lightbox-img.fit-cover { object-fit: cover; width: 100%; height: 60vh; }
+.kf-lightbox-img.fit-fill { object-fit: fill; width: 100%; height: 60vh; }
+.kf-lightbox-caption { color: #ccc; font-size: 14px; margin-top: 16px; width: 100%; text-align: left; }
+.kf-lightbox-credit { color: #666; font-size: 12px; margin-top: 4px; width: 100%; text-align: left; }
 .preview-fact.expandable { cursor: pointer; }
 .preview-fact.expandable:hover { background: rgba(74,158,255,0.1); margin: 0 -10px; padding: 16px 10px; border-radius: 6px; }
 .preview-fact .expand-hint { font-size: 10px; color: #4a9eff; margin-left: auto; opacity: 0.7; }
@@ -546,18 +546,33 @@ function openFactLightbox(index) {
     if (!f || !f.expandable) return;
     var content = document.getElementById('kfLightboxContent');
     var html = '';
+    var caption = f.imageCaption ? '<div class="kf-lightbox-caption">' + f.imageCaption + '</div>' : '';
     var credit = f.imageCredit ? '<div class="kf-lightbox-credit">' + f.imageCredit + '</div>' : '';
     
-    if (f.expandType === 'both' && f.imageUrl) {
-        html = (f.detailText ? '<div class="kf-lightbox-text">' + f.detailText.replace(/\n/g, '<br>') + '</div>' : '') +
-            '<img class="kf-lightbox-img fit-' + f.imageFit + '" src="' + f.imageUrl + '" alt="" style="margin-top:16px;">' +
-            (f.imageCaption ? '<div class="kf-lightbox-caption">' + f.imageCaption + '</div>' : '') + credit;
-    } else if (f.expandType === 'image' && f.imageUrl) {
-        html = '<img class="kf-lightbox-img fit-' + f.imageFit + '" src="' + f.imageUrl + '" alt="">' +
-            (f.imageCaption ? '<div class="kf-lightbox-caption">' + f.imageCaption + '</div>' : '') + credit;
-    } else {
+    // Text + Image mode
+    if (f.expandType === 'both') {
+        if (f.detailText) {
+            html += '<div class="kf-lightbox-text">' + f.detailText.replace(/\n/g, '<br>') + '</div>';
+        }
+        if (f.imageUrl) {
+            html += '<img class="kf-lightbox-img fit-' + (f.imageFit || 'contain') + '" src="' + f.imageUrl + '" alt="" style="margin-top:16px;display:block;">';
+            html += caption + credit;
+        }
+    }
+    // Image only mode
+    else if (f.expandType === 'image') {
+        if (f.imageUrl) {
+            html = '<img class="kf-lightbox-img fit-' + (f.imageFit || 'contain') + '" src="' + f.imageUrl + '" alt="" style="display:block;">';
+            html += caption + credit;
+        } else {
+            html = '<div class="kf-lightbox-text">No image URL set</div>';
+        }
+    }
+    // Text only mode (default)
+    else {
         html = '<div class="kf-lightbox-text">' + (f.detailText || f.text).replace(/\n/g, '<br>') + '</div>';
     }
+    
     content.innerHTML = html;
     document.getElementById('kfLightbox').classList.add('active');
 }
