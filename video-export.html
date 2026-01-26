@@ -36,9 +36,9 @@ button.secondary:hover { background: #3a3a3a; }
 
 .preview-header { padding: 12px 20px; background: #1a1a1a; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 16px; }
 .preview-header span { font-size: 12px; color: #666; }
-.preview-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; overflow: hidden; }
-.preview-frame { background: #000; position: relative; overflow: hidden; }
-.preview-frame iframe { border: none; transform-origin: top left; }
+.preview-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; overflow: hidden; min-height: 400px; }
+.preview-frame { background: #000; position: relative; overflow: hidden; border: 1px solid #333; min-width: 200px; min-height: 112px; }
+.preview-frame iframe { border: none; transform-origin: top left; display: block; background: #fff; }
 
 .progress-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; flex-direction: column; }
 .progress-overlay.active { display: flex; }
@@ -255,12 +255,10 @@ function loadPreview() {
     
     loadedHTML = html;
     
-    // Create blob and load into iframe
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    
     const iframe = document.getElementById('previewIframe');
-    iframe.src = url;
+    
+    // Set size before loading
+    updatePreviewSize();
     
     iframe.onload = function() {
         document.getElementById('previewInfo').textContent = 'Content loaded';
@@ -268,6 +266,9 @@ function loadPreview() {
         updateRenderButton();
         showStatus('success', 'Preview loaded. Ready to render.');
     };
+    
+    // Use srcdoc for better compatibility
+    iframe.srcdoc = html;
 }
 
 // Update preview size based on aspect ratio
@@ -281,20 +282,25 @@ function updatePreviewSize() {
     const maxW = containerRect.width - 40;
     const maxH = containerRect.height - 40;
     
+    if (maxW <= 0 || maxH <= 0) return; // Container not ready
+    
     // Calculate scale to fit
     const scaleW = maxW / s.width;
     const scaleH = maxH / s.height;
-    const scale = Math.min(scaleW, scaleH, 0.5); // Cap at 50% for performance
+    const scale = Math.min(scaleW, scaleH, 1); // Allow up to 100%
     
-    const displayW = s.width * scale;
-    const displayH = s.height * scale;
+    const displayW = Math.floor(s.width * scale);
+    const displayH = Math.floor(s.height * scale);
     
     frame.style.width = displayW + 'px';
     frame.style.height = displayH + 'px';
+    frame.style.overflow = 'hidden';
     
     iframe.style.width = s.width + 'px';
     iframe.style.height = s.height + 'px';
     iframe.style.transform = 'scale(' + scale + ')';
+    iframe.style.transformOrigin = 'top left';
+    iframe.style.display = 'block';
 }
 
 // Update render button state
@@ -329,21 +335,18 @@ async function startRender() {
     try {
         // Create offscreen iframe for rendering
         const renderFrame = document.createElement('iframe');
-        renderFrame.style.cssText = 'position:fixed;left:-9999px;top:0;width:' + s.width + 'px;height:' + s.height + 'px;border:none;';
+        renderFrame.style.cssText = 'position:fixed;left:-9999px;top:0;width:' + s.width + 'px;height:' + s.height + 'px;border:none;background:#fff;';
         document.body.appendChild(renderFrame);
         
-        // Load HTML into render frame
-        const blob = new Blob([loadedHTML], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        
+        // Load HTML into render frame using srcdoc
         await new Promise((resolve, reject) => {
             renderFrame.onload = resolve;
             renderFrame.onerror = reject;
-            renderFrame.src = url;
+            renderFrame.srcdoc = loadedHTML;
         });
         
         // Wait for content to settle
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise(r => setTimeout(r, 1000));
         
         const renderDoc = renderFrame.contentDocument || renderFrame.contentWindow.document;
         const renderBody = renderDoc.body;
@@ -397,7 +400,6 @@ async function startRender() {
         
         // Cleanup render frame
         document.body.removeChild(renderFrame);
-        URL.revokeObjectURL(url);
         
         if (cancelRequested) throw new Error('Cancelled');
         
@@ -477,6 +479,7 @@ window.addEventListener('resize', updatePreviewSize);
 
 // Init
 updateDisplays();
+setTimeout(updatePreviewSize, 100); // Ensure container is rendered
 initFFmpeg();
 </script>
 </body>
