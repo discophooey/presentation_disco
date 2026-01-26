@@ -90,52 +90,485 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 </head>
 <body>
 <div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-<a href="index.html" style="padding:8px 12px;color:#4a9eff;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">← Hub</a>
-<a href="before-after.html" data-module="before-after" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Before/After<span class="dot"></span></a>
-<a href="card-stack.html" data-module="card-stack" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Card Stack<span class="dot"></span></a>
-<a href="chart.html" data-module="chart" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chart<span class="dot"></span></a>
-<a href="collage.html" data-module="collage" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Collage<span class="dot"></span></a>
-<a href="doc-module.html" data-module="doc-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Doc Module<span class="dot"></span></a>
-<a href="gallery.html" data-module="gallery" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Gallery<span class="dot"></span></a>
-<a href="globe.html" data-module="globe" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Globe<span class="dot"></span></a>
-<a href="hotspots.html" data-module="hotspots" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Hotspots<span class="dot"></span></a>
-<a href="layers.html" data-module="layers" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Layers<span class="dot"></span></a>
-<a href="matte.html" data-module="matte" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Matte<span class="dot"></span></a>
-<a href="pull-quote.html" data-module="pull-quote" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Pull Quote<span class="dot"></span></a>
-<a href="single-image.html" data-module="single-image" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Single Image<span class="dot"></span></a>
-<a href="stat-counter.html" data-module="stat-counter" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Stat Counter<span class="dot"></span></a>
-<a href="timeline.html" data-module="timeline" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Timeline<span class="dot"></span></a>
-<a href="video.html" data-module="video" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Video<span class="dot"></span></a>
-<a href="zoom-detail.html" data-module="zoom-detail" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Zoom Detail<span class="dot"></span></a>
-<a href="text-scroll.html" data-module="text-scroll" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Text Scroll<span class="dot"></span></a>
-<a href="chapter-marker.html" data-module="chapter-marker" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chapter Marker<span class="dot"></span></a>
-<a href="key-facts.html" data-module="key-facts" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Key Facts<span class="dot"></span></a>
-<a href="body-module.html" data-module="body-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Body Module<span class="dot"></span></a>
-<a href="stack-builder-clean.html" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;">Stack Builder</a>
+<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
+<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
+<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
+<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
+<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
+<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
+<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
+<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
+<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
+<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
+<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
+<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
+<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
+<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
+<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
+<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
+<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
+<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
+<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
+<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
+<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
+<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
 </div>
-<style>
-#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}
-#disco-nav .dot{width:6px;height:6px;border-radius:50%;display:none;}
-#disco-nav .dot.orange{display:inline-block;background:#f90;}
-#disco-nav .dot.green{display:inline-block;background:#4a4;}
+<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
+
+<div class="app">
+    <div class="controls">
+        <h1>🎨 Collage</h1>
+        
+        <h2 onclick="toggleSection(this)">Add Image</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Image URL</label>
+                <div class="row">
+                    <input type="url" id="imageUrl" placeholder="https://...">
+                    <button class="small" onclick="addImage()">Add</button>
+                </div>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)" class="collapsed">Images (<span id="imageCount">0</span>)</h2>
+        <div class="section collapsed">
+            <div id="imageList" class="image-list"></div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Layout</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Grid Columns</label>
+                <select id="gridCols" onchange="updatePreview()">
+                    <option value="2">2 Columns</option>
+                    <option value="3" selected>3 Columns</option>
+                    <option value="4">4 Columns</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Gap <span class="range-val" id="gapVal">10px</span></label>
+                <input type="range" id="gridGap" min="0" max="30" value="10" oninput="document.getElementById('gapVal').textContent=this.value+'px'; updatePreview();">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Appearance</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Background Color</label>
+                <input type="color" id="bgColor" value="#000000" onchange="updatePreview()">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Export Settings</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Scroll Duration (vh)</label>
+                <div class="row">
+                    <input type="range" id="scrollDuration" min="100" max="300" value="150" oninput="document.getElementById('scrollDurationNum').value=this.value; updatePreviewHeight();">
+                    <input type="number" id="scrollDurationNum" value="150" style="width:70px;" oninput="document.getElementById('scrollDuration').value=this.value; updatePreviewHeight();">
+                </div>
+            </div>
+            <button onclick="generateExport()">Generate HTML</button>
+            <button class="secondary" onclick="copyCode()" style="margin-top:8px;">📋 Copy Code</button>
+            <button class="secondary" onclick="resetModule()">↺ Reset</button>
+        </div>
+    </div>
+    
+    <div class="preview-area">
+        <div class="preview-header">
+            <span>Preview (scroll to animate, click images for lightbox)</span>
+            <span id="progressDisplay">0%</span>
+        </div>
+        <div class="preview-scroll" id="previewScroll">
+            <div class="preview-container" id="previewContainer">
+                <div class="preview-stage" id="previewStage">
+                    <div class="collage-area" id="collageArea"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Generated HTML</h3>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <textarea class="code" id="exportCode" readonly></textarea>
+        <div style="display:flex;gap:10px;margin-top:15px;">
+            <button onclick="copyCode()">📋 Copy</button>
+            <button onclick="downloadCode()" class="secondary">💾 Download</button>
+            <button onclick="sendToStackBuilder()" class="secondary">📚 Stack</button>
+        </div>
+    </div>
+</div>
+
+<div class="lightbox" id="lightbox">
+    <div class="lightbox-close" onclick="closeLightbox()">×</div>
+    <div class="lightbox-nav lightbox-prev" onclick="navLightbox(-1)">‹</div>
+    <div class="lightbox-nav lightbox-next" onclick="navLightbox(1)">›</div>
+    <img id="lightboxImg" src="" alt="">
+    <div class="lightbox-caption">
+        <div class="lightbox-caption-text" id="lightboxCaption"></div>
+        <div class="lightbox-caption-credit" id="lightboxCredit"></div>
+    </div>
+</div>
+
+<script>
+var images = [];
+
+function toggleSection(el) {
+    el.classList.toggle('collapsed');
+    el.nextElementSibling.classList.toggle('collapsed');
+}
+
+function convertGithubUrl(url) {
+    if (url.includes('github.com') && url.includes('/blob/')) {
+        return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
+    }
+    return url;
+}
+
+function addImage() {
+    var url = document.getElementById('imageUrl').value.trim();
+    if (!url) { alert('Enter image URL'); return; }
+    if (images.length >= 12) { alert('Maximum 12 images'); return; }
+    
+    url = convertGithubUrl(url);
+    
+    var img = new Image();
+    img.onload = function() {
+        images.push({
+            url: url,
+            name: url.split('/').pop().substring(0, 15),
+            scale: 1,
+            offsetX: 0,
+            offsetY: 0,
+            caption: 'A collection of images that animate into view as you scroll through the story.',
+            credit: ''
+        });
+        document.getElementById('imageUrl').value = '';
+        updateImageList();
+        updatePreview();
+    };
+    img.onerror = function() { alert('Failed to load image'); };
+    img.src = url;
+}
+
+function removeImage(i) {
+    images.splice(i, 1);
+    updateImageList();
+    updatePreview();
+}
+
+function updateImageProp(i, prop, val) {
+    if (prop === 'scale') val = parseFloat(val);
+    if (prop === 'offsetX' || prop === 'offsetY') val = parseInt(val);
+    images[i][prop] = val;
+    updatePreview();
+}
+
+function updateImageList() {
+    document.getElementById('imageCount').textContent = images.length;
+    var html = '';
+    for (var i = 0; i < images.length; i++) {
+        var img = images[i];
+        html += '<div class="image-item">';
+        html += '<div class="image-header"><div class="image-thumb" style="background-image:url(' + img.url + ')"></div>';
+        html += '<span class="image-name">' + (i+1) + '. ' + img.name + '</span>';
+        html += '<button class="small" style="background:#333;color:#fff;flex:none;width:auto;padding:4px 8px;" onclick="moveImage(' + i + ',-1)" ' + (i===0?'disabled':'') + '>▲</button>';
+        html += '<button class="small" style="background:#333;color:#fff;flex:none;width:auto;padding:4px 8px;" onclick="moveImage(' + i + ',1)" ' + (i===images.length-1?'disabled':'') + '>▼</button>';
+        html += '<button class="small" style="background:#c0392b;color:#fff;flex:none;width:auto;" onclick="removeImage(' + i + ')">✕</button></div>';
+        html += '<div class="image-controls">';
+        html += '<div class="control-group"><label>Scale</label><input type="range" min="0.5" max="2" step="0.1" value="' + img.scale + '" onchange="updateImageProp(' + i + ',\'scale\',this.value)"></div>';
+        html += '<div class="control-group"><label>X Offset</label><input type="range" min="-50" max="50" value="' + img.offsetX + '" onchange="updateImageProp(' + i + ',\'offsetX\',this.value)"></div>';
+        html += '<div class="control-group"><label>Y Offset</label><input type="range" min="-50" max="50" value="' + img.offsetY + '" onchange="updateImageProp(' + i + ',\'offsetY\',this.value)"></div>';
+        html += '<div class="control-group"></div>';
+        html += '</div>';
+        html += '<div class="control-group" style="margin-top:6px;"><label>Caption</label><input type="text" value="' + (img.caption || '') + '" placeholder="Image caption..." onchange="updateImageProp(' + i + ',\'caption\',this.value)"></div>';
+        html += '<div class="control-group"><label>Credit</label><input type="text" value="' + (img.credit || '') + '" placeholder="Photo credit..." onchange="updateImageProp(' + i + ',\'credit\',this.value)"></div>';
+        html += '</div>';
+    }
+    document.getElementById('imageList').innerHTML = html || '<div style="color:#555;font-size:11px;padding:10px;">No images added yet</div>';
+}
+
+function moveImage(i, dir) {
+    var newIndex = i + dir;
+    if (newIndex < 0 || newIndex >= images.length) return;
+    var temp = images[i];
+    images[i] = images[newIndex];
+    images[newIndex] = temp;
+    updateImageList();
+    updatePreview();
+}
+
+function updatePreviewHeight() {
+    document.getElementById('previewContainer').style.height = (parseInt(document.getElementById('scrollDuration').value) || 150) + 'vh';
+}
+
+function updatePreview() {
+    var area = document.getElementById('collageArea');
+    var bgColor = document.getElementById('bgColor').value;
+    var cols = parseInt(document.getElementById('gridCols').value);
+    var gap = parseInt(document.getElementById('gridGap').value);
+    
+    document.getElementById('previewStage').style.background = bgColor;
+    area.style.background = bgColor;
+    
+    if (images.length === 0) {
+        area.innerHTML = '<div style="color:#444;text-align:center;padding:60px;">Add images to create collage</div>';
+        return;
+    }
+    
+    var rows = Math.ceil(images.length / cols);
+    var gapPct = (gap / 10);
+    var cellW = (100 - gapPct * (cols + 1)) / cols;
+    var cellH = (100 - gapPct * (rows + 1)) / rows;
+    
+    var html = '';
+    for (var i = 0; i < images.length; i++) {
+        var img = images[i];
+        var col = i % cols;
+        var row = Math.floor(i / cols);
+        var x = gapPct + col * (cellW + gapPct);
+        var y = gapPct + row * (cellH + gapPct);
+        var tx = img.offsetX * 2;
+        var ty = img.offsetY * 2;
+        
+        html += '<div class="collage-item" data-i="' + i + '" style="left:' + x + '%;top:' + y + '%;width:' + cellW + '%;height:' + cellH + '%;" onclick="openLightbox(' + i + ')">';
+        html += '<img src="' + img.url + '" alt="" style="transform:scale(' + img.scale + ') translate(' + tx + '%, ' + ty + '%);">';
+        html += '</div>';
+    }
+    area.innerHTML = html;
+    
+    updatePreviewHeight();
+    applyEffect();
+}
+
+var currentLightboxIndex = 0;
+
+function openLightbox(i) {
+    currentLightboxIndex = i;
+    showLightboxImage(i);
+    document.getElementById('lightbox').classList.add('active');
+}
+
+function showLightboxImage(i) {
+    var img = images[i];
+    document.getElementById('lightboxImg').src = img.url;
+    document.getElementById('lightboxCaption').textContent = img.caption || '';
+    document.getElementById('lightboxCredit').textContent = img.credit || '';
+}
+
+function navLightbox(dir) {
+    currentLightboxIndex += dir;
+    if (currentLightboxIndex < 0) currentLightboxIndex = images.length - 1;
+    if (currentLightboxIndex >= images.length) currentLightboxIndex = 0;
+    showLightboxImage(currentLightboxIndex);
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+}
+
+document.addEventListener('keydown', function(e) {
+    var lb = document.getElementById('lightbox');
+    if (!lb.classList.contains('active')) return;
+    if (e.key === 'Escape' || e.key === ' ') {
+        e.preventDefault();
+        closeLightbox();
+    } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        navLightbox(-1);
+    } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        navLightbox(1);
+    }
+});
+
+function applyEffect() {
+    var scroll = document.getElementById('previewScroll');
+    var container = document.getElementById('previewContainer');
+    var scrollTop = scroll.scrollTop;
+    var maxScroll = container.offsetHeight - scroll.clientHeight;
+    var progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
+    document.getElementById('progressDisplay').textContent = Math.round(progress * 100) + '%';
+    
+    var items = document.querySelectorAll('.collage-item');
+    var n = items.length;
+    for (var i = 0; i < n; i++) {
+        var threshold = (i + 1) / (n + 2);
+        items[i].classList.toggle('visible', progress >= threshold * 0.8);
+    }
+}
+
+document.getElementById('previewScroll').addEventListener('scroll', function() {
+    requestAnimationFrame(applyEffect);
+}, { passive: true });
+
+function generateExport() {
+    if (images.length === 0) { alert('Add at least one image'); return; }
+    
+    var uid = 'collage' + Math.random().toString(36).substr(2, 6);
+    var bgColor = document.getElementById('bgColor').value;
+    var cols = parseInt(document.getElementById('gridCols').value);
+    var gap = parseInt(document.getElementById('gridGap').value);
+    var scrollMult = parseInt(document.getElementById('scrollDuration').value) / 100;
+    
+    var rows = Math.ceil(images.length / cols);
+    var gapPct = (gap / 10);
+    var cellW = (100 - gapPct * (cols + 1)) / cols;
+    var cellH = (100 - gapPct * (rows + 1)) / rows;
+    
+    var itemsHtml = '';
+    var imgData = [];
+    
+    for (var i = 0; i < images.length; i++) {
+        var img = images[i];
+        var col = i % cols;
+        var row = Math.floor(i / cols);
+        var x = gapPct + col * (cellW + gapPct);
+        var y = gapPct + row * (cellH + gapPct);
+        var tx = img.offsetX * 2;
+        var ty = img.offsetY * 2;
+        
+        imgData.push({ url: img.url, caption: img.caption || '', credit: img.credit || '' });
+        itemsHtml += '<div class="c-item" style="left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%;width:' + cellW.toFixed(2) + '%;height:' + cellH.toFixed(2) + '%;"><img src="' + img.url + '" alt="" style="transform:scale(' + img.scale + ') translate(' + tx + '%,' + ty + '%)"></div>';
+    }
+    
+    var code = `<style>
+#${uid}{position:relative}
+#${uid} .c-stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;background:${bgColor}}
+#${uid} .c-area{position:relative;width:90%;max-width:1000px;aspect-ratio:16/10;background:${bgColor};border-radius:8px;overflow:hidden}
+#${uid} .c-item{position:absolute;overflow:hidden;border-radius:4px;opacity:0;transform:translateY(30px);transition:all 0.5s;cursor:pointer}
+#${uid} .c-item.on{opacity:1;transform:translateY(0)}
+#${uid} .c-item img{width:100%;height:100%;object-fit:cover}
+#${uid} .c-lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999;align-items:center;justify-content:center;flex-direction:column}
+#${uid} .c-lb.on{display:flex}
+#${uid} .c-lb>img{max-width:95vw;max-height:85vh;object-fit:contain;border-radius:4px}
+#${uid} .c-lb-cap{color:#ccc;font-size:14px;margin-top:12px;text-align:center;max-width:600px;padding:0 20px;line-height:1.5}
+#${uid} .c-lb-cred{color:#888;font-size:12px;font-style:italic;margin-top:4px}
+#${uid} .c-lb-x{position:absolute;top:15px;right:20px;color:#fff;font-size:20px;cursor:pointer;opacity:0.7;background:rgba(0,0,0,0.5);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+#${uid} .c-lb-x:hover{opacity:1}
+#${uid} .c-lb-nav{position:absolute;top:50%;transform:translateY(-50%);color:#fff;font-size:28px;cursor:pointer;opacity:0.7;background:rgba(0,0,0,0.5);width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+#${uid} .c-lb-nav:hover{opacity:1}
+#${uid} .c-lb-prev{left:20px}
+#${uid} .c-lb-next{right:20px}
+@media(max-width:768px){#${uid} .c-area{width:95%}#${uid} .c-lb-nav{width:40px;height:40px;font-size:22px}}
 </style>
+<div id="${uid}">
+<div class="c-stage"><div class="c-area">
+${itemsHtml}
+</div></div>
+<div class="c-lb"><div class="c-lb-x">×</div><div class="c-lb-nav c-lb-prev">‹</div><div class="c-lb-nav c-lb-next">›</div><img src="" alt=""><div class="c-lb-cap"></div><div class="c-lb-cred"></div></div>
+</div>
 <script>
 (function(){
-  document.querySelectorAll('#disco-nav a[data-module]').forEach(function(a){
-    var mod = a.getAttribute('data-module');
-    var key = 'disco_' + mod;
-    var dot = a.querySelector('.dot');
-    if(!dot) return;
-    var hasContent = localStorage.getItem(key);
-    var fromPlanner = localStorage.getItem(key + '_from_planner');
-    if(hasContent){
-      if(fromPlanner === 'true'){
-        dot.className = 'dot orange';
-      } else {
-        dot.className = 'dot green';
-      }
+var w=document.getElementById("${uid}");
+var s=w.querySelector(".c-stage");
+var items=w.querySelectorAll(".c-item");
+var lb=w.querySelector(".c-lb");
+var lbImg=lb.querySelector("img");
+var lbCap=lb.querySelector(".c-lb-cap");
+var lbCred=lb.querySelector(".c-lb-cred");
+var lbX=lb.querySelector(".c-lb-x");
+var lbPrev=lb.querySelector(".c-lb-prev");
+var lbNext=lb.querySelector(".c-lb-next");
+var data=${JSON.stringify(imgData)};
+var n=items.length;
+var scrollMult=${scrollMult};
+var revealed=[];
+var curIdx=0;
+for(var i=0;i<n;i++)revealed[i]=false;
+function setH(){w.style.height=(s.offsetHeight*scrollMult)+"px";}
+setH();window.addEventListener("resize",setH);
+function showImg(i){curIdx=i;lbImg.src=data[i].url;lbCap.textContent=data[i].caption;lbCred.textContent=data[i].credit;}
+for(var i=0;i<n;i++){
+(function(idx){
+items[idx].onclick=function(){
+showImg(idx);
+lb.classList.add("on");
+};
+})(i);
+}
+lbX.onclick=function(e){e.stopPropagation();lb.classList.remove("on");};
+lbPrev.onclick=function(e){e.stopPropagation();curIdx=(curIdx-1+n)%n;showImg(curIdx);};
+lbNext.onclick=function(e){e.stopPropagation();curIdx=(curIdx+1)%n;showImg(curIdx);};
+lb.onclick=function(e){if(e.target===lb)lb.classList.remove("on");};
+document.addEventListener("keydown",function(e){
+if(!lb.classList.contains("on"))return;
+if(e.key==="Escape"||e.key===" "){e.preventDefault();lb.classList.remove("on");}
+else if(e.key==="ArrowLeft"){e.preventDefault();curIdx=(curIdx-1+n)%n;showImg(curIdx);}
+else if(e.key==="ArrowRight"){e.preventDefault();curIdx=(curIdx+1)%n;showImg(curIdx);}
+});
+function upd(){
+var wh=window.innerHeight;
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["${uid}"];
+var shouldReveal=false;
+if(extP!==undefined){shouldReveal=extP>0.1;}else{
+var areaRect=w.querySelector(".c-area").getBoundingClientRect();
+shouldReveal=areaRect.top<wh*0.85;
+}
+if(shouldReveal){
+for(var i=0;i<n;i++){
+if(!revealed[i]){
+revealed[i]=true;
+(function(idx){
+setTimeout(function(){items[idx].classList.add("on");},idx*100);
+})(i);
+}
+}
+}
+requestAnimationFrame(upd);
+}
+upd();
+})();
+<\/script>`;
+    
+    document.getElementById('exportCode').value = code;
+    document.getElementById('exportModal').classList.add('active');
+}
+
+function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
+
+function copyCode() {
+    var code = document.getElementById('exportCode');
+    if (!code.value) { generateExport(); return; }
+    code.select();
+    document.execCommand('copy');
+    alert('Copied!');
+}
+
+function downloadCode() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { generateExport(); return; }
+    var filename = prompt('Save export as:', 'collage');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    var blob = new Blob([code], { type: 'text/html' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = safeName + '.html';
+    a.click();
+}
+
+function sendToStackBuilder() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate HTML first'); return; }
+    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
+    queue.push({ name: 'Collage', html: code, timestamp: Date.now() });
+    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
+    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
+        window.location.href = 'stack-builder-clean.html';
     }
-  });
+}
+
+updateImageList();
+updatePreview();
+</script>
+<script>
+(function(){
   var path = location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('#disco-nav a').forEach(function(a){
     if(a.getAttribute('href') === path){
@@ -145,7 +578,6 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
   });
 })();
 </script>
-
 <script>
 // Persistence for collage
 (function() {

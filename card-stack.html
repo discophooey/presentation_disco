@@ -72,52 +72,373 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 </head>
 <body>
 <div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-<a href="index.html" style="padding:8px 12px;color:#4a9eff;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">← Hub</a>
-<a href="before-after.html" data-module="before-after" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Before/After<span class="dot"></span></a>
-<a href="card-stack.html" data-module="card-stack" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Card Stack<span class="dot"></span></a>
-<a href="chart.html" data-module="chart" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chart<span class="dot"></span></a>
-<a href="collage.html" data-module="collage" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Collage<span class="dot"></span></a>
-<a href="doc-module.html" data-module="doc-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Doc Module<span class="dot"></span></a>
-<a href="gallery.html" data-module="gallery" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Gallery<span class="dot"></span></a>
-<a href="globe.html" data-module="globe" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Globe<span class="dot"></span></a>
-<a href="hotspots.html" data-module="hotspots" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Hotspots<span class="dot"></span></a>
-<a href="layers.html" data-module="layers" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Layers<span class="dot"></span></a>
-<a href="matte.html" data-module="matte" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Matte<span class="dot"></span></a>
-<a href="pull-quote.html" data-module="pull-quote" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Pull Quote<span class="dot"></span></a>
-<a href="single-image.html" data-module="single-image" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Single Image<span class="dot"></span></a>
-<a href="stat-counter.html" data-module="stat-counter" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Stat Counter<span class="dot"></span></a>
-<a href="timeline.html" data-module="timeline" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Timeline<span class="dot"></span></a>
-<a href="video.html" data-module="video" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Video<span class="dot"></span></a>
-<a href="zoom-detail.html" data-module="zoom-detail" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Zoom Detail<span class="dot"></span></a>
-<a href="text-scroll.html" data-module="text-scroll" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Text Scroll<span class="dot"></span></a>
-<a href="chapter-marker.html" data-module="chapter-marker" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chapter Marker<span class="dot"></span></a>
-<a href="key-facts.html" data-module="key-facts" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Key Facts<span class="dot"></span></a>
-<a href="body-module.html" data-module="body-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Body Module<span class="dot"></span></a>
-<a href="stack-builder-clean.html" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;">Stack Builder</a>
+<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
+<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
+<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
+<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
+<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
+<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
+<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
+<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
+<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
+<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
+<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
+<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
+<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
+<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
+<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
+<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
+<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
+<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
+<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
+<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
+<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
+<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
 </div>
-<style>
-#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}
-#disco-nav .dot{width:6px;height:6px;border-radius:50%;display:none;}
-#disco-nav .dot.orange{display:inline-block;background:#f90;}
-#disco-nav .dot.green{display:inline-block;background:#4a4;}
-</style>
+<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
+
+<div class="app">
+    <div class="controls">
+        <h1>🃏 Card Stack</h1>
+        
+        <h2 onclick="toggleSection(this)">Cards</h2>
+        <div class="section">
+            <button onclick="addCard()">+ Add Card</button>
+            <div id="cardList"></div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Animation</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Stack Direction</label>
+                <select id="stackDir" onchange="updatePreview()">
+                    <option value="up">Fly Up (with rotation)</option>
+                    <option value="down">Fly Down (with rotation)</option>
+                    <option value="left">Fly Left (with rotation)</option>
+                    <option value="right">Fly Right (with rotation)</option>
+                    <option value="straightUp" selected>Straight Up</option>
+                    <option value="straightDown">Straight Down</option>
+                    <option value="straightLeft">Straight Left</option>
+                    <option value="straightRight">Straight Right</option>
+                    <option value="altLeftRight">Alternate Left/Right</option>
+                    <option value="altUpDown">Alternate Up/Down</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Card Width <span class="range-val" id="cardWidthVal">600px</span></label>
+                <input type="range" id="cardWidth" min="200" max="900" value="600" oninput="document.getElementById('cardWidthVal').textContent=this.value+'px'; updatePreview();">
+            </div>
+            <div class="control-group">
+                <label>Card Height <span class="range-val" id="cardHeightVal">400px</span></label>
+                <input type="range" id="cardHeight" min="150" max="600" value="400" oninput="document.getElementById('cardHeightVal').textContent=this.value+'px'; updatePreview();">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Container Size</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Container Scale Y <span class="range-val" id="scaleYVal">100%</span></label>
+                <input type="range" id="containerScaleY" min="30" max="100" value="100" oninput="document.getElementById('scaleYVal').textContent=this.value+'%'; updatePreview();">
+            </div>
+            <div class="control-group">
+                <label>Top Padding <span class="range-val" id="topPadVal">0px</span></label>
+                <input type="range" id="containerTopPad" min="0" max="200" value="0" oninput="document.getElementById('topPadVal').textContent=this.value+'px'; updatePreview();">
+            </div>
+            <div class="control-group">
+                <label>Bottom Padding <span class="range-val" id="bottomPadVal">0px</span></label>
+                <input type="range" id="containerBottomPad" min="0" max="200" value="0" oninput="document.getElementById('bottomPadVal').textContent=this.value+'px'; updatePreview();">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Appearance</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Background Color</label>
+                <input type="color" id="bgColor" value="#000000" onchange="document.getElementById('previewStage').style.background=this.value;">
+            </div>
+            <div class="control-group">
+                <label>Card Background</label>
+                <input type="color" id="cardBg" value="#1a1a1a" onchange="updatePreview()">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Export Settings</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Scroll Duration (vh)</label>
+                <div class="row">
+                    <input type="range" id="scrollDuration" min="200" max="500" value="300" oninput="document.getElementById('scrollDurationNum').value=this.value; updatePreviewHeight();">
+                    <input type="number" id="scrollDurationNum" value="300" style="width:70px;" oninput="document.getElementById('scrollDuration').value=this.value; updatePreviewHeight();">
+                </div>
+            </div>
+            <button onclick="generateExport()">Generate HTML</button>
+            <button class="secondary" onclick="copyCode()">📋 Copy Code</button>
+            <button class="secondary" onclick="resetModule()">↺ Reset</button>
+        </div>
+    </div>
+    
+    <div class="preview-area">
+        <div class="preview-header">
+            <span>Preview (scroll to reveal cards)</span>
+            <span id="progressDisplay">0%</span>
+        </div>
+        <div class="preview-scroll" id="previewScroll">
+            <div class="preview-container" id="previewContainer">
+                <div class="preview-stage" id="previewStage">
+                    <div class="card-wrapper" id="cardWrapper"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 style="margin:0;border:0;padding:0;background:none;">Export HTML</h2>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <textarea class="code" id="exportCode" readonly></textarea>
+        <div class="row" style="margin-top:12px;">
+            <button onclick="copyCode()">📋 Copy</button>
+            <button onclick="downloadCode()" class="secondary">💾 Download</button>
+            <button onclick="sendToStackBuilder()" class="secondary">📚 Stack</button>
+        </div>
+    </div>
+</div>
+
+<script>
+var cards = [
+    { image: '', title: 'First Card', text: 'This is the first card in the stack.' },
+    { image: '', title: 'Second Card', text: 'This is the second card.' },
+    { image: '', title: 'Third Card', text: 'And this is the third.' }
+];
+
+function toggleSection(el) {
+    el.classList.toggle('collapsed');
+    el.nextElementSibling.classList.toggle('collapsed');
+}
+
+function addCard() {
+    if (cards.length >= 10) { alert('Maximum 10 cards'); return; }
+    cards.push({ image: '', title: 'New Card', text: 'Card description.' });
+    updateCardList();
+    updatePreview();
+}
+
+function removeCard(i) {
+    cards.splice(i, 1);
+    updateCardList();
+    updatePreview();
+}
+
+function updateCard(i, prop, val) {
+    cards[i][prop] = val;
+    updatePreview();
+}
+
+function moveCard(i, dir) {
+    var newI = i + dir;
+    if (newI < 0 || newI >= cards.length) return;
+    var temp = cards[i];
+    cards[i] = cards[newI];
+    cards[newI] = temp;
+    updateCardList();
+    updatePreview();
+}
+
+function loadCardImage(i) {
+    var url = document.getElementById('cardImg' + i).value.trim();
+    if (!url) { alert('Enter image URL'); return; }
+    // Convert GitHub blob URLs to raw
+    if (url.includes('github.com') && url.includes('/blob/')) {
+        url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
+    }
+    var img = new Image();
+    img.onload = function() {
+        cards[i].image = url;
+        updateCardList();
+        updatePreview();
+    };
+    img.onerror = function() { alert('Failed to load image'); };
+    img.src = url;
+}
+
+function updateCardList() {
+    var html = '';
+    for (var i = 0; i < cards.length; i++) {
+        var c = cards[i];
+        html += '<div class="card-item"><div class="card-header"><span>Card ' + (i+1) + ' (Bottom→Top)</span>';
+        html += '<div style="display:flex;gap:4px;">';
+        if (i > 0) html += '<button class="small secondary" onclick="moveCard(' + i + ',-1)">↑</button>';
+        if (i < cards.length - 1) html += '<button class="small secondary" onclick="moveCard(' + i + ',1)">↓</button>';
+        html += '<button class="small" style="background:#c0392b;color:#fff;" onclick="removeCard(' + i + ')">✕</button></div></div>';
+        html += '<div class="control-group"><label>Image URL</label><div class="row"><input type="url" id="cardImg' + i + '" value="' + c.image + '" placeholder="https://..."><button class="small" onclick="loadCardImage(' + i + ')">Load</button></div></div>';
+        html += '<div class="control-group"><label>Title</label><input type="text" value="' + c.title + '" onchange="updateCard(' + i + ',\'title\',this.value)"></div>';
+        html += '<div class="control-group"><label>Text</label><textarea onchange="updateCard(' + i + ',\'text\',this.value)">' + c.text + '</textarea></div></div>';
+    }
+    document.getElementById('cardList').innerHTML = html;
+}
+
+function updatePreviewHeight() {
+    document.getElementById('previewContainer').style.height = (parseInt(document.getElementById('scrollDuration').value) || 300) + 'vh';
+}
+
+function updatePreview() {
+    var wrapper = document.getElementById('cardWrapper');
+    var stage = document.getElementById('previewStage');
+    var cardWidth = document.getElementById('cardWidth').value;
+    var cardHeight = document.getElementById('cardHeight').value;
+    var cardBg = document.getElementById('cardBg').value;
+    var topPad = document.getElementById('containerTopPad').value;
+    var bottomPad = document.getElementById('containerBottomPad').value;
+    var scaleY = document.getElementById('containerScaleY').value / 100;
+    
+    wrapper.style.width = cardWidth + 'px';
+    wrapper.style.height = cardHeight + 'px';
+    stage.style.paddingTop = topPad + 'px';
+    stage.style.paddingBottom = bottomPad + 'px';
+    stage.style.height = (100 * scaleY) + 'vh';
+    
+    // Scale fonts based on card height
+    // 15% text area, minus 16px padding = usable height
+    // Need title + desc + 3px gap to fit
+    var textAreaHeight = (cardHeight * 0.15) - 16;
+    // Title takes ~55% of remaining, desc ~45%
+    var titleSize = Math.round(Math.max(12, Math.min(20, textAreaHeight * 0.35)));
+    var descSize = Math.round(Math.max(10, Math.min(16, textAreaHeight * 0.28)));
+    
+    var html = '';
+    for (var i = 0; i < cards.length; i++) {
+        var c = cards[i];
+        var imgHtml = c.image ? '<img class="card-img" src="' + c.image + '" alt="">' : '<div class="card-img"></div>';
+        html += '<div class="card" data-i="' + i + '" style="background:' + cardBg + ';z-index:' + (i + 1) + ';">' + imgHtml;
+        html += '<div class="card-body"><div class="card-title" style="font-size:' + titleSize + 'px">' + c.title + '</div><div class="card-text" style="font-size:' + descSize + 'px">' + c.text + '</div></div></div>';
+    }
+    wrapper.innerHTML = html;
+    applyEffect();
+}
+
+function applyEffect() {
+    var scroll = document.getElementById('previewScroll');
+    var container = document.getElementById('previewContainer');
+    var scrollTop = scroll.scrollTop;
+    var maxScroll = container.offsetHeight - scroll.clientHeight;
+    var progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
+    document.getElementById('progressDisplay').textContent = Math.round(progress * 100) + '%';
+    
+    var dir = document.getElementById('stackDir').value;
+    var cardEls = document.querySelectorAll('.card');
+    var n = cardEls.length;
+    
+    for (var i = 0; i < n; i++) {
+        var card = cardEls[i];
+        // First card visible immediately, others animate in with spacing
+        var cardProgress;
+        if (i === 0) {
+            cardProgress = 1; // First card always fully visible
+        } else {
+            var segmentSize = 1 / (n - 1);
+            var cardStart = (i - 1) * segmentSize;
+            var cardEnd = cardStart + segmentSize * 0.7;
+            cardProgress = Math.max(0, Math.min(1, (progress - cardStart) / (cardEnd - cardStart)));
+        }
+        
+        var x = 0, y = 0, rot = 0;
+        var baseOffset = (1 - cardProgress) * 500;
+        
+        if (dir === 'up') { y = -baseOffset; rot = (1 - cardProgress) * 10; }
+        else if (dir === 'down') { y = baseOffset; rot = (1 - cardProgress) * -10; }
+        else if (dir === 'left') { x = -baseOffset; rot = (1 - cardProgress) * 10; }
+        else if (dir === 'right') { x = baseOffset; rot = (1 - cardProgress) * -10; }
+        else if (dir === 'straightUp') { y = -baseOffset; }
+        else if (dir === 'straightDown') { y = baseOffset; }
+        else if (dir === 'straightLeft') { x = -baseOffset; }
+        else if (dir === 'straightRight') { x = baseOffset; }
+        else if (dir === 'altLeftRight') { x = (i % 2 === 0 ? -1 : 1) * baseOffset; }
+        else if (dir === 'altUpDown') { y = (i % 2 === 0 ? -1 : 1) * baseOffset; }
+        
+        var stackOffset = i * 8 * (1 - cardProgress);
+        
+        card.style.transform = 'translate(' + x + 'px, ' + (y + stackOffset) + 'px) rotate(' + rot + 'deg)';
+        card.style.opacity = cardProgress > 0.1 ? 1 : cardProgress * 10;
+    }
+}
+
+var rafId = null;
+function onScroll() { if (rafId) cancelAnimationFrame(rafId); rafId = requestAnimationFrame(applyEffect); }
+document.getElementById('previewScroll').addEventListener('scroll', onScroll, { passive: true });
+
+function generateExport() {
+    if (cards.length === 0) { alert('Add at least one card'); return; }
+    var uid = 'cs' + Math.random().toString(36).substr(2, 9);
+    var dir = document.getElementById('stackDir').value;
+    var cardWidth = document.getElementById('cardWidth').value;
+    var cardHeight = document.getElementById('cardHeight').value;
+    var cardBg = document.getElementById('cardBg').value;
+    var bgColor = document.getElementById('bgColor').value;
+    var scaleY = document.getElementById('containerScaleY').value;
+    var scrollDur = document.getElementById('scrollDuration').value;
+    var scrollMult = scrollDur / 100;
+    
+    // Calculate font sizes - same logic as preview
+    var textAreaHeight = (cardHeight * 0.15) - 16;
+    var titleSize = Math.round(Math.max(12, Math.min(20, textAreaHeight * 0.35)));
+    var descSize = Math.round(Math.max(10, Math.min(16, textAreaHeight * 0.28)));
+    
+    var cardsHtml = '';
+    for (var i = 0; i < cards.length; i++) {
+        var c = cards[i];
+        var imgHtml = c.image ? '<img class="cs-img" src="' + c.image + '" alt="">' : '';
+        cardsHtml += '<div class="cs-card" style="z-index:' + (i + 1) + ';">' + imgHtml + '<div class="cs-body"><div class="cs-tt">' + c.title + '</div><div class="cs-tx">' + c.text + '</div></div></div>';
+    }
+    
+    var code = '<style>\n#' + uid + '{position:relative}\n#' + uid + ' .cs-stage{position:-webkit-sticky;position:sticky;top:0;height:' + scaleY + 'vh;display:flex;align-items:center;justify-content:center;background:' + bgColor + ';perspective:1000px;overflow:hidden}\n#' + uid + ' .cs-wrap{position:relative;width:' + cardWidth + 'px;height:' + cardHeight + 'px;max-width:90%}\n#' + uid + ' .cs-card{position:absolute;width:100%;height:100%;opacity:0;background:' + cardBg + ';border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.5);overflow:hidden;display:flex;flex-direction:column}\n#' + uid + ' .cs-img{width:100%;height:85%;object-fit:cover;background:#333;flex-shrink:0}\n#' + uid + ' .cs-body{padding:8px 16px;flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:center}\n#' + uid + ' .cs-tt{font-size:' + titleSize + 'px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}\n#' + uid + ' .cs-tx{font-size:' + descSize + 'px;color:#aaa;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}\n@media(max-width:768px){#' + uid + ' .cs-wrap{width:90%!important;max-width:' + cardWidth + 'px;height:auto!important;aspect-ratio:' + cardWidth + '/' + cardHeight + '}#' + uid + ' .cs-tt{font-size:14px}#' + uid + ' .cs-tx{font-size:11px}}</style>\n<div id="' + uid + '">\n<div class="cs-stage"><div class="cs-wrap">' + cardsHtml + '</div></div>\n</div>\n<script>\n(function(){\nvar w=document.getElementById("' + uid + '");\nvar s=w.querySelector(".cs-stage");\nvar cards=w.querySelectorAll(".cs-card");\nvar n=cards.length,dir="' + dir + '";\nvar scrollMult=' + scrollMult + ';\nvar curP=0,tarP=0,raf=null;\nfunction setH(){w.style.height=(s.offsetHeight*scrollMult)+"px";}\nsetH();window.addEventListener("resize",setH);\nfunction lerp(a,b,t){return a+(b-a)*t;}\nfunction upd(){\nvar extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\nif(extP!==undefined){tarP=extP;}else{\nvar r=w.getBoundingClientRect();\nvar wh=window.innerHeight;\nvar scrolled=Math.max(0,-r.top);\nvar scrollRange=w.offsetHeight-wh;\nif(scrollRange<=0)scrollRange=1;\ntarP=Math.max(0,Math.min(1,scrolled/scrollRange));\n}\ncurP=lerp(curP,tarP,0.12);\nif(Math.abs(curP-tarP)>0.001)raf=requestAnimationFrame(upd);\nfor(var i=0;i<n;i++){\nvar cp;if(i===0){cp=1;}else{var ss=1/(n-1);var cs=(i-1)*ss;var ce=cs+ss*0.7;cp=Math.max(0,Math.min(1,(curP-cs)/(ce-cs)));}\nvar x=0,y=0,rot=0,off=(1-cp)*500;\nif(dir==="up"){y=-off;rot=(1-cp)*10;}\nelse if(dir==="down"){y=off;rot=(1-cp)*-10;}\nelse if(dir==="left"){x=-off;rot=(1-cp)*10;}\nelse if(dir==="right"){x=off;rot=(1-cp)*-10;}\nelse if(dir==="straightUp"){y=-off;}\nelse if(dir==="straightDown"){y=off;}\nelse if(dir==="straightLeft"){x=-off;}\nelse if(dir==="straightRight"){x=off;}\nelse if(dir==="altLeftRight"){x=(i%2===0?-1:1)*off;}\nelse if(dir==="altUpDown"){y=(i%2===0?-1:1)*off;}\nvar so=i*8*(1-cp);\ncards[i].style.transform="translate("+x+"px,"+(y+so)+"px) rotate("+rot+"deg)";\ncards[i].style.opacity=cp>0.1?1:cp*10;\n}}\nfunction onScroll(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(upd);}\nwindow.addEventListener("scroll",onScroll,{passive:true});upd();\n})();\n<\/script>';
+    
+    document.getElementById('exportCode').value = code;
+    document.getElementById('exportModal').classList.add('active');
+}
+
+function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
+
+function copyCode() {
+    var code = document.getElementById('exportCode');
+    if (!code.value) { generateExport(); return; }
+    code.select();
+    document.execCommand('copy');
+    alert('Copied!');
+}
+
+function downloadCode() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { generateExport(); return; }
+    var filename = prompt('Save export as:', 'card-stack');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    var blob = new Blob([code], { type: 'text/html' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = safeName + '.html';
+    a.click();
+}
+
+function sendToStackBuilder() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate HTML first'); return; }
+    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
+    queue.push({ name: 'Card Stack', html: code, timestamp: Date.now() });
+    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
+    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
+        window.location.href = 'stack-builder-clean.html';
+    }
+}
+
+updatePreviewHeight();
+updateCardList();
+updatePreview();
+</script>
 <script>
 (function(){
-  document.querySelectorAll('#disco-nav a[data-module]').forEach(function(a){
-    var mod = a.getAttribute('data-module');
-    var key = 'disco_' + mod;
-    var dot = a.querySelector('.dot');
-    if(!dot) return;
-    var hasContent = localStorage.getItem(key);
-    var fromPlanner = localStorage.getItem(key + '_from_planner');
-    if(hasContent){
-      if(fromPlanner === 'true'){
-        dot.className = 'dot orange';
-      } else {
-        dot.className = 'dot green';
-      }
-    }
-  });
   var path = location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('#disco-nav a').forEach(function(a){
     if(a.getAttribute('href') === path){
@@ -127,7 +448,6 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
   });
 })();
 </script>
-
 <script>
 // Persistence for card-stack
 (function() {

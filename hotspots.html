@@ -94,52 +94,437 @@ textarea.code { width: 100%; height: 250px; background: #0a0a0a; border: 1px sol
 </head>
 <body>
 <div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-<a href="index.html" style="padding:8px 12px;color:#4a9eff;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">← Hub</a>
-<a href="before-after.html" data-module="before-after" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Before/After<span class="dot"></span></a>
-<a href="card-stack.html" data-module="card-stack" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Card Stack<span class="dot"></span></a>
-<a href="chart.html" data-module="chart" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chart<span class="dot"></span></a>
-<a href="collage.html" data-module="collage" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Collage<span class="dot"></span></a>
-<a href="doc-module.html" data-module="doc-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Doc Module<span class="dot"></span></a>
-<a href="gallery.html" data-module="gallery" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Gallery<span class="dot"></span></a>
-<a href="globe.html" data-module="globe" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Globe<span class="dot"></span></a>
-<a href="hotspots.html" data-module="hotspots" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Hotspots<span class="dot"></span></a>
-<a href="layers.html" data-module="layers" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Layers<span class="dot"></span></a>
-<a href="matte.html" data-module="matte" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Matte<span class="dot"></span></a>
-<a href="pull-quote.html" data-module="pull-quote" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Pull Quote<span class="dot"></span></a>
-<a href="single-image.html" data-module="single-image" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Single Image<span class="dot"></span></a>
-<a href="stat-counter.html" data-module="stat-counter" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Stat Counter<span class="dot"></span></a>
-<a href="timeline.html" data-module="timeline" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Timeline<span class="dot"></span></a>
-<a href="video.html" data-module="video" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Video<span class="dot"></span></a>
-<a href="zoom-detail.html" data-module="zoom-detail" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Zoom Detail<span class="dot"></span></a>
-<a href="text-scroll.html" data-module="text-scroll" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Text Scroll<span class="dot"></span></a>
-<a href="chapter-marker.html" data-module="chapter-marker" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chapter Marker<span class="dot"></span></a>
-<a href="key-facts.html" data-module="key-facts" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Key Facts<span class="dot"></span></a>
-<a href="body-module.html" data-module="body-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Body Module<span class="dot"></span></a>
-<a href="stack-builder-clean.html" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;">Stack Builder</a>
+<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
+<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
+<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
+<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
+<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
+<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
+<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
+<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
+<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
+<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
+<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
+<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
+<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
+<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
+<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
+<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
+<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
+<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
+<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
+<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
+<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
+<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
 </div>
-<style>
-#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}
-#disco-nav .dot{width:6px;height:6px;border-radius:50%;display:none;}
-#disco-nav .dot.orange{display:inline-block;background:#f90;}
-#disco-nav .dot.green{display:inline-block;background:#4a4;}
+<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
+
+
+<div class="container">
+    <div class="controls">
+        <h1>Hotspots</h1>
+        
+        <h2>Image</h2>
+        <div class="control-group">
+            <label>Image URL</label>
+            <input type="url" id="imageUrl" placeholder="https://...">
+            <button onclick="loadImage()" style="margin-top:6px;">Load Image</button>
+        </div>
+        <div class="control-group">
+            <label>Image Fit</label>
+            <select id="imageFit" onchange="rebuildPreview()">
+                <option value="contain" selected>Contain</option>
+                <option value="cover">Cover</option>
+            </select>
+        </div>
+        
+        <h2>Caption</h2>
+        <div class="control-group">
+            <label>Text</label>
+            <textarea id="captionText" rows="2" oninput="updateCaption()">Interactive annotation points that reveal on scroll. Customizable colors and scales. Multiline labels with positioning options.</textarea>
+        </div>
+        <div class="control-group">
+            <label>Credit</label>
+            <input type="text" id="captionCredit" value="" oninput="updateCaption()">
+        </div>
+        
+        <h2>Hotspots</h2>
+        <button onclick="addHotspot()">+ Add Hotspot</button>
+        <div class="hint">Click image to position</div>
+        <div id="hotspotList" style="margin-top:10px;"></div>
+        
+        <h2>Export</h2>
+        <div class="control-group">
+            <label>Scroll Duration (vh): <span id="durVal">300</span></label>
+            <input type="range" id="scrollDuration" min="150" max="500" value="300" oninput="document.getElementById('durVal').textContent=this.value; setPreviewHeight();">
+        </div>
+        <div class="control-group">
+            <label>Sticky Offset (px)</label>
+            <input type="number" id="stickyOffset" value="50" min="0" max="200">
+        </div>
+        <button onclick="generateExport()">Generate HTML</button>
+        <button class="secondary" onclick="resetModule()">↺ Reset</button>
+        <div class="row" style="margin-top:8px;">
+            <button onclick="saveProject()" class="secondary">💾 Save</button>
+            <button onclick="loadProject()" class="secondary">📂 Load</button>
+        </div>
+    </div>
+    
+    <div class="preview-panel">
+        <div class="preview-header">
+            <span>Preview (scroll to test)</span>
+            <span id="progressDisplay">0%</span>
+        </div>
+        <div id="previewScroll">
+            <div id="previewContainer">
+                <div id="previewStage">
+                    <div id="previewInner">
+                        <div style="color:#666;text-align:center;padding-top:45vh;">Load an image</div>
+                    </div>
+                    <div id="previewCaption">
+                        <div id="capText" style="font-size:13px;color:#e0e0e0;"></div>
+                        <div id="capCredit" style="font-size:11px;color:#888;margin-top:6px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Export HTML</h2>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <textarea class="code" id="exportCode" readonly></textarea>
+        <div class="row" style="margin-top:10px;">
+            <button onclick="copyCode()">📋 Copy</button>
+            <button onclick="downloadCode()" class="secondary">💾 Download</button>
+            <button onclick="sendToStackBuilder()" class="secondary">📚 Stack</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// STATE
+let imageUrl = null;
+let hotspots = [];
+let placingId = null;
+
+// IMAGE
+function loadImage() {
+    let url = document.getElementById('imageUrl').value.trim();
+    if (!url) return alert('Enter image URL');
+    if (url.includes('github.com') && url.includes('/blob/')) {
+        url = url.replace('github.com','raw.githubusercontent.com').replace('/blob/','/').split('?')[0];
+    }
+    const img = new Image();
+    img.onload = () => { imageUrl = url; rebuildPreview(); };
+    img.onerror = () => alert('Failed to load image');
+    img.src = url;
+}
+
+// HOTSPOT CRUD
+function addHotspot() {
+    if (!imageUrl) return alert('Load image first');
+    hotspots.push({
+        id: Date.now(),
+        x: 50, y: 50,
+        label: 'Hotspot ' + (hotspots.length + 1),
+        color: '#ff4444',
+        labelPos: 'right',
+        scale: 1,
+        start: 0,
+        end: 100
+    });
+    placingId = hotspots[hotspots.length - 1].id;
+    renderList();
+    rebuildPreview();
+}
+
+function removeHotspot(id) {
+    hotspots = hotspots.filter(h => h.id !== id);
+    renderList();
+    rebuildPreview();
+}
+
+function updateHotspot(id, prop, val) {
+    const h = hotspots.find(h => h.id === id);
+    if (!h) return;
+    h[prop] = (prop === 'start' || prop === 'end' || prop === 'scale') ? parseFloat(val) || 0 : val;
+    rebuildPreview();
+}
+
+// LIST UI
+function toggleBody(id) {
+    document.querySelectorAll('.hotspot-body').forEach(el => {
+        el.classList.toggle('open', el.id === 'body-' + id && !el.classList.contains('open'));
+    });
+}
+
+function renderList() {
+    const list = document.getElementById('hotspotList');
+    if (!hotspots.length) { list.innerHTML = '<div class="hint">No hotspots</div>'; return; }
+    list.innerHTML = hotspots.map((h, i) => `
+        <div class="hotspot-item">
+            <div class="hotspot-header" onclick="toggleBody(${h.id})">
+                <span><span style="color:${h.color}">●</span> ${(h.label||'').split('\\n')[0] || 'Hotspot '+(i+1)}</span>
+                <button onclick="event.stopPropagation();removeHotspot(${h.id})">×</button>
+            </div>
+            <div class="hotspot-body" id="body-${h.id}">
+                <div class="control-group">
+                    <label>Label</label>
+                    <textarea rows="2" oninput="updateHotspot(${h.id},'label',this.value)">${h.label||''}</textarea>
+                </div>
+                <div class="row">
+                    <div class="control-group">
+                        <label>Color</label>
+                        <input type="color" value="${h.color}" oninput="updateHotspot(${h.id},'color',this.value)">
+                    </div>
+                    <div class="control-group">
+                        <label>Label Pos</label>
+                        <select onchange="updateHotspot(${h.id},'labelPos',this.value)">
+                            <option value="right" ${h.labelPos==='right'?'selected':''}>Right</option>
+                            <option value="left" ${h.labelPos==='left'?'selected':''}>Left</option>
+                            <option value="top" ${h.labelPos==='top'?'selected':''}>Top</option>
+                            <option value="bottom" ${h.labelPos==='bottom'?'selected':''}>Bottom</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Scale: ${(h.scale||1).toFixed(1)}x</label>
+                    <input type="range" min="0.5" max="3" step="0.1" value="${h.scale||1}" oninput="this.previousElementSibling.textContent='Scale: '+parseFloat(this.value).toFixed(1)+'x';updateHotspot(${h.id},'scale',this.value)">
+                </div>
+                <div class="row">
+                    <div class="control-group">
+                        <label>Start %</label>
+                        <input type="number" min="0" max="100" value="${h.start}" oninput="updateHotspot(${h.id},'start',this.value)">
+                    </div>
+                    <div class="control-group">
+                        <label>End %</label>
+                        <input type="number" min="0" max="100" value="${h.end}" oninput="updateHotspot(${h.id},'end',this.value)">
+                    </div>
+                </div>
+                <div class="hint">Pos: ${h.x.toFixed(0)}%, ${h.y.toFixed(0)}% — <a href="#" onclick="event.preventDefault();placingId=${h.id};rebuildPreview();" style="color:#4a9eff;">reposition</a></div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// PREVIEW
+function setPreviewHeight() {
+    const vh = parseInt(document.getElementById('scrollDuration').value) || 300;
+    document.getElementById('previewContainer').style.height = vh + 'vh';
+}
+
+function rebuildPreview() {
+    const inner = document.getElementById('previewInner');
+    if (!imageUrl) {
+        inner.innerHTML = '<div style="color:#666;text-align:center;padding-top:45vh;">Load an image</div>';
+        return;
+    }
+    const fit = document.getElementById('imageFit').value;
+    let html = `<img src="${imageUrl}" style="object-fit:${fit};" onclick="handleClick(event)">`;
+    hotspots.forEach(h => {
+        html += `<div class="hp${placingId===h.id?' placing':''}" data-s="${h.start}" data-e="${h.end}" style="left:${h.x}%;top:${h.y}%;transform:scale(${h.scale||1});">
+            <div class="hp-dot" style="background:${h.color};"></div>
+            ${h.label?`<div class="hp-label ${h.labelPos}">${h.label.replace(/\n/g,'<br>')}</div>`:''}
+        </div>`;
+    });
+    inner.innerHTML = html;
+    updateCaption();
+    handleScroll();
+}
+
+function handleClick(e) {
+    if (!placingId) return;
+    const rect = e.target.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    const h = hotspots.find(h => h.id === placingId);
+    if (h) { h.x = x; h.y = y; }
+    placingId = null;
+    renderList();
+    rebuildPreview();
+}
+
+function updateCaption() {
+    document.getElementById('capText').textContent = document.getElementById('captionText').value;
+    document.getElementById('capCredit').textContent = document.getElementById('captionCredit').value;
+}
+
+// SCROLL
+function handleScroll() {
+    const scroller = document.getElementById('previewScroll');
+    const container = document.getElementById('previewContainer');
+    const scrollTop = scroller.scrollTop;
+    const scrollMax = container.offsetHeight - scroller.clientHeight;
+    const pct = scrollMax > 0 ? (scrollTop / scrollMax) * 100 : 0;
+    
+    document.getElementById('progressDisplay').textContent = Math.round(pct) + '%';
+    document.getElementById('previewCaption').classList.toggle('on', pct > 5);
+    
+    document.querySelectorAll('#previewInner .hp').forEach(el => {
+        const s = parseFloat(el.dataset.s) || 0;
+        const e = parseFloat(el.dataset.e) || 100;
+        const placing = el.classList.contains('placing');
+        el.classList.toggle('on', placing || (pct >= s && pct <= e));
+    });
+}
+
+document.getElementById('previewScroll').addEventListener('scroll', handleScroll);
+
+// EXPORT
+function generateExport() {
+    if (!imageUrl) return alert('Load image first');
+    const dur = document.getElementById('scrollDuration').value;
+    const offset = document.getElementById('stickyOffset').value;
+    const capText = document.getElementById('captionText').value;
+    const capCredit = document.getElementById('captionCredit').value;
+    const fit = document.getElementById('imageFit').value;
+    const sm = parseInt(dur) / 100;
+    const uid = 'hs' + Math.random().toString(36).substr(2, 9);
+    
+    const hpHtml = hotspots.map(h => 
+        `<div class="hp" data-s="${h.start}" data-e="${h.end}" style="left:${h.x.toFixed(1)}%;top:${h.y.toFixed(1)}%;--sc:${h.scale||1};">` +
+        `<div class="dot" style="background:${h.color}"></div>` +
+        (h.label ? `<div class="lbl ${h.labelPos}">${h.label.replace(/\n/g,'<br>')}</div>` : '') +
+        `</div>`
+    ).join('\n');
+    
+    const capHtml = (capText || capCredit) ? 
+        `<div class="cap"><div class="cap-t">${capText}</div>${capCredit?`<div class="cap-c">${capCredit}</div>`:''}</div>` : '';
+    
+    const code = `<style>
+#${uid}{position:relative}
+#${uid} .stage{position:-webkit-sticky;position:sticky;top:${offset}px;height:100vh;background:#000;overflow:hidden}
+#${uid} .inner{position:relative;width:100%;height:100%}
+#${uid} .inner img{width:100%;height:100%;object-fit:${fit};display:block}
+#${uid} .hp{position:absolute;opacity:0;transform:scale(var(--sc,1));pointer-events:none;transition:opacity .3s}
+#${uid} .hp.on{opacity:1;pointer-events:auto}
+#${uid} .dot{width:16px;height:16px;border-radius:50%;position:absolute;left:-8px;top:-8px;animation:pulse${uid} 2s infinite}
+@keyframes pulse${uid}{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.7}}
+#${uid} .lbl{position:absolute;background:rgba(0,0,0,.9);color:#fff;padding:8px 12px;font:13px/1.4 system-ui,sans-serif;border-radius:4px;white-space:nowrap;opacity:0;transition:opacity .2s .1s}
+#${uid} .hp.on .lbl{opacity:1}
+#${uid} .lbl.right{left:24px;top:50%;transform:translateY(-50%)}
+#${uid} .lbl.left{right:24px;top:50%;transform:translateY(-50%)}
+#${uid} .lbl.top{left:50%;bottom:24px;transform:translateX(-50%)}
+#${uid} .lbl.bottom{left:50%;top:24px;transform:translateX(-50%)}
+#${uid} .cap{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);width:85%;max-width:650px;background:rgba(0,0,0,.85);padding:12px 16px;border-radius:6px;opacity:0;transition:opacity .3s;z-index:10}
+#${uid} .cap.on{opacity:1}
+#${uid} .cap-t{font:13px/1.5 system-ui,sans-serif;color:#e0e0e0}
+#${uid} .cap-c{font:11px system-ui,sans-serif;color:#888;font-style:italic;margin-top:6px}
+@media(max-width:768px){#${uid} .stage{top:200px}#${uid} .lbl{font-size:14px;padding:8px 12px}#${uid} .cap{width:92%;bottom:20px}#${uid} .cap-t{font-size:11px}}
 </style>
+<div id="${uid}">
+<div class="stage">
+<div class="inner">
+<img src="${imageUrl}" alt="">
+${hpHtml}
+</div>
+${capHtml}
+</div>
+</div>
+<scr` + `ipt>
+(function(){
+var w=document.getElementById('${uid}'),st=w.querySelector('.stage');
+w.style.height=(st.offsetHeight*${sm})+'px';
+window.addEventListener('resize',function(){w.style.height=(st.offsetHeight*${sm})+'px';});
+function upd(){
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS['${uid}'];
+var p;
+if(extP!==undefined){p=extP*100;}else{
+var r=w.getBoundingClientRect();
+var scrolled=Math.max(0,-r.top);
+var range=w.offsetHeight-window.innerHeight;
+p=range>0?(scrolled/range)*100:0;
+}
+w.querySelectorAll('.hp').forEach(function(h){
+var s=parseFloat(h.dataset.s)||0,e=parseFloat(h.dataset.e)||100;
+h.classList.toggle('on',p>=s&&p<=e);
+});
+var c=w.querySelector('.cap');if(c)c.classList.toggle('on',p>5);
+}
+window.addEventListener('scroll',upd,{passive:true});
+upd();
+})();
+<\/scr` + `ipt>`;
+
+    document.getElementById('exportCode').value = code;
+    document.getElementById('exportModal').classList.add('active');
+}
+
+// MODAL
+function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
+function copyCode() { document.getElementById('exportCode').select(); document.execCommand('copy'); alert('Copied!'); }
+function downloadCode() {
+    var filename = prompt('Save export as:', 'hotspots');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    const blob = new Blob([document.getElementById('exportCode').value], {type:'text/html'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = safeName + '.html'; a.click();
+}
+function sendToStackBuilder() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate HTML first'); return; }
+    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
+    queue.push({ name: 'Hotspots', html: code, timestamp: Date.now() });
+    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
+    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
+        window.location.href = 'stack-builder-clean.html';
+    }
+}
+
+// SAVE/LOAD
+function saveProject() {
+    var filename = prompt('Save project as:', 'hotspots-project');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    const project = { imageUrl, hotspots, settings: {
+        imageFit: document.getElementById('imageFit').value,
+        captionText: document.getElementById('captionText').value,
+        captionCredit: document.getElementById('captionCredit').value,
+        scrollDuration: document.getElementById('scrollDuration').value,
+        stickyOffset: document.getElementById('stickyOffset').value
+    }};
+    const blob = new Blob([JSON.stringify(project,null,2)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = safeName + '.json'; a.click();
+}
+
+function loadProject() {
+    const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            try {
+                const p = JSON.parse(e.target.result);
+                imageUrl = p.imageUrl; hotspots = p.hotspots || [];
+                if (p.settings) {
+                    document.getElementById('imageUrl').value = imageUrl || '';
+                    document.getElementById('imageFit').value = p.settings.imageFit || 'contain';
+                    document.getElementById('captionText').value = p.settings.captionText || '';
+                    document.getElementById('captionCredit').value = p.settings.captionCredit || '';
+                    document.getElementById('scrollDuration').value = p.settings.scrollDuration || 300;
+                    document.getElementById('durVal').textContent = p.settings.scrollDuration || 300;
+                    document.getElementById('stickyOffset').value = p.settings.stickyOffset || 50;
+                }
+                renderList(); setPreviewHeight(); rebuildPreview();
+                alert('Loaded!');
+            } catch(err) { alert('Error: '+err.message); }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+// INIT
+setPreviewHeight();
+updateCaption();
+</script>
 <script>
 (function(){
-  document.querySelectorAll('#disco-nav a[data-module]').forEach(function(a){
-    var mod = a.getAttribute('data-module');
-    var key = 'disco_' + mod;
-    var dot = a.querySelector('.dot');
-    if(!dot) return;
-    var hasContent = localStorage.getItem(key);
-    var fromPlanner = localStorage.getItem(key + '_from_planner');
-    if(hasContent){
-      if(fromPlanner === 'true'){
-        dot.className = 'dot orange';
-      } else {
-        dot.className = 'dot green';
-      }
-    }
-  });
   var path = location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('#disco-nav a').forEach(function(a){
     if(a.getAttribute('href') === path){
@@ -149,7 +534,6 @@ textarea.code { width: 100%; height: 250px; background: #0a0a0a; border: 1px sol
   });
 })();
 </script>
-
 <script>
 // Persistence for hotspots
 (function() {

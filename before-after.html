@@ -75,52 +75,513 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 </head>
 <body>
 <div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-<a href="index.html" style="padding:8px 12px;color:#4a9eff;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">← Hub</a>
-<a href="before-after.html" data-module="before-after" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Before/After<span class="dot"></span></a>
-<a href="card-stack.html" data-module="card-stack" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Card Stack<span class="dot"></span></a>
-<a href="chart.html" data-module="chart" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chart<span class="dot"></span></a>
-<a href="collage.html" data-module="collage" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Collage<span class="dot"></span></a>
-<a href="doc-module.html" data-module="doc-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Doc Module<span class="dot"></span></a>
-<a href="gallery.html" data-module="gallery" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Gallery<span class="dot"></span></a>
-<a href="globe.html" data-module="globe" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Globe<span class="dot"></span></a>
-<a href="hotspots.html" data-module="hotspots" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Hotspots<span class="dot"></span></a>
-<a href="layers.html" data-module="layers" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Layers<span class="dot"></span></a>
-<a href="matte.html" data-module="matte" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Matte<span class="dot"></span></a>
-<a href="pull-quote.html" data-module="pull-quote" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Pull Quote<span class="dot"></span></a>
-<a href="single-image.html" data-module="single-image" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Single Image<span class="dot"></span></a>
-<a href="stat-counter.html" data-module="stat-counter" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Stat Counter<span class="dot"></span></a>
-<a href="timeline.html" data-module="timeline" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Timeline<span class="dot"></span></a>
-<a href="video.html" data-module="video" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Video<span class="dot"></span></a>
-<a href="zoom-detail.html" data-module="zoom-detail" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Zoom Detail<span class="dot"></span></a>
-<a href="text-scroll.html" data-module="text-scroll" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Text Scroll<span class="dot"></span></a>
-<a href="chapter-marker.html" data-module="chapter-marker" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chapter Marker<span class="dot"></span></a>
-<a href="key-facts.html" data-module="key-facts" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Key Facts<span class="dot"></span></a>
-<a href="body-module.html" data-module="body-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Body Module<span class="dot"></span></a>
-<a href="stack-builder-clean.html" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;">Stack Builder</a>
+<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
+<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
+<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
+<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
+<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
+<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
+<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
+<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
+<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
+<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
+<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
+<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
+<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
+<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
+<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
+<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
+<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
+<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
+<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
+<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
+<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
+<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
 </div>
-<style>
-#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}
-#disco-nav .dot{width:6px;height:6px;border-radius:50%;display:none;}
-#disco-nav .dot.orange{display:inline-block;background:#f90;}
-#disco-nav .dot.green{display:inline-block;background:#4a4;}
+<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
+
+<div class="app">
+    <div class="controls">
+        <h1>⚖️ Before / After</h1>
+        
+        <h2 onclick="toggleSection(this)">Before Image</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Image URL</label>
+                <input type="url" id="beforeUrl" placeholder="https://...">
+                <button onclick="loadBeforeImage()" style="margin-top:6px;">Load</button>
+                <div id="beforeStatus" class="status empty">No image</div>
+            </div>
+            <div class="control-group">
+                <label>Label</label>
+                <input type="text" id="beforeLabel" value="Before" oninput="updatePreview()">
+            </div>
+            <div class="control-group">
+                <label>Focus X <span class="range-val" id="beforeXVal">50%</span></label>
+                <input type="range" id="beforeX" min="0" max="100" value="50" oninput="document.getElementById('beforeXVal').textContent=this.value+'%'; updateImageStyle();">
+            </div>
+            <div class="control-group">
+                <label>Focus Y <span class="range-val" id="beforeYVal">50%</span></label>
+                <input type="range" id="beforeY" min="0" max="100" value="50" oninput="document.getElementById('beforeYVal').textContent=this.value+'%'; updateImageStyle();">
+            </div>
+            <div class="control-group">
+                <label>Scale <span class="range-val" id="beforeScaleVal">100%</span></label>
+                <input type="range" id="beforeScale" min="100" max="200" value="100" oninput="document.getElementById('beforeScaleVal').textContent=this.value+'%'; updateImageStyle();">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">After Image</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Image URL</label>
+                <input type="url" id="afterUrl" placeholder="https://...">
+                <button onclick="loadAfterImage()" style="margin-top:6px;">Load</button>
+                <div id="afterStatus" class="status empty">No image</div>
+            </div>
+            <div class="control-group">
+                <label>Label</label>
+                <input type="text" id="afterLabel" value="After" oninput="updatePreview()">
+            </div>
+            <div class="control-group">
+                <label>Focus X <span class="range-val" id="afterXVal">50%</span></label>
+                <input type="range" id="afterX" min="0" max="100" value="50" oninput="document.getElementById('afterXVal').textContent=this.value+'%'; updateImageStyle();">
+            </div>
+            <div class="control-group">
+                <label>Focus Y <span class="range-val" id="afterYVal">50%</span></label>
+                <input type="range" id="afterY" min="0" max="100" value="50" oninput="document.getElementById('afterYVal').textContent=this.value+'%'; updateImageStyle();">
+            </div>
+            <div class="control-group">
+                <label>Scale <span class="range-val" id="afterScaleVal">100%</span></label>
+                <input type="range" id="afterScale" min="100" max="200" value="100" oninput="document.getElementById('afterScaleVal').textContent=this.value+'%'; updateImageStyle();">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Slider</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Mode</label>
+                <select id="controlMode">
+                    <option value="both">Scroll + Drag</option>
+                    <option value="scroll">Scroll Only</option>
+                    <option value="drag">Drag Only</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Start Position <span class="range-val" id="startPosVal">0%</span></label>
+                <input type="range" id="startPos" min="0" max="100" value="0" oninput="document.getElementById('startPosVal').textContent=this.value+'%'; sliderPos=parseInt(this.value); updateSlider();">
+            </div>
+            <div class="control-group">
+                <label>Divider Color <input type="color" id="dividerColor" value="#ffffff" onchange="updatePreview()"></label>
+            </div>
+            <div class="control-group">
+                <label><input type="checkbox" id="showLabels" checked onchange="updatePreview()"> Show Labels</label>
+            </div>
+            <div class="control-group">
+                <label><input type="checkbox" id="showHandle" checked onchange="updatePreview()"> Show Handle</label>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Caption</h2>
+        <div class="section">
+            <div class="control-group">
+                <label><input type="checkbox" id="captionEnabled" onchange="updatePreview()"> Enable Caption</label>
+            </div>
+            <div class="control-group">
+                <label>Caption Text</label>
+                <textarea id="captionText" oninput="updatePreview()">Compare two images with an interactive slider. Scroll to animate or drag the divider to explore the difference.</textarea>
+            </div>
+            <div class="control-group">
+                <label>Credit</label>
+                <input type="text" id="captionCredit" value="Marshall Ritzel" oninput="updatePreview()">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Layout</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Aspect Ratio</label>
+                <select id="aspectRatio">
+                    <option value="21:9">21:9 Ultra Wide</option>
+                    <option value="16:9" selected>16:9 Widescreen</option>
+                    <option value="4:3">4:3 Standard</option>
+                    <option value="1:1">1:1 Square</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Max Width</label>
+                <select id="maxWidth">
+                    <option value="100%">Full</option>
+                    <option value="1200px" selected>1200px</option>
+                    <option value="1000px">1000px</option>
+                    <option value="800px">800px</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Desktop Top Offset <span class="range-val" id="stickyOffsetVal">50px</span></label>
+                <input type="range" id="stickyOffset" min="0" max="150" value="50" oninput="document.getElementById('stickyOffsetVal').textContent=this.value+'px';">
+            </div>
+            <div class="control-group">
+                <label>Mobile Top Offset <span class="range-val" id="mobileOffsetVal">200px</span></label>
+                <input type="range" id="mobileOffset" min="0" max="300" value="200" oninput="document.getElementById('mobileOffsetVal').textContent=this.value+'px';">
+                <div class="hint">For mobile nav/banners</div>
+            </div>
+            <div class="control-group">
+                <label>Scroll Duration <span class="range-val" id="scrollDurVal">200%</span></label>
+                <input type="range" id="scrollDuration" min="150" max="400" value="200" oninput="document.getElementById('scrollDurVal').textContent=this.value+'%'; updatePreviewHeight();">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Export</h2>
+        <div class="section">
+            <button onclick="generateExport()">Generate HTML</button>
+            <button class="secondary" onclick="copyCode()" style="margin-top:8px;"><button class="secondary" onclick="resetModule()" style="margin-top:8px;">↺ Reset</button>
+            📋 Copy</button>
+        </div>
+    </div>
+    
+    <div class="preview-area">
+        <div class="preview-header">
+            <span>Preview</span>
+            <span id="progressDisplay">0%</span>
+        </div>
+        <div class="preview-scroll" id="previewScroll">
+            <div class="preview-container" id="previewContainer">
+                <div class="preview-stage" id="previewStage">
+                    <div class="ba-matte" id="baMatte">
+                        <div style="padding:80px;text-align:center;color:#555;">Load images</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Export</h3>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <textarea class="code" id="exportCode" readonly></textarea>
+        <div style="display:flex;gap:10px;margin-top:15px;">
+            <button onclick="copyCode()">📋 Copy</button>
+            <button onclick="downloadCode()" class="secondary">💾 Download</button>
+            <button onclick="sendToStackBuilder()" class="secondary">📚 Stack</button>
+        </div>
+    </div>
+</div>
+
+<script>
+var beforeUrl = '', afterUrl = '';
+var sliderPos = 0, isDragging = false;
+
+function toggleSection(el) {
+    el.classList.toggle('collapsed');
+    el.nextElementSibling.classList.toggle('collapsed');
+}
+
+function convertGithubUrl(url) {
+    if (!url) return url;
+    if (url.includes('github.com') && url.includes('/blob/')) {
+        return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
+    }
+    return url;
+}
+
+function loadBeforeImage() {
+    var url = document.getElementById('beforeUrl').value.trim();
+    if (!url) return;
+    url = convertGithubUrl(url);
+    var img = new Image();
+    img.onload = function() {
+        beforeUrl = url;
+        document.getElementById('beforeStatus').className = 'status loaded';
+        document.getElementById('beforeStatus').textContent = '✓ ' + img.naturalWidth + '×' + img.naturalHeight;
+        updatePreview();
+    };
+    img.onerror = function() {
+        document.getElementById('beforeStatus').className = 'status empty';
+        document.getElementById('beforeStatus').textContent = '✗ Failed';
+    };
+    img.src = url;
+}
+
+function loadAfterImage() {
+    var url = document.getElementById('afterUrl').value.trim();
+    if (!url) return;
+    url = convertGithubUrl(url);
+    var img = new Image();
+    img.onload = function() {
+        afterUrl = url;
+        document.getElementById('afterStatus').className = 'status loaded';
+        document.getElementById('afterStatus').textContent = '✓ ' + img.naturalWidth + '×' + img.naturalHeight;
+        updatePreview();
+    };
+    img.onerror = function() {
+        document.getElementById('afterStatus').className = 'status empty';
+        document.getElementById('afterStatus').textContent = '✗ Failed';
+    };
+    img.src = url;
+}
+
+function updatePreviewHeight() {
+    document.getElementById('previewContainer').style.height = document.getElementById('scrollDuration').value + 'vh';
+}
+
+function updatePreview() {
+    var matte = document.getElementById('baMatte');
+    if (!beforeUrl || !afterUrl) {
+        matte.innerHTML = '<div style="padding:80px;text-align:center;color:#555;">Load both images</div>';
+        return;
+    }
+    
+    var divColor = document.getElementById('dividerColor').value;
+    var showLabels = document.getElementById('showLabels').checked;
+    var showHandle = document.getElementById('showHandle').checked;
+    var bLabel = document.getElementById('beforeLabel').value;
+    var aLabel = document.getElementById('afterLabel').value;
+    
+    var html = '<img class="ba-img ba-before" id="beforeImg" src="' + beforeUrl + '">';
+    html += '<img class="ba-img ba-after" id="afterImg" src="' + afterUrl + '">';
+    html += '<div class="ba-divider" id="divider" style="background:' + divColor + ';">';
+    if (showHandle) html += '<div class="ba-handle">‹›</div>';
+    html += '</div>';
+    if (showLabels) {
+        html += '<div class="ba-label ba-label-before">' + bLabel + '</div>';
+        html += '<div class="ba-label ba-label-after">' + aLabel + '</div>';
+    }
+    
+    matte.innerHTML = html;
+    sliderPos = parseInt(document.getElementById('startPos').value);
+    updateImageStyle();
+    updateSlider();
+    setupDrag();
+    updatePreviewHeight();
+}
+
+function updateImageStyle() {
+    var bImg = document.getElementById('beforeImg');
+    var aImg = document.getElementById('afterImg');
+    if (!bImg || !aImg) return;
+    
+    var bX = document.getElementById('beforeX').value;
+    var bY = document.getElementById('beforeY').value;
+    var bS = document.getElementById('beforeScale').value / 100;
+    var aX = document.getElementById('afterX').value;
+    var aY = document.getElementById('afterY').value;
+    var aS = document.getElementById('afterScale').value / 100;
+    
+    bImg.style.objectPosition = bX + '% ' + bY + '%';
+    bImg.style.transformOrigin = bX + '% ' + bY + '%';
+    bImg.style.transform = 'scale(' + bS + ')';
+    aImg.style.objectPosition = aX + '% ' + aY + '%';
+    aImg.style.transformOrigin = aX + '% ' + aY + '%';
+    aImg.style.transform = 'scale(' + aS + ')';
+}
+
+function updateSlider() {
+    var aImg = document.getElementById('afterImg');
+    var div = document.getElementById('divider');
+    if (!aImg || !div) return;
+    aImg.style.clipPath = 'inset(0 ' + (100 - sliderPos) + '% 0 0)';
+    div.style.left = 'calc(' + sliderPos + '% - 1.5px)';
+}
+
+function setupDrag() {
+    var div = document.getElementById('divider');
+    var matte = document.getElementById('baMatte');
+    if (!div) return;
+    
+    div.onmousedown = function(e) { e.preventDefault(); isDragging = true; };
+    div.ontouchstart = function(e) { e.preventDefault(); isDragging = true; };
+    
+    document.onmousemove = function(e) {
+        if (!isDragging) return;
+        var r = matte.getBoundingClientRect();
+        sliderPos = Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100));
+        updateSlider();
+    };
+    document.ontouchmove = function(e) {
+        if (!isDragging) return;
+        var r = matte.getBoundingClientRect();
+        sliderPos = Math.max(0, Math.min(100, ((e.touches[0].clientX - r.left) / r.width) * 100));
+        updateSlider();
+    };
+    document.onmouseup = function() { isDragging = false; };
+    document.ontouchend = function() { isDragging = false; };
+}
+
+function applyScrollEffect() {
+    var mode = document.getElementById('controlMode').value;
+    if (mode === 'drag') return;
+    if (isDragging && mode === 'both') return;
+    
+    var scroll = document.getElementById('previewScroll');
+    var container = document.getElementById('previewContainer');
+    var progress = container.offsetHeight > scroll.clientHeight ? 
+        scroll.scrollTop / (container.offsetHeight - scroll.clientHeight) : 0;
+    
+    document.getElementById('progressDisplay').textContent = Math.round(progress * 100) + '%';
+    var start = parseInt(document.getElementById('startPos').value);
+    sliderPos = start + (100 - start) * progress;
+    updateSlider();
+}
+
+document.getElementById('previewScroll').addEventListener('scroll', function() {
+    requestAnimationFrame(applyScrollEffect);
+}, { passive: true });
+
+function generateExport() {
+    if (!beforeUrl || !afterUrl) { alert('Load both images'); return; }
+    
+    var uid = 'ba' + Math.random().toString(36).substr(2, 6);
+    var mode = document.getElementById('controlMode').value;
+    var startPos = document.getElementById('startPos').value;
+    var divColor = document.getElementById('dividerColor').value;
+    var showLabels = document.getElementById('showLabels').checked;
+    var showHandle = document.getElementById('showHandle').checked;
+    var bLabel = document.getElementById('beforeLabel').value;
+    var aLabel = document.getElementById('afterLabel').value;
+    var aspect = document.getElementById('aspectRatio').value;
+    var maxW = document.getElementById('maxWidth').value;
+    var offset = document.getElementById('stickyOffset').value;
+    var mobileOffset = document.getElementById('mobileOffset').value;
+    var scrollMult = document.getElementById('scrollDuration').value / 100;
+    
+    var bX = document.getElementById('beforeX').value;
+    var bY = document.getElementById('beforeY').value;
+    var bS = document.getElementById('beforeScale').value / 100;
+    var aX = document.getElementById('afterX').value;
+    var aY = document.getElementById('afterY').value;
+    var aS = document.getElementById('afterScale').value / 100;
+    
+    var captionEnabled = document.getElementById('captionEnabled').checked;
+    var captionText = document.getElementById('captionText').value;
+    var captionCredit = document.getElementById('captionCredit').value;
+    
+    var ar = aspect.split(':');
+    var bStyle = 'object-position:' + bX + '% ' + bY + '%;transform-origin:' + bX + '% ' + bY + '%;transform:scale(' + bS + ')';
+    var aStyle = 'object-position:' + aX + '% ' + aY + '%;transform-origin:' + aX + '% ' + aY + '%;transform:scale(' + aS + ')';
+    
+    var handleHtml = showHandle ? '<div class="h">‹›</div>' : '';
+    var labelsHtml = showLabels ? '<div class="l lb">' + bLabel + '</div><div class="l la">' + aLabel + '</div>' : '';
+    
+    var captionHtml = '';
+    if (captionEnabled && (captionText || captionCredit)) {
+        captionHtml = '<div class="cap">';
+        if (captionText) captionHtml += '<div class="cap-t">' + captionText + '</div>';
+        if (captionCredit) captionHtml += '<div class="cap-c">' + captionCredit + '</div>';
+        captionHtml += '</div>';
+    }
+
+    var code = `<style>
+#${uid}{position:relative;background:#000}
+#${uid} .wrap{position:-webkit-sticky;position:sticky;top:${offset}px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+#${uid} .matte{position:relative;width:100%;max-width:${maxW};aspect-ratio:${ar[0]}/${ar[1]};overflow:hidden;background:#000}
+#${uid} .img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+#${uid} .b{z-index:1}
+#${uid} .a{z-index:2}
+#${uid} .d{position:absolute;top:0;bottom:0;width:3px;background:${divColor};z-index:10;cursor:ew-resize;user-select:none;touch-action:none}
+#${uid} .h{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:36px;height:36px;background:rgba(255,255,255,.95);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#555}
+#${uid} .l{position:absolute;bottom:15px;padding:6px 12px;background:rgba(0,0,0,.7);color:#fff;font-size:12px;font-weight:600;border-radius:4px;z-index:5}
+#${uid} .lb{left:15px}
+#${uid} .la{right:15px}
+#${uid} .cap{width:85%;max-width:700px;padding:12px 0;font-size:13px;line-height:1.5;text-align:left}
+#${uid} .cap-t{color:#ccc}
+#${uid} .cap-c{color:#888;font-size:11px;font-style:italic;margin-top:4px}
+@media(max-width:768px){
+#${uid} .wrap{top:${mobileOffset}px;padding:10px}
+#${uid} .l{font-size:10px;padding:4px 8px;bottom:10px}
+#${uid} .lb{left:8px}
+#${uid} .la{right:8px}
+#${uid} .h{width:30px;height:30px;font-size:10px}
+#${uid} .cap{width:95%;padding:10px 0;font-size:12px}
+}
 </style>
+<div id="${uid}">
+<div class="wrap">
+<div class="matte">
+<img class="img b" src="${beforeUrl}" style="${bStyle}">
+<img class="img a" src="${afterUrl}" style="${aStyle}">
+<div class="d">${handleHtml}</div>
+${labelsHtml}
+</div>
+${captionHtml}
+</div>
+</div>
 <script>
 (function(){
-  document.querySelectorAll('#disco-nav a[data-module]').forEach(function(a){
-    var mod = a.getAttribute('data-module');
-    var key = 'disco_' + mod;
-    var dot = a.querySelector('.dot');
-    if(!dot) return;
-    var hasContent = localStorage.getItem(key);
-    var fromPlanner = localStorage.getItem(key + '_from_planner');
-    if(hasContent){
-      if(fromPlanner === 'true'){
-        dot.className = 'dot orange';
-      } else {
-        dot.className = 'dot green';
-      }
+var w=document.getElementById("${uid}"),wrap=w.querySelector(".wrap"),m=w.querySelector(".matte"),a=w.querySelector(".a"),d=w.querySelector(".d");
+var pos=${startPos},drag=0,mode="${mode}",mult=${scrollMult},cur=0;
+function setH(){w.style.height=(wrap.offsetHeight*mult)+"px";}
+setH();window.addEventListener("resize",setH);
+function set(p){a.style.clipPath="inset(0 "+(100-p)+"% 0 0)";d.style.left="calc("+p+"% - 1.5px)";}
+set(pos);
+if(mode!=="scroll"){
+d.onmousedown=function(e){e.preventDefault();drag=1;};
+d.ontouchstart=function(e){e.preventDefault();drag=1;};
+document.onmousemove=function(e){if(drag){var r=m.getBoundingClientRect();pos=Math.max(0,Math.min(100,((e.clientX-r.left)/r.width)*100));set(pos);}};
+document.ontouchmove=function(e){if(drag){var r=m.getBoundingClientRect();pos=Math.max(0,Math.min(100,((e.touches[0].clientX-r.left)/r.width)*100));set(pos);}};
+document.onmouseup=function(){drag=0;};
+document.ontouchend=function(){drag=0;};
+}
+if(mode!=="drag"){
+var tar=0;
+function upd(){
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["${uid}"];
+if(extP!==undefined){tar=extP;}else{
+var r=w.getBoundingClientRect(),wh=window.innerHeight;
+var scrolled=Math.max(0,-r.top),range=w.offsetHeight-wh;
+if(range<=0)range=1;
+tar=Math.max(0,Math.min(1,scrolled/range));
+}
+cur+=(tar-cur)*0.12;
+if(!drag){pos=${startPos}+(100-${startPos})*cur;set(pos);}
+requestAnimationFrame(upd);
+}
+upd();
+}
+})();
+</scrip` + `t>`;
+
+    document.getElementById('exportCode').value = code;
+    document.getElementById('exportModal').classList.add('active');
+}
+
+function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
+function copyCode() {
+    var c = document.getElementById('exportCode');
+    if (!c.value) generateExport();
+    c.select();
+    document.execCommand('copy');
+    alert('Copied!');
+}
+function downloadCode() {
+    var c = document.getElementById('exportCode').value;
+    if (!c) { generateExport(); return; }
+    var filename = prompt('Save export as:', 'before-after');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([c], {type:'text/html'}));
+    a.download = safeName + '.html';
+    a.click();
+}
+function sendToStackBuilder() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate HTML first'); return; }
+    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
+    queue.push({ name: 'Before/After', html: code, timestamp: Date.now() });
+    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
+    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
+        window.location.href = 'stack-builder-clean.html';
     }
-  });
+}
+
+updatePreviewHeight();
+</script>
+<script>
+(function(){
   var path = location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('#disco-nav a').forEach(function(a){
     if(a.getAttribute('href') === path){
@@ -130,7 +591,6 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
   });
 })();
 </script>
-
 <script>
 // Persistence for before-after
 (function() {

@@ -84,52 +84,313 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 </head>
 <body>
 <div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-<a href="index.html" style="padding:8px 12px;color:#4a9eff;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">← Hub</a>
-<a href="before-after.html" data-module="before-after" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Before/After<span class="dot"></span></a>
-<a href="card-stack.html" data-module="card-stack" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Card Stack<span class="dot"></span></a>
-<a href="chart.html" data-module="chart" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chart<span class="dot"></span></a>
-<a href="collage.html" data-module="collage" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Collage<span class="dot"></span></a>
-<a href="doc-module.html" data-module="doc-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Doc Module<span class="dot"></span></a>
-<a href="gallery.html" data-module="gallery" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Gallery<span class="dot"></span></a>
-<a href="globe.html" data-module="globe" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Globe<span class="dot"></span></a>
-<a href="hotspots.html" data-module="hotspots" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Hotspots<span class="dot"></span></a>
-<a href="layers.html" data-module="layers" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Layers<span class="dot"></span></a>
-<a href="matte.html" data-module="matte" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Matte<span class="dot"></span></a>
-<a href="pull-quote.html" data-module="pull-quote" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Pull Quote<span class="dot"></span></a>
-<a href="single-image.html" data-module="single-image" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Single Image<span class="dot"></span></a>
-<a href="stat-counter.html" data-module="stat-counter" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Stat Counter<span class="dot"></span></a>
-<a href="timeline.html" data-module="timeline" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Timeline<span class="dot"></span></a>
-<a href="video.html" data-module="video" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Video<span class="dot"></span></a>
-<a href="zoom-detail.html" data-module="zoom-detail" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Zoom Detail<span class="dot"></span></a>
-<a href="text-scroll.html" data-module="text-scroll" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Text Scroll<span class="dot"></span></a>
-<a href="chapter-marker.html" data-module="chapter-marker" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chapter Marker<span class="dot"></span></a>
-<a href="key-facts.html" data-module="key-facts" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Key Facts<span class="dot"></span></a>
-<a href="body-module.html" data-module="body-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Body Module<span class="dot"></span></a>
-<a href="stack-builder-clean.html" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;">Stack Builder</a>
+<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
+<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
+<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
+<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
+<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
+<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
+<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
+<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
+<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
+<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
+<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
+<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
+<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
+<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
+<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
+<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
+<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
+<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
+<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
+<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
+<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
+<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
 </div>
-<style>
-#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}
-#disco-nav .dot{width:6px;height:6px;border-radius:50%;display:none;}
-#disco-nav .dot.orange{display:inline-block;background:#f90;}
-#disco-nav .dot.green{display:inline-block;background:#4a4;}
+<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
+
+<div class="app">
+    <div class="controls">
+        <h1>📅 Timeline</h1>
+        
+        <h2 onclick="toggleSection(this)">Events</h2>
+        <div class="section" id="eventsList"></div>
+        
+        <button onclick="addEvent()">+ Add Event</button>
+        
+        <h2 onclick="toggleSection(this)">Style</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Line Color <input type="color" id="lineColor" value="#333333" onchange="updatePreview()"></label>
+            </div>
+            <div class="control-group">
+                <label>Progress Color <input type="color" id="progressColor" value="#ff6666" onchange="updatePreview()"></label>
+            </div>
+            <div class="control-group">
+                <label>Background <input type="color" id="bgColor" value="#0a0a0a" onchange="updatePreview()"></label>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Export Settings</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Scroll Duration <span class="range-val" id="scrollDurVal">300%</span></label>
+                <input type="range" id="scrollDuration" min="150" max="800" value="300" oninput="document.getElementById('scrollDurVal').textContent=this.value+'%'; updatePreviewHeight();">
+            </div>
+            <button onclick="generateExport()">Generate HTML</button>
+            <button class="secondary" onclick="resetModule()" style="margin-top:8px;">↺ Reset</button>
+        </div>
+    </div>
+    
+    <div class="preview-area">
+        <div class="preview-header"><span>Preview (scroll to test)</span><span id="progressDisplay">0%</span></div>
+        <div class="preview-scroll" id="previewScroll">
+            <div class="preview-container" id="previewContainer">
+                <div class="preview-stage" id="previewStage">
+                    <div class="timeline-wrapper">
+                        <div class="timeline-line"></div>
+                        <div class="timeline-progress" id="timelineProgress"></div>
+                        <div id="timelineEvents"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header"><h2 style="margin:0;border:0;padding:0;background:none;">Export HTML</h2><button class="modal-close" onclick="closeModal()">×</button></div>
+        <textarea class="code" id="exportCode" readonly></textarea>
+        <div class="row" style="margin-top:12px;"><button onclick="copyCode()">📋 Copy</button><button onclick="downloadCode()" class="secondary">💾 Download</button><button onclick="sendToStackBuilder()" class="secondary">📚 Stack</button></div>
+    </div>
+</div>
+
+<script>
+var events = [
+    { date: '2020', title: 'First Event', text: 'Description of the first milestone.', image: '' },
+    { date: '2021', title: 'Second Event', text: 'Description of the second milestone.', image: '' },
+    { date: '2022', title: 'Third Event', text: 'Description of the third milestone.', image: '' }
+];
+
+function toggleSection(el) { el.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('collapsed'); }
+
+function convertGithubUrl(url) {
+    if (!url) return url;
+    if (url.includes('github.com') && url.includes('/blob/')) {
+        return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
+    }
+    return url;
+}
+
+function loadEventImage(i) {
+    var url = document.getElementById('eventImg' + i).value.trim();
+    if (!url) return;
+    url = convertGithubUrl(url);
+    var img = new Image();
+    img.onload = function() { events[i].image = url; updatePreview(); };
+    img.onerror = function() { alert('Failed to load image'); };
+    img.src = url;
+}
+
+function addEvent() {
+    events.push({ date: 'Date', title: 'New Event', text: 'Description', image: '' });
+    updateEventList();
+    updatePreview();
+}
+
+function removeEvent(i) {
+    events.splice(i, 1);
+    updateEventList();
+    updatePreview();
+}
+
+function updateEventList() {
+    var html = '';
+    for (var i = 0; i < events.length; i++) {
+        var e = events[i];
+        html += '<div class="event-card"><h3>Event ' + (i+1) + ' <button class="small danger" onclick="removeEvent(' + i + ')">×</button></h3>';
+        html += '<div class="control-group"><label>Date</label><input type="text" id="eventDate' + i + '" value="' + e.date + '" oninput="events[' + i + '].date=this.value; updatePreview();"></div>';
+        html += '<div class="control-group"><label>Title</label><input type="text" id="eventTitle' + i + '" value="' + e.title + '" oninput="events[' + i + '].title=this.value; updatePreview();"></div>';
+        html += '<div class="control-group"><label>Description</label><textarea id="eventText' + i + '" oninput="events[' + i + '].text=this.value; updatePreview();">' + e.text + '</textarea></div>';
+        html += '<div class="control-group"><label>Image (optional)</label><div class="row"><input type="url" id="eventImg' + i + '" value="' + (e.image || '') + '" placeholder="https://..."><button class="small" onclick="loadEventImage(' + i + ')">Load</button></div><div class="hint">Any direct image URL</div></div></div>';
+    }
+    document.getElementById('eventsList').innerHTML = html;
+}
+
+function updatePreviewHeight() {
+    document.getElementById('previewContainer').style.height = document.getElementById('scrollDuration').value + 'vh';
+}
+
+function updatePreview() {
+    var bgColor = document.getElementById('bgColor').value;
+    var lineColor = document.getElementById('lineColor').value;
+    var progressColor = document.getElementById('progressColor').value;
+    
+    document.getElementById('previewStage').style.background = bgColor;
+    document.querySelector('.timeline-line').style.background = lineColor;
+    document.getElementById('timelineProgress').style.background = progressColor;
+    
+    var html = '';
+    for (var i = 0; i < events.length; i++) {
+        var e = events[i];
+        var side = i % 2 === 0 ? 'left' : 'right';
+        var imgHtml = e.image ? '<img class="timeline-img" src="' + e.image + '" alt="">' : '';
+        html += '<div class="timeline-event ' + side + '" data-index="' + i + '">';
+        html += '<div class="timeline-content">' + imgHtml + '<div class="timeline-date" style="color:' + progressColor + '">' + e.date + '</div><div class="timeline-title">' + e.title + '</div><div class="timeline-text">' + e.text + '</div></div>';
+        html += '<div class="timeline-dot"></div>';
+        html += '</div>';
+    }
+    document.getElementById('timelineEvents').innerHTML = html;
+    updatePreviewHeight();
+    applyEffect();
+}
+
+function applyEffect() {
+    var scroll = document.getElementById('previewScroll');
+    var container = document.getElementById('previewContainer');
+    var scrollTop = scroll.scrollTop;
+    var maxScroll = container.offsetHeight - scroll.clientHeight;
+    var progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
+    document.getElementById('progressDisplay').textContent = Math.round(progress * 100) + '%';
+    
+    document.getElementById('timelineProgress').style.height = (progress * 100) + '%';
+    
+    var eventEls = document.querySelectorAll('.timeline-event');
+    var n = eventEls.length;
+    var lineColor = document.getElementById('lineColor').value;
+    var progressColor = document.getElementById('progressColor').value;
+    
+    for (var i = 0; i < n; i++) {
+        var threshold = (i / Math.max(1, n - 1)) * 0.8;
+        var isVisible = progress >= threshold;
+        eventEls[i].classList.toggle('visible', isVisible);
+        var dot = eventEls[i].querySelector('.timeline-dot');
+        if (dot) dot.style.background = isVisible ? progressColor : lineColor;
+    }
+}
+
+document.getElementById('previewScroll').addEventListener('scroll', function() {
+    requestAnimationFrame(applyEffect);
+}, { passive: true });
+
+function generateExport() {
+    if (events.length === 0) { alert('Add at least one event'); return; }
+    var uid = 'tltest';
+    var lineColor = document.getElementById('lineColor').value;
+    var progressColor = document.getElementById('progressColor').value;
+    var bgColor = document.getElementById('bgColor').value;
+    var scrollMult = document.getElementById('scrollDuration').value / 100;
+    
+    var eventsHtml = '';
+    for (var i = 0; i < events.length; i++) {
+        var e = events[i];
+        var side = i % 2 === 0 ? 'left' : 'right';
+        var imgHtml = e.image ? '<img class="tl-img" src="' + e.image + '" alt="">' : '';
+        eventsHtml += '<div class="tl-ev ' + side + '"><div class="tl-cnt">' + imgHtml + '<div class="tl-dt">' + e.date + '</div><div class="tl-tt">' + e.title + '</div><div class="tl-tx">' + e.text + '</div></div><div class="tl-dot"></div></div>\n';
+    }
+    
+    // New approach: check each event's position in viewport
+    var code = `<style>
+#${uid}{position:relative}
+#${uid} .tl-stage{position:-webkit-sticky;position:sticky;top:0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;background:${bgColor}}
+#${uid} .tl-wrap{position:relative;max-width:800px;width:100%;padding:20px 0}
+#${uid} .tl-line{position:absolute;left:50%;top:0;bottom:0;width:3px;background:${lineColor};transform:translateX(-50%)}
+#${uid} .tl-prog{position:absolute;left:50%;top:0;width:3px;background:${progressColor};transform:translateX(-50%);height:0%}
+#${uid} .tl-ev{position:relative;padding:20px 0;margin-bottom:40px;display:flex;opacity:0;transform:translateY(30px);transition:opacity 0.6s ease-out,transform 0.6s ease-out}
+#${uid} .tl-ev.left{flex-direction:row}
+#${uid} .tl-ev.right{flex-direction:row-reverse}
+#${uid} .tl-ev.on{opacity:1;transform:translateY(0)}
+#${uid} .tl-cnt{width:45%;padding:15px 20px;background:#1a1a1a;border-radius:8px;border:1px solid #333}
+#${uid} .tl-img{width:100%;max-height:200px;object-fit:cover;border-radius:4px;margin-bottom:10px}
+#${uid} .tl-dot{position:absolute;left:50%;top:30px;width:16px;height:16px;background:${lineColor};border:3px solid ${bgColor};border-radius:50%;transform:translateX(-50%);z-index:2;transition:background 0.3s}
+#${uid} .tl-ev.on .tl-dot{background:${progressColor}}
+#${uid} .tl-dt{font-size:12px;font-weight:600;color:${progressColor};margin-bottom:6px}
+#${uid} .tl-tt{font-size:16px;font-weight:600;margin-bottom:8px;color:#fff}
+#${uid} .tl-tx{font-size:13px;line-height:1.5;color:#aaa}
+@media(max-width:600px){#${uid} .tl-line,#${uid} .tl-prog{left:20px}#${uid} .tl-ev{flex-direction:row!important;padding-left:40px}#${uid} .tl-cnt{width:100%}#${uid} .tl-dot{left:20px}}
 </style>
+<div id="${uid}">
+<div class="tl-stage"><div class="tl-wrap">
+<div class="tl-line"></div><div class="tl-prog"></div>
+${eventsHtml}</div></div>
+</div>
 <script>
 (function(){
-  document.querySelectorAll('#disco-nav a[data-module]').forEach(function(a){
-    var mod = a.getAttribute('data-module');
-    var key = 'disco_' + mod;
-    var dot = a.querySelector('.dot');
-    if(!dot) return;
-    var hasContent = localStorage.getItem(key);
-    var fromPlanner = localStorage.getItem(key + '_from_planner');
-    if(hasContent){
-      if(fromPlanner === 'true'){
-        dot.className = 'dot orange';
-      } else {
-        dot.className = 'dot green';
-      }
+var w=document.getElementById("${uid}");
+var s=w.querySelector(".tl-stage");
+var prog=w.querySelector(".tl-prog");
+var evs=w.querySelectorAll(".tl-ev");
+var n=evs.length;
+var lineCol="${lineColor}";
+var progCol="${progressColor}";
+var scrollMult=${scrollMult};
+var curP=0;
+var revealed=[];
+for(var j=0;j<n;j++)revealed[j]=false;
+function setH(){w.style.height=(s.offsetHeight*scrollMult)+"px";}
+setH();window.addEventListener("resize",setH);
+function upd(){
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["${uid}"];
+var tarP;
+if(extP!==undefined){tarP=extP;}else{
+var r=w.getBoundingClientRect();
+var wh=window.innerHeight;
+var scrolled=Math.max(0,-r.top);
+var scrollRange=w.offsetHeight-wh;
+if(scrollRange<=0)scrollRange=1;
+tarP=Math.max(0,Math.min(1,scrolled/scrollRange));
+}
+curP+=(tarP-curP)*0.12;
+prog.style.height=(curP*100)+"%";
+for(var i=0;i<n;i++){
+var evRect=evs[i].getBoundingClientRect();
+if(evRect.top<wh*0.85){revealed[i]=true;}
+var vis=revealed[i];
+evs[i].classList.toggle("on",vis);
+var dot=evs[i].querySelector(".tl-dot");
+if(dot)dot.style.background=vis?progCol:lineCol;
+}
+requestAnimationFrame(upd);
+}
+upd();
+})();
+</scrip` + `t>`;
+    
+    document.getElementById('exportCode').value = code;
+    document.getElementById('exportModal').classList.add('active');
+}
+
+function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
+function copyCode() { document.getElementById('exportCode').select(); document.execCommand('copy'); alert('Copied!'); }
+function downloadCode() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { generateExport(); return; }
+    var filename = prompt('Save export as:', 'timeline');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    var blob = new Blob([code], { type: 'text/html' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = safeName + '.html';
+    a.click();
+}
+function sendToStackBuilder() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate HTML first'); return; }
+    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
+    queue.push({ name: 'Timeline', html: code, timestamp: Date.now() });
+    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
+    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
+        window.location.href = 'stack-builder-clean.html';
     }
-  });
+}
+
+updateEventList();
+updatePreview();
+</script>
+<script>
+(function(){
   var path = location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('#disco-nav a').forEach(function(a){
     if(a.getAttribute('href') === path){
@@ -139,7 +400,6 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
   });
 })();
 </script>
-
 <script>
 // Persistence for timeline
 (function() {

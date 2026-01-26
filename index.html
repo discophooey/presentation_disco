@@ -24,32 +24,35 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .hub-header button { padding: 8px 16px; background: #2a2a2a; border: none; color: #888; border-radius: 6px; cursor: pointer; font-size: 12px; }
 .hub-header button:hover { background: #333; color: #fff; }
 
-.landing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-.module-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 24px; text-decoration: none; transition: all 0.2s; display: block; }
-.module-card:hover { border-color: #4a9eff; transform: translateY(-3px); box-shadow: 0 10px 30px rgba(74, 158, 255, 0.1); }
-.module-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.module-card h3 { color: #4a9eff; font-size: 16px; margin: 0; }
-.module-card p { color: #888; font-size: 13px; line-height: 1.5; }
+.landing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; max-width: 1200px; margin: 0 auto; }
+.module-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 14px; text-decoration: none; transition: all 0.2s; display: block; position: relative; }
+.module-card:hover { border-color: #4a9eff; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(74, 158, 255, 0.1); }
+.module-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.module-card h3 { color: #4a9eff; font-size: 14px; margin: 0; }
+.module-card p { color: #888; font-size: 11px; line-height: 1.4; }
+.module-card .status-dot { position: absolute; top: 10px; right: 10px; width: 8px; height: 8px; border-radius: 50%; display: none; }
+.module-card .status-dot.orange { display: block; background: #f90; }
+.module-card .status-dot.green { display: block; background: #4a4; }
 
 .demo-btn { 
     background: #2a2a2a; 
     border: 1px solid #3a3a3a; 
     color: #888; 
-    font-size: 10px; 
-    padding: 4px 8px; 
+    font-size: 9px; 
+    padding: 3px 6px; 
     border-radius: 4px; 
     cursor: pointer; 
     font-weight: 500; 
     display: inline-flex; 
     align-items: center; 
-    gap: 4px;
+    gap: 3px;
     transition: all 0.2s;
     text-decoration: none;
 }
 .demo-btn:hover { background: #3a3a3a; color: #fff; border-color: #4a4a4a; }
-.demo-btn .play-icon { font-size: 8px; }
+.demo-btn .play-icon { font-size: 7px; }
 
-.section-title { max-width: 1200px; margin: 0 auto 20px; padding-top: 40px; border-top: 1px solid #2a2a2a; margin-top: 40px; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.section-title { max-width: 1200px; margin: 0 auto 12px; padding-top: 20px; border-top: 1px solid #2a2a2a; margin-top: 20px; color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
 .section-title:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
 
 /* Demo Modal */
@@ -120,112 +123,112 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     
     <div class="section-title">Modules</div>
     <div class="landing-grid">
-        <a href="before-after.html" class="module-card">
+        <a href="before-after.html" class="module-card" data-module="before-after"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Before/After</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('before-after-demo.html', 'Before/After')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Scroll-driven comparison slider between two images with drag and scroll modes.</p>
         </a>
-        <a href="card-stack.html" class="module-card">
+        <a href="card-stack.html" class="module-card" data-module="card-stack"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Card Stack</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('card-stack-demo.html', 'Card Stack')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Stacked cards that fly away on scroll, revealing content beneath.</p>
         </a>
-        <a href="chart.html" class="module-card">
+        <a href="chart.html" class="module-card" data-module="chart"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Chart</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('chart-demo.html', 'Chart')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Scroll-driven bar and pie charts with staggered animations.</p>
         </a>
-        <a href="collage.html" class="module-card">
+        <a href="collage.html" class="module-card" data-module="collage"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Collage</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('collage-demo.html', 'Collage')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Multi-image grid layout with per-image positioning controls.</p>
         </a>
-        <a href="doc-module.html" class="module-card">
+        <a href="doc-module.html" class="module-card" data-module="doc-module"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Doc Module</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('doc-module-demo.html', 'Doc Module')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Document image with animated highlight bars that reveal on scroll. Blend modes and aspect ratio controls.</p>
         </a>
-        <a href="gallery.html" class="module-card">
+        <a href="gallery.html" class="module-card" data-module="gallery"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Gallery</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('gallery-demo.html', 'Gallery')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Scroll-driven image sequence with transitions and text overlays.</p>
         </a>
-        <a href="globe.html" class="module-card">
+        <a href="globe.html" class="module-card" data-module="globe"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Globe</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('globe-demo.html', 'Globe')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>3D WebGL globe with animated location markers and connection lines.</p>
         </a>
-        <a href="hotspots.html" class="module-card">
+        <a href="hotspots.html" class="module-card" data-module="hotspots"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Hotspots</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('hotspots-demo.html', 'Hotspots')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Interactive annotation points that appear at scroll positions.</p>
         </a>
-        <a href="layers.html" class="module-card">
+        <a href="layers.html" class="module-card" data-module="layers"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Layers</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('layers-demo.html', 'Layers')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Multi-layer parallax compositions with various animation effects.</p>
         </a>
-        <a href="matte.html" class="module-card">
+        <a href="matte.html" class="module-card" data-module="matte"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Matte</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('matte-demo.html', 'Matte')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Text or image matte reveals with scroll-driven animation and background clipping.</p>
         </a>
-        <a href="pull-quote.html" class="module-card">
+        <a href="pull-quote.html" class="module-card" data-module="pull-quote"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Pull Quote</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('pull-quote-demo.html', 'Pull Quote')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Large-format text display with scroll-triggered reveal animations.</p>
         </a>
-        <a href="single-image.html" class="module-card">
+        <a href="single-image.html" class="module-card" data-module="single-image"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Single Image</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('single-image-demo.html', 'Single Image')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Hero images with scroll-driven effects like zoom, parallax, tilt.</p>
         </a>
-        <a href="stat-counter.html" class="module-card">
+        <a href="stat-counter.html" class="module-card" data-module="stat-counter"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Stat Counter</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('stat-counter-demo.html', 'Stat Counter')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Animated number counters that increment on scroll.</p>
         </a>
-        <a href="timeline.html" class="module-card">
+        <a href="timeline.html" class="module-card" data-module="timeline"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Timeline</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('timeline-demo.html', 'Timeline')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Vertical timeline with events that reveal on scroll.</p>
         </a>
-        <a href="video.html" class="module-card">
+        <a href="video.html" class="module-card" data-module="video"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Video</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('video-demo.html', 'Video')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Scroll-controlled video playback with text overlays.</p>
         </a>
-        <a href="zoom-detail.html" class="module-card">
+        <a href="zoom-detail.html" class="module-card" data-module="zoom-detail"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Zoom Detail</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('zoom-detail-demo.html', 'Zoom Detail')"><span class="play-icon">▶</span> demo</button>
@@ -236,28 +239,28 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     
     <div class="section-title">Text Modules</div>
     <div class="landing-grid">
-        <a href="text-scroll.html" class="module-card">
+        <a href="text-scroll.html" class="module-card" data-module="text-scroll"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Text Scroll</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('text-scroll-demo.html', 'Text Scroll')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Punchy statement blocks with crossfading background images or solid colors.</p>
         </a>
-        <a href="chapter-marker.html" class="module-card">
+        <a href="chapter-marker.html" class="module-card" data-module="chapter-marker"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Chapter Marker</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('chapter-marker-demo.html', 'Chapter Marker')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Full-viewport section dividers with animated text reveals including random letters effect.</p>
         </a>
-        <a href="key-facts.html" class="module-card">
+        <a href="key-facts.html" class="module-card" data-module="key-facts"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Key Facts Panel</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('key-facts-demo.html', 'Key Facts Panel')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Structured info box with staggered reveal animations and source attribution.</p>
         </a>
-        <a href="body-module.html" class="module-card">
+        <a href="body-module.html" class="module-card" data-module="body-module"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Body Module</h3>
                 <button class="demo-btn" onclick="event.preventDefault(); openDemo('body-module-demo.html', 'Body Module')"><span class="play-icon">▶</span> demo</button>
@@ -345,6 +348,23 @@ if (sessionStorage.getItem('disco_auth') === '1') {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('hubScreen').style.display = 'block';
 }
+
+// Update status dots for modules with saved content
+document.querySelectorAll('.module-card[data-module]').forEach(function(card) {
+    var mod = card.getAttribute('data-module');
+    var key = 'disco_' + mod;
+    var dot = card.querySelector('.status-dot');
+    if (!dot) return;
+    var hasContent = localStorage.getItem(key);
+    var fromPlanner = localStorage.getItem(key + '_from_planner');
+    if (hasContent) {
+        if (fromPlanner === 'true') {
+            dot.className = 'status-dot orange';
+        } else {
+            dot.className = 'status-dot green';
+        }
+    }
+});
 
 document.getElementById('passwordInput').focus();
 </script>

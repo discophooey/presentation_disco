@@ -83,52 +83,665 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 </head>
 <body>
 <div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-<a href="index.html" style="padding:8px 12px;color:#4a9eff;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">← Hub</a>
-<a href="before-after.html" data-module="before-after" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Before/After<span class="dot"></span></a>
-<a href="card-stack.html" data-module="card-stack" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Card Stack<span class="dot"></span></a>
-<a href="chart.html" data-module="chart" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chart<span class="dot"></span></a>
-<a href="collage.html" data-module="collage" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Collage<span class="dot"></span></a>
-<a href="doc-module.html" data-module="doc-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Doc Module<span class="dot"></span></a>
-<a href="gallery.html" data-module="gallery" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Gallery<span class="dot"></span></a>
-<a href="globe.html" data-module="globe" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Globe<span class="dot"></span></a>
-<a href="hotspots.html" data-module="hotspots" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Hotspots<span class="dot"></span></a>
-<a href="layers.html" data-module="layers" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Layers<span class="dot"></span></a>
-<a href="matte.html" data-module="matte" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Matte<span class="dot"></span></a>
-<a href="pull-quote.html" data-module="pull-quote" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Pull Quote<span class="dot"></span></a>
-<a href="single-image.html" data-module="single-image" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Single Image<span class="dot"></span></a>
-<a href="stat-counter.html" data-module="stat-counter" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Stat Counter<span class="dot"></span></a>
-<a href="timeline.html" data-module="timeline" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Timeline<span class="dot"></span></a>
-<a href="video.html" data-module="video" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Video<span class="dot"></span></a>
-<a href="zoom-detail.html" data-module="zoom-detail" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Zoom Detail<span class="dot"></span></a>
-<a href="text-scroll.html" data-module="text-scroll" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Text Scroll<span class="dot"></span></a>
-<a href="chapter-marker.html" data-module="chapter-marker" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Chapter Marker<span class="dot"></span></a>
-<a href="key-facts.html" data-module="key-facts" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Key Facts<span class="dot"></span></a>
-<a href="body-module.html" data-module="body-module" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;display:flex;align-items:center;gap:4px;">Body Module<span class="dot"></span></a>
-<a href="stack-builder-clean.html" style="padding:8px 10px;color:#888;text-decoration:none;font-size:10px;white-space:nowrap;">Stack Builder</a>
+<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
+<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
+<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
+<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
+<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
+<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
+<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
+<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
+<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
+<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
+<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
+<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
+<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
+<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
+<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
+<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
+<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
+<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
+<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
+<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
+<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
+<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
 </div>
-<style>
-#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}
-#disco-nav .dot{width:6px;height:6px;border-radius:50%;display:none;}
-#disco-nav .dot.orange{display:inline-block;background:#f90;}
-#disco-nav .dot.green{display:inline-block;background:#4a4;}
+<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
+
+<button class="toggle-btn" onclick="toggleControls()">☰</button>
+<div class="app" id="app">
+    <div class="controls">
+        <h1>🎭 Layers</h1>
+        
+        <h2 onclick="toggleSection(this)">Add Layer</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Image URL</label>
+                <input type="url" id="imageUrl" placeholder="https://...">
+                <button onclick="addLayer()" style="margin-top:8px;">Add Layer</button>
+                <div class="hint">Any direct image URL (CDN, S3, GitHub raw, your server)</div>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Effect</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Effect Type</label>
+                <select id="effectType" onchange="updatePreview();">
+                    <option value="parallax" selected>Parallax</option>
+                    <option value="cascade">Layer by Layer</option>
+                    <option value="zoomIn">Zoom In</option>
+                    <option value="zoomOut">Zoom Out</option>
+                    <option value="depthFloat">Depth Float</option>
+                    <option value="sway">Sway</option>
+                    <option value="drift">Drift</option>
+                    <option value="breathe">Breathe</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Effect Intensity <span class="range-val" id="intensityVal">50%</span></label>
+                <input type="range" id="intensity" min="0" max="100" value="50" oninput="document.getElementById('intensityVal').textContent=this.value+'%'; updatePreview();">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Settings</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Image Fit</label>
+                <select id="imageFit" onchange="updatePreview();">
+                    <option value="cover" selected>Cover (fill, crop)</option>
+                    <option value="contain">Contain (fit inside)</option>
+                    <option value="fill">Fill (stretch)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Background Color</label>
+                <input type="color" id="bgColor" value="#000000" onchange="updatePreview();">
+            </div>
+            <div class="control-group">
+                <label>Scroll Duration (vh) <span class="range-val" id="scrollDurVal">400</span></label>
+                <input type="range" id="scrollDuration" min="200" max="600" value="400" oninput="document.getElementById('scrollDurVal').textContent=this.value; updatePreviewHeight();">
+            </div>
+            <div class="control-group">
+                <label>Desktop Top Offset <span class="range-val" id="desktopOffsetVal">50px</span></label>
+                <input type="range" id="desktopOffset" min="0" max="150" value="50" oninput="document.getElementById('desktopOffsetVal').textContent=this.value+'px';">
+            </div>
+            <div class="control-group">
+                <label>Mobile Top Offset <span class="range-val" id="mobileOffsetVal">0px</span></label>
+                <input type="range" id="mobileOffset" min="0" max="300" value="0" oninput="document.getElementById('mobileOffsetVal').textContent=this.value+'px';">
+                <div class="hint">For mobile nav/banners</div>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Layers <span id="layerCount">(0)</span></h2>
+        <div class="section">
+            <div id="layerList"></div>
+            <div id="noLayers" class="hint" style="text-align:center;padding:20px;">Add images to create layers</div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Text Layers</h2>
+        <div class="section">
+            <div class="row">
+                <div class="control-group">
+                    <label>Font Size <span class="range-val" id="fontSizeVal">32px</span></label>
+                    <input type="range" id="fontSize" min="16" max="72" value="32" oninput="document.getElementById('fontSizeVal').textContent=this.value+'px'; updatePreview();">
+                </div>
+                <div class="control-group">
+                    <label>Color</label>
+                    <input type="color" id="textColor" value="#ffffff" onchange="updatePreview();">
+                </div>
+            </div>
+            <div class="control-group">
+                <label><input type="checkbox" id="textBgEnabled" checked onchange="updatePreview();"> Text Background</label>
+            </div>
+            <div class="row">
+                <div class="control-group">
+                    <label>BG Opacity <span class="range-val" id="bgOpVal">70%</span></label>
+                    <input type="range" id="bgOpacity" min="0" max="100" value="70" oninput="document.getElementById('bgOpVal').textContent=this.value+'%'; updatePreview();">
+                </div>
+                <div class="control-group">
+                    <label>BG Blur <span class="range-val" id="bgBlurVal">8px</span></label>
+                    <input type="range" id="bgBlur" min="0" max="30" value="8" oninput="document.getElementById('bgBlurVal').textContent=this.value+'px'; updatePreview();">
+                </div>
+            </div>
+            <button onclick="addTextLayer()" style="margin-bottom:12px;">➕ Add Text Layer</button>
+            <div id="textLayerList"></div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Export</h2>
+        <div class="section">
+            <button onclick="generateExport()">Generate HTML</button>
+            <button class="secondary" onclick="resetModule()" style="margin-top:8px;">↺ Reset</button>
+            <div style="display:flex;gap:8px;margin-top:8px;">
+                <button onclick="saveProject()" style="flex:1;background:#333;color:#fff;">💾 Save</button>
+                <button onclick="loadProject()" style="flex:1;background:#333;color:#fff;">📂 Load</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="preview-area">
+        <div class="preview-header">
+            <span>Preview (scroll to animate)</span>
+            <span id="progressDisplay">0%</span>
+        </div>
+        <div class="preview-scroll" id="previewScroll">
+            <div class="preview-container" id="previewContainer">
+                <div class="preview-stage" id="previewStage">
+                    <div class="preview-layers" id="previewLayers"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Export HTML</h3>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <textarea class="code" id="exportCode" readonly></textarea>
+        <div style="display:flex;gap:10px;margin-top:12px;">
+            <button onclick="copyCode()">📋 Copy</button>
+            <button class="secondary" onclick="downloadCode()">💾 Download</button>
+            <button class="secondary" onclick="sendToStackBuilder()">📚 Stack</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let layers = [];
+let textLayers = [];
+
+function toggleSection(el) { el.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('collapsed'); }
+
+function saveProject() {
+    var filename = prompt('Save project as:', 'layers-project');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    const project = {
+        layers: layers,
+        textLayers: textLayers,
+        settings: {
+            imageFit: document.getElementById('imageFit').value,
+            effect: document.getElementById('effectType').value,
+            intensity: document.getElementById('intensity').value,
+            bgColor: document.getElementById('bgColor').value,
+            scrollDuration: document.getElementById('scrollDuration').value,
+            desktopOffset: document.getElementById('desktopOffset').value,
+            mobileOffset: document.getElementById('mobileOffset').value,
+            fontSize: document.getElementById('fontSize').value,
+            textColor: document.getElementById('textColor').value,
+            textBgEnabled: document.getElementById('textBgEnabled').checked,
+            bgOpacity: document.getElementById('bgOpacity').value,
+            bgBlur: document.getElementById('bgBlur').value
+        }
+    };
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = safeName + '.json';
+    a.click();
+}
+
+function loadProject() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const project = JSON.parse(e.target.result);
+                layers = project.layers || [];
+                textLayers = project.textLayers || [];
+                if (project.settings) {
+                    document.getElementById('imageFit').value = project.settings.imageFit || 'cover';
+                    document.getElementById('effectType').value = project.settings.effect || 'parallax';
+                    document.getElementById('intensity').value = project.settings.intensity || 50;
+                    document.getElementById('bgColor').value = project.settings.bgColor || '#000000';
+                    document.getElementById('scrollDuration').value = project.settings.scrollDuration || 400;
+                    document.getElementById('desktopOffset').value = project.settings.desktopOffset || 50;
+                    document.getElementById('mobileOffset').value = project.settings.mobileOffset || 0;
+                    document.getElementById('fontSize').value = project.settings.fontSize || 32;
+                    document.getElementById('textColor').value = project.settings.textColor || '#ffffff';
+                    document.getElementById('textBgEnabled').checked = project.settings.textBgEnabled !== false;
+                    document.getElementById('bgOpacity').value = project.settings.bgOpacity || 70;
+                    document.getElementById('bgBlur').value = project.settings.bgBlur || 8;
+                    // Update display values
+                    document.getElementById('intensityVal').textContent = project.settings.intensity + '%';
+                    document.getElementById('scrollDurVal').textContent = project.settings.scrollDuration;
+                    document.getElementById('desktopOffsetVal').textContent = project.settings.desktopOffset + 'px';
+                    document.getElementById('mobileOffsetVal').textContent = project.settings.mobileOffset + 'px';
+                    document.getElementById('fontSizeVal').textContent = project.settings.fontSize + 'px';
+                    document.getElementById('bgOpVal').textContent = project.settings.bgOpacity + '%';
+                    document.getElementById('bgBlurVal').textContent = project.settings.bgBlur + 'px';
+                }
+                renderLayerList();
+                renderTextLayerList();
+                updatePreviewHeight();
+                updatePreview();
+                alert('Project loaded!');
+            } catch (err) {
+                alert('Error loading project: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+function toggleControls() { document.getElementById('app').classList.toggle('controls-hidden'); }
+
+function toggleLayerBody(id) {
+    const body = document.getElementById('layer-body-' + id);
+    if (body) body.classList.toggle('collapsed');
+}
+
+function updatePreviewHeight() {
+    document.getElementById('previewContainer').style.height = (parseInt(document.getElementById('scrollDuration').value) || 400) + 'vh';
+}
+
+function addLayer() {
+    let url = document.getElementById('imageUrl').value.trim();
+    if (!url) { alert('Enter image URL'); return; }
+    if (url.includes('github.com') && url.includes('/blob/')) {
+        url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
+    }
+    
+    const img = new Image();
+    img.onload = function() {
+        layers.push({
+            id: Date.now(),
+            url: url,
+            depth: layers.length === 0 ? 0 : (layers.length / (layers.length + 1)),
+            opacity: 1,
+            fadeIn: 0,
+            fadeOut: 100,
+            blend: 'normal'
+        });
+        document.getElementById('imageUrl').value = '';
+        renderLayerList();
+        updatePreview();
+    };
+    img.onerror = function() { alert('Failed to load image'); };
+    img.src = url;
+}
+
+function removeLayer(id) {
+    layers = layers.filter(l => l.id !== id);
+    renderLayerList();
+    updatePreview();
+}
+
+function moveLayer(id, dir) {
+    const idx = layers.findIndex(l => l.id === id);
+    if (idx < 0) return;
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= layers.length) return;
+    [layers[idx], layers[newIdx]] = [layers[newIdx], layers[idx]];
+    renderLayerList();
+    updatePreview();
+}
+
+function updateLayer(id, prop, value) {
+    const layer = layers.find(l => l.id === id);
+    if (layer) {
+        layer[prop] = (prop === 'blend') ? value : parseFloat(value);
+        updatePreview();
+    }
+}
+
+function renderLayerList() {
+    document.getElementById('layerCount').textContent = '(' + layers.length + ')';
+    document.getElementById('noLayers').style.display = layers.length ? 'none' : 'block';
+    
+    const blendOptions = '<option value="normal">Normal</option><option value="multiply">Multiply</option><option value="screen">Screen</option><option value="overlay">Overlay</option><option value="darken">Darken</option><option value="lighten">Lighten</option><option value="color-dodge">Color Dodge</option><option value="color-burn">Color Burn</option><option value="hard-light">Hard Light</option><option value="soft-light">Soft Light</option><option value="difference">Difference</option><option value="exclusion">Exclusion</option><option value="hue">Hue</option><option value="saturation">Saturation</option><option value="color">Color</option><option value="luminosity">Luminosity</option>';
+    
+    let html = '';
+    layers.forEach((l, i) => {
+        html += '<div class="layer-item">';
+        html += '<div class="layer-header" onclick="toggleLayerBody(' + l.id + ')">';
+        html += '<span class="layer-title">Layer ' + (i + 1) + '</span>';
+        html += '<div class="layer-btns" onclick="event.stopPropagation()">';
+        html += '<button class="small secondary" onclick="moveLayer(' + l.id + ',-1)" ' + (i === 0 ? 'disabled' : '') + '>↑</button>';
+        html += '<button class="small secondary" onclick="moveLayer(' + l.id + ',1)" ' + (i === layers.length - 1 ? 'disabled' : '') + '>↓</button>';
+        html += '<button class="small danger" onclick="removeLayer(' + l.id + ')">✕</button>';
+        html += '</div></div>';
+        html += '<div class="layer-body" id="layer-body-' + l.id + '">';
+        html += '<img class="layer-thumb" src="' + l.url + '">';
+        html += '<div class="control-group"><label>Blend Mode</label><select onchange="updateLayer(' + l.id + ',\'blend\',this.value)">' + blendOptions.replace('value="' + l.blend + '"', 'value="' + l.blend + '" selected') + '</select></div>';
+        html += '<div class="layer-grid">';
+        html += '<div class="control-group"><label>Depth <span class="range-val">' + (l.depth * 100).toFixed(0) + '%</span></label>';
+        html += '<input type="range" min="0" max="100" value="' + (l.depth * 100) + '" oninput="updateLayer(' + l.id + ',\'depth\',this.value/100); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
+        html += '<div class="control-group"><label>Opacity <span class="range-val">' + (l.opacity * 100).toFixed(0) + '%</span></label>';
+        html += '<input type="range" min="0" max="100" value="' + (l.opacity * 100) + '" oninput="updateLayer(' + l.id + ',\'opacity\',this.value/100); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
+        html += '<div class="control-group"><label>Fade In <span class="range-val">' + l.fadeIn.toFixed(0) + '%</span></label>';
+        html += '<input type="range" min="0" max="100" value="' + l.fadeIn + '" oninput="updateLayer(' + l.id + ',\'fadeIn\',this.value); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
+        html += '<div class="control-group"><label>Fade Out <span class="range-val">' + l.fadeOut.toFixed(0) + '%</span></label>';
+        html += '<input type="range" min="0" max="100" value="' + l.fadeOut + '" oninput="updateLayer(' + l.id + ',\'fadeOut\',this.value); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
+        html += '</div></div></div>';
+    });
+    document.getElementById('layerList').innerHTML = html;
+}
+
+function addTextLayer() {
+    const count = textLayers.length;
+    const fadeIn = 5 + (count * 20);
+    const fadeOut = 25 + (count * 20);
+    textLayers.push({
+        id: Date.now(),
+        text: 'Your Text',
+        x: 50,
+        y: 50,
+        fadeIn: fadeIn,
+        fadeOut: fadeOut
+    });
+    renderTextLayerList();
+    updatePreview();
+}
+
+function removeTextLayer(id) {
+    textLayers = textLayers.filter(t => t.id !== id);
+    renderTextLayerList();
+    updatePreview();
+}
+
+function updateTextLayer(id, prop, value) {
+    const layer = textLayers.find(t => t.id === id);
+    if (layer) {
+        layer[prop] = prop === 'text' ? value : parseFloat(value);
+        updatePreview();
+    }
+}
+
+function renderTextLayerList() {
+    let html = '';
+    textLayers.forEach((t, i) => {
+        html += '<div class="layer-item">';
+        html += '<div class="layer-header" onclick="toggleLayerBody(\'txt-' + t.id + '\')">';
+        html += '<span class="layer-title">Text ' + (i+1) + ': ' + t.text.substring(0,15) + '</span>';
+        html += '<button class="small danger" onclick="event.stopPropagation(); removeTextLayer(' + t.id + ')">✕</button>';
+        html += '</div>';
+        html += '<div class="layer-body" id="layer-body-txt-' + t.id + '">';
+        html += '<div class="control-group"><label>Text</label><input type="text" value="' + t.text + '" onchange="updateTextLayer(' + t.id + ',\'text\',this.value)"></div>';
+        html += '<div class="layer-grid">';
+        html += '<div class="control-group"><label>X <span class="range-val">' + t.x + '%</span></label><input type="range" min="0" max="100" value="' + t.x + '" oninput="updateTextLayer(' + t.id + ',\'x\',this.value); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
+        html += '<div class="control-group"><label>Y <span class="range-val">' + t.y + '%</span></label><input type="range" min="0" max="100" value="' + t.y + '" oninput="updateTextLayer(' + t.id + ',\'y\',this.value); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
+        html += '<div class="control-group"><label>In <span class="range-val">' + t.fadeIn + '%</span></label><input type="range" min="0" max="100" value="' + t.fadeIn + '" oninput="updateTextLayer(' + t.id + ',\'fadeIn\',this.value); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
+        html += '<div class="control-group"><label>Out <span class="range-val">' + t.fadeOut + '%</span></label><input type="range" min="0" max="100" value="' + t.fadeOut + '" oninput="updateTextLayer(' + t.id + ',\'fadeOut\',this.value); this.previousElementSibling.querySelector(\'.range-val\').textContent=this.value+\'%\'"></div>';
+        html += '</div></div></div>';
+    });
+    document.getElementById('textLayerList').innerHTML = html;
+}
+
+function updatePreview() {
+    const stage = document.getElementById('previewStage');
+    const container = document.getElementById('previewLayers');
+    const bgColor = document.getElementById('bgColor').value;
+    const imageFit = document.getElementById('imageFit').value;
+    stage.style.background = bgColor;
+    
+    const fontSize = document.getElementById('fontSize').value;
+    const color = document.getElementById('textColor').value;
+    const hasBg = document.getElementById('textBgEnabled').checked;
+    const bgOp = document.getElementById('bgOpacity').value / 100;
+    const bgBlur = document.getElementById('bgBlur').value;
+    
+    let html = '';
+    // Image layers
+    layers.forEach((l, i) => {
+        html += '<div class="preview-layer" data-depth="' + l.depth + '" data-opacity="' + l.opacity + '" data-fadein="' + l.fadeIn + '" data-fadeout="' + l.fadeOut + '" data-blend="' + l.blend + '" style="background-image:url(' + l.url + ');background-size:' + imageFit + ';z-index:' + i + ';mix-blend-mode:' + l.blend + '"></div>';
+    });
+    // Text layers on top
+    textLayers.forEach((t, i) => {
+        let style = 'position:absolute;left:' + t.x + '%;top:' + t.y + '%;transform:translate(-50%,-50%);';
+        style += 'font-size:' + fontSize + 'px;color:' + color + ';font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);';
+        style += 'pointer-events:none;white-space:nowrap;opacity:0;transition:opacity 0.3s;z-index:' + (layers.length + i) + ';';
+        if (hasBg) style += 'background:rgba(0,0,0,' + bgOp + ');padding:10px 16px;border-radius:6px;backdrop-filter:blur(' + bgBlur + 'px);';
+        html += '<div class="preview-text" data-fadein="' + t.fadeIn + '" data-fadeout="' + t.fadeOut + '" style="' + style + '">' + t.text + '</div>';
+    });
+    container.innerHTML = html;
+    applyScroll();
+}
+
+function applyScroll() {
+    const scroll = document.getElementById('previewScroll');
+    const container = document.getElementById('previewContainer');
+    const progressEl = document.getElementById('progressDisplay');
+    const effect = document.getElementById('effectType').value;
+    const intensity = parseInt(document.getElementById('intensity').value) / 100;
+    
+    const scrollTop = scroll.scrollTop;
+    const maxScroll = container.offsetHeight - scroll.clientHeight;
+    const progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
+    progressEl.textContent = Math.round(progress * 100) + '%';
+    
+    document.querySelectorAll('.preview-layer').forEach((el, i) => {
+        const depth = parseFloat(el.dataset.depth);
+        const baseOpacity = parseFloat(el.dataset.opacity);
+        const fadeIn = parseFloat(el.dataset.fadein) / 100;
+        const fadeOut = parseFloat(el.dataset.fadeout) / 100;
+        const pct = progress;
+        
+        let opacity = baseOpacity;
+        let transform = '';
+        
+        // Fade logic
+        if (pct < fadeIn) {
+            opacity = 0;
+        } else if (pct > fadeOut) {
+            opacity = 0;
+        }
+        
+        // Effect logic
+        if (effect === 'parallax') {
+            const offset = (pct - 0.5) * 100 * depth * intensity;
+            transform = 'translateY(' + offset + 'px) scale(' + (1 + depth * 0.1 * intensity) + ')';
+        } else if (effect === 'cascade') {
+            // Cascade handled by fade timing
+        } else if (effect === 'zoomIn') {
+            const scale = 1 + pct * 0.5 * intensity;
+            transform = 'scale(' + scale + ')';
+        } else if (effect === 'zoomOut') {
+            const scale = 1.5 - pct * 0.5 * intensity;
+            transform = 'scale(' + scale + ')';
+        } else if (effect === 'depthFloat') {
+            // Gentle vertical float - deeper layers move less
+            const floatAmount = (pct - 0.5) * 60 * (1 - depth * 0.7) * intensity;
+            transform = 'translateY(' + floatAmount + 'px)';
+        } else if (effect === 'sway') {
+            // Horizontal sway - deeper layers move less
+            const swayAmount = (pct - 0.5) * 80 * (1 - depth * 0.7) * intensity;
+            transform = 'translateX(' + swayAmount + 'px)';
+        } else if (effect === 'drift') {
+            // Diagonal drift - combines X and Y
+            const driftX = (pct - 0.5) * 50 * (1 - depth * 0.6) * intensity;
+            const driftY = (pct - 0.5) * 40 * (1 - depth * 0.8) * intensity;
+            transform = 'translate(' + driftX + 'px, ' + driftY + 'px)';
+        } else if (effect === 'breathe') {
+            // Gentle scale pulse offset by depth
+            const breathePhase = (pct * 4 + depth * 2) * Math.PI;
+            const breatheScale = 1 + Math.sin(breathePhase) * 0.03 * intensity;
+            transform = 'scale(' + breatheScale + ')';
+        }
+        
+        el.style.opacity = opacity;
+        el.style.transform = transform;
+        el.classList.toggle('visible', opacity > 0);
+    });
+    
+    // Text layers
+    const pct = progress * 100;
+    document.querySelectorAll('.preview-text').forEach(el => {
+        const fadeIn = parseFloat(el.dataset.fadein);
+        const fadeOut = parseFloat(el.dataset.fadeout);
+        el.style.opacity = (pct >= fadeIn && pct <= fadeOut) ? 1 : 0;
+    });
+}
+
+let rafId = null;
+function onPreviewScroll() {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(applyScroll);
+}
+document.getElementById('previewScroll').addEventListener('scroll', onPreviewScroll, { passive: true });
+
+function generateExport() {
+    if (layers.length === 0 && textLayers.length === 0) { alert('Add layers first'); return; }
+    
+    const uid = 'ly' + Math.random().toString(36).substr(2, 9);
+    const effect = document.getElementById('effectType').value;
+    const intensity = parseInt(document.getElementById('intensity').value) / 100;
+    const bgColor = document.getElementById('bgColor').value;
+    const imageFit = document.getElementById('imageFit').value;
+    const dur = document.getElementById('scrollDuration').value;
+    const desktopOffset = document.getElementById('desktopOffset').value;
+    const mobileOffset = document.getElementById('mobileOffset').value;
+    const fontSize = document.getElementById('fontSize').value;
+    const textColor = document.getElementById('textColor').value;
+    const hasBg = document.getElementById('textBgEnabled').checked;
+    const bgOp = document.getElementById('bgOpacity').value / 100;
+    const bgBlur = document.getElementById('bgBlur').value;
+    const scrollMult = dur / 100;
+    
+    const bgStyle = hasBg ? 'background:rgba(0,0,0,' + bgOp + ');padding:10px 16px;border-radius:6px;backdrop-filter:blur(' + bgBlur + 'px);-webkit-backdrop-filter:blur(' + bgBlur + 'px);' : '';
+    
+    let layerHtml = '';
+    let layerData = [];
+    layers.forEach((l, i) => {
+        layerData.push({ depth: l.depth, opacity: l.opacity, fadeIn: l.fadeIn, fadeOut: l.fadeOut, blend: l.blend });
+        layerHtml += '<div class="ly-layer" style="background-image:url(' + l.url + ');z-index:' + i + ';mix-blend-mode:' + l.blend + '"></div>\n';
+    });
+    
+    let txtHtml = '';
+    let txtData = [];
+    textLayers.forEach((t, i) => {
+        txtData.push({ fadeIn: t.fadeIn, fadeOut: t.fadeOut });
+        txtHtml += '<div class="ly-txt" style="left:' + t.x + '%;top:' + t.y + '%;z-index:' + (layers.length + i) + '">' + t.text + '</div>\n';
+    });
+    
+    const code = `<style>
+#${uid}.ly-wrap{position:relative}
+#${uid} .ly-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;height:100vh;background:${bgColor};overflow:hidden}
+#${uid} .ly-layers{position:relative;width:100%;height:100%;overflow:hidden}
+#${uid} .ly-layer{position:absolute;inset:-10%;width:120%;height:120%;background-size:${imageFit};background-position:center;opacity:0;transition:opacity 0.3s;will-change:transform,opacity}
+#${uid} .ly-txt{position:absolute;transform:translate(-50%,-50%);font-size:${fontSize}px;color:${textColor};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;max-width:90%}
+#${uid} .ly-txt.on{opacity:1}
+@media(max-width:768px){
+#${uid} .ly-stage{top:${mobileOffset}px;height:calc(100vh - ${mobileOffset}px)}
+#${uid} .ly-layer{inset:-15%;width:130%;height:130%}
+#${uid} .ly-txt{font-size:clamp(14px,4vw,${Math.round(fontSize * 0.7)}px)!important;white-space:normal;word-wrap:break-word;text-align:center!important;max-width:90%!important;padding:10px 14px;left:50%!important}
+}
 </style>
+<div id="${uid}" class="ly-wrap">
+<div class="ly-stage">
+<div class="ly-layers">
+${layerHtml}${txtHtml}</div>
+</div>
+</div>
 <script>
 (function(){
-  document.querySelectorAll('#disco-nav a[data-module]').forEach(function(a){
-    var mod = a.getAttribute('data-module');
-    var key = 'disco_' + mod;
-    var dot = a.querySelector('.dot');
-    if(!dot) return;
-    var hasContent = localStorage.getItem(key);
-    var fromPlanner = localStorage.getItem(key + '_from_planner');
-    if(hasContent){
-      if(fromPlanner === 'true'){
-        dot.className = 'dot orange';
-      } else {
-        dot.className = 'dot green';
-      }
+var wrap=document.getElementById("${uid}");
+var layers=wrap.querySelectorAll(".ly-layer");
+var txts=wrap.querySelectorAll(".ly-txt");
+var data=${JSON.stringify(layerData)};
+var txtData=${JSON.stringify(txtData)};
+var effect="${effect}",intensity=${intensity};
+var curP=0,tarP=0,raf=null;
+var scrollMult=${scrollMult};
+function setHeight(){
+var stage=wrap.querySelector(".ly-stage");
+wrap.style.height=(stage.offsetHeight*scrollMult)+"px";
+}
+setHeight();window.addEventListener("resize",setHeight);
+function lerp(a,b,t){return a+(b-a)*t;}
+function upd(){
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["${uid}"];
+if(extP!==undefined){tarP=extP;}else{
+var r=wrap.getBoundingClientRect();
+var wh=window.innerHeight;
+var scrolled=Math.max(0,-r.top);
+var scrollRange=wrap.offsetHeight-wh;
+if(scrollRange<=0)scrollRange=1;
+tarP=Math.max(0,Math.min(1,scrolled/scrollRange));
+}
+curP=lerp(curP,tarP,0.12);
+if(Math.abs(curP-tarP)>0.001){raf=requestAnimationFrame(upd);}
+var p=curP;
+for(var i=0;i<layers.length;i++){
+var el=layers[i],d=data[i];
+var op=d.opacity;
+if(p*100<d.fadeIn||p*100>d.fadeOut)op=0;
+var tf="";
+if(effect==="parallax"){
+var offset=(p-0.5)*100*d.depth*intensity;
+tf="translateY("+offset+"px) scale("+(1+d.depth*0.1*intensity)+")";
+}else if(effect==="zoomIn"){
+tf="scale("+(1+p*0.5*intensity)+")";
+}else if(effect==="zoomOut"){
+tf="scale("+(1.5-p*0.5*intensity)+")";
+}else if(effect==="depthFloat"){
+var floatAmt=(p-0.5)*60*(1-d.depth*0.7)*intensity;
+tf="translateY("+floatAmt+"px)";
+}else if(effect==="sway"){
+var swayAmt=(p-0.5)*80*(1-d.depth*0.7)*intensity;
+tf="translateX("+swayAmt+"px)";
+}else if(effect==="drift"){
+var driftX=(p-0.5)*50*(1-d.depth*0.6)*intensity;
+var driftY=(p-0.5)*40*(1-d.depth*0.8)*intensity;
+tf="translate("+driftX+"px,"+driftY+"px)";
+}else if(effect==="breathe"){
+var breathePhase=(p*4+d.depth*2)*Math.PI;
+var breatheScale=1+Math.sin(breathePhase)*0.03*intensity;
+tf="scale("+breatheScale+")";
+}
+el.style.opacity=op;
+el.style.transform=tf;
+}
+var pct=p*100;
+for(var j=0;j<txts.length;j++){
+var t=txts[j],td=txtData[j];
+txts[j].classList.toggle("on",pct>=td.fadeIn&&pct<=td.fadeOut);
+}
+}
+function onScroll(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(upd);}
+window.addEventListener("scroll",onScroll,{passive:true});
+upd();
+})();
+<\/script>`;
+    
+    document.getElementById('exportCode').value = code;
+    document.getElementById('exportModal').classList.add('active');
+}
+
+function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
+function copyCode() { document.getElementById('exportCode').select(); document.execCommand('copy'); alert('Copied!'); }
+function downloadCode() {
+    var filename = prompt('Save export as:', 'layers');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    const blob = new Blob([document.getElementById('exportCode').value], {type:'text/html'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = safeName + '.html'; a.click();
+}
+function sendToStackBuilder() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate HTML first'); return; }
+    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
+    queue.push({ name: 'Layers', html: code, timestamp: Date.now() });
+    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
+    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
+        window.location.href = 'stack-builder-clean.html';
     }
-  });
+}
+
+updatePreviewHeight();
+</script>
+<script>
+(function(){
   var path = location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('#disco-nav a').forEach(function(a){
     if(a.getAttribute('href') === path){
@@ -138,7 +751,6 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
   });
 })();
 </script>
-
 <script>
 // Persistence for layers
 (function() {
