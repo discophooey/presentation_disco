@@ -169,6 +169,7 @@ button.danger:hover { background: #e74c3c; }
                         <select id="factExpandType" onchange="updateFact();toggleExpandType()">
                             <option value="text">Text (detailed content)</option>
                             <option value="image">Image</option>
+                            <option value="both">Text + Image</option>
                         </select>
                     </div>
                     <div id="expandTextControls">
@@ -197,6 +198,10 @@ button.danger:hover { background: #e74c3c; }
                         <div class="control-group">
                             <label>Image Caption</label>
                             <input type="text" id="factImageCaption" oninput="updateFact()" placeholder="Caption text...">
+                        </div>
+                        <div class="control-group">
+                            <label>Caption Credit</label>
+                            <input type="text" id="factImageCredit" oninput="updateFact()" placeholder="Photo by...">
                         </div>
                     </div>
                 </div>
@@ -356,7 +361,8 @@ function addFact() {
         detailText: '',
         imageUrl: '',
         imageFit: 'contain',
-        imageCaption: ''
+        imageCaption: '',
+        imageCredit: ''
     });
     selectedFactIndex = facts.length - 1;
     renderFactsList();
@@ -386,6 +392,7 @@ function loadFactEditor() {
     document.getElementById('factImageUrl').value = f.imageUrl || '';
     document.getElementById('factImageFit').value = f.imageFit || 'contain';
     document.getElementById('factImageCaption').value = f.imageCaption || '';
+    document.getElementById('factImageCredit').value = f.imageCredit || '';
     document.getElementById('expandControls').style.display = f.expandable ? 'block' : 'none';
     toggleExpandType();
     // Show image preview if URL exists
@@ -408,6 +415,7 @@ function updateFact() {
     f.imageUrl = document.getElementById('factImageUrl').value;
     f.imageFit = document.getElementById('factImageFit').value;
     f.imageCaption = document.getElementById('factImageCaption').value;
+    f.imageCredit = document.getElementById('factImageCredit').value;
     document.getElementById('expandControls').style.display = f.expandable ? 'block' : 'none';
     renderFactsList();
     updatePreview();
@@ -416,8 +424,8 @@ function updateFact() {
 
 function toggleExpandType() {
     var type = document.getElementById('factExpandType').value;
-    document.getElementById('expandTextControls').style.display = type === 'text' ? 'block' : 'none';
-    document.getElementById('expandImageControls').style.display = type === 'image' ? 'block' : 'none';
+    document.getElementById('expandTextControls').style.display = (type === 'text' || type === 'both') ? 'block' : 'none';
+    document.getElementById('expandImageControls').style.display = (type === 'image' || type === 'both') ? 'block' : 'none';
 }
 
 function loadFactImage() {
@@ -583,7 +591,8 @@ function generateExport() {
                 x: (f.detailText || f.text),
                 i: f.imageUrl || '',
                 f: f.imageFit || 'contain',
-                c: f.imageCaption || ''
+                c: f.imageCaption || '',
+                r: f.imageCredit || ''
             });
         } else {
             factsData.push(null);
@@ -595,33 +604,43 @@ function generateExport() {
     
     var lightboxCss = hasExpandable ? 
         '#' + uid + ' .kf-expand{cursor:pointer}#' + uid + ' .kf-expand:hover{background:rgba(74,158,255,.1);margin:0 -10px;padding:16px 10px;border-radius:6px}#' + uid + ' .kf-hint{margin-left:auto;color:' + accentColor + ';font-size:12px;opacity:.7}\n' +
-        '#' + uid + '-lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9999;align-items:center;justify-content:center;flex-direction:column}#' + uid + '-lb.on{display:flex}\n' +
-        '#' + uid + '-lb .lb-close{position:absolute;top:20px;right:20px;background:#333;border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:20px}#' + uid + '-lb .lb-close:hover{background:' + accentColor + '}\n' +
-        '#' + uid + '-lb .lb-txt{max-width:800px;width:90%;color:#e0e0e0;font-size:16px;line-height:1.8;max-height:80vh;overflow-y:auto;padding:20px}\n' +
-        '#' + uid + '-lb .lb-img{max-width:90%;max-height:70vh;border-radius:8px}#' + uid + '-lb .lb-img.fit-cover{object-fit:cover;width:90%;height:70vh}#' + uid + '-lb .lb-img.fit-fill{object-fit:fill;width:90%;height:70vh}\n' +
-        '#' + uid + '-lb .lb-cap{color:#888;font-size:14px;margin-top:16px;max-width:600px;text-align:center}\n' : '';
-    
-    var lightboxHtml = hasExpandable ? 
-        '<div id="' + uid + '-lb" onclick="this.classList.remove(\'on\')">\n' +
-        '<button class="lb-close" onclick="event.stopPropagation();this.parentNode.classList.remove(\'on\')">✕</button>\n' +
-        '<div id="' + uid + '-lbc" onclick="event.stopPropagation()"></div>\n' +
-        '</div>\n' : '';
+        '.kf-lb-' + uid + '{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:999999;align-items:center;justify-content:center;flex-direction:column}\n' +
+        '.kf-lb-' + uid + '.on{display:flex}\n' +
+        '.kf-lb-' + uid + ' .lb-close{position:absolute;top:20px;right:20px;background:#333;border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:20px}\n' +
+        '.kf-lb-' + uid + ' .lb-close:hover{background:' + accentColor + '}\n' +
+        '.kf-lb-' + uid + ' .lb-txt{max-width:800px;width:90%;color:#e0e0e0;font-size:16px;line-height:1.8;max-height:80vh;overflow-y:auto;padding:20px}\n' +
+        '.kf-lb-' + uid + ' .lb-img{max-width:90%;max-height:70vh;border-radius:8px}\n' +
+        '.kf-lb-' + uid + ' .lb-img.fit-cover{object-fit:cover;width:90%;height:70vh}\n' +
+        '.kf-lb-' + uid + ' .lb-img.fit-fill{object-fit:fill;width:90%;height:70vh}\n' +
+        '.kf-lb-' + uid + ' .lb-cap{color:#ccc;font-size:14px;margin-top:16px;max-width:600px;text-align:center}\n' +
+        '.kf-lb-' + uid + ' .lb-credit{color:#666;font-size:12px;margin-top:4px;text-align:center}\n' +
+        '.kf-lb-' + uid + ' .lb-combo{max-width:800px;width:90%;max-height:80vh;overflow-y:auto;padding:20px}\n' +
+        '.kf-lb-' + uid + ' .lb-combo img{max-width:100%;border-radius:8px;margin-top:16px}\n' : '';
     
     var lightboxJs = hasExpandable ?
-        'var fd=JSON.parse(\'' + factsDataJson + '\');\n' +
-        'var lbEl=document.getElementById("' + uid + '-lb");\n' +
-        'var lbC=document.getElementById("' + uid + '-lbc");\n' +
+        'var fd=' + JSON.stringify(factsData) + ';\n' +
+        'var lbEl=document.createElement("div");lbEl.className="kf-lb-' + uid + '";\n' +
+        'lbEl.innerHTML=\'<button class="lb-close">✕</button><div class="lb-content"></div>\';\n' +
+        'document.body.appendChild(lbEl);\n' +
+        'var lbC=lbEl.querySelector(".lb-content");\n' +
+        'lbEl.querySelector(".lb-close").onclick=function(e){e.stopPropagation();lbEl.classList.remove("on");};\n' +
+        'lbEl.onclick=function(){lbEl.classList.remove("on");};\n' +
+        'lbC.onclick=function(e){e.stopPropagation();};\n' +
         'w.querySelectorAll(".kf-expand").forEach(function(el){\n' +
         'el.addEventListener("click",function(e){\n' +
         'e.stopPropagation();\n' +
         'var idx=parseInt(this.getAttribute("data-idx"));\n' +
         'var d=fd[idx];\n' +
         'if(!d)return;\n' +
-        'if(d.t==="image"&&d.i){\n' +
-        'lbC.innerHTML=\'<img class="lb-img fit-\'+d.f+\'" src="\'+d.i+\'">\'+((d.c)?\'<div class="lb-cap">\'+d.c+\'</div>\':\'\');\n' +
+        'var html="";\n' +
+        'if(d.t==="both"&&d.i){\n' +
+        'html=\'<div class="lb-combo">\'+((d.x)?\'<div class="lb-txt">\'+d.x.replace(/\\n/g,"<br>")+\'</div>\':\'\')+\'<img class="lb-img fit-\'+d.f+\'" src="\'+d.i+\'">\'+((d.c)?\'<div class="lb-cap">\'+d.c+\'</div>\':\'\')+(d.r?\'<div class="lb-credit">\'+d.r+\'</div>\':\'\')+\'</div>\';\n' +
+        '}else if(d.t==="image"&&d.i){\n' +
+        'html=\'<img class="lb-img fit-\'+d.f+\'" src="\'+d.i+\'">\'+((d.c)?\'<div class="lb-cap">\'+d.c+\'</div>\':\'\')+(d.r?\'<div class="lb-credit">\'+d.r+\'</div>\':\'\');\n' +
         '}else{\n' +
-        'lbC.innerHTML=\'<div class="lb-txt">\'+d.x.replace(/\\n/g,"<br>")+\'</div>\';\n' +
+        'html=\'<div class="lb-txt">\'+(d.x||"").replace(/\\n/g,"<br>")+\'</div>\';\n' +
         '}\n' +
+        'lbC.innerHTML=html;\n' +
         'lbEl.classList.add("on");\n' +
         '});\n' +
         '});\n' : '';
@@ -651,7 +670,6 @@ factsHtml +
 '</div>\n' +
 '</div>\n' +
 '</div>\n' +
-lightboxHtml +
 '<scr' + 'ipt>\n' +
 '(function(){\n' +
 'var w=document.getElementById("' + uid + '");\n' +
