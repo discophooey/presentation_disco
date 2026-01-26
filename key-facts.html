@@ -235,8 +235,8 @@ button.danger:hover { background: #e74c3c; }
         <h2 onclick="toggleSection(this)">Layout</h2>
         <div class="section">
             <div class="control-group">
-                <label>Container Height <span class="range-val" id="containerHeightVal">100vh</span></label>
-                <input type="range" id="containerHeight" min="30" max="100" value="100" oninput="document.getElementById('containerHeightVal').textContent=this.value+'vh'; updatePreview();">
+                <label>Container Height <span class="range-val" id="containerHeightVal">85vh</span></label>
+                <input type="range" id="containerHeight" min="30" max="100" value="85" oninput="document.getElementById('containerHeightVal').textContent=this.value+'vh'; updatePreview();">
             </div>
             <div class="control-group">
                 <label>Scroll Duration (%)</label>
@@ -421,11 +421,17 @@ function toggleExpandType() {
 }
 
 function loadFactImage() {
-    var url = document.getElementById('factImageUrl').value;
+    var url = document.getElementById('factImageUrl').value.trim();
     if (!url) { alert('Enter an image URL first'); return; }
+    // Convert GitHub blob URLs to raw
+    if (url.includes('github.com') && url.includes('/blob/')) {
+        url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').split('?')[0];
+        document.getElementById('factImageUrl').value = url;
+    }
     var img = document.getElementById('factImagePreviewImg');
     img.onload = function() {
         document.getElementById('factImagePreview').style.display = 'block';
+        updateFact();
     };
     img.onerror = function() {
         alert('Failed to load image. Check the URL.');
@@ -751,8 +757,8 @@ function loadProject(id) {
     document.getElementById('scrollDuration').value = proj.scrollDuration || 150;
     document.getElementById('desktopOffset').value = proj.desktopOffset || 50;
     document.getElementById('mobileOffset').value = proj.mobileOffset || 200;
-    document.getElementById('containerHeight').value = proj.containerHeight || 100;
-    document.getElementById('containerHeightVal').textContent = (proj.containerHeight || 100) + 'vh';
+    document.getElementById('containerHeight').value = proj.containerHeight || 85;
+    document.getElementById('containerHeightVal').textContent = (proj.containerHeight || 85) + 'vh';
     
     renderFactsList();
     loadFactEditor();
@@ -805,8 +811,8 @@ function loadState() {
         document.getElementById('scrollDuration').value = s.scrollDuration || 150;
         document.getElementById('desktopOffset').value = s.desktopOffset || 50;
         document.getElementById('mobileOffset').value = s.mobileOffset || 200;
-        document.getElementById('containerHeight').value = s.containerHeight || 100;
-        document.getElementById('containerHeightVal').textContent = (s.containerHeight || 100) + 'vh';
+        document.getElementById('containerHeight').value = s.containerHeight || 85;
+        document.getElementById('containerHeightVal').textContent = (s.containerHeight || 85) + 'vh';
     }
     renderFactsList();
     if (facts.length > 0) {
