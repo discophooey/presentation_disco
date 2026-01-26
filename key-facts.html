@@ -181,6 +181,10 @@ button.danger:hover { background: #e74c3c; }
                         <div class="control-group">
                             <label>Image URL</label>
                             <input type="text" id="factImageUrl" oninput="updateFact()" placeholder="https://...">
+                            <button class="secondary" style="margin-top:6px;" onclick="loadFactImage()">Load Image</button>
+                        </div>
+                        <div id="factImagePreview" style="display:none;margin-bottom:12px;">
+                            <img id="factImagePreviewImg" style="max-width:100%;max-height:150px;border-radius:4px;border:1px solid #333;">
                         </div>
                         <div class="control-group">
                             <label>Image Fit</label>
@@ -384,6 +388,13 @@ function loadFactEditor() {
     document.getElementById('factImageCaption').value = f.imageCaption || '';
     document.getElementById('expandControls').style.display = f.expandable ? 'block' : 'none';
     toggleExpandType();
+    // Show image preview if URL exists
+    if (f.imageUrl) {
+        document.getElementById('factImagePreviewImg').src = f.imageUrl;
+        document.getElementById('factImagePreview').style.display = 'block';
+    } else {
+        document.getElementById('factImagePreview').style.display = 'none';
+    }
 }
 
 function updateFact() {
@@ -407,6 +418,20 @@ function toggleExpandType() {
     var type = document.getElementById('factExpandType').value;
     document.getElementById('expandTextControls').style.display = type === 'text' ? 'block' : 'none';
     document.getElementById('expandImageControls').style.display = type === 'image' ? 'block' : 'none';
+}
+
+function loadFactImage() {
+    var url = document.getElementById('factImageUrl').value;
+    if (!url) { alert('Enter an image URL first'); return; }
+    var img = document.getElementById('factImagePreviewImg');
+    img.onload = function() {
+        document.getElementById('factImagePreview').style.display = 'block';
+    };
+    img.onerror = function() {
+        alert('Failed to load image. Check the URL.');
+        document.getElementById('factImagePreview').style.display = 'none';
+    };
+    img.src = url;
 }
 
 function deleteFact() {
@@ -452,7 +477,7 @@ function updatePreview() {
     facts.forEach(function(f, i) {
         var expandClass = f.expandable ? ' expandable' : '';
         var clickHandler = f.expandable ? ' onclick="openFactLightbox(' + i + ')"' : '';
-        var expandHint = f.expandable ? '<span class="expand-hint">click to expand</span>' : '';
+        var expandHint = f.expandable ? '<span class="expand-hint">more</span>' : '';
         factsHtml += '<div class="preview-fact' + expandClass + '" style="transition-delay:' + (i * staggerDelay) + 'ms;"' + clickHandler + '>';
         factsHtml += '<div class="preview-fact-icon" style="background:' + accentColor + '22;color:' + accentColor + ';">' + f.icon + '</div>';
         factsHtml += '<div class="preview-fact-text">' + f.text + '</div>';
