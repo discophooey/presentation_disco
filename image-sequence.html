@@ -310,20 +310,26 @@ async function startRender() {
             var easedProgress = ease(progress);
             var scrollPos = Math.round(easedProgress * scrollHeight);
             
+            // Scroll the iframe
             renderFrame.contentWindow.scrollTo(0, scrollPos);
-            await new Promise(function(r) { setTimeout(r, 50); });
+            await new Promise(function(r) { setTimeout(r, 100); });
             
-            var canvas = await html2canvas(renderBody, {
+            // Capture the viewport (not at scroll offset - we already scrolled)
+            // Use documentElement to properly capture sticky/fixed elements
+            var canvas = await html2canvas(renderDoc.documentElement, {
                 width: s.width,
                 height: s.height,
                 windowWidth: s.width,
                 windowHeight: s.height,
+                x: 0,
+                y: 0,
                 scrollX: 0,
-                scrollY: scrollPos,
+                scrollY: 0,
                 useCORS: true,
                 allowTaint: true,
                 backgroundColor: '#000000',
-                scale: 1
+                scale: 1,
+                foreignObjectRendering: false
             });
             
             var dataUrl = canvas.toDataURL('image/png');
