@@ -14,8 +14,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .preview-header span { color: #888; font-size: 12px; }
 #progressDisplay { color: #4a9eff; font-weight: bold; }
 .preview-scroll { flex: 1; overflow-y: auto; background: #0a0a0a; }
-.preview-container { min-height: 300vh; position: relative; display: flex; align-items: center; justify-content: center; }
-.preview-stage { position: sticky; top: 50px; width: 100%; max-width: 600px; padding: 20px; }
+.preview-container { min-height: 300vh; position: relative; }
+.preview-stage { position: sticky; top: 50px; width: 100%; max-width: 600px; padding: 20px; margin: 0 auto; }
 .preview-panel { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 30px; }
 .preview-panel-title { font-size: 14px; color: #4a9eff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; opacity: 0; transform: translateY(10px); transition: all 0.4s; }
 .preview-panel-title.on { opacity: 1; transform: translateY(0); }
@@ -70,6 +70,22 @@ button.danger:hover { background: #e74c3c; }
 .saved-item .date { color: #666; font-size: 11px; }
 .saved-item .delete { background: none; border: none; color: #888; cursor: pointer; padding: 4px 8px; margin: 0; width: auto; }
 .saved-item .delete:hover { color: #e74c3c; }
+
+/* Lightbox for expandable facts */
+.kf-lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; flex-direction: column; }
+.kf-lightbox.active { display: flex; }
+.kf-lightbox-close { position: absolute; top: 20px; right: 20px; background: #333; border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; }
+.kf-lightbox-close:hover { background: #4a9eff; }
+.kf-lightbox-content { max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 40px; }
+.kf-lightbox-text { color: #e0e0e0; font-size: 16px; line-height: 1.8; }
+.kf-lightbox-img { max-width: 90%; max-height: 70vh; border-radius: 8px; }
+.kf-lightbox-img.fit-contain { object-fit: contain; }
+.kf-lightbox-img.fit-cover { object-fit: cover; width: 90%; height: 70vh; }
+.kf-lightbox-img.fit-fill { object-fit: fill; width: 90%; height: 70vh; }
+.kf-lightbox-caption { color: #888; font-size: 14px; margin-top: 16px; max-width: 600px; text-align: center; }
+.preview-fact.expandable { cursor: pointer; }
+.preview-fact.expandable:hover { background: rgba(74,158,255,0.1); margin: 0 -10px; padding: 16px 10px; border-radius: 6px; }
+.preview-fact .expand-hint { font-size: 10px; color: #4a9eff; margin-left: auto; opacity: 0.7; }
 </style>
 </head>
 <body>
@@ -144,7 +160,43 @@ button.danger:hover { background: #e74c3c; }
                         <option value="1">1 Number</option>
                     </select>
                 </div>
-                <button class="danger" onclick="deleteFact()">Delete Fact</button>
+                <div class="control-group" style="margin-top:16px;padding-top:16px;border-top:1px solid #2a2a2a;">
+                    <label><input type="checkbox" id="factExpandable" onchange="updateFact()"> Click to expand (popout)</label>
+                </div>
+                <div id="expandControls" style="display:none;margin-top:12px;background:#0a0a0a;padding:12px;border-radius:6px;">
+                    <div class="control-group">
+                        <label>Expand Type</label>
+                        <select id="factExpandType" onchange="updateFact();toggleExpandType()">
+                            <option value="text">Text (detailed content)</option>
+                            <option value="image">Image</option>
+                        </select>
+                    </div>
+                    <div id="expandTextControls">
+                        <div class="control-group">
+                            <label>Detail Text (shown in popout)</label>
+                            <textarea id="factDetailText" rows="5" oninput="updateFact()" placeholder="Longer detailed text to show when user clicks..."></textarea>
+                        </div>
+                    </div>
+                    <div id="expandImageControls" style="display:none;">
+                        <div class="control-group">
+                            <label>Image URL</label>
+                            <input type="text" id="factImageUrl" oninput="updateFact()" placeholder="https://...">
+                        </div>
+                        <div class="control-group">
+                            <label>Image Fit</label>
+                            <select id="factImageFit" onchange="updateFact()">
+                                <option value="contain">Contain</option>
+                                <option value="cover">Cover</option>
+                                <option value="fill">Fill</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Image Caption</label>
+                            <input type="text" id="factImageCaption" oninput="updateFact()" placeholder="Caption text...">
+                        </div>
+                    </div>
+                </div>
+                <button class="danger" style="margin-top:12px;" onclick="deleteFact()">Delete Fact</button>
             </div>
         </div>
         
@@ -220,6 +272,12 @@ button.danger:hover { background: #e74c3c; }
     </div>
 </div>
 
+<!-- Lightbox for expandable facts -->
+<div class="kf-lightbox" id="kfLightbox" onclick="closeLightbox()">
+    <button class="kf-lightbox-close" onclick="closeLightbox()">✕</button>
+    <div class="kf-lightbox-content" id="kfLightboxContent" onclick="event.stopPropagation()"></div>
+</div>
+
 <!-- Export Modal -->
 <div class="modal" id="exportModal">
     <div class="modal-content">
@@ -277,15 +335,25 @@ function toggleSection(el) {
 function renderFactsList() {
     var html = '';
     facts.forEach(function(f, i) {
+        var expandBadge = f.expandable ? ' <span style="color:#4a9eff;font-size:10px;">[+]</span>' : '';
         html += '<div class="fact-item ' + (i === selectedFactIndex ? 'selected' : '') + '" onclick="selectFact(' + i + ')">';
-        html += '<div class="fact-text">' + f.icon + ' ' + (f.text || '(empty)') + '</div>';
+        html += '<div class="fact-text">' + f.icon + ' ' + (f.text || '(empty)') + expandBadge + '</div>';
         html += '</div>';
     });
     document.getElementById('factsList').innerHTML = html || '<div style="color:#666;font-size:12px;text-align:center;padding:20px;">No facts yet. Add one!</div>';
 }
 
 function addFact() {
-    facts.push({ text: 'Key fact goes here', icon: '•' });
+    facts.push({ 
+        text: 'Key fact goes here', 
+        icon: '•',
+        expandable: false,
+        expandType: 'text',
+        detailText: '',
+        imageUrl: '',
+        imageFit: 'contain',
+        imageCaption: ''
+    });
     selectedFactIndex = facts.length - 1;
     renderFactsList();
     loadFactEditor();
@@ -308,6 +376,14 @@ function loadFactEditor() {
     var f = facts[selectedFactIndex];
     document.getElementById('factText').value = f.text;
     document.getElementById('factIcon').value = f.icon;
+    document.getElementById('factExpandable').checked = f.expandable || false;
+    document.getElementById('factExpandType').value = f.expandType || 'text';
+    document.getElementById('factDetailText').value = f.detailText || '';
+    document.getElementById('factImageUrl').value = f.imageUrl || '';
+    document.getElementById('factImageFit').value = f.imageFit || 'contain';
+    document.getElementById('factImageCaption').value = f.imageCaption || '';
+    document.getElementById('expandControls').style.display = f.expandable ? 'block' : 'none';
+    toggleExpandType();
 }
 
 function updateFact() {
@@ -315,9 +391,22 @@ function updateFact() {
     var f = facts[selectedFactIndex];
     f.text = document.getElementById('factText').value;
     f.icon = document.getElementById('factIcon').value;
+    f.expandable = document.getElementById('factExpandable').checked;
+    f.expandType = document.getElementById('factExpandType').value;
+    f.detailText = document.getElementById('factDetailText').value;
+    f.imageUrl = document.getElementById('factImageUrl').value;
+    f.imageFit = document.getElementById('factImageFit').value;
+    f.imageCaption = document.getElementById('factImageCaption').value;
+    document.getElementById('expandControls').style.display = f.expandable ? 'block' : 'none';
     renderFactsList();
     updatePreview();
     saveState();
+}
+
+function toggleExpandType() {
+    var type = document.getElementById('factExpandType').value;
+    document.getElementById('expandTextControls').style.display = type === 'text' ? 'block' : 'none';
+    document.getElementById('expandImageControls').style.display = type === 'image' ? 'block' : 'none';
 }
 
 function deleteFact() {
@@ -361,9 +450,13 @@ function updatePreview() {
     
     var factsHtml = '';
     facts.forEach(function(f, i) {
-        factsHtml += '<div class="preview-fact" style="transition-delay:' + (i * staggerDelay) + 'ms;">';
+        var expandClass = f.expandable ? ' expandable' : '';
+        var clickHandler = f.expandable ? ' onclick="openFactLightbox(' + i + ')"' : '';
+        var expandHint = f.expandable ? '<span class="expand-hint">click to expand</span>' : '';
+        factsHtml += '<div class="preview-fact' + expandClass + '" style="transition-delay:' + (i * staggerDelay) + 'ms;"' + clickHandler + '>';
         factsHtml += '<div class="preview-fact-icon" style="background:' + accentColor + '22;color:' + accentColor + ';">' + f.icon + '</div>';
         factsHtml += '<div class="preview-fact-text">' + f.text + '</div>';
+        factsHtml += expandHint;
         factsHtml += '</div>';
     });
     factsEl.innerHTML = factsHtml;
@@ -408,6 +501,23 @@ function updatePreview() {
 
 document.getElementById('previewScroll').addEventListener('scroll', updatePreview);
 
+function openFactLightbox(index) {
+    var f = facts[index];
+    if (!f || !f.expandable) return;
+    var content = document.getElementById('kfLightboxContent');
+    if (f.expandType === 'image' && f.imageUrl) {
+        content.innerHTML = '<img class="kf-lightbox-img fit-' + f.imageFit + '" src="' + f.imageUrl + '" alt="">' +
+            (f.imageCaption ? '<div class="kf-lightbox-caption">' + f.imageCaption + '</div>' : '');
+    } else {
+        content.innerHTML = '<div class="kf-lightbox-text">' + (f.detailText || f.text).replace(/\n/g, '<br>') + '</div>';
+    }
+    document.getElementById('kfLightbox').classList.add('active');
+}
+
+function closeLightbox() {
+    document.getElementById('kfLightbox').classList.remove('active');
+}
+
 function generateExport() {
     if (facts.length === 0) { alert('Add at least one fact'); return; }
     
@@ -424,17 +534,52 @@ function generateExport() {
     var mobileOffset = document.getElementById('mobileOffset').value;
     var containerHeight = document.getElementById('containerHeight').value;
     
+    var hasExpandable = facts.some(function(f) { return f.expandable; });
+    
     var factsHtml = '';
+    var factsData = [];
     facts.forEach(function(f, i) {
-        factsHtml += '<div class="kf-fact" style="transition-delay:' + (i * staggerDelay) + 'ms">\n';
+        var expandClass = f.expandable ? ' kf-expand' : '';
+        var clickAttr = f.expandable ? ' data-idx="' + i + '"' : '';
+        factsHtml += '<div class="kf-fact' + expandClass + '" style="transition-delay:' + (i * staggerDelay) + 'ms"' + clickAttr + '>\n';
         factsHtml += '<div class="kf-icon">' + f.icon + '</div>\n';
         factsHtml += '<div class="kf-text">' + f.text + '</div>\n';
+        if (f.expandable) factsHtml += '<span class="kf-hint">+</span>\n';
         factsHtml += '</div>\n';
+        if (f.expandable) {
+            factsData.push({
+                type: f.expandType || 'text',
+                text: (f.detailText || f.text).replace(/"/g, '\\"').replace(/\n/g, '\\n'),
+                img: f.imageUrl || '',
+                fit: f.imageFit || 'contain',
+                cap: f.imageCaption || ''
+            });
+        } else {
+            factsData.push(null);
+        }
     });
     
+    var lightboxCss = hasExpandable ? 
+        '#' + uid + ' .kf-expand{cursor:pointer}#' + uid + ' .kf-expand:hover{background:rgba(74,158,255,.1);margin:0 -10px;padding:16px 10px;border-radius:6px}#' + uid + ' .kf-hint{margin-left:auto;color:' + accentColor + ';font-size:12px;opacity:.7}\n' +
+        '#' + uid + '-lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9999;align-items:center;justify-content:center;flex-direction:column}#' + uid + '-lb.on{display:flex}\n' +
+        '#' + uid + '-lb .lb-close{position:absolute;top:20px;right:20px;background:#333;border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:20px}#' + uid + '-lb .lb-close:hover{background:' + accentColor + '}\n' +
+        '#' + uid + '-lb .lb-txt{max-width:800px;width:90%;color:#e0e0e0;font-size:16px;line-height:1.8;max-height:80vh;overflow-y:auto;padding:20px}\n' +
+        '#' + uid + '-lb .lb-img{max-width:90%;max-height:70vh;border-radius:8px}#' + uid + '-lb .lb-img.fit-cover{object-fit:cover;width:90%;height:70vh}#' + uid + '-lb .lb-img.fit-fill{object-fit:fill;width:90%;height:70vh}\n' +
+        '#' + uid + '-lb .lb-cap{color:#888;font-size:14px;margin-top:16px;max-width:600px;text-align:center}\n' : '';
+    
+    var lightboxHtml = hasExpandable ? 
+        '<div id="' + uid + '-lb" onclick="this.classList.remove(\'on\')">\n' +
+        '<button class="lb-close" onclick="this.parentNode.classList.remove(\'on\')">✕</button>\n' +
+        '<div id="' + uid + '-lbc" onclick="event.stopPropagation()"></div>\n' +
+        '</div>\n' : '';
+    
+    var lightboxJs = hasExpandable ?
+        'var fd=' + JSON.stringify(factsData) + ';\n' +
+        'w.querySelectorAll(".kf-expand").forEach(function(el){el.onclick=function(){var d=fd[this.dataset.idx];if(!d)return;var lb=document.getElementById("' + uid + '-lb"),c=document.getElementById("' + uid + '-lbc");if(d.type==="image"&&d.img){c.innerHTML=\'<img class="lb-img fit-\'+d.fit+\'" src="\'+d.img+\'">\'+((d.cap)?\'<div class="lb-cap">\'+d.cap+\'</div>\':\'\');}else{c.innerHTML=\'<div class="lb-txt">\'+d.text.replace(/\\\\n/g,"<br>")+\'</div>\';}lb.classList.add("on");}});\n' : '';
+    
     var code = '<style>\n' +
-'#' + uid + '{position:relative;display:flex;align-items:center;justify-content:center;min-height:' + containerHeight + 'vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
-'#' + uid + ' .kf-stage{position:-webkit-sticky;position:sticky;top:' + desktopOffset + 'px;width:100%;max-width:' + maxWidth + 'px;padding:20px}\n' +
+'#' + uid + '{position:relative;min-height:' + containerHeight + 'vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}\n' +
+'#' + uid + ' .kf-stage{position:-webkit-sticky;position:sticky;top:' + desktopOffset + 'px;width:100%;max-width:' + maxWidth + 'px;margin:0 auto;padding:20px}\n' +
 '#' + uid + ' .kf-panel{background:' + panelBg + ';border:1px solid ' + borderColor + ';border-radius:12px;padding:30px}\n' +
 '#' + uid + ' .kf-title{font-size:14px;color:' + accentColor + ';text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;opacity:0;transform:translateY(10px);transition:all 0.4s}\n' +
 '#' + uid + '.on .kf-title{opacity:1;transform:translateY(0)}\n' +
@@ -445,6 +590,7 @@ function generateExport() {
 '#' + uid + ' .kf-text{font-size:15px;line-height:1.5;color:#ccc}\n' +
 '#' + uid + ' .kf-source{font-size:12px;color:#666;margin-top:20px;padding-top:16px;border-top:1px solid ' + borderColor + ';opacity:0;transition:all 0.4s 0.2s}\n' +
 '#' + uid + '.on .kf-source{opacity:1}\n' +
+lightboxCss +
 '@media(max-width:768px){#' + uid + ' .kf-stage{top:' + mobileOffset + 'px}}\n' +
 '</style>\n' +
 '<div id="' + uid + '">\n' +
@@ -456,6 +602,7 @@ factsHtml +
 '</div>\n' +
 '</div>\n' +
 '</div>\n' +
+lightboxHtml +
 '<scr' + 'ipt>\n' +
 '(function(){\n' +
 'var w=document.getElementById("' + uid + '");\n' +
@@ -477,6 +624,7 @@ factsHtml +
 'requestAnimationFrame(upd);\n' +
 '}\n' +
 'upd();\n' +
+lightboxJs +
 '})();\n' +
 '<\/scr' + 'ipt>';
     
