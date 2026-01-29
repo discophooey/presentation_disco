@@ -57,7 +57,6 @@ button.small { width: auto; padding: 6px 12px; }
 
 .preview-area { background: #000; display: flex; flex-direction: column; overflow: hidden; }
 .preview-area.fit-frame { background: #1a1a1a; }
-.preview-area.fit-frame { background: #1a1a1a; }
 .preview-area.fit-frame .preview-stage,
 .preview-area.fit-frame .sticky-stage { border: 3px solid #4a9eff; box-sizing: border-box; }
 
@@ -230,20 +229,15 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 function toggleFitFrame() {
     const area = document.getElementById('previewArea');
     const scroll = document.getElementById('previewScroll');
-    const container = document.getElementById('previewContainer');
-    const stage = document.getElementById('previewStage') || container.querySelector('.sticky-stage');
+    const stage = document.getElementById('previewStage') || document.querySelector('.sticky-stage');
     const toggle = document.getElementById('fitFrameToggle');
     
     if (toggle.checked) {
         area.classList.add('fit-frame');
-        // Calculate scale based on stage/viewport size
-        const scrollRect = scroll.getBoundingClientRect();
-        const stageW = stage ? stage.offsetWidth : scrollRect.width;
-        const stageH = stage ? stage.offsetHeight : scrollRect.height;
-        const scale = Math.min((scrollRect.width - 20) / stageW, 0.85);
-        // Scale the stage element, not container (keeps scroll working)
         if (stage) {
-            stage.style.transform = `scale(${scale})`;
+            const scrollRect = scroll.getBoundingClientRect();
+            const scale = Math.min((scrollRect.width - 40) / stage.offsetWidth, 0.85);
+            stage.style.transform = 'scale(' + scale + ')';
             stage.style.transformOrigin = 'top center';
         }
     } else {
@@ -254,6 +248,8 @@ function toggleFitFrame() {
         }
     }
 }
+
+var images = [];
 
 function toggleSection(el) {
     el.classList.toggle('collapsed');

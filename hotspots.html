@@ -27,6 +27,8 @@ body { font-family: 'APRegular', 'APMedium', 'APBold', sans-serif; background: #
 .container { display: grid; grid-template-columns: 320px 1fr; height: 100vh; }
 .controls { background: #1a1a1a; padding: 16px; overflow-y: auto; border-right: 1px solid #2a2a2a; }
 .preview-panel { background: #000; display: flex; flex-direction: column; height: 100vh; }
+.preview-panel.fit-frame { background: #1a1a1a; }
+.preview-panel.fit-frame #previewStage { border: 3px solid #4a9eff; box-sizing: border-box; }
 
 /* Typography */
 h1 { font-size: 18px; color: #4a9eff; margin-bottom: 16px; }
@@ -170,7 +172,7 @@ textarea.code { width: 100%; height: 250px; background: #0a0a0a; border: 1px sol
         </div>
     </div>
     
-    <div class="preview-panel">
+    <div class="preview-panel" id="previewPanel">
         <div class="preview-header">
             <span>Preview (scroll to test)</span>
             <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
@@ -214,31 +216,62 @@ textarea.code { width: 100%; height: 250px; background: #0a0a0a; border: 1px sol
 
 // Toggle Fit Frame preview mode
 function toggleFitFrame() {
-    const area = document.getElementById('previewArea');
+    const panel = document.getElementById('previewPanel');
     const scroll = document.getElementById('previewScroll');
-    const container = document.getElementById('previewContainer');
-    const stage = document.getElementById('previewStage') || container.querySelector('.sticky-stage');
+    const stage = document.getElementById('previewStage');
     const toggle = document.getElementById('fitFrameToggle');
     
     if (toggle.checked) {
-        area.classList.add('fit-frame');
-        // Calculate scale based on stage/viewport size
-        const scrollRect = scroll.getBoundingClientRect();
-        const stageW = stage ? stage.offsetWidth : scrollRect.width;
-        const stageH = stage ? stage.offsetHeight : scrollRect.height;
-        const scale = Math.min((scrollRect.width - 20) / stageW, 0.85);
-        // Scale the stage element, not container (keeps scroll working)
+        panel.classList.add('fit-frame');
         if (stage) {
-            stage.style.transform = `scale(${scale})`;
+            const scrollRect = scroll.getBoundingClientRect();
+            const scale = Math.min((scrollRect.width - 40) / stage.offsetWidth, 0.85);
+            stage.style.transform = 'scale(' + scale + ')';
             stage.style.transformOrigin = 'top center';
         }
     } else {
-        area.classList.remove('fit-frame');
+        panel.classList.remove('fit-frame');
         if (stage) {
             stage.style.transform = '';
             stage.style.transformOrigin = '';
         }
     }
+}
+
+// STATE
+let imageUrl = null;
+let hotspots = [];
+let placingId = null;
+
+// IMAGE
+function loadImage() {
+    let url = document.getElementById('imageUrl').value.trim();
+    if (!url) return alert('Enter image URL');
+    if (url.includes('github.com') && url.includes('/blob/')) {
+        url = url.replace('github.com','raw.githubusercontent.com').replace('/blob/','/').split('?')[0];
+    }
+    const img = new Image();
+    img.onload = () => { imageUrl = url; rebuildPreview(); };
+    img.onerror = () => alert('Failed to load image');
+    img.src = url;
+}
+
+// HOTSPOT CRUD
+function addHotspot() {
+    if (!imageUrl) return alert('Load image first');
+    hotspots.push({
+        id: Date.now(),
+        x: 50, y: 50,
+        label: 'Hotspot ' + (hotspots.length + 1),
+        color: '#ff4444',
+        labelPos: 'right',
+        scale: 1,
+        start: 0,
+        end: 100
+    });
+    placingId = hotspots[hotspots.length - 1].id;
+    renderList();
+    rebuildPreview();
 }
 
 function removeHotspot(id) {

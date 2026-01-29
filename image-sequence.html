@@ -10,11 +10,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .container { display: flex; height: 100vh; }
 .controls { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 1px solid #2a2a2a; flex-shrink: 0; }
 .preview-area { flex: 1; display: flex; flex-direction: column; background: #0a0a0a; }
-.preview-area.fit-frame { background: #1a1a1a; }
-.preview-area.fit-frame { background: #1a1a1a; }
-.preview-area.fit-frame .preview-stage,
-.preview-area.fit-frame .sticky-stage { border: 3px solid #4a9eff; box-sizing: border-box; }
-
 h1 { font-size: 20px; margin-bottom: 8px; color: #fff; }
 .subtitle { font-size: 12px; color: #666; margin-bottom: 24px; }
 h2 { font-size: 14px; color: #4a9eff; margin: 24px 0 16px 0; text-transform: uppercase; letter-spacing: 1px; }
@@ -153,7 +148,7 @@ button.secondary:hover { background: #3a3a3a; }
         </div>
     </div>
     
-    <div class="preview-area" id="previewArea">
+    <div class="preview-area">
         <div class="preview-header">
             <span>Preview</span>
             <span id="previewInfo">No content loaded</span>
@@ -180,35 +175,9 @@ button.secondary:hover { background: #3a3a3a; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <script>
-
-// Toggle Fit Frame preview mode
-function toggleFitFrame() {
-    const area = document.getElementById('previewArea');
-    const scroll = document.getElementById('previewScroll');
-    const container = document.getElementById('previewContainer');
-    const stage = document.getElementById('previewStage') || container.querySelector('.sticky-stage');
-    const toggle = document.getElementById('fitFrameToggle');
-    
-    if (toggle.checked) {
-        area.classList.add('fit-frame');
-        // Calculate scale based on stage/viewport size
-        const scrollRect = scroll.getBoundingClientRect();
-        const stageW = stage ? stage.offsetWidth : scrollRect.width;
-        const stageH = stage ? stage.offsetHeight : scrollRect.height;
-        const scale = Math.min((scrollRect.width - 20) / stageW, 0.85);
-        // Scale the stage element, not container (keeps scroll working)
-        if (stage) {
-            stage.style.transform = `scale(${scale})`;
-            stage.style.transformOrigin = 'top center';
-        }
-    } else {
-        area.classList.remove('fit-frame');
-        if (stage) {
-            stage.style.transform = '';
-            stage.style.transformOrigin = '';
-        }
-    }
-}
+var rendering = false;
+var cancelRequested = false;
+var loadedHTML = '';
 
 function getSettings() {
     var aspect = document.querySelector('input[name="aspect"]:checked').value;

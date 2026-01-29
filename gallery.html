@@ -214,26 +214,19 @@
  }
 
  /* Preview */
- .preview-outer {
-   position: relative;
-   height: calc(100vh - 80px);
-   overflow: hidden;
-   background: #0a0a0a;
-   border-radius: 12px;
-   border: 1px solid #2a2a2a;
- }
- 
- .preview-outer.fit-frame {
-   background: #1a1a1a;
- }
- 
  .preview-wrapper {
  background: #0a0a0a;
- border-radius: 8px;
- height: 100%;
+ border-radius: 12px;
+ border: 1px solid #2a2a2a;
+ height: calc(100vh - 40px);
  overflow-y: auto;
  overflow-x: hidden;
  position: relative;
+ }
+
+ .preview-wrapper.fit-frame .sticky-stage {
+ border: 3px solid #4a9eff;
+ box-sizing: border-box;
  }
 
  .story-container {
@@ -582,9 +575,7 @@
      Fit Frame
    </label>
  </h2>
- <div class="preview-outer" id="previewOuter">
-   <div class="preview-wrapper" id="preview"></div>
- </div>
+ <div class="preview-wrapper" id="preview"></div>
  </div>
  </div>
 
@@ -603,36 +594,32 @@
  </div>
 
  <script>
+
+// Toggle Fit Frame preview mode
+function toggleFitFrame() {
+    const preview = document.getElementById('preview');
+    const stage = preview.querySelector('.sticky-stage');
+    const toggle = document.getElementById('fitFrameToggle');
+    
+    if (toggle.checked) {
+        preview.classList.add('fit-frame');
+        if (stage) {
+            const previewRect = preview.getBoundingClientRect();
+            const scale = Math.min((previewRect.width - 40) / stage.offsetWidth, 0.85);
+            stage.style.transform = 'scale(' + scale + ')';
+            stage.style.transformOrigin = 'top center';
+        }
+    } else {
+        preview.classList.remove('fit-frame');
+        if (stage) {
+            stage.style.transform = '';
+            stage.style.transformOrigin = '';
+        }
+    }
+}
+
  let images = [];
  let customFonts = [];
-
- // Toggle Fit Frame preview mode
- function toggleFitFrame() {
-   const outer = document.getElementById('previewOuter');
-   const preview = document.getElementById('preview');
-   const toggle = document.getElementById('fitFrameToggle');
-   const stage = preview.querySelector('.sticky-stage');
-   
-   if (toggle.checked) {
-     outer.classList.add('fit-frame');
-     if (stage) {
-       const outerRect = outer.getBoundingClientRect();
-       const scale = Math.min((outerRect.width - 40) / stage.offsetWidth, 0.85);
-       stage.style.transform = `scale(${scale})`;
-       stage.style.transformOrigin = 'top center';
-       stage.style.border = '3px solid #4a9eff';
-       stage.style.boxSizing = 'border-box';
-     }
-   } else {
-     outer.classList.remove('fit-frame');
-     if (stage) {
-       stage.style.transform = '';
-       stage.style.transformOrigin = '';
-       stage.style.border = '';
-       stage.style.boxSizing = '';
-     }
-   }
- }
 
  // Load example gallery images
  async function loadExampleGallery() {
@@ -1147,11 +1134,6 @@
  
  preview.addEventListener('scroll', onScroll, { passive: true });
  updateActive();
- 
- // Refresh fit frame if enabled
- if (document.getElementById('fitFrameToggle').checked) {
-   setTimeout(toggleFitFrame, 50);
- }
  }
 
  function toggle(i, prop) {
