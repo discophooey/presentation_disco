@@ -159,6 +159,18 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 </select>
             </div>
             <div class="control-group">
+                <label>Aspect Ratio</label>
+                <select id="aspectRatio" onchange="updatePreview();">
+                    <option value="full" selected>Full Viewport</option>
+                    <option value="16:9">16:9 Widescreen</option>
+                    <option value="4:3">4:3 Standard</option>
+                    <option value="1:1">1:1 Square</option>
+                    <option value="21:9">21:9 Ultrawide</option>
+                    <option value="9:16">9:16 Vertical</option>
+                    <option value="3:2">3:2 Photo</option>
+                </select>
+            </div>
+            <div class="control-group">
                 <label>Background Color</label>
                 <input type="color" id="bgColor" value="#000000" onchange="updatePreview();">
             </div>
@@ -297,6 +309,7 @@ function saveProject() {
         textLayers: textLayers,
         settings: {
             imageFit: document.getElementById('imageFit').value,
+            aspectRatio: document.getElementById('aspectRatio').value,
             effect: document.getElementById('effectType').value,
             intensity: document.getElementById('intensity').value,
             bgColor: document.getElementById('bgColor').value,
@@ -332,6 +345,7 @@ function loadProject() {
                 textLayers = project.textLayers || [];
                 if (project.settings) {
                     document.getElementById('imageFit').value = project.settings.imageFit || 'cover';
+                    document.getElementById('aspectRatio').value = project.settings.aspectRatio || 'full';
                     document.getElementById('effectType').value = project.settings.effect || 'parallax';
                     document.getElementById('intensity').value = project.settings.intensity || 50;
                     document.getElementById('bgColor').value = project.settings.bgColor || '#000000';
@@ -515,7 +529,20 @@ function updatePreview() {
     const container = document.getElementById('previewLayers');
     const bgColor = document.getElementById('bgColor').value;
     const imageFit = document.getElementById('imageFit').value;
+    const aspect = document.getElementById('aspectRatio').value;
     stage.style.background = bgColor;
+    
+    // Apply aspect ratio
+    if (aspect !== 'full') {
+        const [w, h] = aspect.split(':').map(Number);
+        stage.style.height = 'auto';
+        stage.style.maxHeight = '100vh';
+        stage.style.aspectRatio = w + '/' + h;
+    } else {
+        stage.style.height = '100vh';
+        stage.style.maxHeight = '';
+        stage.style.aspectRatio = '';
+    }
     
     const fontSize = document.getElementById('fontSize').value;
     const color = document.getElementById('textColor').value;
@@ -630,6 +657,7 @@ function generateExport() {
     const intensity = parseInt(document.getElementById('intensity').value) / 100;
     const bgColor = document.getElementById('bgColor').value;
     const imageFit = document.getElementById('imageFit').value;
+    const aspect = document.getElementById('aspectRatio').value;
     const dur = document.getElementById('scrollDuration').value;
     const desktopOffset = document.getElementById('desktopOffset').value;
     const mobileOffset = document.getElementById('mobileOffset').value;
@@ -641,6 +669,15 @@ function generateExport() {
     const scrollMult = dur / 100;
     
     const bgStyle = hasBg ? 'background:rgba(0,0,0,' + bgOp + ');padding:10px 16px;border-radius:6px;backdrop-filter:blur(' + bgBlur + 'px);-webkit-backdrop-filter:blur(' + bgBlur + 'px);' : '';
+    
+    // Aspect ratio CSS
+    let stageHeightCSS = 'height:100vh';
+    let mobileStageCSS = `top:${mobileOffset}px;height:calc(100vh - ${mobileOffset}px)`;
+    if (aspect !== 'full') {
+        const [w, h] = aspect.split(':').map(Number);
+        stageHeightCSS = `height:auto;max-height:100vh;aspect-ratio:${w}/${h}`;
+        mobileStageCSS = `top:${mobileOffset}px;max-height:calc(100vh - ${mobileOffset}px)`;
+    }
     
     let layerHtml = '';
     let layerData = [];
@@ -658,13 +695,13 @@ function generateExport() {
     
     const code = `<style>
 #${uid}.ly-wrap{position:relative}
-#${uid} .ly-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;height:100vh;background:${bgColor};overflow:hidden}
+#${uid} .ly-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;${stageHeightCSS};background:${bgColor};overflow:hidden}
 #${uid} .ly-layers{position:relative;width:100%;height:100%;overflow:hidden}
 #${uid} .ly-layer{position:absolute;inset:-10%;width:120%;height:120%;background-size:${imageFit};background-position:center;opacity:0;transition:opacity 0.3s;will-change:transform,opacity}
 #${uid} .ly-txt{position:absolute;transform:translate(-50%,-50%);font-size:${fontSize}px;color:${textColor};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;max-width:90%}
 #${uid} .ly-txt.on{opacity:1}
 @media(max-width:768px){
-#${uid} .ly-stage{top:${mobileOffset}px;height:calc(100vh - ${mobileOffset}px)}
+#${uid} .ly-stage{${mobileStageCSS}}
 #${uid} .ly-layer{inset:-15%;width:130%;height:130%}
 #${uid} .ly-txt{font-size:clamp(14px,4vw,${Math.round(fontSize * 0.7)}px)!important;white-space:normal;word-wrap:break-word;text-align:center!important;max-width:90%!important;padding:10px 14px;left:50%!important}
 }
