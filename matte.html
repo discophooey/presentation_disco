@@ -57,6 +57,10 @@ input[type="range"] { width: 100%; margin: 8px 0; }
 
 /* Preview Area */
 .preview-area { background: #000; display: flex; flex-direction: column; overflow: hidden; }
+.preview-area.fit-frame { background: #1a1a1a; }
+.preview-area.fit-frame .preview-scroll { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.preview-area.fit-frame .preview-container { transform-origin: center center; border: 3px solid #4a9eff; box-shadow: 0 0 0 9999px rgba(0,0,0,0.7); }
+
 .preview-header { padding: 10px 16px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; font-size: 11px; color: #666; }
 .preview-scroll { flex: 1; overflow-y: auto; }
 .preview-container { position: relative; }
@@ -268,9 +272,13 @@ textarea#exportCode { width: 100%; height: 300px; background: #1a1a1a; border: 1
         <button class="btn btn-danger" style="width:100%;" onclick="resetModule()">Reset Module</button>
     </div>
     
-    <div class="preview-area">
+    <div class="preview-area" id="previewArea">
         <div class="preview-header">
             <span>Preview</span>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="checkbox" id="fitFrameToggle" onchange="toggleFitFrame()">
+                Fit Frame
+            </label>
             <span id="progressDisplay">0%</span>
         </div>
         <div class="preview-scroll" id="previewScroll">
@@ -305,6 +313,34 @@ textarea#exportCode { width: 100%; height: 300px; background: #1a1a1a; border: 1
 </div>
 
 <script>
+
+// Toggle Fit Frame preview mode
+function toggleFitFrame() {
+    const area = document.getElementById('previewArea');
+    const scroll = document.getElementById('previewScroll');
+    const container = document.getElementById('previewContainer');
+    const stage = document.getElementById('previewStage');
+    const toggle = document.getElementById('fitFrameToggle');
+    
+    if (toggle.checked) {
+        area.classList.add('fit-frame');
+        const scrollRect = scroll.getBoundingClientRect();
+        const availableW = scrollRect.width - 40;
+        const availableH = scrollRect.height - 40;
+        const stageW = stage ? stage.offsetWidth : container.offsetWidth;
+        const stageH = stage ? stage.offsetHeight : container.offsetHeight;
+        const scale = Math.min(availableW / stageW, availableH / stageH, 1);
+        container.style.transform = `scale(${scale})`;
+        container.style.width = stageW + 'px';
+        container.style.height = stageH + 'px';
+    } else {
+        area.classList.remove('fit-frame');
+        container.style.transform = '';
+        container.style.width = '';
+        container.style.height = '';
+    }
+}
+
 // Config
 var config = {
     matteSource: 'text',

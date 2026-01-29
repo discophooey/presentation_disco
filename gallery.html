@@ -214,11 +214,34 @@
  }
 
  /* Preview */
+ .preview-outer {
+   position: relative;
+   height: calc(100vh - 80px);
+   overflow: hidden;
+   background: #0a0a0a;
+   border-radius: 12px;
+   border: 1px solid #2a2a2a;
+ }
+ 
+ .preview-outer.fit-frame {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   background: #1a1a1a;
+ }
+ 
+ .preview-outer.fit-frame .preview-wrapper {
+   height: auto;
+   overflow: visible;
+   transform-origin: center center;
+   border: 3px solid #4a9eff;
+   box-shadow: 0 0 0 9999px rgba(0,0,0,0.7);
+ }
+ 
  .preview-wrapper {
  background: #0a0a0a;
- border-radius: 12px;
- border: 1px solid #2a2a2a;
- height: calc(100vh - 40px);
+ border-radius: 8px;
+ height: 100%;
  overflow-y: auto;
  overflow-x: hidden;
  position: relative;
@@ -563,8 +586,16 @@
  </div>
 
  <div class="panel">
- <h2>Preview</h2>
- <div class="preview-wrapper" id="preview"></div>
+ <h2 style="display: flex; justify-content: space-between; align-items: center;">
+   Preview
+   <label style="font-size: 12px; font-weight: normal; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+     <input type="checkbox" id="fitFrameToggle" onchange="toggleFitFrame()">
+     Fit Frame
+   </label>
+ </h2>
+ <div class="preview-outer" id="previewOuter">
+   <div class="preview-wrapper" id="preview"></div>
+ </div>
  </div>
  </div>
 
@@ -585,6 +616,35 @@
  <script>
  let images = [];
  let customFonts = [];
+
+ // Toggle Fit Frame preview mode
+ function toggleFitFrame() {
+   const outer = document.getElementById('previewOuter');
+   const preview = document.getElementById('preview');
+   const toggle = document.getElementById('fitFrameToggle');
+   
+   if (toggle.checked) {
+     outer.classList.add('fit-frame');
+     // Calculate scale to fit
+     const stage = preview.querySelector('.sticky-stage');
+     if (stage) {
+       const outerRect = outer.getBoundingClientRect();
+       const availableW = outerRect.width - 60;
+       const availableH = outerRect.height - 60;
+       const stageW = stage.offsetWidth;
+       const stageH = stage.offsetHeight;
+       const scale = Math.min(availableW / stageW, availableH / stageH, 1);
+       preview.style.transform = `scale(${scale})`;
+       preview.style.width = stageW + 'px';
+       preview.style.height = stageH + 'px';
+     }
+   } else {
+     outer.classList.remove('fit-frame');
+     preview.style.transform = '';
+     preview.style.width = '';
+     preview.style.height = '';
+   }
+ }
 
  // Load example gallery images
  async function loadExampleGallery() {
@@ -1099,6 +1159,11 @@
  
  preview.addEventListener('scroll', onScroll, { passive: true });
  updateActive();
+ 
+ // Refresh fit frame if enabled
+ if (document.getElementById('fitFrameToggle').checked) {
+   setTimeout(toggleFitFrame, 50);
+ }
  }
 
  function toggle(i, prop) {
