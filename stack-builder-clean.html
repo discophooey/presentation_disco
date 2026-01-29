@@ -327,6 +327,23 @@
             transform: scale(0.8);
             transform-origin: top left;
         }
+        
+        .preview-modal-body.fit-frame {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 30px;
+            overflow-y: auto;
+        }
+        
+        .preview-modal-body.fit-frame iframe {
+            width: 1200px;
+            height: 800px;
+            transform: scale(0.6);
+            transform-origin: top center;
+            border: 3px solid #4a9eff;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+        }
 
         .close-preview {
             background: #ff4444;
@@ -483,6 +500,10 @@
         <div class="preview-modal-content">
             <div class="preview-modal-header">
                 <h3>Preview - Combined Stack</h3>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; color: #888;">
+                    <input type="checkbox" id="fitFrameToggle" onchange="toggleFitFrame()">
+                    Fit Frame
+                </label>
                 <button onclick="closePreview()" class="close-preview">✕ Close</button>
             </div>
             <div class="preview-modal-body">
@@ -742,6 +763,18 @@
         function closePreview() {
             document.getElementById('previewModal').classList.remove('active');
             document.getElementById('previewIframe').src = '';
+            document.getElementById('fitFrameToggle').checked = false;
+            document.querySelector('.preview-modal-body').classList.remove('fit-frame');
+        }
+        
+        function toggleFitFrame() {
+            const body = document.querySelector('.preview-modal-body');
+            const toggle = document.getElementById('fitFrameToggle');
+            if (toggle.checked) {
+                body.classList.add('fit-frame');
+            } else {
+                body.classList.remove('fit-frame');
+            }
         }
 
         function generateCombinedHTML() {
