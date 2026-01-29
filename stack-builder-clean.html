@@ -266,7 +266,7 @@
         .preview-modal {
             display: none;
             position: fixed;
-            top: 0;
+            top: 60px;
             left: 0;
             right: 0;
             bottom: 0;
@@ -330,17 +330,16 @@
         
         .preview-modal-body.fit-frame {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: center;
-            padding-top: 30px;
             overflow-y: auto;
         }
         
         .preview-modal-body.fit-frame iframe {
             width: 1200px;
-            height: 800px;
-            transform: scale(0.6);
-            transform-origin: top center;
+            height: 900px;
+            transform: scale(0.85);
+            transform-origin: center center;
             border: 3px solid #4a9eff;
             box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
         }
