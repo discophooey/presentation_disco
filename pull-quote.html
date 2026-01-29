@@ -49,8 +49,9 @@ button.secondary { background: #333; color: #fff; }
 .range-val { font-size: 10px; color: #4a9eff; float: right; }
 .preview-area { background: #000; display: flex; flex-direction: column; overflow: hidden; }
 .preview-area.fit-frame { background: #1a1a1a; }
-.preview-area.fit-frame .preview-scroll { display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.preview-area.fit-frame .preview-container { transform-origin: center center; border: 3px solid #4a9eff; box-shadow: 0 0 0 9999px rgba(0,0,0,0.7); }
+.preview-area.fit-frame { background: #1a1a1a; }
+.preview-area.fit-frame .preview-stage,
+.preview-area.fit-frame .sticky-stage { border: 3px solid #4a9eff; box-sizing: border-box; }
 
 .preview-header { padding: 10px 16px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; font-size: 11px; color: #666; }
 #progressDisplay { color: #4a9eff; font-weight: bold; }
@@ -234,29 +235,29 @@ function toggleFitFrame() {
     const area = document.getElementById('previewArea');
     const scroll = document.getElementById('previewScroll');
     const container = document.getElementById('previewContainer');
-    const stage = document.getElementById('previewStage');
+    const stage = document.getElementById('previewStage') || container.querySelector('.sticky-stage');
     const toggle = document.getElementById('fitFrameToggle');
     
     if (toggle.checked) {
         area.classList.add('fit-frame');
+        // Calculate scale based on stage/viewport size
         const scrollRect = scroll.getBoundingClientRect();
-        const availableW = scrollRect.width - 40;
-        const availableH = scrollRect.height - 40;
-        const stageW = stage ? stage.offsetWidth : container.offsetWidth;
-        const stageH = stage ? stage.offsetHeight : container.offsetHeight;
-        const scale = Math.min(availableW / stageW, availableH / stageH, 1);
-        container.style.transform = `scale(${scale})`;
-        container.style.width = stageW + 'px';
-        container.style.height = stageH + 'px';
+        const stageW = stage ? stage.offsetWidth : scrollRect.width;
+        const stageH = stage ? stage.offsetHeight : scrollRect.height;
+        const scale = Math.min((scrollRect.width - 20) / stageW, 0.85);
+        // Scale the stage element, not container (keeps scroll working)
+        if (stage) {
+            stage.style.transform = `scale(${scale})`;
+            stage.style.transformOrigin = 'top center';
+        }
     } else {
         area.classList.remove('fit-frame');
-        container.style.transform = '';
-        container.style.width = '';
-        container.style.height = '';
+        if (stage) {
+            stage.style.transform = '';
+            stage.style.transformOrigin = '';
+        }
     }
 }
-
-var bgImageData = '';
 
 function toggleSection(el) { el.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('collapsed'); }
 

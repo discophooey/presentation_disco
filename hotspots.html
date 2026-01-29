@@ -217,62 +217,28 @@ function toggleFitFrame() {
     const area = document.getElementById('previewArea');
     const scroll = document.getElementById('previewScroll');
     const container = document.getElementById('previewContainer');
-    const stage = document.getElementById('previewStage');
+    const stage = document.getElementById('previewStage') || container.querySelector('.sticky-stage');
     const toggle = document.getElementById('fitFrameToggle');
     
     if (toggle.checked) {
         area.classList.add('fit-frame');
+        // Calculate scale based on stage/viewport size
         const scrollRect = scroll.getBoundingClientRect();
-        const availableW = scrollRect.width - 40;
-        const availableH = scrollRect.height - 40;
-        const stageW = stage ? stage.offsetWidth : container.offsetWidth;
-        const stageH = stage ? stage.offsetHeight : container.offsetHeight;
-        const scale = Math.min(availableW / stageW, availableH / stageH, 1);
-        container.style.transform = `scale(${scale})`;
-        container.style.width = stageW + 'px';
-        container.style.height = stageH + 'px';
+        const stageW = stage ? stage.offsetWidth : scrollRect.width;
+        const stageH = stage ? stage.offsetHeight : scrollRect.height;
+        const scale = Math.min((scrollRect.width - 20) / stageW, 0.85);
+        // Scale the stage element, not container (keeps scroll working)
+        if (stage) {
+            stage.style.transform = `scale(${scale})`;
+            stage.style.transformOrigin = 'top center';
+        }
     } else {
         area.classList.remove('fit-frame');
-        container.style.transform = '';
-        container.style.width = '';
-        container.style.height = '';
+        if (stage) {
+            stage.style.transform = '';
+            stage.style.transformOrigin = '';
+        }
     }
-}
-
-// STATE
-let imageUrl = null;
-let hotspots = [];
-let placingId = null;
-
-// IMAGE
-function loadImage() {
-    let url = document.getElementById('imageUrl').value.trim();
-    if (!url) return alert('Enter image URL');
-    if (url.includes('github.com') && url.includes('/blob/')) {
-        url = url.replace('github.com','raw.githubusercontent.com').replace('/blob/','/').split('?')[0];
-    }
-    const img = new Image();
-    img.onload = () => { imageUrl = url; rebuildPreview(); };
-    img.onerror = () => alert('Failed to load image');
-    img.src = url;
-}
-
-// HOTSPOT CRUD
-function addHotspot() {
-    if (!imageUrl) return alert('Load image first');
-    hotspots.push({
-        id: Date.now(),
-        x: 50, y: 50,
-        label: 'Hotspot ' + (hotspots.length + 1),
-        color: '#ff4444',
-        labelPos: 'right',
-        scale: 1,
-        start: 0,
-        end: 100
-    });
-    placingId = hotspots[hotspots.length - 1].id;
-    renderList();
-    rebuildPreview();
 }
 
 function removeHotspot(id) {
