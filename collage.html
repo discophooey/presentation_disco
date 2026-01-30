@@ -67,7 +67,8 @@ button.small { width: auto; padding: 6px 12px; }
 .preview-stage { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-direction: column; }
 
 .collage-wrapper { position: relative; width: 95%; max-width: 1200px; }
-.collage-title { font-size: 18px; font-weight: 600; padding: 12px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.collage-title { font-size: 18px; font-weight: 600; padding: 12px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0; transform: translateY(10px); transition: opacity 0.5s, transform 0.5s; }
+.collage-title.visible { opacity: 1; transform: translateY(0); }
 .collage-title.top-left, .collage-title.bottom-left { text-align: left; }
 .collage-title.top-center, .collage-title.bottom-center { text-align: center; }
 .collage-area { position: relative; width: 100%; max-width: 1200px; aspect-ratio: 16/10; overflow: hidden; border-radius: 8px; }
@@ -182,8 +183,27 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 </select>
             </div>
             <div class="control-group">
-                <label>Title Color</label>
-                <input type="color" id="titleColor" value="#ffffff" onchange="updatePreview()">
+                <label>Title Font</label>
+                <select id="titleFont" onchange="updatePreview()">
+                    <option value="APRegular">AP Regular</option>
+                    <option value="APMedium">AP Medium</option>
+                    <option value="APBold">AP Bold</option>
+                    <option value="sans-serif">System Sans</option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="control-group">
+                    <label>Title Scale <span class="range-val" id="titleScaleVal">100%</span></label>
+                    <input type="range" id="titleScale" min="50" max="200" value="100" oninput="document.getElementById('titleScaleVal').textContent=this.value+'%'; updatePreview();">
+                </div>
+                <div class="control-group">
+                    <label>Title Color</label>
+                    <input type="color" id="titleColor" value="#ffffff" onchange="updatePreview()">
+                </div>
+            </div>
+            <div class="control-group">
+                <label>X Offset <span class="range-val" id="titleOffsetVal">0px</span></label>
+                <input type="range" id="titleOffset" min="-100" max="100" value="0" oninput="document.getElementById('titleOffsetVal').textContent=this.value+'px'; updatePreview();">
             </div>
         </div>
         
@@ -380,8 +400,13 @@ function updatePreview() {
     var titleText = document.getElementById('titleText').value;
     var titlePos = document.getElementById('titlePosition').value;
     var titleColor = document.getElementById('titleColor').value;
+    var titleFont = document.getElementById('titleFont').value;
+    var titleScale = document.getElementById('titleScale').value;
+    var titleOffset = document.getElementById('titleOffset').value;
     var titleTop = document.getElementById('collageTitle');
     var titleBottom = document.getElementById('collageTitleBottom');
+    
+    var fontSize = Math.round(18 * titleScale / 100);
     
     titleTop.style.display = 'none';
     titleBottom.style.display = 'none';
@@ -390,6 +415,9 @@ function updatePreview() {
         var targetTitle = titlePos.startsWith('top') ? titleTop : titleBottom;
         targetTitle.textContent = titleText;
         targetTitle.style.color = titleColor;
+        targetTitle.style.fontFamily = titleFont + ", sans-serif";
+        targetTitle.style.fontSize = fontSize + 'px';
+        targetTitle.style.marginLeft = titleOffset + 'px';
         targetTitle.style.display = 'block';
         targetTitle.className = 'collage-title ' + titlePos;
     }
@@ -476,6 +504,12 @@ function applyEffect() {
     var progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
     document.getElementById('progressDisplay').textContent = Math.round(progress * 100) + '%';
     
+    // Title fade in early
+    var titleTop = document.getElementById('collageTitle');
+    var titleBottom = document.getElementById('collageTitleBottom');
+    titleTop.classList.toggle('visible', progress >= 0.05);
+    titleBottom.classList.toggle('visible', progress >= 0.8);
+    
     var items = document.querySelectorAll('.collage-item');
     var n = items.length;
     for (var i = 0; i < n; i++) {
@@ -503,8 +537,12 @@ function generateExport() {
     var titleText = document.getElementById('titleText').value;
     var titlePos = document.getElementById('titlePosition').value;
     var titleColor = document.getElementById('titleColor').value;
+    var titleFont = document.getElementById('titleFont').value;
+    var titleScale = document.getElementById('titleScale').value;
+    var titleOffset = document.getElementById('titleOffset').value;
     var titleAlign = titlePos.includes('left') ? 'left' : 'center';
     var titleIsTop = titlePos.startsWith('top');
+    var titleFontSize = Math.round(18 * titleScale / 100);
     
     var rows = Math.ceil(images.length / cols);
     var gapPct = (gap / 10);
@@ -527,10 +565,11 @@ function generateExport() {
         itemsHtml += '<div class="c-item" style="left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%;width:' + cellW.toFixed(2) + '%;height:' + cellH.toFixed(2) + '%;"><img src="' + img.url + '" alt="" style="transform:scale(' + img.scale + ') translate(' + tx + '%,' + ty + '%)"></div>';
     }
     
-    // Title HTML
+    // Title HTML and CSS
     var titleHtmlTop = titleText && titleIsTop ? '<div class="c-title">' + titleText + '</div>' : '';
     var titleHtmlBottom = titleText && !titleIsTop ? '<div class="c-title">' + titleText + '</div>' : '';
-    var titleCSS = titleText ? '#' + uid + ' .c-title{font-size:18px;font-weight:600;color:' + titleColor + ';padding:12px 0;text-align:' + titleAlign + '}' : '';
+    var titleCSS = titleText ? '#' + uid + ' .c-title{font-size:' + titleFontSize + 'px;font-weight:600;color:' + titleColor + ';font-family:' + titleFont + ',sans-serif;padding:12px 0;text-align:' + titleAlign + ';margin-left:' + titleOffset + 'px;opacity:0;transform:translateY(10px);transition:opacity 0.5s,transform 0.5s}#' + uid + ' .c-title.on{opacity:1;transform:translateY(0)}' : '';
+    var titleIsTopFlag = titleIsTop ? 'true' : 'false';
     
     var code = `<style>
 #${uid}{position:relative}
@@ -569,6 +608,8 @@ ${titleHtmlBottom}
 var w=document.getElementById("${uid}");
 var s=w.querySelector(".c-stage");
 var items=w.querySelectorAll(".c-item");
+var title=w.querySelector(".c-title");
+var titleIsTop=${titleIsTopFlag};
 var lb=w.querySelector(".c-lb");
 var lbImg=lb.querySelector("img");
 var lbCap=lb.querySelector(".c-lb-cap");
@@ -580,6 +621,7 @@ var data=${JSON.stringify(imgData)};
 var n=items.length;
 var scrollMult=${scrollMult};
 var revealed=[];
+var titleRevealed=false;
 var curIdx=0;
 for(var i=0;i<n;i++)revealed[i]=false;
 function setH(){w.style.height=(s.offsetHeight*scrollMult)+"px";}
@@ -607,10 +649,13 @@ function upd(){
 var wh=window.innerHeight;
 var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["${uid}"];
 var shouldReveal=false;
+var allRevealed=revealed.every(function(r){return r;});
 if(extP!==undefined){shouldReveal=extP>0.1;}else{
 var areaRect=w.querySelector(".c-area").getBoundingClientRect();
 shouldReveal=areaRect.top<wh*0.85;
 }
+if(title&&!titleRevealed&&shouldReveal&&titleIsTop){titleRevealed=true;title.classList.add("on");}
+if(title&&!titleRevealed&&allRevealed&&!titleIsTop){titleRevealed=true;setTimeout(function(){title.classList.add("on");},200);}
 if(shouldReveal){
 for(var i=0;i<n;i++){
 if(!revealed[i]){
