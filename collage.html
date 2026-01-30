@@ -64,9 +64,13 @@ button.small { width: auto; padding: 6px 12px; }
 #progressDisplay { color: #4a9eff; font-weight: bold; }
 .preview-scroll { flex: 1; overflow-y: auto; }
 .preview-container { position: relative; }
-.preview-stage { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.preview-stage { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-direction: column; }
 
-.collage-area { position: relative; width: 90%; max-width: 1000px; aspect-ratio: 16/10; overflow: hidden; border-radius: 8px; }
+.collage-wrapper { position: relative; width: 95%; max-width: 1200px; }
+.collage-title { font-size: 18px; font-weight: 600; padding: 12px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.collage-title.top-left, .collage-title.bottom-left { text-align: left; }
+.collage-title.top-center, .collage-title.bottom-center { text-align: center; }
+.collage-area { position: relative; width: 100%; max-width: 1200px; aspect-ratio: 16/10; overflow: hidden; border-radius: 8px; }
 .collage-item { position: absolute; overflow: hidden; border-radius: 4px; opacity: 0; transform: translateY(30px); transition: all 0.5s; cursor: pointer; }
 .collage-item.visible { opacity: 1; transform: translateY(0); }
 .collage-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
@@ -164,6 +168,23 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                     <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="bgTransparent" onchange="updatePreview();"> Transparent</label>
                 </div>
             </div>
+            <div class="control-group">
+                <label>Title Text</label>
+                <input type="text" id="titleText" placeholder="Optional title..." oninput="updatePreview()">
+            </div>
+            <div class="control-group">
+                <label>Title Position</label>
+                <select id="titlePosition" onchange="updatePreview()">
+                    <option value="top-left">Top Left</option>
+                    <option value="top-center">Top Center</option>
+                    <option value="bottom-left">Bottom Left</option>
+                    <option value="bottom-center">Bottom Center</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Title Color</label>
+                <input type="color" id="titleColor" value="#ffffff" onchange="updatePreview()">
+            </div>
         </div>
         
         <h2 onclick="toggleSection(this)">Export Settings</h2>
@@ -193,7 +214,11 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         <div class="preview-scroll" id="previewScroll">
             <div class="preview-container" id="previewContainer">
                 <div class="preview-stage" id="previewStage">
-                    <div class="collage-area" id="collageArea"></div>
+                    <div class="collage-wrapper" id="collageWrapper">
+                        <div class="collage-title top-left" id="collageTitle" style="display:none;"></div>
+                        <div class="collage-area" id="collageArea"></div>
+                        <div class="collage-title bottom-left" id="collageTitleBottom" style="display:none;"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -351,6 +376,24 @@ function updatePreview() {
     var cols = parseInt(document.getElementById('gridCols').value);
     var gap = parseInt(document.getElementById('gridGap').value);
     
+    // Title handling
+    var titleText = document.getElementById('titleText').value;
+    var titlePos = document.getElementById('titlePosition').value;
+    var titleColor = document.getElementById('titleColor').value;
+    var titleTop = document.getElementById('collageTitle');
+    var titleBottom = document.getElementById('collageTitleBottom');
+    
+    titleTop.style.display = 'none';
+    titleBottom.style.display = 'none';
+    
+    if (titleText) {
+        var targetTitle = titlePos.startsWith('top') ? titleTop : titleBottom;
+        targetTitle.textContent = titleText;
+        targetTitle.style.color = titleColor;
+        targetTitle.style.display = 'block';
+        targetTitle.className = 'collage-title ' + titlePos;
+    }
+    
     document.getElementById('previewStage').style.background = bgColor;
     area.style.background = bgColor;
     
@@ -456,6 +499,13 @@ function generateExport() {
     var gap = parseInt(document.getElementById('gridGap').value);
     var scrollMult = parseInt(document.getElementById('scrollDuration').value) / 100;
     
+    // Title settings
+    var titleText = document.getElementById('titleText').value;
+    var titlePos = document.getElementById('titlePosition').value;
+    var titleColor = document.getElementById('titleColor').value;
+    var titleAlign = titlePos.includes('left') ? 'left' : 'center';
+    var titleIsTop = titlePos.startsWith('top');
+    
     var rows = Math.ceil(images.length / cols);
     var gapPct = (gap / 10);
     var cellW = (100 - gapPct * (cols + 1)) / cols;
@@ -477,10 +527,17 @@ function generateExport() {
         itemsHtml += '<div class="c-item" style="left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%;width:' + cellW.toFixed(2) + '%;height:' + cellH.toFixed(2) + '%;"><img src="' + img.url + '" alt="" style="transform:scale(' + img.scale + ') translate(' + tx + '%,' + ty + '%)"></div>';
     }
     
+    // Title HTML
+    var titleHtmlTop = titleText && titleIsTop ? '<div class="c-title">' + titleText + '</div>' : '';
+    var titleHtmlBottom = titleText && !titleIsTop ? '<div class="c-title">' + titleText + '</div>' : '';
+    var titleCSS = titleText ? '#' + uid + ' .c-title{font-size:18px;font-weight:600;color:' + titleColor + ';padding:12px 0;text-align:' + titleAlign + '}' : '';
+    
     var code = `<style>
 #${uid}{position:relative}
-#${uid} .c-stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;background:${bgColor}}
-#${uid} .c-area{position:relative;width:90%;max-width:1000px;aspect-ratio:16/10;background:${bgColor};border-radius:8px;overflow:hidden}
+#${uid} .c-stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;background:${bgColor}}
+#${uid} .c-wrap{position:relative;width:95%;max-width:1200px}
+#${uid} .c-area{position:relative;width:100%;aspect-ratio:16/10;background:${bgColor};border-radius:8px;overflow:hidden}
+${titleCSS}
 #${uid} .c-item{position:absolute;overflow:hidden;border-radius:4px;opacity:0;transform:translateY(30px);transition:all 0.5s;cursor:pointer}
 #${uid} .c-item.on{opacity:1;transform:translateY(0)}
 #${uid} .c-item img{width:100%;height:100%;object-fit:cover}
@@ -495,11 +552,15 @@ function generateExport() {
 #${uid} .c-lb-nav:hover{opacity:1}
 #${uid} .c-lb-prev{left:20px}
 #${uid} .c-lb-next{right:20px}
-@media(max-width:768px){#${uid} .c-area{width:95%}#${uid} .c-lb-nav{width:40px;height:40px;font-size:22px}}
+@media(max-width:768px){#${uid} .c-wrap{width:95%}#${uid} .c-lb-nav{width:40px;height:40px;font-size:22px}}
 </style>
 <div id="${uid}">
-<div class="c-stage"><div class="c-area">
+<div class="c-stage"><div class="c-wrap">
+${titleHtmlTop}
+<div class="c-area">
 ${itemsHtml}
+</div>
+${titleHtmlBottom}
 </div></div>
 <div class="c-lb"><div class="c-lb-x">×</div><div class="c-lb-nav c-lb-prev">‹</div><div class="c-lb-nav c-lb-next">›</div><img src="" alt=""><div class="c-lb-cap"></div><div class="c-lb-cred"></div></div>
 </div>
