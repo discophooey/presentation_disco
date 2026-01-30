@@ -148,7 +148,10 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
             </div>
             <div class="control-group">
                 <label>Background Color</label>
-                <input type="color" id="bgColor" value="#000000" onchange="document.getElementById('previewStage').style.background=this.value;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <input type="color" id="bgColor" value="#000000" onchange="updateStageBg();">
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="bgTransparent" onchange="updateStageBg();"> Transparent</label>
+                </div>
             </div>
         </div>
         
@@ -246,6 +249,12 @@ function updatePreviewHeight() {
     document.getElementById('previewContainer').style.height = (parseInt(document.getElementById('scrollDuration').value) || 150) + 'vh';
 }
 
+function updateStageBg() {
+    var isTransparent = document.getElementById('bgTransparent').checked;
+    var color = document.getElementById('bgColor').value;
+    document.getElementById('previewStage').style.background = isTransparent ? 'transparent' : color;
+}
+
 function updatePreview() {
     var wrapper = document.getElementById('statsWrapper');
     var stage = document.getElementById('previewStage');
@@ -315,7 +324,9 @@ function generateExport() {
     var numColor = document.getElementById('numColor').value;
     var numSize = document.getElementById('numSize').value;
     var labelColor = document.getElementById('labelColor').value;
-    var bgColor = document.getElementById('bgColor').value;
+    var bgColorValue = document.getElementById('bgColor').value;
+    var bgTransparent = document.getElementById('bgTransparent').checked;
+    var bgColor = bgTransparent ? 'transparent' : bgColorValue;
     var containerHeight = document.getElementById('containerHeight').value;
     var scrollDur = document.getElementById('scrollDuration').value;
     var scrollMult = scrollDur / 100;

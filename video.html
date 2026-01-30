@@ -211,6 +211,13 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         
         <h2 onclick="toggleSection(this)">Export</h2>
         <div class="section">
+            <div class="control-group">
+                <label>Stage Background</label>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <input type="color" id="stageBgColor" value="#000000" onchange="updateStageBg();">
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="stageBgTransparent" onchange="updateStageBg();"> Transparent</label>
+                </div>
+            </div>
             <button onclick="generateExport()">Generate HTML</button>
             <button class="secondary" onclick="resetModule()" style="margin-top:8px;">↺ Reset</button>
         </div>
@@ -309,6 +316,12 @@ function toggleSection(el) { el.classList.toggle('collapsed'); el.nextElementSib
 
 function updatePreviewHeight() {
     document.getElementById('previewContainer').style.height = (parseInt(document.getElementById('scrollDuration').value) || 400) + 'vh';
+}
+
+function updateStageBg() {
+    const isTransparent = document.getElementById('stageBgTransparent').checked;
+    const color = document.getElementById('stageBgColor').value;
+    document.getElementById('previewStage').style.background = isTransparent ? 'transparent' : color;
 }
 
 function addTextLayer() {
@@ -418,6 +431,9 @@ function generateExport() {
     const smooth = document.getElementById('smoothing').value;
     const desktopOffset = document.getElementById('desktopOffset').value;
     const mobileOffset = document.getElementById('mobileOffset').value;
+    const stageBgTransparent = document.getElementById('stageBgTransparent').checked;
+    const stageBgColor = document.getElementById('stageBgColor').value;
+    const stageBg = stageBgTransparent ? 'transparent' : stageBgColor;
     const fontSize = document.getElementById('fontSize').value;
     const color = document.getElementById('textColor').value;
     const hasBg = document.getElementById('textBgEnabled').checked;
@@ -446,7 +462,7 @@ function generateExport() {
     
     const code = `<style>
 #${uid}.v-wrap{position:relative}
-#${uid} .v-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;height:100vh;background:#000;overflow:hidden}
+#${uid} .v-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;height:100vh;background:${stageBg};overflow:hidden}
 #${uid} .v-inner{position:relative;width:100%;height:100%}
 #${uid} video{width:100%;height:100%;object-fit:${fit};position:absolute;top:0;left:0;-webkit-transform:translateZ(0);transform:translateZ(0)}
 #${uid} .v-txt{position:absolute;pointer-events:none;font-size:${fontSize}px;color:${color};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;transition:opacity 0.3s}

@@ -562,6 +562,14 @@
  <div style="font-size:11px;color:#666;margin-top:4px;">Set to ~120 if nav overlaps content</div>
  </div>
 
+ <div class="control-group">
+ <label>Stage Background</label>
+ <div style="display:flex;align-items:center;gap:10px;">
+ <input type="color" id="stageBgColor" value="#000000" onchange="updateStageBg();">
+ <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="stageBgTransparent" onchange="updateStageBg();"> Transparent</label>
+ </div>
+ </div>
+
  <button onclick="exportHTML()">Generate HTML</button>
  <button class="secondary" onclick="clearAll()">Clear All</button>
  <button class="secondary" onclick="resetModule()">↺ Reset</button>
@@ -742,6 +750,13 @@ function toggleFitFrame() {
  };
  img.onerror = function() { alert('Failed to load image'); };
  img.src = url;
+ }
+
+ function updateStageBg() {
+ const isTransparent = document.getElementById('stageBgTransparent').checked;
+ const color = document.getElementById('stageBgColor').value;
+ const stage = document.querySelector('.sticky-stage');
+ if (stage) stage.style.background = isTransparent ? 'transparent' : color;
  }
 
  function render() {
@@ -1173,6 +1188,9 @@ function toggleFitFrame() {
  const scrollLength = parseInt(document.getElementById('scrollLength').value) || 300;
  const topPad = document.getElementById('topPadding').value;
  const stickyTop = document.getElementById('stickyOffset').value;
+ const stageBgTransparent = document.getElementById('stageBgTransparent').checked;
+ const stageBgColor = document.getElementById('stageBgColor').value;
+ const stageBg = stageBgTransparent ? 'transparent' : stageBgColor;
  const transitionStyle = document.getElementById('transitionStyle').value;
  const slideDirection = document.getElementById('slideDirection').value;
  const transitionSpeed = document.getElementById('transitionSpeed').value;
@@ -1239,7 +1257,7 @@ function toggleFitFrame() {
  const uid = 'gal' + Math.random().toString(36).substr(2, 9);
  const code = `<style>
 #${uid}.story-container{position:relative}
-#${uid} .sticky-stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;width:100%;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}
+#${uid} .sticky-stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;width:100%;display:flex;align-items:center;justify-content:center;background:${stageBg};overflow:hidden}
 #${uid} .image-layer{position:absolute;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;overflow:hidden;will-change:transform,opacity,filter;box-sizing:border-box}
 #${uid} .image-layer img{width:100%;height:100%;display:block;object-fit:${fit}}
 #${uid} .text-overlay{position:absolute;padding:12px 20px;border-radius:4px;transition:opacity 0.8s ease;z-index:10;max-width:90%;box-sizing:border-box}

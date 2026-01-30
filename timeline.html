@@ -127,7 +127,11 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 <label>Progress Color <input type="color" id="progressColor" value="#ff6666" onchange="updatePreview()"></label>
             </div>
             <div class="control-group">
-                <label>Background <input type="color" id="bgColor" value="#0a0a0a" onchange="updatePreview()"></label>
+                <label>Background</label>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <input type="color" id="bgColor" value="#0a0a0a" onchange="updatePreview()">
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="bgTransparent" onchange="updatePreview();"> Transparent</label>
+                </div>
             </div>
         </div>
         
@@ -279,7 +283,9 @@ function generateExport() {
     var uid = 'tltest';
     var lineColor = document.getElementById('lineColor').value;
     var progressColor = document.getElementById('progressColor').value;
-    var bgColor = document.getElementById('bgColor').value;
+    var bgColorValue = document.getElementById('bgColor').value;
+    var bgTransparent = document.getElementById('bgTransparent').checked;
+    var bgColor = bgTransparent ? 'transparent' : bgColorValue;
     var scrollMult = document.getElementById('scrollDuration').value / 100;
     
     var eventsHtml = '';

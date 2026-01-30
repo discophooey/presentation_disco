@@ -159,7 +159,10 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         <div class="section">
             <div class="control-group">
                 <label>Background Color</label>
-                <input type="color" id="bgColor" value="#000000" onchange="updatePreview()">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <input type="color" id="bgColor" value="#000000" onchange="updatePreview()">
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="bgTransparent" onchange="updatePreview();"> Transparent</label>
+                </div>
             </div>
         </div>
         
@@ -444,7 +447,9 @@ function generateExport() {
     if (images.length === 0) { alert('Add at least one image'); return; }
     
     var uid = 'collage' + Math.random().toString(36).substr(2, 6);
-    var bgColor = document.getElementById('bgColor').value;
+    var bgColorValue = document.getElementById('bgColor').value;
+    var bgTransparent = document.getElementById('bgTransparent').checked;
+    var bgColor = bgTransparent ? 'transparent' : bgColorValue;
     var cols = parseInt(document.getElementById('gridCols').value);
     var gap = parseInt(document.getElementById('gridGap').value);
     var scrollMult = parseInt(document.getElementById('scrollDuration').value) / 100;

@@ -196,7 +196,10 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         <div class="section">
             <div class="control-group">
                 <label>Background Color</label>
-                <input type="color" id="bgColor" value="#000000" onchange="document.getElementById('previewStage').style.background=this.value;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <input type="color" id="bgColor" value="#000000" onchange="updateStageBg();">
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="bgTransparent" onchange="updateStageBg();"> Transparent</label>
+                </div>
             </div>
             <div class="control-group">
                 <label>Marker Color</label>
@@ -352,6 +355,12 @@ var currentProgress = 0;
 var targetProgress = 0;
 var animFrame = null;
 
+function updateStageBg() {
+    var isTransparent = document.getElementById('bgTransparent').checked;
+    var color = document.getElementById('bgColor').value;
+    document.getElementById('previewStage').style.background = isTransparent ? 'transparent' : color;
+}
+
 function applyEffect() {
     var img = document.getElementById('zoomImg');
     var marker = document.getElementById('zoomMarker');
@@ -437,7 +446,9 @@ function generateExport() {
     var captionEnabled = document.getElementById('captionEnabled').checked;
     var captionText = document.getElementById('captionText').value;
     var captionCredit = document.getElementById('captionCredit').value;
-    var bgColor = document.getElementById('bgColor').value;
+    var bgColorValue = document.getElementById('bgColor').value;
+    var bgTransparent = document.getElementById('bgTransparent').checked;
+    var bgColor = bgTransparent ? 'transparent' : bgColorValue;
     var aspect = document.getElementById('aspectRatio').value;
     var aspectParts = aspect.split(':');
     var fit = document.getElementById('imageFit').value;

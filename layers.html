@@ -172,7 +172,10 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
             </div>
             <div class="control-group">
                 <label>Background Color</label>
-                <input type="color" id="bgColor" value="#000000" onchange="updatePreview();">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <input type="color" id="bgColor" value="#000000" onchange="updatePreview();">
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="bgTransparent" onchange="updatePreview();"> Transparent</label>
+                </div>
             </div>
             <div class="control-group">
                 <label>Scroll Duration (vh) <span class="range-val" id="scrollDurVal">400</span></label>
@@ -655,7 +658,9 @@ function generateExport() {
     const uid = 'ly' + Math.random().toString(36).substr(2, 9);
     const effect = document.getElementById('effectType').value;
     const intensity = parseInt(document.getElementById('intensity').value) / 100;
-    const bgColor = document.getElementById('bgColor').value;
+    const bgColorValue = document.getElementById('bgColor').value;
+    const bgTransparent = document.getElementById('bgTransparent').checked;
+    const bgColor = bgTransparent ? 'transparent' : bgColorValue;
     const imageFit = document.getElementById('imageFit').value;
     const aspect = document.getElementById('aspectRatio').value;
     const dur = document.getElementById('scrollDuration').value;

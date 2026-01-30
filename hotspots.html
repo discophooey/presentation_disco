@@ -164,6 +164,13 @@ textarea.code { width: 100%; height: 250px; background: #0a0a0a; border: 1px sol
             <label>Sticky Offset (px)</label>
             <input type="number" id="stickyOffset" value="50" min="0" max="200">
         </div>
+        <div class="control-group">
+            <label>Stage Background</label>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <input type="color" id="stageBgColor" value="#000000" onchange="updateStageBg();">
+                <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="stageBgTransparent" onchange="updateStageBg();"> Transparent</label>
+            </div>
+        </div>
         <button onclick="generateExport()">Generate HTML</button>
         <button class="secondary" onclick="resetModule()">↺ Reset</button>
         <div class="row" style="margin-top:8px;">
@@ -349,6 +356,12 @@ function setPreviewHeight() {
     document.getElementById('previewContainer').style.height = vh + 'vh';
 }
 
+function updateStageBg() {
+    const isTransparent = document.getElementById('stageBgTransparent').checked;
+    const color = document.getElementById('stageBgColor').value;
+    document.getElementById('previewStage').style.background = isTransparent ? 'transparent' : color;
+}
+
 function rebuildPreview() {
     const inner = document.getElementById('previewInner');
     if (!imageUrl) {
@@ -411,6 +424,9 @@ function generateExport() {
     if (!imageUrl) return alert('Load image first');
     const dur = document.getElementById('scrollDuration').value;
     const offset = document.getElementById('stickyOffset').value;
+    const stageBgTransparent = document.getElementById('stageBgTransparent').checked;
+    const stageBgColor = document.getElementById('stageBgColor').value;
+    const stageBg = stageBgTransparent ? 'transparent' : stageBgColor;
     const capText = document.getElementById('captionText').value;
     const capCredit = document.getElementById('captionCredit').value;
     const fit = document.getElementById('imageFit').value;
@@ -429,7 +445,7 @@ function generateExport() {
     
     const code = `<style>
 #${uid}{position:relative}
-#${uid} .stage{position:-webkit-sticky;position:sticky;top:${offset}px;height:100vh;background:#000;overflow:hidden}
+#${uid} .stage{position:-webkit-sticky;position:sticky;top:${offset}px;height:100vh;background:${stageBg};overflow:hidden}
 #${uid} .inner{position:relative;width:100%;height:100%}
 #${uid} .inner img{width:100%;height:100%;object-fit:${fit};display:block}
 #${uid} .hp{position:absolute;opacity:0;transform:scale(var(--sc,1));pointer-events:none;transition:opacity .3s}

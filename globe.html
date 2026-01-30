@@ -329,6 +329,13 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         
         <h2 onclick="toggleSection(this)">Export</h2>
         <div class="section">
+            <div class="control-group">
+                <label>Stage Background</label>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <input type="color" id="stageBgColor" value="#000000" onchange="updateStageBg();">
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="stageBgTransparent" onchange="updateStageBg();"> Transparent</label>
+                </div>
+            </div>
             <button onclick="generateExport()">Generate HTML</button>
             <button class="secondary" onclick="resetModule()" style="margin-top:8px;">↺ Reset</button>
         </div>
@@ -1178,6 +1185,12 @@ function applyScroll() {
 document.getElementById('previewScroll').addEventListener('scroll', applyScroll, { passive: true });
 window.addEventListener('resize', onResize);
 
+function updateStageBg() {
+    const isTransparent = document.getElementById('stageBgTransparent').checked;
+    const color = document.getElementById('stageBgColor').value;
+    document.getElementById('previewStage').style.background = isTransparent ? 'transparent' : color;
+}
+
 function generateExport() {
     if (points.length === 0) { alert('Add at least one point'); return; }
     
@@ -1196,6 +1209,9 @@ function generateExport() {
     const desktopOffset = document.getElementById('desktopOffset').value;
     const mobileOffset = document.getElementById('mobileOffset').value;
     const mobileHeight = document.getElementById('mobileHeight').value;
+    const stageBgTransparent = document.getElementById('stageBgTransparent').checked;
+    const stageBgColor = document.getElementById('stageBgColor').value;
+    const stageBg = stageBgTransparent ? 'transparent' : stageBgColor;
     const earthTexUrl = document.getElementById('customEarthTex').value.trim() || defaultEarthTex;
     const bumpTexUrl = document.getElementById('customBumpTex').value.trim() || defaultBumpTex;
     const scrollMult = dur / 100;
@@ -1321,7 +1337,7 @@ document.head.appendChild(sc);
     
     const code = `<style>
 #${uid}.globe-wrap{position:relative}
-#${uid} .globe-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;height:100vh;width:100%;background:#000;overflow:hidden}
+#${uid} .globe-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;height:100vh;width:100%;background:${stageBg};overflow:hidden}
 #${uid} .globe-inner{position:absolute;top:0;left:0;width:100%;height:100%}
 #${uid} canvas{display:block;${filterCSS}}
 #${uid} .labels-container{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden}
