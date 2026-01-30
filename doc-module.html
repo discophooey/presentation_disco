@@ -120,6 +120,11 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         <h2 onclick="toggleSection(this)">Image Controls</h2>
         <div class="section">
             <div class="control-group">
+                <label>Output Scale <span class="range-val" id="outputScaleVal">100%</span></label>
+                <input type="range" id="outputScale" min="50" max="100" value="100" oninput="document.getElementById('outputScaleVal').textContent=this.value+'%'; rebuildPreview();">
+                <div class="hint">Scale down document within container</div>
+            </div>
+            <div class="control-group">
                 <label>Output Aspect Ratio</label>
                 <select id="outputAspect" onchange="rebuildPreview()">
                     <option value="auto" selected>Auto (match image)</option>
@@ -555,6 +560,7 @@ function rebuildPreview() {
     const posX = parseFloat(document.getElementById('imagePosX').value);
     const posY = parseFloat(document.getElementById('imagePosY').value);
     const outputAspect = document.getElementById('outputAspect').value;
+    const outputScale = parseInt(document.getElementById('outputScale').value) || 100;
     
     // Calculate pan offset from center (50% = no pan)
     const panX = (posX - 50) * (scale - 1) / scale;
@@ -588,10 +594,10 @@ function rebuildPreview() {
     // Matte clips to output aspect ratio, flexbox centers content
     let matteStyle = 'position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;';
     if (outputAspect === 'auto' || outputAspect === 'full') {
-        matteStyle += 'width:100%;height:100%;';
+        matteStyle += `width:${outputScale}%;height:${outputScale}%;`;
     } else {
-        // Fixed aspect ratio - fill width, let height be determined by ratio
-        matteStyle += `width:100%;aspect-ratio:${outputAspect.replace(':', '/')};`;
+        // Fixed aspect ratio - use scale percentage for width
+        matteStyle += `width:${outputScale}%;aspect-ratio:${outputAspect.replace(':', '/')};`;
     }
     matte.style.cssText = matteStyle;
     
@@ -692,6 +698,7 @@ function generateExport() {
     const vignetteOn = document.getElementById('vignetteEnabled').checked;
     const paperAmount = parseFloat(document.getElementById('paperAmount').value) / 100;
     const outputAspect = document.getElementById('outputAspect').value;
+    const outputScale = parseInt(document.getElementById('outputScale').value) || 100;
     const mobileWidthMult = parseFloat(document.getElementById('mobileWidthMult').value) || 1;
     const sm = parseInt(dur) / 100;
     const uid = 'doc' + Math.random().toString(36).substr(2, 9);
@@ -736,10 +743,10 @@ function generateExport() {
     // Matte CSS - clips to output aspect ratio
     let matteCss = '';
     if (outputAspect === 'auto' || outputAspect === 'full') {
-        matteCss = `#${uid} .matte{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}`;
+        matteCss = `#${uid} .matte{position:relative;width:${outputScale}%;height:${outputScale}%;display:flex;align-items:center;justify-content:center;overflow:hidden}`;
     } else {
-        // Fixed aspect ratio - fill width for maximum size
-        matteCss = `#${uid} .matte{position:relative;width:100%;aspect-ratio:${outputAspect.replace(':', '/')};display:flex;align-items:center;justify-content:center;overflow:hidden}`;
+        // Fixed aspect ratio - use scale percentage for width
+        matteCss = `#${uid} .matte{position:relative;width:${outputScale}%;aspect-ratio:${outputAspect.replace(':', '/')};display:flex;align-items:center;justify-content:center;overflow:hidden}`;
     }
     
     // Content transform for scale and pan (only used if no keyframes)
@@ -873,6 +880,7 @@ function saveProject() {
         keyframes,
         settings: {
             outputAspect: document.getElementById('outputAspect').value,
+            outputScale: document.getElementById('outputScale').value,
             imageScale: document.getElementById('imageScale').value,
             imagePosX: document.getElementById('imagePosX').value,
             imagePosY: document.getElementById('imagePosY').value,
@@ -907,6 +915,8 @@ function loadProject() {
                 keyframes = proj.keyframes || [];
                 if (proj.settings) {
                     document.getElementById('outputAspect').value = proj.settings.outputAspect || proj.settings.aspectRatio || 'auto';
+                    document.getElementById('outputScale').value = proj.settings.outputScale || 100;
+                    document.getElementById('outputScaleVal').textContent = (proj.settings.outputScale || 100) + '%';
                     document.getElementById('imageScale').value = proj.settings.imageScale || 1;
                     document.getElementById('scaleVal').textContent = parseFloat(proj.settings.imageScale || 1).toFixed(2) + 'x';
                     document.getElementById('imagePosX').value = proj.settings.imagePosX || 50;
