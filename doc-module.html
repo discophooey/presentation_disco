@@ -64,6 +64,12 @@ button.small { width: auto; padding: 4px 10px; font-size: 11px; }
 .cap-text { font-size: 13px; line-height: 1.5; color: #e0e0e0; }
 .cap-credit { font-size: 11px; color: #888; font-style: italic; margin-top: 6px; }
 
+.preview-blurb { position: absolute; z-index: 15; opacity: 0; transform: translateY(10px); transition: opacity 0.5s, transform 0.5s; pointer-events: none; }
+.preview-blurb.on { opacity: 1; transform: translateY(0); }
+.preview-blurb.top-left, .preview-blurb.bottom-left { text-align: left; }
+.preview-blurb.top-center, .preview-blurb.bottom-center { text-align: center; }
+.blurb-line { line-height: 1.4; white-space: nowrap; }
+
 .doc-highlight { position: absolute; pointer-events: none; overflow: hidden; }
 .doc-highlight .hl-bar { height: 100%; width: 0%; }
 .doc-highlight.placing { outline: 2px dashed #4a9eff; }
@@ -192,6 +198,58 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
             </div>
         </div>
         
+        <h2 onclick="toggleSection(this)">Text Blurb</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Line 1</label>
+                <input type="text" id="blurbLine1" placeholder="First line..." oninput="updateBlurb()">
+            </div>
+            <div class="control-group">
+                <label>Line 2</label>
+                <input type="text" id="blurbLine2" placeholder="Second line..." oninput="updateBlurb()">
+            </div>
+            <div class="control-group">
+                <label>Line 3</label>
+                <input type="text" id="blurbLine3" placeholder="Third line..." oninput="updateBlurb()">
+            </div>
+            <div class="control-group">
+                <label>Position</label>
+                <select id="blurbPosition" onchange="updateBlurb()">
+                    <option value="top-left">Top Left</option>
+                    <option value="top-center">Top Center</option>
+                    <option value="bottom-left">Bottom Left</option>
+                    <option value="bottom-center">Bottom Center</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Font</label>
+                <select id="blurbFont" onchange="updateBlurb()">
+                    <option value="APRegular">AP Regular</option>
+                    <option value="APMedium">AP Medium</option>
+                    <option value="APBold">AP Bold</option>
+                    <option value="sans-serif">System Sans</option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="control-group">
+                    <label>Scale <span class="range-val" id="blurbScaleVal">100%</span></label>
+                    <input type="range" id="blurbScale" min="50" max="200" value="100" oninput="document.getElementById('blurbScaleVal').textContent=this.value+'%'; updateBlurb();">
+                </div>
+                <div class="control-group">
+                    <label>Color</label>
+                    <input type="color" id="blurbColor" value="#ffffff" onchange="updateBlurb()">
+                </div>
+            </div>
+            <div class="control-group">
+                <label>X Offset <span class="range-val" id="blurbOffsetXVal">0px</span></label>
+                <input type="range" id="blurbOffsetX" min="-200" max="200" value="0" oninput="document.getElementById('blurbOffsetXVal').textContent=this.value+'px'; updateBlurb();">
+            </div>
+            <div class="control-group">
+                <label>Y Offset <span class="range-val" id="blurbOffsetYVal">0px</span></label>
+                <input type="range" id="blurbOffsetY" min="-200" max="200" value="0" oninput="document.getElementById('blurbOffsetYVal').textContent=this.value+'px'; updateBlurb();">
+            </div>
+        </div>
+        
         <h2 onclick="toggleSection(this)">Export</h2>
         <div class="section">
             <div class="control-group">
@@ -242,6 +300,11 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                     <div class="preview-caption" id="previewCaption">
                         <div class="cap-text" id="capText"></div>
                         <div class="cap-credit" id="capCredit"></div>
+                    </div>
+                    <div class="preview-blurb" id="previewBlurb">
+                        <div class="blurb-line" id="blurbLine1Display"></div>
+                        <div class="blurb-line" id="blurbLine2Display"></div>
+                        <div class="blurb-line" id="blurbLine3Display"></div>
                     </div>
                 </div>
             </div>
@@ -633,6 +696,61 @@ function updateVignette() {
     if (el) el.classList.toggle('on', enabled);
 }
 
+function updateBlurb() {
+    const blurb = document.getElementById('previewBlurb');
+    const line1 = document.getElementById('blurbLine1').value;
+    const line2 = document.getElementById('blurbLine2').value;
+    const line3 = document.getElementById('blurbLine3').value;
+    const position = document.getElementById('blurbPosition').value;
+    const font = document.getElementById('blurbFont').value;
+    const scale = parseInt(document.getElementById('blurbScale').value) || 100;
+    const color = document.getElementById('blurbColor').value;
+    const offsetX = parseInt(document.getElementById('blurbOffsetX').value) || 0;
+    const offsetY = parseInt(document.getElementById('blurbOffsetY').value) || 0;
+    
+    const hasContent = line1 || line2 || line3;
+    blurb.style.display = hasContent ? 'block' : 'none';
+    
+    if (!hasContent) return;
+    
+    const fontSize = Math.round(16 * scale / 100);
+    
+    // Set content
+    document.getElementById('blurbLine1Display').textContent = line1;
+    document.getElementById('blurbLine2Display').textContent = line2;
+    document.getElementById('blurbLine3Display').textContent = line3;
+    
+    // Set styles
+    blurb.style.fontFamily = font + ', sans-serif';
+    blurb.style.fontSize = fontSize + 'px';
+    blurb.style.color = color;
+    
+    // Position
+    blurb.className = 'preview-blurb ' + position;
+    
+    const isTop = position.startsWith('top');
+    const isLeft = position.includes('left');
+    
+    // Base positioning
+    if (isTop) {
+        blurb.style.top = (20 + offsetY) + 'px';
+        blurb.style.bottom = 'auto';
+    } else {
+        blurb.style.bottom = (80 + -offsetY) + 'px'; // above caption
+        blurb.style.top = 'auto';
+    }
+    
+    if (isLeft) {
+        blurb.style.left = (20 + offsetX) + 'px';
+        blurb.style.right = 'auto';
+        blurb.style.transform = 'none';
+    } else {
+        blurb.style.left = '50%';
+        blurb.style.right = 'auto';
+        blurb.style.transform = 'translateX(calc(-50% + ' + offsetX + 'px))';
+    }
+}
+
 function updatePaperOverlay() {
     const amount = parseFloat(document.getElementById('paperAmount').value) / 100;
     const el = document.getElementById('previewPaper');
@@ -652,6 +770,7 @@ function handleScroll() {
     currentScrollPct = pct;
     document.getElementById('progressDisplay').textContent = Math.round(pct) + '%';
     document.getElementById('previewCaption').classList.toggle('on', pct > 5);
+    document.getElementById('previewBlurb').classList.toggle('on', pct > 5);
     
     // Apply keyframe transform if keyframes exist
     if (keyframes.length > 0) {
@@ -731,6 +850,44 @@ function generateExport() {
     const capHtml = capEnabled ? 
         `<div class="cap"><div class="cap-t">${capText}</div>${capCredit?`<div class="cap-c">${capCredit}</div>`:''}</div>` : '';
     
+    // Blurb settings
+    const blurbLine1 = document.getElementById('blurbLine1').value;
+    const blurbLine2 = document.getElementById('blurbLine2').value;
+    const blurbLine3 = document.getElementById('blurbLine3').value;
+    const blurbPosition = document.getElementById('blurbPosition').value;
+    const blurbFont = document.getElementById('blurbFont').value;
+    const blurbScale = parseInt(document.getElementById('blurbScale').value) || 100;
+    const blurbColor = document.getElementById('blurbColor').value;
+    const blurbOffsetX = parseInt(document.getElementById('blurbOffsetX').value) || 0;
+    const blurbOffsetY = parseInt(document.getElementById('blurbOffsetY').value) || 0;
+    const hasBlurb = blurbLine1 || blurbLine2 || blurbLine3;
+    const blurbFontSize = Math.round(16 * blurbScale / 100);
+    const blurbIsTop = blurbPosition.startsWith('top');
+    const blurbIsLeft = blurbPosition.includes('left');
+    
+    let blurbHtml = '';
+    let blurbCss = '';
+    if (hasBlurb) {
+        const lines = [blurbLine1, blurbLine2, blurbLine3].filter(l => l).map(l => `<div class="blurb-line">${l}</div>`).join('');
+        blurbHtml = `<div class="blurb">${lines}</div>`;
+        
+        let blurbPos = '';
+        if (blurbIsTop) {
+            blurbPos += `top:${20 + blurbOffsetY}px;`;
+        } else {
+            blurbPos += `bottom:${80 - blurbOffsetY}px;`;
+        }
+        if (blurbIsLeft) {
+            blurbPos += `left:${20 + blurbOffsetX}px;text-align:left;`;
+        } else {
+            blurbPos += `left:50%;transform:translateX(calc(-50% + ${blurbOffsetX}px));text-align:center;`;
+        }
+        
+        blurbCss = `#${uid} .blurb{position:absolute;${blurbPos}font-family:${blurbFont},sans-serif;font-size:${blurbFontSize}px;color:${blurbColor};z-index:15;opacity:0;transition:opacity 0.5s,transform 0.5s;pointer-events:none}
+#${uid} .blurb.on{opacity:1}
+#${uid} .blurb-line{line-height:1.4;white-space:nowrap}\n`;
+    }
+    
     const vigHtml = vignetteOn ? `<div class="vig"></div>` : '';
     const vigCss = vignetteOn ? `#${uid} .vig{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 150px 60px rgba(0,0,0,0.5);z-index:5}\n` : '';
     
@@ -782,7 +939,7 @@ ${matteCss}
 #${uid} .content img{width:100%;height:100%;display:block}
 #${uid} .hl{position:absolute;pointer-events:none;overflow:hidden}
 #${uid} .hl-bar{height:100%;width:0%}
-${vigCss}${paperCss}#${uid} .cap{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);width:85%;max-width:650px;background:rgba(0,0,0,.85);padding:12px 16px;border-radius:6px;opacity:0;transition:opacity .3s;z-index:10}
+${vigCss}${paperCss}${blurbCss}#${uid} .cap{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);width:85%;max-width:650px;background:rgba(0,0,0,.85);padding:12px 16px;border-radius:6px;opacity:0;transition:opacity .3s;z-index:10}
 #${uid} .cap.on{opacity:1}
 #${uid} .cap-t{font:13px/1.5 system-ui,sans-serif;color:#e0e0e0}
 #${uid} .cap-c{font:11px system-ui,sans-serif;color:#888;font-style:italic;margin-top:6px}
@@ -799,6 +956,7 @@ ${vigHtml}
 ${paperHtml}
 </div>
 ${capHtml}
+${blurbHtml}
 </div>
 </div>
 <scr` + `ipt>
@@ -827,6 +985,7 @@ var prog=Math.max(0,Math.min(1,(p-a)/15));
 el.querySelector('.hl-bar').style.width=(ease(prog)*100)+'%';
 });
 var c=w.querySelector('.cap');if(c)c.classList.toggle('on',p>5);
+var b=w.querySelector('.blurb');if(b)b.classList.toggle('on',p>5);
 }
 window.addEventListener('scroll',upd,{passive:true});
 upd();
@@ -890,6 +1049,15 @@ function saveProject() {
             captionEnabled: document.getElementById('captionEnabled').checked,
             captionText: document.getElementById('captionText').value,
             captionCredit: document.getElementById('captionCredit').value,
+            blurbLine1: document.getElementById('blurbLine1').value,
+            blurbLine2: document.getElementById('blurbLine2').value,
+            blurbLine3: document.getElementById('blurbLine3').value,
+            blurbPosition: document.getElementById('blurbPosition').value,
+            blurbFont: document.getElementById('blurbFont').value,
+            blurbScale: document.getElementById('blurbScale').value,
+            blurbColor: document.getElementById('blurbColor').value,
+            blurbOffsetX: document.getElementById('blurbOffsetX').value,
+            blurbOffsetY: document.getElementById('blurbOffsetY').value,
             scrollDuration: document.getElementById('scrollDuration').value,
             stickyOffset: document.getElementById('stickyOffset').value,
             mobileWidthMult: document.getElementById('mobileWidthMult').value
@@ -930,6 +1098,18 @@ function loadProject() {
                     document.getElementById('captionEnabled').checked = proj.settings.captionEnabled !== false;
                     document.getElementById('captionText').value = proj.settings.captionText || '';
                     document.getElementById('captionCredit').value = proj.settings.captionCredit || '';
+                    document.getElementById('blurbLine1').value = proj.settings.blurbLine1 || '';
+                    document.getElementById('blurbLine2').value = proj.settings.blurbLine2 || '';
+                    document.getElementById('blurbLine3').value = proj.settings.blurbLine3 || '';
+                    document.getElementById('blurbPosition').value = proj.settings.blurbPosition || 'top-left';
+                    document.getElementById('blurbFont').value = proj.settings.blurbFont || 'APRegular';
+                    document.getElementById('blurbScale').value = proj.settings.blurbScale || 100;
+                    document.getElementById('blurbScaleVal').textContent = (proj.settings.blurbScale || 100) + '%';
+                    document.getElementById('blurbColor').value = proj.settings.blurbColor || '#ffffff';
+                    document.getElementById('blurbOffsetX').value = proj.settings.blurbOffsetX || 0;
+                    document.getElementById('blurbOffsetXVal').textContent = (proj.settings.blurbOffsetX || 0) + 'px';
+                    document.getElementById('blurbOffsetY').value = proj.settings.blurbOffsetY || 0;
+                    document.getElementById('blurbOffsetYVal').textContent = (proj.settings.blurbOffsetY || 0) + 'px';
                     document.getElementById('scrollDuration').value = proj.settings.scrollDuration || 300;
                     document.getElementById('scrollDurVal').textContent = proj.settings.scrollDuration || 300;
                     document.getElementById('stickyOffset').value = proj.settings.stickyOffset || 200;
@@ -940,6 +1120,7 @@ function loadProject() {
                 renderList();
                 renderKeyframeList();
                 rebuildPreview();
+                updateBlurb();
                 setPreviewHeight();
             } catch(err) { alert('Invalid project file'); }
         };
@@ -996,12 +1177,17 @@ function loadProject() {
             document.getElementById('posYVal').textContent = document.getElementById('imagePosY').value + '%';
             document.getElementById('scrollDurVal').textContent = document.getElementById('scrollDuration').value;
             document.getElementById('mobileWidthVal').textContent = parseFloat(document.getElementById('mobileWidthMult').value).toFixed(1) + 'x';
+            document.getElementById('outputScaleVal').textContent = document.getElementById('outputScale').value + '%';
+            document.getElementById('blurbScaleVal').textContent = document.getElementById('blurbScale').value + '%';
+            document.getElementById('blurbOffsetXVal').textContent = document.getElementById('blurbOffsetX').value + 'px';
+            document.getElementById('blurbOffsetYVal').textContent = document.getElementById('blurbOffsetY').value + 'px';
             
             renderList();
             renderKeyframeList();
             rebuildPreview();
             setPreviewHeight();
             updateVignette();
+            updateBlurb();
         } catch(e) { console.warn('Load state error:', e); }
     }
     
