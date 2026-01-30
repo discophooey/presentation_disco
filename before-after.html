@@ -682,7 +682,7 @@ updatePreviewHeight();
                 }
             });
             
-            if (state.beforeUrl) { document.getElementById("beforeUrl").value = state.beforeUrl; loadBeforeImage(); } if (state.afterUrl) { document.getElementById("afterUrl").value = state.afterUrl; loadAfterImage(); } updatePreviewHeight();
+            if (state.beforeUrl) { document.getElementById("beforeUrl").value = state.beforeUrl; loadBeforeImage(); } if (state.afterUrl) { document.getElementById("afterUrl").value = state.afterUrl; loadAfterImage(); } updatePreviewHeight(); updateStageBg();
         } catch(e) { console.warn('Load state error:', e); }
     }
     

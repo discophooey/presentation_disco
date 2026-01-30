@@ -554,7 +554,7 @@ updatePreviewHeight();
                 }
             });
             
-            if (state.imageUrl) { document.getElementById("imageUrl").value = state.imageUrl; loadImage(); } updatePreview();
+            if (state.imageUrl) { document.getElementById("imageUrl").value = state.imageUrl; loadImage(); } updatePreview(); updateStageBg();
         } catch(e) { console.warn('Load state error:', e); }
     }
     

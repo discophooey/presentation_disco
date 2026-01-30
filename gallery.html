@@ -1491,7 +1491,7 @@ window.addEventListener('scroll',onScroll,{passive:true});setTimeout(upd,100);up
                 }
             });
             
-            renderList(); renderPreview();
+            renderList(); renderPreview(); updateStageBg();
         } catch(e) { console.warn('Load state error:', e); }
     }
     

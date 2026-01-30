@@ -227,7 +227,9 @@ function updatePreviewHeight() {
 }
 
 function updatePreview() {
-    var bgColor = document.getElementById('bgColor').value;
+    var bgColorValue = document.getElementById('bgColor').value;
+    var bgTransparent = document.getElementById('bgTransparent').checked;
+    var bgColor = bgTransparent ? 'transparent' : bgColorValue;
     var lineColor = document.getElementById('lineColor').value;
     var progressColor = document.getElementById('progressColor').value;
     

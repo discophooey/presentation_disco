@@ -248,7 +248,9 @@ var previewAnimating = false;
 function updatePreview() {
     var quote = document.getElementById('quoteText').value;
     var attr = document.getElementById('attribution').value;
-    var bgColor = document.getElementById('bgColor').value;
+    var bgColorValue = document.getElementById('bgColor').value;
+    var bgTransparent = document.getElementById('bgTransparent').checked;
+    var bgColor = bgTransparent ? 'transparent' : bgColorValue;
     var quoteColor = document.getElementById('quoteColor').value;
     var attrColor = document.getElementById('attrColor').value;
     var fontSize = document.getElementById('fontSize').value;

@@ -530,7 +530,9 @@ function renderTextLayerList() {
 function updatePreview() {
     const stage = document.getElementById('previewStage');
     const container = document.getElementById('previewLayers');
-    const bgColor = document.getElementById('bgColor').value;
+    const bgColorValue = document.getElementById('bgColor').value;
+    const bgTransparent = document.getElementById('bgTransparent').checked;
+    const bgColor = bgTransparent ? 'transparent' : bgColorValue;
     const imageFit = document.getElementById('imageFit').value;
     const aspect = document.getElementById('aspectRatio').value;
     stage.style.background = bgColor;
