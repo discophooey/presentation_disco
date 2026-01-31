@@ -70,6 +70,10 @@
         .preview-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .preview-matte { position: relative; overflow: hidden; }
         .preview-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; }
+        .preview-text { display: flex; align-items: center; padding: 20px; box-sizing: border-box; white-space: pre-wrap; word-wrap: break-word; background: none !important; }
+        .preview-text[style*="text-align: left"] { justify-content: flex-start; }
+        .preview-text[style*="text-align: center"] { justify-content: center; }
+        .preview-text[style*="text-align: right"] { justify-content: flex-end; }
         
         .progress-display { font-family: APMedium; font-size: 12px; color: #4a9eff; }
         
@@ -125,7 +129,10 @@
         
         <h2 onclick="toggleSection(this)">Layers</h2>
         <div class="section">
-            <button class="primary" onclick="addLayer()">+ Add Layer</button>
+            <div style="display: flex; gap: 8px;">
+                <button class="primary" onclick="addLayer('image')">+ Image</button>
+                <button class="primary" onclick="addLayer('text')">+ Text</button>
+            </div>
             <div id="layerList" style="margin-top: 12px;"></div>
         </div>
         
@@ -209,12 +216,19 @@ function generateId() {
 }
 
 // Layer management
-function addLayer() {
+function addLayer(type = 'image') {
     const id = generateId();
     const layer = {
         id: id,
-        name: 'Layer ' + (layers.length + 1),
+        name: (type === 'text' ? 'Text ' : 'Layer ') + (layers.length + 1),
+        type: type,
         imageUrl: '',
+        text: 'Text here',
+        fontSize: 48,
+        fontColor: '#ffffff',
+        fontFamily: 'APRegular',
+        textAlign: 'center',
+        blendMode: 'normal',
         zIndex: layers.length,
         keyframes: [{ scrollPct: 0, x: 50, y: 50, scale: 100, opacity: 100 }]
     };
@@ -254,10 +268,55 @@ function renderLayerList() {
         container.innerHTML = '<div class="hint">No layers added</div>';
         return;
     }
-    container.innerHTML = layers.map(l => `
+    const blendOpts = ['normal','multiply','screen','overlay','darken','lighten','color-dodge','color-burn','hard-light','soft-light','difference','exclusion','hue','saturation','color','luminosity'].map(b => 
+        `<option value="${b}">${b}</option>`
+    ).join('');
+    
+    container.innerHTML = layers.map(l => {
+        const isText = l.type === 'text';
+        const typeIcon = isText ? '𝐓' : '🖼';
+        
+        const imageControls = `
+            <div style="display: flex; gap: 6px;">
+                <input type="text" id="url_${l.id}" placeholder="Image URL" value="${l.imageUrl || ''}" onclick="event.stopPropagation()" style="flex: 1;">
+                <button onclick="event.stopPropagation(); loadLayerImage('${l.id}')">Load</button>
+            </div>`;
+        
+        const textControls = `
+            <textarea placeholder="Text content" onclick="event.stopPropagation()" onchange="updateLayerProp('${l.id}', 'text', this.value); updatePreview();" style="width: 100%; height: 60px; margin-bottom: 6px; resize: vertical;">${l.text || ''}</textarea>
+            <div class="row" style="gap: 6px; margin-bottom: 6px;">
+                <div class="control-group" style="flex: 1;">
+                    <label style="font-size: 10px;">Font</label>
+                    <select onclick="event.stopPropagation()" onchange="updateLayerProp('${l.id}', 'fontFamily', this.value); updatePreview();">
+                        <option value="APRegular" ${(l.fontFamily || 'APRegular') === 'APRegular' ? 'selected' : ''}>AP Regular</option>
+                        <option value="APMedium" ${l.fontFamily === 'APMedium' ? 'selected' : ''}>AP Medium</option>
+                        <option value="APBold" ${l.fontFamily === 'APBold' ? 'selected' : ''}>AP Bold</option>
+                    </select>
+                </div>
+                <div class="control-group" style="flex: 1;">
+                    <label style="font-size: 10px;">Size</label>
+                    <input type="number" value="${l.fontSize || 48}" onclick="event.stopPropagation()" onchange="updateLayerProp('${l.id}', 'fontSize', +this.value); updatePreview();" style="width: 100%;">
+                </div>
+            </div>
+            <div class="row" style="gap: 6px;">
+                <div class="control-group" style="flex: 1;">
+                    <label style="font-size: 10px;">Color</label>
+                    <input type="color" value="${l.fontColor || '#ffffff'}" onclick="event.stopPropagation()" onchange="updateLayerProp('${l.id}', 'fontColor', this.value); updatePreview();">
+                </div>
+                <div class="control-group" style="flex: 1;">
+                    <label style="font-size: 10px;">Align</label>
+                    <select onclick="event.stopPropagation()" onchange="updateLayerProp('${l.id}', 'textAlign', this.value); updatePreview();">
+                        <option value="left" ${l.textAlign === 'left' ? 'selected' : ''}>Left</option>
+                        <option value="center" ${l.textAlign === 'center' ? 'selected' : ''}>Center</option>
+                        <option value="right" ${l.textAlign === 'right' ? 'selected' : ''}>Right</option>
+                    </select>
+                </div>
+            </div>`;
+        
+        return `
         <div class="layer-item ${selectedLayerId === l.id ? 'selected' : ''}" onclick="selectLayer('${l.id}')">
             <div class="layer-header">
-                <span class="layer-name">${l.name}</span>
+                <span class="layer-name">${typeIcon} ${l.name}</span>
                 <div class="layer-actions">
                     <button onclick="event.stopPropagation(); moveLayer('${l.id}', -1)">↑</button>
                     <button onclick="event.stopPropagation(); moveLayer('${l.id}', 1)">↓</button>
@@ -266,13 +325,16 @@ function renderLayerList() {
             </div>
             <div style="margin-top: 8px;">
                 <input type="text" placeholder="Layer name" value="${l.name}" onchange="updateLayerProp('${l.id}', 'name', this.value)" onclick="event.stopPropagation()" style="width: 100%; margin-bottom: 6px;">
-                <div style="display: flex; gap: 6px;">
-                    <input type="text" id="url_${l.id}" placeholder="Image URL" value="${l.imageUrl}" onclick="event.stopPropagation()" style="flex: 1;">
-                    <button onclick="event.stopPropagation(); loadLayerImage('${l.id}')">Load</button>
+                ${isText ? textControls : imageControls}
+                <div class="control-group" style="margin-top: 8px;">
+                    <label style="font-size: 10px;">Blend Mode</label>
+                    <select onclick="event.stopPropagation()" onchange="updateLayerProp('${l.id}', 'blendMode', this.value); updatePreview();">
+                        ${blendOpts.replace(`value="${l.blendMode || 'normal'}"`, `value="${l.blendMode || 'normal'}" selected`)}
+                    </select>
                 </div>
             </div>
-        </div>
-    `).join('');
+        </div>`;
+    }).join('');
 }
 
 function loadLayerImage(id) {
@@ -548,8 +610,14 @@ function updatePreview() {
     
     let html = '';
     layers.forEach((layer, i) => {
-        const imgStyle = layer.imageUrl ? `background-image: url(${layer.imageUrl});` : 'background: #333;';
-        html += `<div class="preview-layer" data-layer-id="${layer.id}" style="${imgStyle} z-index: ${i};"></div>`;
+        const blendStyle = layer.blendMode && layer.blendMode !== 'normal' ? `mix-blend-mode: ${layer.blendMode};` : '';
+        
+        if (layer.type === 'text') {
+            html += `<div class="preview-layer preview-text" data-layer-id="${layer.id}" style="z-index: ${i}; ${blendStyle} font-size: ${layer.fontSize || 48}px; color: ${layer.fontColor || '#fff'}; text-align: ${layer.textAlign || 'center'}; font-family: ${layer.fontFamily || 'APRegular'}, sans-serif;">${(layer.text || '').replace(/\n/g, '<br>')}</div>`;
+        } else {
+            const imgStyle = layer.imageUrl ? `background-image: url(${layer.imageUrl});` : 'background: #333;';
+            html += `<div class="preview-layer" data-layer-id="${layer.id}" style="${imgStyle} z-index: ${i}; ${blendStyle}"></div>`;
+        }
     });
     
     matte.innerHTML = html;
@@ -611,15 +679,28 @@ function generateExport() {
     const layersData = JSON.stringify(layers.map(l => ({ id: l.id, kf: l.keyframes })));
     const camData = JSON.stringify(cameraKeyframes);
     
-    const layerHtml = layers.map((l, i) => 
-        `<div class="lp-layer" data-id="${l.id}" style="background-image:url(${l.imageUrl});z-index:${i}"></div>`
-    ).join('\n');
+    const layerHtml = layers.map((l, i) => {
+        const blendStyle = l.blendMode && l.blendMode !== 'normal' ? `mix-blend-mode:${l.blendMode};` : '';
+        if (l.type === 'text') {
+            const escaped = (l.text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+            return `<div class="lp-layer lp-text" data-id="${l.id}" style="z-index:${i};${blendStyle}font-size:${l.fontSize || 48}px;color:${l.fontColor || '#fff'};text-align:${l.textAlign || 'center'};font-family:${l.fontFamily || 'APRegular'},sans-serif">${escaped}</div>`;
+        } else {
+            return `<div class="lp-layer" data-id="${l.id}" style="background-image:url(${l.imageUrl});z-index:${i};${blendStyle}"></div>`;
+        }
+    }).join('\n');
     
     const code = `<style>
+@font-face{font-family:'APRegular';src:url('https://www.ap.org/assets/static-assets/fonts/AP-Regular.woff2') format('woff2')}
+@font-face{font-family:'APMedium';src:url('https://www.ap.org/assets/static-assets/fonts/AP-Medium.woff2') format('woff2')}
+@font-face{font-family:'APBold';src:url('https://www.ap.org/assets/static-assets/fonts/AP-Bold.woff2') format('woff2')}
 #${uid}.lp-wrap{position:relative}
 #${uid} .lp-stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;background:${bg};overflow:hidden;display:flex;align-items:center;justify-content:center}
 #${uid} .lp-matte{position:relative;width:100%;height:100%;max-width:100%;max-height:100%;aspect-ratio:${w}/${h};overflow:hidden}
 #${uid} .lp-layer{position:absolute;inset:0;background-size:cover;background-position:center;will-change:transform,opacity}
+#${uid} .lp-text{display:flex;align-items:center;padding:20px;box-sizing:border-box;white-space:pre-wrap;word-wrap:break-word;background:none}
+#${uid} .lp-text[style*="text-align:left"]{justify-content:flex-start}
+#${uid} .lp-text[style*="text-align:center"]{justify-content:center}
+#${uid} .lp-text[style*="text-align:right"]{justify-content:flex-end}
 @media(max-width:768px){#${uid} .lp-stage{top:${mobileOffset}px;height:calc(100vh - ${mobileOffset}px)}}
 </style>
 <div id="${uid}" class="lp-wrap">
