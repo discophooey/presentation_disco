@@ -13,7 +13,7 @@
         body { font-family: APRegular, system-ui, sans-serif; background: #111; color: #e0e0e0; }
         
         .layout { display: flex; height: 100vh; }
-        .sidebar { width: 340px; background: #1a1a1a; overflow-y: auto; border-right: 1px solid #333; }
+        .sidebar { width: 340px; min-width: 340px; background: #1a1a1a; overflow-y: auto; border-right: 1px solid #333; flex-shrink: 0; }
         .preview-area { flex: 1; display: flex; flex-direction: column; background: #0a0a0a; overflow: auto; }
         
         .sidebar-header { padding: 16px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
@@ -424,6 +424,10 @@ function updateBlockEditor() {
                 <input type="text" value="${b.imageUrl}" onchange="updateBlock('imageUrl', this.value)">
             </div>
             <div class="control-group">
+                <label>Or upload image</label>
+                <input type="file" accept="image/*" onchange="uploadBlockImage(this)">
+            </div>
+            <div class="control-group">
                 <label>Fit</label>
                 <select onchange="updateBlock('fit', this.value)">
                     <option value="cover" ${b.fit === 'cover' ? 'selected' : ''}>Cover</option>
@@ -522,6 +526,18 @@ function updateBlock(prop, value) {
     }
     
     renderBlocks();
+}
+
+function uploadBlockImage(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = e => {
+        updateBlock('imageUrl', e.target.result);
+        updateBlockEditor(); // Refresh to show URL in text field
+    };
+    reader.readAsDataURL(file);
 }
 
 // Drag & Resize

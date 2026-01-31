@@ -13,7 +13,7 @@
         body { font-family: APRegular, system-ui, sans-serif; background: #111; color: #e0e0e0; }
         
         .layout { display: flex; height: 100vh; }
-        .sidebar { width: 340px; background: #1a1a1a; overflow-y: auto; border-right: 1px solid #333; }
+        .sidebar { width: 340px; min-width: 340px; background: #1a1a1a; overflow-y: auto; border-right: 1px solid #333; flex-shrink: 0; }
         .preview-area { flex: 1; display: flex; flex-direction: column; background: #0a0a0a; }
         
         .sidebar-header { padding: 16px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
@@ -104,10 +104,10 @@
         <div class="section">
             <div class="control-group">
                 <label>Video URL</label>
-                <input type="text" id="videoUrl" placeholder="https://..." onchange="loadVideo()">
+                <input type="text" id="videoUrl" placeholder="https://...">
             </div>
             <button onclick="loadVideo()">Load Video</button>
-            <div class="hint" style="margin-top: 8px;">Supports MP4, WebM, or direct video URLs</div>
+            <div class="hint" style="margin-top: 8px;">Supports MP4, WebM</div>
         </div>
         
         <h2 onclick="toggleSection(this)">Playback Mode</h2>
@@ -160,8 +160,8 @@
     <div class="preview-area">
         <div class="preview-container">
             <div class="video-wrapper" id="videoWrapper">
-                <video id="videoPlayer" style="display: none;"></video>
-                <div style="color: #666; padding: 60px; text-align: center;">Load a video to begin</div>
+                <video id="videoPlayer" style="display: none;" crossorigin="anonymous"></video>
+                <div id="videoPlaceholder" style="color: #666; padding: 60px; text-align: center;">Load a video to begin</div>
                 <div class="pause-overlay" id="pauseOverlay">
                     <div class="pause-caption" id="pauseCaption"></div>
                     <button class="pause-continue" onclick="continuePlaying()">Continue ▶</button>
@@ -219,16 +219,26 @@ function loadVideo() {
     if (!url) return;
     
     const video = document.getElementById('videoPlayer');
-    const wrapper = document.getElementById('videoWrapper');
+    const placeholder = document.getElementById('videoPlaceholder');
+    
+    // Show loading state
+    placeholder.textContent = 'Loading video...';
     
     video.src = url;
     video.style.display = 'block';
-    wrapper.querySelector('div:not(.pause-overlay)').style.display = 'none';
     
     video.onloadedmetadata = () => {
         videoLoaded = true;
+        placeholder.style.display = 'none';
         document.getElementById('duration').textContent = formatTime(video.duration);
         renderMarks();
+    };
+    
+    video.onerror = () => {
+        placeholder.textContent = 'Error loading video. Check URL or try another source.';
+        placeholder.style.display = 'block';
+        video.style.display = 'none';
+        videoLoaded = false;
     };
     
     video.ontimeupdate = () => {
