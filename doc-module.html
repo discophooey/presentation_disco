@@ -201,16 +201,8 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         <h2 onclick="toggleSection(this)">Text Blurb</h2>
         <div class="section">
             <div class="control-group">
-                <label>Line 1</label>
-                <input type="text" id="blurbLine1" placeholder="First line..." oninput="updateBlurb()">
-            </div>
-            <div class="control-group">
-                <label>Line 2</label>
-                <input type="text" id="blurbLine2" placeholder="Second line..." oninput="updateBlurb()">
-            </div>
-            <div class="control-group">
-                <label>Line 3</label>
-                <input type="text" id="blurbLine3" placeholder="Third line..." oninput="updateBlurb()">
+                <label>Blurb Text</label>
+                <textarea id="blurbText" rows="3" placeholder="Enter text (use Enter for line breaks)..." oninput="updateBlurb()"></textarea>
             </div>
             <div class="control-group">
                 <label>Position</label>
@@ -301,11 +293,7 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                         <div class="cap-text" id="capText"></div>
                         <div class="cap-credit" id="capCredit"></div>
                     </div>
-                    <div class="preview-blurb" id="previewBlurb">
-                        <div class="blurb-line" id="blurbLine1Display"></div>
-                        <div class="blurb-line" id="blurbLine2Display"></div>
-                        <div class="blurb-line" id="blurbLine3Display"></div>
-                    </div>
+                    <div class="preview-blurb" id="previewBlurb"></div>
                 </div>
             </div>
         </div>
@@ -698,9 +686,7 @@ function updateVignette() {
 
 function updateBlurb() {
     const blurb = document.getElementById('previewBlurb');
-    const line1 = document.getElementById('blurbLine1').value;
-    const line2 = document.getElementById('blurbLine2').value;
-    const line3 = document.getElementById('blurbLine3').value;
+    const text = document.getElementById('blurbText').value;
     const position = document.getElementById('blurbPosition').value;
     const font = document.getElementById('blurbFont').value;
     const scale = parseInt(document.getElementById('blurbScale').value) || 100;
@@ -708,17 +694,16 @@ function updateBlurb() {
     const offsetX = parseInt(document.getElementById('blurbOffsetX').value) || 0;
     const offsetY = parseInt(document.getElementById('blurbOffsetY').value) || 0;
     
-    const hasContent = line1 || line2 || line3;
+    const hasContent = text.trim();
     blurb.style.display = hasContent ? 'block' : 'none';
     
     if (!hasContent) return;
     
     const fontSize = Math.round(16 * scale / 100);
     
-    // Set content
-    document.getElementById('blurbLine1Display').textContent = line1;
-    document.getElementById('blurbLine2Display').textContent = line2;
-    document.getElementById('blurbLine3Display').textContent = line3;
+    // Set content - split by newlines into separate divs
+    const lines = text.split('\n').map(line => '<div class="blurb-line">' + line + '</div>').join('');
+    blurb.innerHTML = lines;
     
     // Set styles
     blurb.style.fontFamily = font + ', sans-serif';
@@ -851,16 +836,14 @@ function generateExport() {
         `<div class="cap"><div class="cap-t">${capText}</div>${capCredit?`<div class="cap-c">${capCredit}</div>`:''}</div>` : '';
     
     // Blurb settings
-    const blurbLine1 = document.getElementById('blurbLine1').value;
-    const blurbLine2 = document.getElementById('blurbLine2').value;
-    const blurbLine3 = document.getElementById('blurbLine3').value;
+    const blurbText = document.getElementById('blurbText').value;
     const blurbPosition = document.getElementById('blurbPosition').value;
     const blurbFont = document.getElementById('blurbFont').value;
     const blurbScale = parseInt(document.getElementById('blurbScale').value) || 100;
     const blurbColor = document.getElementById('blurbColor').value;
     const blurbOffsetX = parseInt(document.getElementById('blurbOffsetX').value) || 0;
     const blurbOffsetY = parseInt(document.getElementById('blurbOffsetY').value) || 0;
-    const hasBlurb = blurbLine1 || blurbLine2 || blurbLine3;
+    const hasBlurb = blurbText.trim();
     const blurbFontSize = Math.round(16 * blurbScale / 100);
     const blurbIsTop = blurbPosition.startsWith('top');
     const blurbIsLeft = blurbPosition.includes('left');
@@ -868,7 +851,7 @@ function generateExport() {
     let blurbHtml = '';
     let blurbCss = '';
     if (hasBlurb) {
-        const lines = [blurbLine1, blurbLine2, blurbLine3].filter(l => l).map(l => `<div class="blurb-line">${l}</div>`).join('');
+        const lines = blurbText.split('\n').map(l => `<div class="blurb-line">${l}</div>`).join('');
         blurbHtml = `<div class="blurb">${lines}</div>`;
         
         let blurbPos = '';
@@ -1049,9 +1032,7 @@ function saveProject() {
             captionEnabled: document.getElementById('captionEnabled').checked,
             captionText: document.getElementById('captionText').value,
             captionCredit: document.getElementById('captionCredit').value,
-            blurbLine1: document.getElementById('blurbLine1').value,
-            blurbLine2: document.getElementById('blurbLine2').value,
-            blurbLine3: document.getElementById('blurbLine3').value,
+            blurbText: document.getElementById('blurbText').value,
             blurbPosition: document.getElementById('blurbPosition').value,
             blurbFont: document.getElementById('blurbFont').value,
             blurbScale: document.getElementById('blurbScale').value,
@@ -1098,9 +1079,12 @@ function loadProject() {
                     document.getElementById('captionEnabled').checked = proj.settings.captionEnabled !== false;
                     document.getElementById('captionText').value = proj.settings.captionText || '';
                     document.getElementById('captionCredit').value = proj.settings.captionCredit || '';
-                    document.getElementById('blurbLine1').value = proj.settings.blurbLine1 || '';
-                    document.getElementById('blurbLine2').value = proj.settings.blurbLine2 || '';
-                    document.getElementById('blurbLine3').value = proj.settings.blurbLine3 || '';
+                    // Backward compat: merge old blurbLine1/2/3 into blurbText if needed
+                    let blurbText = proj.settings.blurbText || '';
+                    if (!blurbText && (proj.settings.blurbLine1 || proj.settings.blurbLine2 || proj.settings.blurbLine3)) {
+                        blurbText = [proj.settings.blurbLine1, proj.settings.blurbLine2, proj.settings.blurbLine3].filter(l => l).join('\n');
+                    }
+                    document.getElementById('blurbText').value = blurbText;
                     document.getElementById('blurbPosition').value = proj.settings.blurbPosition || 'top-left';
                     document.getElementById('blurbFont').value = proj.settings.blurbFont || 'APRegular';
                     document.getElementById('blurbScale').value = proj.settings.blurbScale || 100;
