@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layers Pro - Scrolltastic Lab</title>
+    <style>
+        @font-face { font-family: 'APRegular'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Regular.woff2') format('woff2'); }
+        @font-face { font-family: 'APMedium'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Medium.woff2') format('woff2'); }
+        @font-face { font-family: 'APBold'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Bold.woff2') format('woff2'); }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: APRegular, system-ui, sans-serif; background: #111; color: #e0e0e0; }
+        
+        .layout { display: flex; height: 100vh; }
+        .sidebar { width: 340px; background: #1a1a1a; overflow-y: auto; border-right: 1px solid #333; }
+        .preview-area { flex: 1; display: flex; flex-direction: column; }
+        
+        .sidebar-header { padding: 16px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
+        .sidebar-header h1 { font-family: APBold; font-size: 16px; }
+        .back-link { color: #888; text-decoration: none; font-size: 12px; }
+        .back-link:hover { color: #ff6b6b; }
+        
+        h2 { font-family: APMedium; font-size: 13px; padding: 12px 16px; background: #222; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        h2:hover { background: #282828; }
+        h2::after { content: '▼'; font-size: 10px; color: #666; }
+        
+        .section { padding: 16px; border-bottom: 1px solid #333; }
+        .section.collapsed { display: none; }
+        
+        .control-group { margin-bottom: 14px; }
+        .control-group label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; }
+        .control-group input[type="text"],
+        .control-group input[type="number"],
+        .control-group select,
+        .control-group textarea { width: 100%; padding: 8px 10px; border: 1px solid #333; border-radius: 6px; background: #222; color: #e0e0e0; font-size: 13px; }
+        .control-group input[type="range"] { width: 100%; }
+        .control-group input[type="color"] { width: 50px; height: 32px; border: none; border-radius: 4px; cursor: pointer; }
+        
+        .row { display: flex; gap: 10px; }
+        .row .control-group { flex: 1; }
+        
+        .range-val { float: right; color: #4a9eff; font-size: 11px; }
+        .hint { font-size: 11px; color: #666; margin-top: 4px; }
+        
+        button { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; background: #333; color: #e0e0e0; width: 100%; margin-top: 6px; }
+        button:hover { background: #444; }
+        button.primary { background: #4a9eff; color: #000; }
+        button.primary:hover { background: #6ab0ff; }
+        button.danger { background: #ff4a4a; color: #fff; }
+        button.danger:hover { background: #ff6b6b; }
+        
+        .layer-item, .keyframe-item { background: #222; border: 1px solid #333; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
+        .layer-item.selected { border-color: #4a9eff; }
+        .layer-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .layer-name { font-family: APMedium; font-size: 13px; }
+        .layer-actions { display: flex; gap: 6px; }
+        .layer-actions button { width: auto; margin: 0; padding: 4px 8px; font-size: 11px; }
+        
+        .keyframe-item { background: #1a1a1a; padding: 8px; }
+        .keyframe-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .keyframe-scroll { font-family: APMedium; color: #4a9eff; font-size: 12px; }
+        .keyframe-values { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 11px; color: #888; }
+        .keyframe-values span { background: #222; padding: 4px 6px; border-radius: 4px; text-align: center; }
+        
+        .preview-toolbar { padding: 10px 16px; background: #1a1a1a; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 16px; }
+        .preview-toolbar label { font-size: 12px; color: #888; display: flex; align-items: center; gap: 6px; }
+        .preview-scroll { flex: 1; overflow-y: auto; background: #0a0a0a; }
+        .preview-container { position: relative; }
+        .preview-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .preview-matte { position: relative; overflow: hidden; }
+        .preview-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; }
+        
+        .progress-display { font-family: APMedium; font-size: 12px; color: #4a9eff; }
+        
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #1a1a1a; border-radius: 12px; padding: 24px; width: 90%; max-width: 700px; max-height: 80vh; overflow: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-close { background: none; border: none; color: #888; font-size: 24px; cursor: pointer; width: auto; padding: 0; }
+        .modal textarea { width: 100%; height: 300px; font-family: monospace; font-size: 12px; background: #111; color: #0f0; border: 1px solid #333; border-radius: 6px; padding: 12px; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>🎬 Layers Pro</h1>
+            <a href="index.html" class="back-link">← Lab</a>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Stage Settings</h2>
+        <div class="section">
+            <div class="row">
+                <div class="control-group">
+                    <label>Width</label>
+                    <input type="number" id="stageWidth" value="1920" onchange="updateStage()">
+                </div>
+                <div class="control-group">
+                    <label>Height</label>
+                    <input type="number" id="stageHeight" value="1080" onchange="updateStage()">
+                </div>
+            </div>
+            <div class="control-group">
+                <label>Background Color</label>
+                <input type="color" id="bgColor" value="#000000" onchange="updateStage()">
+            </div>
+            <div class="control-group">
+                <label>Scroll Duration (vh) <span class="range-val" id="scrollDurVal">300</span></label>
+                <input type="range" id="scrollDuration" min="150" max="600" value="300" oninput="document.getElementById('scrollDurVal').textContent=this.value; setPreviewHeight();">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Master Camera</h2>
+        <div class="section">
+            <div class="hint" style="margin-bottom: 12px;">Camera controls the view into the composition. Add keyframes to animate pan/zoom.</div>
+            <button onclick="addCameraKeyframe()">+ Add Camera Keyframe</button>
+            <div id="cameraKeyframes" style="margin-top: 12px;"></div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Layers</h2>
+        <div class="section">
+            <button class="primary" onclick="addLayer()">+ Add Layer</button>
+            <div id="layerList" style="margin-top: 12px;"></div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Layer Keyframes</h2>
+        <div class="section">
+            <div id="noLayerSelected" class="hint">Select a layer to edit keyframes</div>
+            <div id="layerKeyframeEditor" style="display: none;">
+                <div class="control-group">
+                    <label>Editing: <span id="editingLayerName" style="color: #4a9eff;"></span></label>
+                </div>
+                <button onclick="addLayerKeyframe()">+ Add Keyframe</button>
+                <div id="layerKeyframes" style="margin-top: 12px;"></div>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Export</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Mobile Sticky Offset (px)</label>
+                <input type="number" id="mobileOffset" value="200">
+            </div>
+            <button class="primary" onclick="generateExport()">Generate Export</button>
+            <button onclick="copyCode()">Copy Code</button>
+            <div class="row" style="margin-top: 10px;">
+                <button onclick="saveProject()">Save Project</button>
+                <button onclick="loadProject()">Load Project</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="preview-area">
+        <div class="preview-toolbar">
+            <span class="progress-display">Scroll: <span id="progressDisplay">0%</span></span>
+            <label>
+                <input type="checkbox" id="fitFrame" checked onchange="updateStage()">
+                Fit to frame
+            </label>
+            <label>
+                <input type="checkbox" id="showGuides" onchange="updateStage()">
+                Show guides
+            </label>
+        </div>
+        <div class="preview-scroll" id="previewScroll">
+            <div class="preview-container" id="previewContainer">
+                <div class="preview-stage" id="previewStage">
+                    <div class="preview-matte" id="previewMatte">
+                        <div style="color: #666; text-align: center; padding: 40px;">Add layers to begin</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Export Code</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <textarea id="exportCode" readonly></textarea>
+        <button class="primary" onclick="copyExportCode()" style="margin-top: 12px;">Copy to Clipboard</button>
+    </div>
+</div>
+
+<script>
+// State
+let layers = [];
+let cameraKeyframes = [{ scrollPct: 0, x: 50, y: 50, scale: 100 }];
+let selectedLayerId = null;
+let currentScrollPct = 0;
+
+// Utility
+function toggleSection(h2) {
+    const section = h2.nextElementSibling;
+    section.classList.toggle('collapsed');
+}
+
+function generateId() {
+    return 'l' + Math.random().toString(36).substr(2, 9);
+}
+
+// Layer management
+function addLayer() {
+    const id = generateId();
+    const layer = {
+        id: id,
+        name: 'Layer ' + (layers.length + 1),
+        imageUrl: '',
+        zIndex: layers.length,
+        keyframes: [{ scrollPct: 0, x: 50, y: 50, scale: 100, opacity: 100 }]
+    };
+    layers.push(layer);
+    renderLayerList();
+    selectLayer(id);
+    updatePreview();
+}
+
+function removeLayer(id) {
+    layers = layers.filter(l => l.id !== id);
+    if (selectedLayerId === id) selectedLayerId = null;
+    renderLayerList();
+    updateLayerKeyframeEditor();
+    updatePreview();
+}
+
+function selectLayer(id) {
+    selectedLayerId = id;
+    renderLayerList();
+    updateLayerKeyframeEditor();
+}
+
+function moveLayer(id, dir) {
+    const idx = layers.findIndex(l => l.id === id);
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= layers.length) return;
+    [layers[idx], layers[newIdx]] = [layers[newIdx], layers[idx]];
+    layers.forEach((l, i) => l.zIndex = i);
+    renderLayerList();
+    updatePreview();
+}
+
+function renderLayerList() {
+    const container = document.getElementById('layerList');
+    if (layers.length === 0) {
+        container.innerHTML = '<div class="hint">No layers added</div>';
+        return;
+    }
+    container.innerHTML = layers.map(l => `
+        <div class="layer-item ${selectedLayerId === l.id ? 'selected' : ''}" onclick="selectLayer('${l.id}')">
+            <div class="layer-header">
+                <span class="layer-name">${l.name}</span>
+                <div class="layer-actions">
+                    <button onclick="event.stopPropagation(); moveLayer('${l.id}', -1)">↑</button>
+                    <button onclick="event.stopPropagation(); moveLayer('${l.id}', 1)">↓</button>
+                    <button class="danger" onclick="event.stopPropagation(); removeLayer('${l.id}')">×</button>
+                </div>
+            </div>
+            <div style="margin-top: 8px;">
+                <input type="text" placeholder="Layer name" value="${l.name}" onchange="updateLayerProp('${l.id}', 'name', this.value)" onclick="event.stopPropagation()" style="width: 100%; margin-bottom: 6px;">
+                <input type="text" placeholder="Image URL" value="${l.imageUrl}" onchange="updateLayerProp('${l.id}', 'imageUrl', this.value); updatePreview();" onclick="event.stopPropagation()">
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateLayerProp(id, prop, value) {
+    const layer = layers.find(l => l.id === id);
+    if (layer) {
+        layer[prop] = value;
+        if (prop === 'name') renderLayerList();
+    }
+}
+
+// Layer keyframes
+function updateLayerKeyframeEditor() {
+    const noLayer = document.getElementById('noLayerSelected');
+    const editor = document.getElementById('layerKeyframeEditor');
+    
+    if (!selectedLayerId) {
+        noLayer.style.display = 'block';
+        editor.style.display = 'none';
+        return;
+    }
+    
+    const layer = layers.find(l => l.id === selectedLayerId);
+    if (!layer) return;
+    
+    noLayer.style.display = 'none';
+    editor.style.display = 'block';
+    document.getElementById('editingLayerName').textContent = layer.name;
+    
+    renderLayerKeyframes(layer);
+}
+
+function addLayerKeyframe() {
+    const layer = layers.find(l => l.id === selectedLayerId);
+    if (!layer) return;
+    
+    const lastKf = layer.keyframes[layer.keyframes.length - 1];
+    layer.keyframes.push({
+        scrollPct: Math.min(100, (lastKf?.scrollPct || 0) + 25),
+        x: lastKf?.x || 50,
+        y: lastKf?.y || 50,
+        scale: lastKf?.scale || 100,
+        opacity: lastKf?.opacity || 100
+    });
+    layer.keyframes.sort((a, b) => a.scrollPct - b.scrollPct);
+    renderLayerKeyframes(layer);
+    updatePreview();
+}
+
+function removeLayerKeyframe(idx) {
+    const layer = layers.find(l => l.id === selectedLayerId);
+    if (!layer || layer.keyframes.length <= 1) return;
+    layer.keyframes.splice(idx, 1);
+    renderLayerKeyframes(layer);
+    updatePreview();
+}
+
+function updateLayerKeyframe(idx, prop, value) {
+    const layer = layers.find(l => l.id === selectedLayerId);
+    if (!layer) return;
+    layer.keyframes[idx][prop] = parseFloat(value);
+    if (prop === 'scrollPct') {
+        layer.keyframes.sort((a, b) => a.scrollPct - b.scrollPct);
+        renderLayerKeyframes(layer);
+    }
+    updatePreview();
+}
+
+function renderLayerKeyframes(layer) {
+    const container = document.getElementById('layerKeyframes');
+    container.innerHTML = layer.keyframes.map((kf, i) => `
+        <div class="keyframe-item">
+            <div class="keyframe-header">
+                <span class="keyframe-scroll">@ ${kf.scrollPct}%</span>
+                <button class="danger" onclick="removeLayerKeyframe(${i})" style="width: auto; padding: 2px 8px; margin: 0; font-size: 11px;">×</button>
+            </div>
+            <div class="row" style="margin-bottom: 6px;">
+                <div class="control-group" style="margin: 0;">
+                    <label style="font-size: 10px;">Scroll %</label>
+                    <input type="number" value="${kf.scrollPct}" min="0" max="100" onchange="updateLayerKeyframe(${i}, 'scrollPct', this.value)" style="padding: 4px;">
+                </div>
+                <div class="control-group" style="margin: 0;">
+                    <label style="font-size: 10px;">Opacity %</label>
+                    <input type="number" value="${kf.opacity}" min="0" max="100" onchange="updateLayerKeyframe(${i}, 'opacity', this.value)" style="padding: 4px;">
+                </div>
+            </div>
+            <div class="row">
+                <div class="control-group" style="margin: 0;">
+                    <label style="font-size: 10px;">X %</label>
+                    <input type="number" value="${kf.x}" min="0" max="100" onchange="updateLayerKeyframe(${i}, 'x', this.value)" style="padding: 4px;">
+                </div>
+                <div class="control-group" style="margin: 0;">
+                    <label style="font-size: 10px;">Y %</label>
+                    <input type="number" value="${kf.y}" min="0" max="100" onchange="updateLayerKeyframe(${i}, 'y', this.value)" style="padding: 4px;">
+                </div>
+                <div class="control-group" style="margin: 0;">
+                    <label style="font-size: 10px;">Scale %</label>
+                    <input type="number" value="${kf.scale}" min="10" max="300" onchange="updateLayerKeyframe(${i}, 'scale', this.value)" style="padding: 4px;">
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Camera keyframes
+function addCameraKeyframe() {
+    const lastKf = cameraKeyframes[cameraKeyframes.length - 1];
+    cameraKeyframes.push({
+        scrollPct: Math.min(100, (lastKf?.scrollPct || 0) + 25),
+        x: lastKf?.x || 50,
+        y: lastKf?.y || 50,
+        scale: lastKf?.scale || 100
+    });
+    cameraKeyframes.sort((a, b) => a.scrollPct - b.scrollPct);
+    renderCameraKeyframes();
+    updatePreview();
+}
+
+function removeCameraKeyframe(idx) {
+    if (cameraKeyframes.length <= 1) return;
+    cameraKeyframes.splice(idx, 1);
+    renderCameraKeyframes();
+    updatePreview();
+}
+
+function updateCameraKeyframe(idx, prop, value) {
+    cameraKeyframes[idx][prop] = parseFloat(value);
+    if (prop === 'scrollPct') {
+        cameraKeyframes.sort((a, b) => a.scrollPct - b.scrollPct);
+        renderCameraKeyframes();
+    }
+    updatePreview();
+}
+
+function renderCameraKeyframes() {
+    const container = document.getElementById('cameraKeyframes');
+    container.innerHTML = cameraKeyframes.map((kf, i) => `
+        <div class="keyframe-item">
+            <div class="keyframe-header">
+                <span class="keyframe-scroll">@ ${kf.scrollPct}%</span>
+                <button class="danger" onclick="removeCameraKeyframe(${i})" style="width: auto; padding: 2px 8px; margin: 0; font-size: 11px;">×</button>
+            </div>
+            <div class="row">
+                <div class="control-group" style="margin: 0;">
+                    <label style="font-size: 10px;">Scroll %</label>
+                    <input type="number" value="${kf.scrollPct}" min="0" max="100" onchange="updateCameraKeyframe(${i}, 'scrollPct', this.value)" style="padding: 4px;">
+                </div>
+                <div class="control-group" style="margin: 0;">
+                    <label style="font-size: 10px;">Scale %</label>
+                    <input type="number" value="${kf.scale}" min="50" max="200" onchange="updateCameraKeyframe(${i}, 'scale', this.value)" style="padding: 4px;">
+                </div>
+            </div>
+            <div class="row" style="margin-top: 6px;">
+                <div class="control-group" style="margin: 0;">
+                    <label style="font-size: 10px;">Pan X %</label>
+                    <input type="number" value="${kf.x}" min="0" max="100" onchange="updateCameraKeyframe(${i}, 'x', this.value)" style="padding: 4px;">
+                </div>
+                <div class="control-group" style="margin: 0;">
+                    <label style="font-size: 10px;">Pan Y %</label>
+                    <input type="number" value="${kf.y}" min="0" max="100" onchange="updateCameraKeyframe(${i}, 'y', this.value)" style="padding: 4px;">
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Interpolation
+function lerp(a, b, t) {
+    return a + (b - a) * t;
+}
+
+function getInterpolatedValue(keyframes, scrollPct, props) {
+    if (keyframes.length === 0) return null;
+    if (keyframes.length === 1) {
+        const result = {};
+        props.forEach(p => result[p] = keyframes[0][p]);
+        return result;
+    }
+    
+    if (scrollPct <= keyframes[0].scrollPct) {
+        const result = {};
+        props.forEach(p => result[p] = keyframes[0][p]);
+        return result;
+    }
+    
+    if (scrollPct >= keyframes[keyframes.length - 1].scrollPct) {
+        const result = {};
+        props.forEach(p => result[p] = keyframes[keyframes.length - 1][p]);
+        return result;
+    }
+    
+    for (let i = 0; i < keyframes.length - 1; i++) {
+        if (scrollPct >= keyframes[i].scrollPct && scrollPct <= keyframes[i + 1].scrollPct) {
+            const range = keyframes[i + 1].scrollPct - keyframes[i].scrollPct;
+            const t = range > 0 ? (scrollPct - keyframes[i].scrollPct) / range : 0;
+            const result = {};
+            props.forEach(p => result[p] = lerp(keyframes[i][p], keyframes[i + 1][p], t));
+            return result;
+        }
+    }
+    
+    const result = {};
+    props.forEach(p => result[p] = keyframes[0][p]);
+    return result;
+}
+
+// Stage/Preview
+function updateStage() {
+    const w = parseInt(document.getElementById('stageWidth').value) || 1920;
+    const h = parseInt(document.getElementById('stageHeight').value) || 1080;
+    const bg = document.getElementById('bgColor').value;
+    const fit = document.getElementById('fitFrame').checked;
+    
+    const matte = document.getElementById('previewMatte');
+    const stage = document.getElementById('previewStage');
+    
+    stage.style.background = bg;
+    
+    if (fit) {
+        matte.style.width = '100%';
+        matte.style.height = '100%';
+        matte.style.maxWidth = '100%';
+        matte.style.maxHeight = '100%';
+        matte.style.aspectRatio = w + '/' + h;
+    } else {
+        matte.style.width = w + 'px';
+        matte.style.height = h + 'px';
+        matte.style.aspectRatio = 'auto';
+    }
+    
+    updatePreview();
+}
+
+function setPreviewHeight() {
+    const dur = parseInt(document.getElementById('scrollDuration').value) || 300;
+    const stage = document.getElementById('previewStage');
+    const container = document.getElementById('previewContainer');
+    container.style.height = (stage.offsetHeight * dur / 100) + 'px';
+}
+
+function updatePreview() {
+    const matte = document.getElementById('previewMatte');
+    const bg = document.getElementById('bgColor').value;
+    
+    if (layers.length === 0) {
+        matte.innerHTML = '<div style="color: #666; text-align: center; padding: 40px;">Add layers to begin</div>';
+        return;
+    }
+    
+    let html = '';
+    layers.forEach((layer, i) => {
+        const imgStyle = layer.imageUrl ? `background-image: url(${layer.imageUrl});` : 'background: #333;';
+        html += `<div class="preview-layer" data-layer-id="${layer.id}" style="${imgStyle} z-index: ${i};"></div>`;
+    });
+    
+    matte.innerHTML = html;
+    applyTransforms(currentScrollPct);
+}
+
+function applyTransforms(scrollPct) {
+    // Camera
+    const cam = getInterpolatedValue(cameraKeyframes, scrollPct, ['x', 'y', 'scale']);
+    const matte = document.getElementById('previewMatte');
+    
+    if (cam) {
+        const camScale = cam.scale / 100;
+        const panX = (cam.x - 50) * (camScale - 1) / camScale;
+        const panY = (cam.y - 50) * (camScale - 1) / camScale;
+        matte.style.transform = `scale(${camScale}) translate(${-panX}%, ${-panY}%)`;
+        matte.style.transformOrigin = `${cam.x}% ${cam.y}%`;
+    }
+    
+    // Layers
+    layers.forEach(layer => {
+        const el = document.querySelector(`[data-layer-id="${layer.id}"]`);
+        if (!el) return;
+        
+        const vals = getInterpolatedValue(layer.keyframes, scrollPct, ['x', 'y', 'scale', 'opacity']);
+        if (vals) {
+            const scale = vals.scale / 100;
+            const transX = (vals.x - 50);
+            const transY = (vals.y - 50);
+            el.style.transform = `translate(${transX}%, ${transY}%) scale(${scale})`;
+            el.style.opacity = vals.opacity / 100;
+        }
+    });
+}
+
+function handleScroll() {
+    const scroller = document.getElementById('previewScroll');
+    const container = document.getElementById('previewContainer');
+    const scrollTop = scroller.scrollTop;
+    const scrollMax = container.offsetHeight - scroller.clientHeight;
+    const pct = scrollMax > 0 ? (scrollTop / scrollMax) * 100 : 0;
+    
+    currentScrollPct = pct;
+    document.getElementById('progressDisplay').textContent = Math.round(pct) + '%';
+    applyTransforms(pct);
+}
+
+// Export
+function generateExport() {
+    if (layers.length === 0) return alert('Add at least one layer');
+    
+    const w = parseInt(document.getElementById('stageWidth').value) || 1920;
+    const h = parseInt(document.getElementById('stageHeight').value) || 1080;
+    const bg = document.getElementById('bgColor').value;
+    const dur = parseInt(document.getElementById('scrollDuration').value) || 300;
+    const mobileOffset = parseInt(document.getElementById('mobileOffset').value) || 200;
+    const uid = 'lp' + Math.random().toString(36).substr(2, 9);
+    const sm = dur / 100;
+    
+    const layersData = JSON.stringify(layers.map(l => ({ id: l.id, kf: l.keyframes })));
+    const camData = JSON.stringify(cameraKeyframes);
+    
+    const layerHtml = layers.map((l, i) => 
+        `<div class="lp-layer" data-id="${l.id}" style="background-image:url(${l.imageUrl});z-index:${i}"></div>`
+    ).join('\n');
+    
+    const code = `<style>
+#${uid}.lp-wrap{position:relative}
+#${uid} .lp-stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;background:${bg};overflow:hidden;display:flex;align-items:center;justify-content:center}
+#${uid} .lp-matte{position:relative;width:100%;height:100%;max-width:100%;max-height:100%;aspect-ratio:${w}/${h};overflow:hidden}
+#${uid} .lp-layer{position:absolute;inset:0;background-size:cover;background-position:center;will-change:transform,opacity}
+@media(max-width:768px){#${uid} .lp-stage{top:${mobileOffset}px;height:calc(100vh - ${mobileOffset}px)}}
+</style>
+<div id="${uid}" class="lp-wrap">
+<div class="lp-stage">
+<div class="lp-matte">
+${layerHtml}
+</div>
+</div>
+</div>
+<scr`+`ipt>
+(function(){
+var w=document.getElementById('${uid}'),matte=w.querySelector('.lp-matte');
+var layers=${layersData},cam=${camData};
+w.style.height=(w.querySelector('.lp-stage').offsetHeight*${sm})+'px';
+window.addEventListener('resize',function(){w.style.height=(w.querySelector('.lp-stage').offsetHeight*${sm})+'px';});
+function lerp(a,b,t){return a+(b-a)*t;}
+function getVal(kf,p,props){
+if(kf.length===0)return null;
+if(kf.length===1){var r={};props.forEach(function(k){r[k]=kf[0][k]});return r;}
+if(p<=kf[0].scrollPct){var r={};props.forEach(function(k){r[k]=kf[0][k]});return r;}
+if(p>=kf[kf.length-1].scrollPct){var r={};props.forEach(function(k){r[k]=kf[kf.length-1][k]});return r;}
+for(var i=0;i<kf.length-1;i++){
+if(p>=kf[i].scrollPct&&p<=kf[i+1].scrollPct){
+var rng=kf[i+1].scrollPct-kf[i].scrollPct;
+var t=rng>0?(p-kf[i].scrollPct)/rng:0;
+var r={};props.forEach(function(k){r[k]=lerp(kf[i][k],kf[i+1][k],t)});return r;
+}}
+var r={};props.forEach(function(k){r[k]=kf[0][k]});return r;
+}
+function upd(){
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS['${uid}'];
+var p;
+if(extP!==undefined){p=extP*100;}else{
+var r=w.getBoundingClientRect();
+var scrolled=Math.max(0,-r.top);
+var range=w.offsetHeight-window.innerHeight;
+p=range>0?(scrolled/range)*100:0;
+}
+var c=getVal(cam,p,['x','y','scale']);
+if(c){
+var cs=c.scale/100;
+var px=(c.x-50)*(cs-1)/cs;
+var py=(c.y-50)*(cs-1)/cs;
+matte.style.transform='scale('+cs+') translate('+(-px)+'%, '+(-py)+'%)';
+matte.style.transformOrigin=c.x+'% '+c.y+'%';
+}
+layers.forEach(function(l){
+var el=w.querySelector('[data-id="'+l.id+'"]');
+if(!el)return;
+var v=getVal(l.kf,p,['x','y','scale','opacity']);
+if(v){
+var s=v.scale/100;
+el.style.transform='translate('+(v.x-50)+'%, '+(v.y-50)+'%) scale('+s+')';
+el.style.opacity=v.opacity/100;
+}
+});
+}
+window.addEventListener('scroll',upd,{passive:true});
+upd();
+})();
+<\/scr`+`ipt>`;
+    
+    document.getElementById('exportCode').value = code;
+    document.getElementById('exportModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('exportModal').classList.remove('active');
+}
+
+function copyExportCode() {
+    const textarea = document.getElementById('exportCode');
+    textarea.select();
+    document.execCommand('copy');
+    alert('Copied!');
+}
+
+function copyCode() {
+    generateExport();
+}
+
+// Project save/load
+function saveProject() {
+    const project = {
+        version: 1,
+        stageWidth: document.getElementById('stageWidth').value,
+        stageHeight: document.getElementById('stageHeight').value,
+        bgColor: document.getElementById('bgColor').value,
+        scrollDuration: document.getElementById('scrollDuration').value,
+        mobileOffset: document.getElementById('mobileOffset').value,
+        layers: layers,
+        cameraKeyframes: cameraKeyframes
+    };
+    
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'layers-pro-project.json';
+    a.click();
+}
+
+function loadProject() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+            try {
+                const proj = JSON.parse(ev.target.result);
+                document.getElementById('stageWidth').value = proj.stageWidth || 1920;
+                document.getElementById('stageHeight').value = proj.stageHeight || 1080;
+                document.getElementById('bgColor').value = proj.bgColor || '#000000';
+                document.getElementById('scrollDuration').value = proj.scrollDuration || 300;
+                document.getElementById('scrollDurVal').textContent = proj.scrollDuration || 300;
+                document.getElementById('mobileOffset').value = proj.mobileOffset || 200;
+                layers = proj.layers || [];
+                cameraKeyframes = proj.cameraKeyframes || [{ scrollPct: 0, x: 50, y: 50, scale: 100 }];
+                selectedLayerId = null;
+                renderLayerList();
+                renderCameraKeyframes();
+                updateLayerKeyframeEditor();
+                updateStage();
+                setPreviewHeight();
+            } catch (err) {
+                alert('Invalid project file');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+// Init
+document.getElementById('previewScroll').addEventListener('scroll', handleScroll);
+window.addEventListener('resize', () => { updateStage(); setPreviewHeight(); });
+renderCameraKeyframes();
+renderLayerList();
+updateStage();
+setTimeout(setPreviewHeight, 100);
+</script>
+</body>
+</html>

@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex Module - Scrolltastic Lab</title>
+    <style>
+        @font-face { font-family: 'APRegular'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Regular.woff2') format('woff2'); }
+        @font-face { font-family: 'APMedium'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Medium.woff2') format('woff2'); }
+        @font-face { font-family: 'APBold'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Bold.woff2') format('woff2'); }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: APRegular, system-ui, sans-serif; background: #111; color: #e0e0e0; }
+        
+        .layout { display: flex; height: 100vh; }
+        .sidebar { width: 340px; background: #1a1a1a; overflow-y: auto; border-right: 1px solid #333; }
+        .preview-area { flex: 1; display: flex; flex-direction: column; background: #0a0a0a; overflow: auto; }
+        
+        .sidebar-header { padding: 16px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
+        .sidebar-header h1 { font-family: APBold; font-size: 16px; }
+        .back-link { color: #888; text-decoration: none; font-size: 12px; }
+        .back-link:hover { color: #ff6b6b; }
+        
+        h2 { font-family: APMedium; font-size: 13px; padding: 12px 16px; background: #222; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        h2:hover { background: #282828; }
+        h2::after { content: '▼'; font-size: 10px; color: #666; }
+        
+        .section { padding: 16px; border-bottom: 1px solid #333; }
+        .section.collapsed { display: none; }
+        
+        .control-group { margin-bottom: 14px; }
+        .control-group label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; }
+        .control-group input[type="text"],
+        .control-group input[type="number"],
+        .control-group select,
+        .control-group textarea { width: 100%; padding: 8px 10px; border: 1px solid #333; border-radius: 6px; background: #222; color: #e0e0e0; font-size: 13px; }
+        .control-group input[type="range"] { width: 100%; }
+        .control-group input[type="color"] { width: 50px; height: 32px; border: none; border-radius: 4px; cursor: pointer; }
+        
+        .row { display: flex; gap: 10px; }
+        .row .control-group { flex: 1; }
+        
+        .range-val { float: right; color: #4a9eff; font-size: 11px; }
+        .hint { font-size: 11px; color: #666; margin-top: 4px; }
+        
+        button { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; background: #333; color: #e0e0e0; width: 100%; margin-top: 6px; }
+        button:hover { background: #444; }
+        button.primary { background: #4a9eff; color: #000; }
+        button.primary:hover { background: #6ab0ff; }
+        button.danger { background: #ff4a4a; color: #fff; }
+        button.danger:hover { background: #ff6b6b; }
+        button.small { width: auto; padding: 6px 12px; margin: 0; }
+        
+        .add-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .add-buttons button { margin: 0; }
+        
+        .block-item { background: #222; border: 1px solid #333; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
+        .block-item.selected { border-color: #4a9eff; }
+        .block-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .block-name { font-family: APMedium; font-size: 13px; }
+        .block-type { font-size: 11px; color: #666; }
+        .block-actions { display: flex; gap: 4px; }
+        .block-actions button { width: auto; margin: 0; padding: 4px 8px; font-size: 11px; }
+        
+        .canvas-container { flex: 1; padding: 20px; display: flex; align-items: center; justify-content: center; }
+        .canvas { position: relative; background: #000; box-shadow: 0 4px 24px rgba(0,0,0,0.5); }
+        .canvas.show-grid { background-image: 
+            linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+        }
+        
+        .flex-block { position: absolute; cursor: move; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .flex-block.selected { outline: 2px solid #4a9eff; outline-offset: 2px; }
+        .flex-block:hover { outline: 2px solid rgba(74, 158, 255, 0.5); outline-offset: 2px; }
+        
+        .resize-handle { position: absolute; width: 12px; height: 12px; background: #4a9eff; border-radius: 2px; }
+        .resize-handle.se { right: -6px; bottom: -6px; cursor: se-resize; }
+        
+        .block-image { width: 100%; height: 100%; object-fit: cover; }
+        .block-text { padding: 12px; width: 100%; height: 100%; display: flex; align-items: center; overflow: hidden; }
+        .block-stat { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .stat-number { font-family: APBold; }
+        .stat-label { font-size: 0.6em; opacity: 0.7; margin-top: 4px; }
+        
+        .block-beforeafter { position: relative; width: 100%; height: 100%; overflow: hidden; }
+        .ba-before, .ba-after { position: absolute; inset: 0; background-size: cover; background-position: center; }
+        .ba-before { clip-path: inset(0 50% 0 0); }
+        .ba-slider { position: absolute; top: 0; bottom: 0; left: 50%; width: 4px; background: #fff; cursor: ew-resize; transform: translateX(-50%); }
+        .ba-slider::before { content: '◄►'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 10px; }
+        
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #1a1a1a; border-radius: 12px; padding: 24px; width: 90%; max-width: 700px; max-height: 80vh; overflow: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-close { background: none; border: none; color: #888; font-size: 24px; cursor: pointer; width: auto; padding: 0; }
+        .modal textarea { width: 100%; height: 300px; font-family: monospace; font-size: 12px; background: #111; color: #0f0; border: 1px solid #333; border-radius: 6px; padding: 12px; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>📐 Flex Module</h1>
+            <a href="index.html" class="back-link">← Lab</a>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Canvas Settings</h2>
+        <div class="section">
+            <div class="row">
+                <div class="control-group">
+                    <label>Width</label>
+                    <input type="number" id="canvasWidth" value="800" onchange="updateCanvas()">
+                </div>
+                <div class="control-group">
+                    <label>Height</label>
+                    <input type="number" id="canvasHeight" value="600" onchange="updateCanvas()">
+                </div>
+            </div>
+            <div class="control-group">
+                <label>Background Color</label>
+                <input type="color" id="bgColor" value="#000000" onchange="updateCanvas()">
+            </div>
+            <div class="control-group">
+                <label>Grid Size (px) <span class="range-val" id="gridSizeVal">20</span></label>
+                <input type="range" id="gridSize" min="10" max="50" value="20" oninput="document.getElementById('gridSizeVal').textContent=this.value; updateCanvas();">
+            </div>
+            <div class="control-group">
+                <label><input type="checkbox" id="showGrid" checked onchange="updateCanvas()"> Show Grid</label>
+            </div>
+            <div class="control-group">
+                <label><input type="checkbox" id="snapToGrid" checked> Snap to Grid</label>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Add Block</h2>
+        <div class="section">
+            <div class="add-buttons">
+                <button onclick="addBlock('image')">🖼️ Image</button>
+                <button onclick="addBlock('text')">📝 Text</button>
+                <button onclick="addBlock('stat')">🔢 Stat</button>
+                <button onclick="addBlock('beforeafter')">↔️ Before/After</button>
+            </div>
+            <div class="hint" style="margin-top: 10px;">Click to add, drag to position, resize from corner</div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Blocks</h2>
+        <div class="section">
+            <div id="blocksList"></div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Selected Block</h2>
+        <div class="section" id="blockEditor">
+            <div id="noBlockSelected" class="hint">Click a block to edit</div>
+            <div id="blockEditorContent" style="display: none;"></div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Export</h2>
+        <div class="section">
+            <button class="primary" onclick="generateExport()">Generate Export</button>
+            <button onclick="copyCode()">Copy Code</button>
+            <div class="row" style="margin-top: 10px;">
+                <button onclick="saveProject()">Save Project</button>
+                <button onclick="loadProject()">Load Project</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="preview-area">
+        <div class="canvas-container">
+            <div class="canvas" id="canvas"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Export Code</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <textarea id="exportCode" readonly></textarea>
+        <button class="primary" onclick="copyExportCode()" style="margin-top: 12px;">Copy to Clipboard</button>
+    </div>
+</div>
+
+<script>
+// State
+let blocks = [];
+let selectedBlockId = null;
+let dragging = null;
+let resizing = null;
+let dragOffset = { x: 0, y: 0 };
+
+// Utility
+function toggleSection(h2) {
+    const section = h2.nextElementSibling;
+    section.classList.toggle('collapsed');
+}
+
+function generateId() {
+    return 'b' + Math.random().toString(36).substr(2, 9);
+}
+
+function snapToGrid(value) {
+    if (!document.getElementById('snapToGrid').checked) return value;
+    const grid = parseInt(document.getElementById('gridSize').value) || 20;
+    return Math.round(value / grid) * grid;
+}
+
+// Canvas
+function updateCanvas() {
+    const canvas = document.getElementById('canvas');
+    const w = parseInt(document.getElementById('canvasWidth').value) || 800;
+    const h = parseInt(document.getElementById('canvasHeight').value) || 600;
+    const bg = document.getElementById('bgColor').value;
+    const grid = parseInt(document.getElementById('gridSize').value) || 20;
+    const showGrid = document.getElementById('showGrid').checked;
+    
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    canvas.style.background = bg;
+    
+    if (showGrid) {
+        canvas.style.backgroundImage = `
+            linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)`;
+        canvas.style.backgroundSize = `${grid}px ${grid}px`;
+    } else {
+        canvas.style.backgroundImage = 'none';
+    }
+    
+    renderBlocks();
+}
+
+// Blocks
+function addBlock(type) {
+    const id = generateId();
+    const block = {
+        id: id,
+        type: type,
+        x: 40,
+        y: 40,
+        width: 200,
+        height: 150,
+        zIndex: blocks.length
+    };
+    
+    // Type-specific defaults
+    if (type === 'image') {
+        block.imageUrl = '';
+        block.fit = 'cover';
+    } else if (type === 'text') {
+        block.text = 'Enter text here';
+        block.fontSize = 16;
+        block.fontFamily = 'APRegular';
+        block.color = '#ffffff';
+        block.align = 'left';
+        block.bgColor = 'transparent';
+    } else if (type === 'stat') {
+        block.number = '47';
+        block.label = 'Label';
+        block.fontSize = 48;
+        block.color = '#ffffff';
+    } else if (type === 'beforeafter') {
+        block.beforeUrl = '';
+        block.afterUrl = '';
+        block.sliderPos = 50;
+    }
+    
+    blocks.push(block);
+    selectBlock(id);
+    renderBlocks();
+    renderBlocksList();
+}
+
+function removeBlock(id) {
+    blocks = blocks.filter(b => b.id !== id);
+    if (selectedBlockId === id) selectedBlockId = null;
+    renderBlocks();
+    renderBlocksList();
+    updateBlockEditor();
+}
+
+function selectBlock(id) {
+    selectedBlockId = id;
+    renderBlocks();
+    renderBlocksList();
+    updateBlockEditor();
+}
+
+function moveBlockZ(id, dir) {
+    const idx = blocks.findIndex(b => b.id === id);
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= blocks.length) return;
+    [blocks[idx], blocks[newIdx]] = [blocks[newIdx], blocks[idx]];
+    blocks.forEach((b, i) => b.zIndex = i);
+    renderBlocks();
+    renderBlocksList();
+}
+
+function renderBlocksList() {
+    const container = document.getElementById('blocksList');
+    if (blocks.length === 0) {
+        container.innerHTML = '<div class="hint">No blocks added</div>';
+        return;
+    }
+    
+    container.innerHTML = blocks.map(b => `
+        <div class="block-item ${selectedBlockId === b.id ? 'selected' : ''}" onclick="selectBlock('${b.id}')">
+            <div class="block-header">
+                <div>
+                    <span class="block-name">${getBlockIcon(b.type)} Block ${blocks.indexOf(b) + 1}</span>
+                    <span class="block-type">${b.type}</span>
+                </div>
+                <div class="block-actions">
+                    <button onclick="event.stopPropagation(); moveBlockZ('${b.id}', 1)">↑</button>
+                    <button onclick="event.stopPropagation(); moveBlockZ('${b.id}', -1)">↓</button>
+                    <button class="danger" onclick="event.stopPropagation(); removeBlock('${b.id}')">×</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getBlockIcon(type) {
+    const icons = { image: '🖼️', text: '📝', stat: '🔢', beforeafter: '↔️' };
+    return icons[type] || '📦';
+}
+
+function renderBlocks() {
+    const canvas = document.getElementById('canvas');
+    canvas.innerHTML = '';
+    
+    blocks.forEach(b => {
+        const el = document.createElement('div');
+        el.className = 'flex-block' + (selectedBlockId === b.id ? ' selected' : '');
+        el.dataset.id = b.id;
+        el.style.left = b.x + 'px';
+        el.style.top = b.y + 'px';
+        el.style.width = b.width + 'px';
+        el.style.height = b.height + 'px';
+        el.style.zIndex = b.zIndex;
+        
+        // Type-specific content
+        if (b.type === 'image') {
+            if (b.imageUrl) {
+                el.innerHTML = `<img class="block-image" src="${b.imageUrl}" style="object-fit: ${b.fit};">`;
+            } else {
+                el.innerHTML = '<div style="color: #666; font-size: 12px;">No image</div>';
+                el.style.background = '#222';
+            }
+        } else if (b.type === 'text') {
+            el.style.background = b.bgColor || 'transparent';
+            el.innerHTML = `<div class="block-text" style="font-family: ${b.fontFamily}; font-size: ${b.fontSize}px; color: ${b.color}; text-align: ${b.align}; justify-content: ${b.align === 'center' ? 'center' : b.align === 'right' ? 'flex-end' : 'flex-start'};">${b.text}</div>`;
+        } else if (b.type === 'stat') {
+            el.innerHTML = `<div class="block-stat" style="color: ${b.color};"><span class="stat-number" style="font-size: ${b.fontSize}px;">${b.number}</span><span class="stat-label">${b.label}</span></div>`;
+        } else if (b.type === 'beforeafter') {
+            const beforeStyle = b.beforeUrl ? `background-image: url(${b.beforeUrl})` : 'background: #333';
+            const afterStyle = b.afterUrl ? `background-image: url(${b.afterUrl})` : 'background: #444';
+            el.innerHTML = `
+                <div class="block-beforeafter">
+                    <div class="ba-after" style="${afterStyle}"></div>
+                    <div class="ba-before" style="${beforeStyle}; clip-path: inset(0 ${100 - b.sliderPos}% 0 0);"></div>
+                    <div class="ba-slider" style="left: ${b.sliderPos}%;"></div>
+                </div>`;
+        }
+        
+        // Resize handle
+        if (selectedBlockId === b.id) {
+            const handle = document.createElement('div');
+            handle.className = 'resize-handle se';
+            handle.dataset.id = b.id;
+            el.appendChild(handle);
+        }
+        
+        el.addEventListener('mousedown', startDrag);
+        canvas.appendChild(el);
+    });
+}
+
+function updateBlockEditor() {
+    const noBlock = document.getElementById('noBlockSelected');
+    const content = document.getElementById('blockEditorContent');
+    
+    if (!selectedBlockId) {
+        noBlock.style.display = 'block';
+        content.style.display = 'none';
+        return;
+    }
+    
+    const b = blocks.find(x => x.id === selectedBlockId);
+    if (!b) return;
+    
+    noBlock.style.display = 'none';
+    content.style.display = 'block';
+    
+    let html = `
+        <div class="row">
+            <div class="control-group">
+                <label>X</label>
+                <input type="number" value="${b.x}" onchange="updateBlock('x', this.value)">
+            </div>
+            <div class="control-group">
+                <label>Y</label>
+                <input type="number" value="${b.y}" onchange="updateBlock('y', this.value)">
+            </div>
+        </div>
+        <div class="row">
+            <div class="control-group">
+                <label>Width</label>
+                <input type="number" value="${b.width}" onchange="updateBlock('width', this.value)">
+            </div>
+            <div class="control-group">
+                <label>Height</label>
+                <input type="number" value="${b.height}" onchange="updateBlock('height', this.value)">
+            </div>
+        </div>
+    `;
+    
+    if (b.type === 'image') {
+        html += `
+            <div class="control-group">
+                <label>Image URL</label>
+                <input type="text" value="${b.imageUrl}" onchange="updateBlock('imageUrl', this.value)">
+            </div>
+            <div class="control-group">
+                <label>Fit</label>
+                <select onchange="updateBlock('fit', this.value)">
+                    <option value="cover" ${b.fit === 'cover' ? 'selected' : ''}>Cover</option>
+                    <option value="contain" ${b.fit === 'contain' ? 'selected' : ''}>Contain</option>
+                    <option value="fill" ${b.fit === 'fill' ? 'selected' : ''}>Fill</option>
+                </select>
+            </div>
+        `;
+    } else if (b.type === 'text') {
+        html += `
+            <div class="control-group">
+                <label>Text</label>
+                <textarea rows="3" onchange="updateBlock('text', this.value)">${b.text}</textarea>
+            </div>
+            <div class="row">
+                <div class="control-group">
+                    <label>Font Size</label>
+                    <input type="number" value="${b.fontSize}" onchange="updateBlock('fontSize', this.value)">
+                </div>
+                <div class="control-group">
+                    <label>Color</label>
+                    <input type="color" value="${b.color}" onchange="updateBlock('color', this.value)">
+                </div>
+            </div>
+            <div class="control-group">
+                <label>Font</label>
+                <select onchange="updateBlock('fontFamily', this.value)">
+                    <option value="APRegular" ${b.fontFamily === 'APRegular' ? 'selected' : ''}>AP Regular</option>
+                    <option value="APMedium" ${b.fontFamily === 'APMedium' ? 'selected' : ''}>AP Medium</option>
+                    <option value="APBold" ${b.fontFamily === 'APBold' ? 'selected' : ''}>AP Bold</option>
+                    <option value="sans-serif" ${b.fontFamily === 'sans-serif' ? 'selected' : ''}>System Sans</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Align</label>
+                <select onchange="updateBlock('align', this.value)">
+                    <option value="left" ${b.align === 'left' ? 'selected' : ''}>Left</option>
+                    <option value="center" ${b.align === 'center' ? 'selected' : ''}>Center</option>
+                    <option value="right" ${b.align === 'right' ? 'selected' : ''}>Right</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Background</label>
+                <input type="text" value="${b.bgColor}" placeholder="transparent or #color" onchange="updateBlock('bgColor', this.value)">
+            </div>
+        `;
+    } else if (b.type === 'stat') {
+        html += `
+            <div class="control-group">
+                <label>Number</label>
+                <input type="text" value="${b.number}" onchange="updateBlock('number', this.value)">
+            </div>
+            <div class="control-group">
+                <label>Label</label>
+                <input type="text" value="${b.label}" onchange="updateBlock('label', this.value)">
+            </div>
+            <div class="row">
+                <div class="control-group">
+                    <label>Font Size</label>
+                    <input type="number" value="${b.fontSize}" onchange="updateBlock('fontSize', this.value)">
+                </div>
+                <div class="control-group">
+                    <label>Color</label>
+                    <input type="color" value="${b.color}" onchange="updateBlock('color', this.value)">
+                </div>
+            </div>
+        `;
+    } else if (b.type === 'beforeafter') {
+        html += `
+            <div class="control-group">
+                <label>Before Image URL</label>
+                <input type="text" value="${b.beforeUrl}" onchange="updateBlock('beforeUrl', this.value)">
+            </div>
+            <div class="control-group">
+                <label>After Image URL</label>
+                <input type="text" value="${b.afterUrl}" onchange="updateBlock('afterUrl', this.value)">
+            </div>
+            <div class="control-group">
+                <label>Slider Position (%) <span class="range-val">${b.sliderPos}</span></label>
+                <input type="range" min="0" max="100" value="${b.sliderPos}" oninput="updateBlock('sliderPos', this.value); this.previousElementSibling.textContent=this.value;">
+            </div>
+        `;
+    }
+    
+    content.innerHTML = html;
+}
+
+function updateBlock(prop, value) {
+    const b = blocks.find(x => x.id === selectedBlockId);
+    if (!b) return;
+    
+    if (['x', 'y', 'width', 'height', 'fontSize', 'sliderPos'].includes(prop)) {
+        b[prop] = parseInt(value);
+    } else {
+        b[prop] = value;
+    }
+    
+    renderBlocks();
+}
+
+// Drag & Resize
+function startDrag(e) {
+    const el = e.target.closest('.flex-block');
+    if (!el) return;
+    
+    const id = el.dataset.id;
+    selectBlock(id);
+    
+    if (e.target.classList.contains('resize-handle')) {
+        resizing = id;
+    } else {
+        dragging = id;
+        const b = blocks.find(x => x.id === id);
+        dragOffset.x = e.clientX - b.x;
+        dragOffset.y = e.clientY - b.y;
+    }
+    
+    e.preventDefault();
+}
+
+function handleMouseMove(e) {
+    const canvas = document.getElementById('canvas');
+    const rect = canvas.getBoundingClientRect();
+    
+    if (dragging) {
+        const b = blocks.find(x => x.id === dragging);
+        if (!b) return;
+        
+        let newX = e.clientX - rect.left - dragOffset.x + canvas.scrollLeft;
+        let newY = e.clientY - rect.top - dragOffset.y + canvas.scrollTop;
+        
+        b.x = snapToGrid(Math.max(0, newX));
+        b.y = snapToGrid(Math.max(0, newY));
+        
+        renderBlocks();
+        updateBlockEditor();
+    }
+    
+    if (resizing) {
+        const b = blocks.find(x => x.id === resizing);
+        if (!b) return;
+        
+        let newW = e.clientX - rect.left - b.x;
+        let newH = e.clientY - rect.top - b.y;
+        
+        b.width = snapToGrid(Math.max(40, newW));
+        b.height = snapToGrid(Math.max(40, newH));
+        
+        renderBlocks();
+        updateBlockEditor();
+    }
+}
+
+function handleMouseUp() {
+    dragging = null;
+    resizing = null;
+}
+
+// Export
+function generateExport() {
+    if (blocks.length === 0) return alert('Add some blocks first');
+    
+    const w = parseInt(document.getElementById('canvasWidth').value) || 800;
+    const h = parseInt(document.getElementById('canvasHeight').value) || 600;
+    const bg = document.getElementById('bgColor').value;
+    const uid = 'flex' + Math.random().toString(36).substr(2, 9);
+    
+    let blocksHtml = '';
+    let blocksCss = '';
+    
+    blocks.forEach((b, i) => {
+        const baseStyle = `position:absolute;left:${b.x}px;top:${b.y}px;width:${b.width}px;height:${b.height}px;z-index:${b.zIndex}`;
+        
+        if (b.type === 'image' && b.imageUrl) {
+            blocksHtml += `<div class="fb-${i}" style="${baseStyle}"><img src="${b.imageUrl}" style="width:100%;height:100%;object-fit:${b.fit};display:block;"></div>\n`;
+        } else if (b.type === 'text') {
+            const textStyle = `font-family:${b.fontFamily},sans-serif;font-size:${b.fontSize}px;color:${b.color};text-align:${b.align};padding:12px;display:flex;align-items:center;justify-content:${b.align === 'center' ? 'center' : b.align === 'right' ? 'flex-end' : 'flex-start'}`;
+            blocksHtml += `<div class="fb-${i}" style="${baseStyle};background:${b.bgColor};${textStyle}">${b.text}</div>\n`;
+        } else if (b.type === 'stat') {
+            blocksHtml += `<div class="fb-${i}" style="${baseStyle};display:flex;flex-direction:column;align-items:center;justify-content:center;color:${b.color}"><span style="font-family:APBold,sans-serif;font-size:${b.fontSize}px">${b.number}</span><span style="font-size:${Math.round(b.fontSize * 0.35)}px;opacity:0.7;margin-top:4px">${b.label}</span></div>\n`;
+        } else if (b.type === 'beforeafter') {
+            blocksCss += `#${uid} .fb-${i} .ba-b{clip-path:inset(0 ${100 - b.sliderPos}% 0 0)}\n`;
+            blocksHtml += `<div class="fb-${i}" style="${baseStyle};overflow:hidden">
+<div class="ba-a" style="position:absolute;inset:0;background:url(${b.afterUrl}) center/cover"></div>
+<div class="ba-b" style="position:absolute;inset:0;background:url(${b.beforeUrl}) center/cover"></div>
+<div class="ba-s" style="position:absolute;top:0;bottom:0;left:${b.sliderPos}%;width:4px;background:#fff;transform:translateX(-50%);cursor:ew-resize"><span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:#000;padding:4px 8px;border-radius:4px;font-size:10px">◄►</span></div>
+</div>\n`;
+        }
+    });
+    
+    const code = `<style>
+#${uid}{position:relative;width:100%;max-width:${w}px;height:${h}px;background:${bg};margin:0 auto}
+${blocksCss}@media(max-width:${w}px){#${uid}{height:auto;aspect-ratio:${w}/${h}}}
+</style>
+<div id="${uid}">
+${blocksHtml}</div>
+<scr`+`ipt>
+(function(){
+var w=document.getElementById('${uid}');
+w.querySelectorAll('.ba-s').forEach(function(s){
+var wrap=s.parentElement;
+var isDragging=false;
+s.onmousedown=function(){isDragging=true};
+document.onmouseup=function(){isDragging=false};
+document.onmousemove=function(e){
+if(!isDragging)return;
+var rect=wrap.getBoundingClientRect();
+var pct=Math.max(0,Math.min(100,((e.clientX-rect.left)/rect.width)*100));
+s.style.left=pct+'%';
+wrap.querySelector('.ba-b').style.clipPath='inset(0 '+(100-pct)+'% 0 0)';
+};
+});
+})();
+<\/scr`+`ipt>`;
+    
+    document.getElementById('exportCode').value = code;
+    document.getElementById('exportModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('exportModal').classList.remove('active');
+}
+
+function copyExportCode() {
+    const textarea = document.getElementById('exportCode');
+    textarea.select();
+    document.execCommand('copy');
+    alert('Copied!');
+}
+
+function copyCode() {
+    generateExport();
+}
+
+// Project save/load
+function saveProject() {
+    const project = {
+        version: 1,
+        canvasWidth: document.getElementById('canvasWidth').value,
+        canvasHeight: document.getElementById('canvasHeight').value,
+        bgColor: document.getElementById('bgColor').value,
+        gridSize: document.getElementById('gridSize').value,
+        blocks: blocks
+    };
+    
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'flex-module-project.json';
+    a.click();
+}
+
+function loadProject() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+            try {
+                const proj = JSON.parse(ev.target.result);
+                document.getElementById('canvasWidth').value = proj.canvasWidth || 800;
+                document.getElementById('canvasHeight').value = proj.canvasHeight || 600;
+                document.getElementById('bgColor').value = proj.bgColor || '#000000';
+                document.getElementById('gridSize').value = proj.gridSize || 20;
+                document.getElementById('gridSizeVal').textContent = proj.gridSize || 20;
+                blocks = proj.blocks || [];
+                selectedBlockId = null;
+                updateCanvas();
+                renderBlocksList();
+                updateBlockEditor();
+            } catch (err) {
+                alert('Invalid project file');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+// Init
+document.addEventListener('mousemove', handleMouseMove);
+document.addEventListener('mouseup', handleMouseUp);
+updateCanvas();
+renderBlocksList();
+</script>
+</body>
+</html>

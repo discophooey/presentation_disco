@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Module - Scrolltastic Lab</title>
+    <style>
+        @font-face { font-family: 'APRegular'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Regular.woff2') format('woff2'); }
+        @font-face { font-family: 'APMedium'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Medium.woff2') format('woff2'); }
+        @font-face { font-family: 'APBold'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Bold.woff2') format('woff2'); }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: APRegular, system-ui, sans-serif; background: #111; color: #e0e0e0; }
+        
+        .layout { display: flex; height: 100vh; }
+        .sidebar { width: 360px; background: #1a1a1a; overflow-y: auto; border-right: 1px solid #333; }
+        .preview-area { flex: 1; display: flex; flex-direction: column; background: #0a0a0a; }
+        
+        .sidebar-header { padding: 16px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
+        .sidebar-header h1 { font-family: APBold; font-size: 16px; }
+        .back-link { color: #888; text-decoration: none; font-size: 12px; }
+        .back-link:hover { color: #ff6b6b; }
+        
+        h2 { font-family: APMedium; font-size: 13px; padding: 12px 16px; background: #222; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        h2:hover { background: #282828; }
+        h2::after { content: '▼'; font-size: 10px; color: #666; }
+        
+        .section { padding: 16px; border-bottom: 1px solid #333; }
+        .section.collapsed { display: none; }
+        
+        .control-group { margin-bottom: 14px; }
+        .control-group label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; }
+        .control-group input[type="text"],
+        .control-group input[type="number"],
+        .control-group select,
+        .control-group textarea { width: 100%; padding: 8px 10px; border: 1px solid #333; border-radius: 6px; background: #222; color: #e0e0e0; font-size: 13px; }
+        .control-group input[type="range"] { width: 100%; }
+        .control-group input[type="color"] { width: 50px; height: 32px; border: none; border-radius: 4px; cursor: pointer; }
+        
+        .row { display: flex; gap: 10px; }
+        .row .control-group { flex: 1; }
+        
+        .range-val { float: right; color: #4a9eff; font-size: 11px; }
+        .hint { font-size: 11px; color: #666; margin-top: 4px; }
+        
+        button { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; background: #333; color: #e0e0e0; width: 100%; margin-top: 6px; }
+        button:hover { background: #444; }
+        button.primary { background: #4a9eff; color: #000; }
+        button.primary:hover { background: #6ab0ff; }
+        button.danger { background: #ff4a4a; color: #fff; }
+        button.danger:hover { background: #ff6b6b; }
+        button.small { width: auto; padding: 4px 10px; margin: 0; }
+        
+        .item-card { background: #222; border: 1px solid #333; border-radius: 6px; padding: 10px; margin-bottom: 8px; cursor: pointer; }
+        .item-card.selected { border-color: #4a9eff; }
+        .item-header { display: flex; justify-content: space-between; align-items: center; }
+        .item-name { font-family: APMedium; font-size: 13px; }
+        .item-type { font-size: 11px; color: #666; padding: 2px 6px; background: #333; border-radius: 4px; }
+        
+        .type-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; margin-right: 6px; }
+        .type-person { background: rgba(74, 158, 255, 0.2); color: #4a9eff; }
+        .type-company { background: rgba(255, 165, 0, 0.2); color: #ffa500; }
+        .type-org { background: rgba(0, 200, 100, 0.2); color: #00c864; }
+        .type-other { background: rgba(200, 200, 200, 0.2); color: #888; }
+        
+        .canvas-container { flex: 1; position: relative; overflow: hidden; }
+        .canvas-svg { width: 100%; height: 100%; }
+        
+        .node { cursor: pointer; }
+        .node:hover .node-circle { stroke-width: 3; }
+        .node.selected .node-circle { stroke: #4a9eff; stroke-width: 3; }
+        .node-circle { fill: #222; stroke: #444; stroke-width: 2; }
+        .node-image { clip-path: circle(24px at center); }
+        .node-label { font-family: APMedium, sans-serif; font-size: 11px; fill: #fff; text-anchor: middle; }
+        .node-type { font-size: 9px; fill: #888; text-anchor: middle; }
+        
+        .connection { stroke: #444; stroke-width: 2; fill: none; }
+        .connection.money { stroke: #00c864; stroke-dasharray: 5,3; }
+        .connection-label { font-size: 10px; fill: #888; text-anchor: middle; }
+        
+        .preview-toolbar { padding: 10px 16px; background: #1a1a1a; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 16px; }
+        .preview-toolbar label { font-size: 12px; color: #888; display: flex; align-items: center; gap: 6px; }
+        .mode-btn { padding: 6px 12px; border: 1px solid #333; background: transparent; color: #888; cursor: pointer; font-size: 12px; }
+        .mode-btn.active { background: #4a9eff; color: #000; border-color: #4a9eff; }
+        
+        .detail-panel { position: absolute; bottom: 20px; right: 20px; width: 280px; background: rgba(26, 26, 26, 0.95); border: 1px solid #333; border-radius: 8px; padding: 16px; display: none; }
+        .detail-panel.active { display: block; }
+        .detail-name { font-family: APBold; font-size: 18px; margin-bottom: 4px; }
+        .detail-type { font-size: 12px; color: #888; margin-bottom: 12px; }
+        .detail-desc { font-size: 13px; line-height: 1.5; color: #ccc; }
+        
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #1a1a1a; border-radius: 12px; padding: 24px; width: 90%; max-width: 700px; max-height: 80vh; overflow: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-close { background: none; border: none; color: #888; font-size: 24px; cursor: pointer; width: auto; padding: 0; }
+        .modal textarea { width: 100%; height: 300px; font-family: monospace; font-size: 12px; background: #111; color: #0f0; border: 1px solid #333; border-radius: 6px; padding: 12px; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>🕸️ Connection Module</h1>
+            <a href="index.html" class="back-link">← Lab</a>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Canvas Settings</h2>
+        <div class="section">
+            <div class="row">
+                <div class="control-group">
+                    <label>Width</label>
+                    <input type="number" id="canvasWidth" value="900" onchange="updateCanvas()">
+                </div>
+                <div class="control-group">
+                    <label>Height</label>
+                    <input type="number" id="canvasHeight" value="600" onchange="updateCanvas()">
+                </div>
+            </div>
+            <div class="control-group">
+                <label>Background Color</label>
+                <input type="color" id="bgColor" value="#0a0a0a" onchange="updateCanvas()">
+            </div>
+            <div class="control-group">
+                <label>Scroll Duration (vh) <span class="range-val" id="scrollDurVal">300</span></label>
+                <input type="range" id="scrollDuration" min="150" max="600" value="300" oninput="document.getElementById('scrollDurVal').textContent=this.value;">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Nodes</h2>
+        <div class="section">
+            <button class="primary" onclick="addNode()">+ Add Node</button>
+            <div id="nodesList" style="margin-top: 12px;"></div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Connections</h2>
+        <div class="section">
+            <div class="hint" style="margin-bottom: 12px;">Select two nodes to connect, or click "Add Connection"</div>
+            <button class="primary" onclick="startConnection()">+ Add Connection</button>
+            <div id="connectionsList" style="margin-top: 12px;"></div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Selected Node</h2>
+        <div class="section" id="nodeEditor">
+            <div id="noNodeSelected" class="hint">Click a node to edit</div>
+            <div id="nodeEditorContent" style="display: none;"></div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Export</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Mobile Sticky Offset (px)</label>
+                <input type="number" id="mobileOffset" value="200">
+            </div>
+            <div class="control-group">
+                <label><input type="checkbox" id="scrollReveal" checked> Scroll Reveal (fade in nodes)</label>
+            </div>
+            <button class="primary" onclick="generateExport()">Generate Export</button>
+            <button onclick="copyCode()">Copy Code</button>
+            <div class="row" style="margin-top: 10px;">
+                <button onclick="saveProject()">Save Project</button>
+                <button onclick="loadProject()">Load Project</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="preview-area">
+        <div class="preview-toolbar">
+            <button class="mode-btn active" id="selectMode" onclick="setMode('select')">Select</button>
+            <button class="mode-btn" id="moveMode" onclick="setMode('move')">Move</button>
+            <button class="mode-btn" id="connectMode" onclick="setMode('connect')">Connect</button>
+            <span style="color: #666; margin-left: auto; font-size: 12px;" id="modeHint">Click node to select</span>
+        </div>
+        <div class="canvas-container" id="canvasContainer">
+            <svg class="canvas-svg" id="canvas">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#444"/>
+                    </marker>
+                    <marker id="arrowhead-money" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#00c864"/>
+                    </marker>
+                </defs>
+                <g id="connectionsLayer"></g>
+                <g id="nodesLayer"></g>
+            </svg>
+            <div class="detail-panel" id="detailPanel">
+                <div class="detail-name" id="detailName"></div>
+                <div class="detail-type" id="detailType"></div>
+                <div class="detail-desc" id="detailDesc"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Export Code</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <textarea id="exportCode" readonly></textarea>
+        <button class="primary" onclick="copyExportCode()" style="margin-top: 12px;">Copy to Clipboard</button>
+    </div>
+</div>
+
+<script>
+// State
+let nodes = [];
+let connections = [];
+let selectedNodeId = null;
+let mode = 'select';
+let connectingFrom = null;
+let draggingNode = null;
+let dragOffset = { x: 0, y: 0 };
+
+const nodeTypes = [
+    { id: 'person', label: 'Person', color: '#4a9eff' },
+    { id: 'company', label: 'Company', color: '#ffa500' },
+    { id: 'org', label: 'Organization', color: '#00c864' },
+    { id: 'other', label: 'Other', color: '#888888' }
+];
+
+// Utility
+function toggleSection(h2) {
+    const section = h2.nextElementSibling;
+    section.classList.toggle('collapsed');
+}
+
+function generateId() {
+    return 'n' + Math.random().toString(36).substr(2, 9);
+}
+
+function setMode(newMode) {
+    mode = newMode;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(newMode + 'Mode').classList.add('active');
+    
+    const hints = {
+        select: 'Click node to select',
+        move: 'Drag nodes to reposition',
+        connect: 'Click two nodes to connect'
+    };
+    document.getElementById('modeHint').textContent = hints[newMode];
+    
+    if (newMode !== 'connect') {
+        connectingFrom = null;
+    }
+}
+
+// Canvas
+function updateCanvas() {
+    const svg = document.getElementById('canvas');
+    const w = parseInt(document.getElementById('canvasWidth').value) || 900;
+    const h = parseInt(document.getElementById('canvasHeight').value) || 600;
+    const bg = document.getElementById('bgColor').value;
+    
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    svg.style.background = bg;
+    
+    renderGraph();
+}
+
+// Nodes
+function addNode() {
+    const w = parseInt(document.getElementById('canvasWidth').value) || 900;
+    const h = parseInt(document.getElementById('canvasHeight').value) || 600;
+    
+    const node = {
+        id: generateId(),
+        name: 'New Node',
+        type: 'person',
+        description: '',
+        imageUrl: '',
+        x: 100 + Math.random() * (w - 200),
+        y: 100 + Math.random() * (h - 200),
+        appearAt: nodes.length * 10
+    };
+    
+    nodes.push(node);
+    selectNode(node.id);
+    renderGraph();
+    renderNodesList();
+}
+
+function removeNode(id) {
+    nodes = nodes.filter(n => n.id !== id);
+    connections = connections.filter(c => c.from !== id && c.to !== id);
+    if (selectedNodeId === id) selectedNodeId = null;
+    renderGraph();
+    renderNodesList();
+    renderConnectionsList();
+    updateNodeEditor();
+}
+
+function selectNode(id) {
+    selectedNodeId = id;
+    renderGraph();
+    renderNodesList();
+    updateNodeEditor();
+    showDetailPanel(id);
+}
+
+function showDetailPanel(id) {
+    const panel = document.getElementById('detailPanel');
+    const node = nodes.find(n => n.id === id);
+    
+    if (!node) {
+        panel.classList.remove('active');
+        return;
+    }
+    
+    document.getElementById('detailName').textContent = node.name;
+    document.getElementById('detailType').textContent = nodeTypes.find(t => t.id === node.type)?.label || node.type;
+    document.getElementById('detailDesc').textContent = node.description || 'No description';
+    panel.classList.add('active');
+}
+
+function renderNodesList() {
+    const container = document.getElementById('nodesList');
+    if (nodes.length === 0) {
+        container.innerHTML = '<div class="hint">No nodes added</div>';
+        return;
+    }
+    
+    container.innerHTML = nodes.map(n => {
+        const type = nodeTypes.find(t => t.id === n.type);
+        return `
+            <div class="item-card ${selectedNodeId === n.id ? 'selected' : ''}" onclick="selectNode('${n.id}')">
+                <div class="item-header">
+                    <span class="item-name">${n.name}</span>
+                    <span class="type-badge type-${n.type}">${type?.label || n.type}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function updateNodeEditor() {
+    const noNode = document.getElementById('noNodeSelected');
+    const content = document.getElementById('nodeEditorContent');
+    
+    if (!selectedNodeId) {
+        noNode.style.display = 'block';
+        content.style.display = 'none';
+        return;
+    }
+    
+    const n = nodes.find(x => x.id === selectedNodeId);
+    if (!n) return;
+    
+    noNode.style.display = 'none';
+    content.style.display = 'block';
+    
+    content.innerHTML = `
+        <div class="control-group">
+            <label>Name</label>
+            <input type="text" value="${n.name}" onchange="updateNode('name', this.value)">
+        </div>
+        <div class="control-group">
+            <label>Type</label>
+            <select onchange="updateNode('type', this.value)">
+                ${nodeTypes.map(t => `<option value="${t.id}" ${n.type === t.id ? 'selected' : ''}>${t.label}</option>`).join('')}
+            </select>
+        </div>
+        <div class="control-group">
+            <label>Description</label>
+            <textarea rows="2" onchange="updateNode('description', this.value)">${n.description}</textarea>
+        </div>
+        <div class="control-group">
+            <label>Image URL (optional)</label>
+            <input type="text" value="${n.imageUrl}" onchange="updateNode('imageUrl', this.value)" placeholder="https://...">
+        </div>
+        <div class="row">
+            <div class="control-group">
+                <label>X Position</label>
+                <input type="number" value="${Math.round(n.x)}" onchange="updateNode('x', this.value)">
+            </div>
+            <div class="control-group">
+                <label>Y Position</label>
+                <input type="number" value="${Math.round(n.y)}" onchange="updateNode('y', this.value)">
+            </div>
+        </div>
+        <div class="control-group">
+            <label>Appear At (scroll %) <span class="range-val">${n.appearAt}%</span></label>
+            <input type="range" min="0" max="100" value="${n.appearAt}" oninput="updateNode('appearAt', this.value); this.previousElementSibling.textContent=this.value+'%';">
+        </div>
+        <button class="danger" onclick="removeNode('${n.id}')" style="margin-top: 10px;">Delete Node</button>
+    `;
+}
+
+function updateNode(prop, value) {
+    const n = nodes.find(x => x.id === selectedNodeId);
+    if (!n) return;
+    
+    if (['x', 'y', 'appearAt'].includes(prop)) {
+        n[prop] = parseFloat(value);
+    } else {
+        n[prop] = value;
+    }
+    
+    renderGraph();
+    renderNodesList();
+    showDetailPanel(selectedNodeId);
+}
+
+// Connections
+function startConnection() {
+    setMode('connect');
+    connectingFrom = null;
+}
+
+function addConnection(fromId, toId) {
+    if (fromId === toId) return;
+    if (connections.some(c => (c.from === fromId && c.to === toId) || (c.from === toId && c.to === fromId))) return;
+    
+    connections.push({
+        id: generateId(),
+        from: fromId,
+        to: toId,
+        label: '',
+        type: 'default',
+        appearAt: Math.max(...nodes.filter(n => n.id === fromId || n.id === toId).map(n => n.appearAt)) + 5
+    });
+    
+    renderGraph();
+    renderConnectionsList();
+}
+
+function removeConnection(id) {
+    connections = connections.filter(c => c.id !== id);
+    renderGraph();
+    renderConnectionsList();
+}
+
+function updateConnection(id, prop, value) {
+    const c = connections.find(x => x.id === id);
+    if (c) {
+        if (prop === 'appearAt') {
+            c[prop] = parseFloat(value);
+        } else {
+            c[prop] = value;
+        }
+        renderGraph();
+        renderConnectionsList();
+    }
+}
+
+function renderConnectionsList() {
+    const container = document.getElementById('connectionsList');
+    if (connections.length === 0) {
+        container.innerHTML = '<div class="hint">No connections yet</div>';
+        return;
+    }
+    
+    container.innerHTML = connections.map(c => {
+        const fromNode = nodes.find(n => n.id === c.from);
+        const toNode = nodes.find(n => n.id === c.to);
+        return `
+            <div class="item-card">
+                <div class="item-header" style="margin-bottom: 8px;">
+                    <span class="item-name">${fromNode?.name || '?'} → ${toNode?.name || '?'}</span>
+                    <button class="small danger" onclick="removeConnection('${c.id}')">×</button>
+                </div>
+                <div class="control-group" style="margin-bottom: 6px;">
+                    <input type="text" value="${c.label}" placeholder="Relationship label..." onchange="updateConnection('${c.id}', 'label', this.value)">
+                </div>
+                <div class="row">
+                    <div class="control-group" style="margin: 0;">
+                        <select onchange="updateConnection('${c.id}', 'type', this.value)" style="padding: 4px;">
+                            <option value="default" ${c.type === 'default' ? 'selected' : ''}>Default</option>
+                            <option value="money" ${c.type === 'money' ? 'selected' : ''}>Money Flow</option>
+                        </select>
+                    </div>
+                    <div class="control-group" style="margin: 0;">
+                        <input type="number" value="${c.appearAt}" min="0" max="100" onchange="updateConnection('${c.id}', 'appearAt', this.value)" style="padding: 4px;" title="Appear at %">
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Render
+function renderGraph() {
+    const nodesLayer = document.getElementById('nodesLayer');
+    const connectionsLayer = document.getElementById('connectionsLayer');
+    
+    // Render connections
+    connectionsLayer.innerHTML = connections.map(c => {
+        const from = nodes.find(n => n.id === c.from);
+        const to = nodes.find(n => n.id === c.to);
+        if (!from || !to) return '';
+        
+        const midX = (from.x + to.x) / 2;
+        const midY = (from.y + to.y) / 2;
+        const marker = c.type === 'money' ? 'url(#arrowhead-money)' : 'url(#arrowhead)';
+        const cls = c.type === 'money' ? 'connection money' : 'connection';
+        
+        return `
+            <line class="${cls}" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" marker-end="${marker}" data-id="${c.id}"/>
+            ${c.label ? `<text class="connection-label" x="${midX}" y="${midY - 8}">${c.label}</text>` : ''}
+        `;
+    }).join('');
+    
+    // Render nodes
+    nodesLayer.innerHTML = nodes.map(n => {
+        const type = nodeTypes.find(t => t.id === n.type);
+        const color = type?.color || '#888';
+        const selected = selectedNodeId === n.id ? 'selected' : '';
+        
+        return `
+            <g class="node ${selected}" data-id="${n.id}" transform="translate(${n.x}, ${n.y})">
+                <circle class="node-circle" r="28" style="stroke: ${color}"/>
+                ${n.imageUrl ? `<image class="node-image" href="${n.imageUrl}" x="-24" y="-24" width="48" height="48"/>` : `<circle r="20" fill="${color}" opacity="0.2"/>`}
+                <text class="node-label" y="42">${n.name}</text>
+                <text class="node-type" y="54">${type?.label || ''}</text>
+            </g>
+        `;
+    }).join('');
+    
+    // Add event listeners
+    document.querySelectorAll('.node').forEach(el => {
+        el.addEventListener('mousedown', handleNodeMouseDown);
+    });
+}
+
+function handleNodeMouseDown(e) {
+    const id = e.currentTarget.dataset.id;
+    const node = nodes.find(n => n.id === id);
+    if (!node) return;
+    
+    if (mode === 'select') {
+        selectNode(id);
+    } else if (mode === 'move') {
+        draggingNode = id;
+        const svg = document.getElementById('canvas');
+        const pt = svg.createSVGPoint();
+        pt.x = e.clientX;
+        pt.y = e.clientY;
+        const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
+        dragOffset.x = svgP.x - node.x;
+        dragOffset.y = svgP.y - node.y;
+        e.preventDefault();
+    } else if (mode === 'connect') {
+        if (!connectingFrom) {
+            connectingFrom = id;
+            document.getElementById('modeHint').textContent = `Click another node to connect to "${node.name}"`;
+        } else {
+            addConnection(connectingFrom, id);
+            connectingFrom = null;
+            document.getElementById('modeHint').textContent = 'Click two nodes to connect';
+        }
+    }
+}
+
+function handleMouseMove(e) {
+    if (!draggingNode) return;
+    
+    const svg = document.getElementById('canvas');
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX;
+    pt.y = e.clientY;
+    const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
+    
+    const node = nodes.find(n => n.id === draggingNode);
+    if (node) {
+        node.x = Math.max(30, Math.min(svgP.x - dragOffset.x, parseInt(document.getElementById('canvasWidth').value) - 30));
+        node.y = Math.max(30, Math.min(svgP.y - dragOffset.y, parseInt(document.getElementById('canvasHeight').value) - 30));
+        renderGraph();
+    }
+}
+
+function handleMouseUp() {
+    if (draggingNode) {
+        updateNodeEditor();
+        draggingNode = null;
+    }
+}
+
+// Export
+function generateExport() {
+    if (nodes.length === 0) return alert('Add some nodes first');
+    
+    const w = parseInt(document.getElementById('canvasWidth').value) || 900;
+    const h = parseInt(document.getElementById('canvasHeight').value) || 600;
+    const bg = document.getElementById('bgColor').value;
+    const dur = parseInt(document.getElementById('scrollDuration').value) || 300;
+    const mobileOffset = parseInt(document.getElementById('mobileOffset').value) || 200;
+    const scrollReveal = document.getElementById('scrollReveal').checked;
+    const uid = 'conn' + Math.random().toString(36).substr(2, 9);
+    const sm = dur / 100;
+    
+    const nodesData = JSON.stringify(nodes.map(n => ({ id: n.id, x: n.x, y: n.y, a: n.appearAt })));
+    const connsData = JSON.stringify(connections.map(c => ({ id: c.id, a: c.appearAt })));
+    
+    // Generate connection lines
+    const connHtml = connections.map(c => {
+        const from = nodes.find(n => n.id === c.from);
+        const to = nodes.find(n => n.id === c.to);
+        if (!from || !to) return '';
+        
+        const midX = (from.x + to.x) / 2;
+        const midY = (from.y + to.y) / 2;
+        const cls = c.type === 'money' ? 'cn money' : 'cn';
+        const marker = c.type === 'money' ? 'url(#am)' : 'url(#ar)';
+        
+        return `<line class="${cls}" data-id="${c.id}" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" marker-end="${marker}"/>
+${c.label ? `<text class="cl" x="${midX}" y="${midY - 8}">${c.label}</text>` : ''}`;
+    }).join('\n');
+    
+    // Generate node elements
+    const nodeHtml = nodes.map(n => {
+        const type = nodeTypes.find(t => t.id === n.type);
+        const color = type?.color || '#888';
+        
+        return `<g class="nd" data-id="${n.id}" transform="translate(${n.x},${n.y})">
+<circle class="nc" r="28" style="stroke:${color}"/>
+${n.imageUrl ? `<image href="${n.imageUrl}" x="-24" y="-24" width="48" height="48" clip-path="circle(24px)"/>` : `<circle r="20" fill="${color}" opacity="0.2"/>`}
+<text class="nl" y="42">${n.name}</text>
+<text class="nt" y="54">${type?.label || ''}</text>
+</g>`;
+    }).join('\n');
+    
+    const revealCss = scrollReveal ? `#${uid} .nd,#${uid} .cn{opacity:0;transition:opacity 0.4s}
+#${uid} .nd.on,#${uid} .cn.on{opacity:1}` : '';
+    
+    const revealJs = scrollReveal ? `
+nd.forEach(function(d){
+var el=w.querySelector('[data-id="'+d.id+'"]');
+if(el)el.classList.toggle('on',p>=d.a);
+});
+cn.forEach(function(d){
+var el=w.querySelector('line[data-id="'+d.id+'"]');
+if(el)el.classList.toggle('on',p>=d.a);
+});` : '';
+    
+    const code = `<style>
+#${uid}{position:relative}
+#${uid} .stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;background:${bg}}
+#${uid} svg{width:100%;max-width:${w}px;height:auto;aspect-ratio:${w}/${h}}
+#${uid} .nc{fill:#222;stroke-width:2}
+#${uid} .nl{font:11px APMedium,sans-serif;fill:#fff;text-anchor:middle}
+#${uid} .nt{font-size:9px;fill:#888;text-anchor:middle}
+#${uid} .cn{stroke:#444;stroke-width:2;fill:none}
+#${uid} .cn.money{stroke:#00c864;stroke-dasharray:5,3}
+#${uid} .cl{font-size:10px;fill:#888;text-anchor:middle}
+${revealCss}
+@media(max-width:768px){#${uid} .stage{top:${mobileOffset}px;height:calc(100vh - ${mobileOffset}px)}}
+</style>
+<div id="${uid}">
+<div class="stage">
+<svg viewBox="0 0 ${w} ${h}">
+<defs>
+<marker id="ar" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#444"/></marker>
+<marker id="am" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#00c864"/></marker>
+</defs>
+<g class="connections">
+${connHtml}
+</g>
+<g class="nodes">
+${nodeHtml}
+</g>
+</svg>
+</div>
+</div>
+${scrollReveal ? `<scr`+`ipt>
+(function(){
+var w=document.getElementById('${uid}');
+var nd=${nodesData},cn=${connsData};
+w.style.height=(w.querySelector('.stage').offsetHeight*${sm})+'px';
+window.addEventListener('resize',function(){w.style.height=(w.querySelector('.stage').offsetHeight*${sm})+'px';});
+function upd(){
+var r=w.getBoundingClientRect();
+var scrolled=Math.max(0,-r.top);
+var range=w.offsetHeight-window.innerHeight;
+var p=range>0?(scrolled/range)*100:0;${revealJs}
+}
+window.addEventListener('scroll',upd,{passive:true});
+upd();
+})();
+<\/scr`+`ipt>` : ''}`;
+    
+    document.getElementById('exportCode').value = code;
+    document.getElementById('exportModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('exportModal').classList.remove('active');
+}
+
+function copyExportCode() {
+    const textarea = document.getElementById('exportCode');
+    textarea.select();
+    document.execCommand('copy');
+    alert('Copied!');
+}
+
+function copyCode() {
+    generateExport();
+}
+
+// Project save/load
+function saveProject() {
+    const project = {
+        version: 1,
+        canvasWidth: document.getElementById('canvasWidth').value,
+        canvasHeight: document.getElementById('canvasHeight').value,
+        bgColor: document.getElementById('bgColor').value,
+        scrollDuration: document.getElementById('scrollDuration').value,
+        mobileOffset: document.getElementById('mobileOffset').value,
+        scrollReveal: document.getElementById('scrollReveal').checked,
+        nodes: nodes,
+        connections: connections
+    };
+    
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'connection-module-project.json';
+    a.click();
+}
+
+function loadProject() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+            try {
+                const proj = JSON.parse(ev.target.result);
+                document.getElementById('canvasWidth').value = proj.canvasWidth || 900;
+                document.getElementById('canvasHeight').value = proj.canvasHeight || 600;
+                document.getElementById('bgColor').value = proj.bgColor || '#0a0a0a';
+                document.getElementById('scrollDuration').value = proj.scrollDuration || 300;
+                document.getElementById('scrollDurVal').textContent = proj.scrollDuration || 300;
+                document.getElementById('mobileOffset').value = proj.mobileOffset || 200;
+                document.getElementById('scrollReveal').checked = proj.scrollReveal !== false;
+                nodes = proj.nodes || [];
+                connections = proj.connections || [];
+                selectedNodeId = null;
+                updateCanvas();
+                renderNodesList();
+                renderConnectionsList();
+                updateNodeEditor();
+            } catch (err) {
+                alert('Invalid project file');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+// Init
+document.addEventListener('mousemove', handleMouseMove);
+document.addEventListener('mouseup', handleMouseUp);
+updateCanvas();
+renderNodesList();
+renderConnectionsList();
+</script>
+</body>
+</html>

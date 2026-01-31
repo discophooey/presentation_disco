@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Module - Scrolltastic Lab</title>
+    <style>
+        @font-face { font-family: 'APRegular'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Regular.woff2') format('woff2'); }
+        @font-face { font-family: 'APMedium'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Medium.woff2') format('woff2'); }
+        @font-face { font-family: 'APBold'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Bold.woff2') format('woff2'); }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: APRegular, system-ui, sans-serif; background: #111; color: #e0e0e0; }
+        
+        .layout { display: flex; height: 100vh; }
+        .sidebar { width: 340px; background: #1a1a1a; overflow-y: auto; border-right: 1px solid #333; }
+        .preview-area { flex: 1; display: flex; flex-direction: column; background: #0a0a0a; }
+        
+        .sidebar-header { padding: 16px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
+        .sidebar-header h1 { font-family: APBold; font-size: 16px; }
+        .back-link { color: #888; text-decoration: none; font-size: 12px; }
+        .back-link:hover { color: #ff6b6b; }
+        
+        h2 { font-family: APMedium; font-size: 13px; padding: 12px 16px; background: #222; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        h2:hover { background: #282828; }
+        h2::after { content: '▼'; font-size: 10px; color: #666; }
+        
+        .section { padding: 16px; border-bottom: 1px solid #333; }
+        .section.collapsed { display: none; }
+        
+        .control-group { margin-bottom: 14px; }
+        .control-group label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; }
+        .control-group input[type="text"],
+        .control-group input[type="number"],
+        .control-group select,
+        .control-group textarea { width: 100%; padding: 8px 10px; border: 1px solid #333; border-radius: 6px; background: #222; color: #e0e0e0; font-size: 13px; }
+        .control-group input[type="range"] { width: 100%; }
+        .control-group input[type="color"] { width: 50px; height: 32px; border: none; border-radius: 4px; cursor: pointer; }
+        
+        .row { display: flex; gap: 10px; }
+        .row .control-group { flex: 1; }
+        
+        .range-val { float: right; color: #4a9eff; font-size: 11px; }
+        .hint { font-size: 11px; color: #666; margin-top: 4px; }
+        
+        button { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; background: #333; color: #e0e0e0; width: 100%; margin-top: 6px; }
+        button:hover { background: #444; }
+        button.primary { background: #4a9eff; color: #000; }
+        button.primary:hover { background: #6ab0ff; }
+        button.danger { background: #ff4a4a; color: #fff; }
+        button.danger:hover { background: #ff6b6b; }
+        button.small { width: auto; padding: 4px 10px; margin: 0; }
+        
+        .mark-item { background: #222; border: 1px solid #333; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
+        .mark-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .mark-time { font-family: APMedium; font-size: 13px; color: #4a9eff; }
+        
+        .annotation-list { margin-top: 8px; }
+        .annotation-item { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+        .annotation-item select { flex: 0 0 80px; padding: 4px; font-size: 11px; }
+        .annotation-item input { flex: 1; padding: 4px; font-size: 11px; }
+        
+        .preview-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; }
+        .video-wrapper { position: relative; max-width: 100%; max-height: calc(100vh - 200px); background: #000; }
+        .video-wrapper video { display: block; max-width: 100%; max-height: calc(100vh - 200px); }
+        
+        .video-controls { display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: #1a1a1a; width: 100%; }
+        .video-controls button { width: auto; margin: 0; }
+        .time-display { font-family: APMedium; font-size: 13px; color: #4a9eff; min-width: 100px; }
+        .video-progress { flex: 1; height: 6px; background: #333; border-radius: 3px; cursor: pointer; position: relative; }
+        .video-progress-fill { height: 100%; background: #4a9eff; border-radius: 3px; width: 0%; }
+        .video-progress-mark { position: absolute; top: -4px; width: 3px; height: 14px; background: #ff6b6b; border-radius: 2px; transform: translateX(-50%); }
+        
+        .annotation-overlay { position: absolute; pointer-events: none; }
+        .anno-circle { border: 3px solid #ff6b6b; border-radius: 50%; position: absolute; }
+        .anno-arrow { position: absolute; }
+        .anno-arrow::after { content: ''; position: absolute; border: 8px solid transparent; border-left-color: #ff6b6b; right: -16px; top: 50%; transform: translateY(-50%); }
+        .anno-box { border: 3px solid #ff6b6b; position: absolute; }
+        .anno-text { position: absolute; background: rgba(0,0,0,0.8); color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 14px; max-width: 250px; }
+        
+        .pause-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: none; align-items: center; justify-content: center; flex-direction: column; }
+        .pause-overlay.active { display: flex; }
+        .pause-caption { background: rgba(0,0,0,0.85); color: #fff; padding: 16px 24px; border-radius: 8px; max-width: 80%; text-align: center; margin-bottom: 16px; font-size: 15px; line-height: 1.5; }
+        .pause-continue { background: #4a9eff; color: #000; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-family: APMedium; font-size: 14px; }
+        .pause-continue:hover { background: #6ab0ff; }
+        
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #1a1a1a; border-radius: 12px; padding: 24px; width: 90%; max-width: 700px; max-height: 80vh; overflow: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-close { background: none; border: none; color: #888; font-size: 24px; cursor: pointer; width: auto; padding: 0; }
+        .modal textarea { width: 100%; height: 300px; font-family: monospace; font-size: 12px; background: #111; color: #0f0; border: 1px solid #333; border-radius: 6px; padding: 12px; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>🎥 Video Module</h1>
+            <a href="index.html" class="back-link">← Lab</a>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Video Source</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Video URL</label>
+                <input type="text" id="videoUrl" placeholder="https://..." onchange="loadVideo()">
+            </div>
+            <button onclick="loadVideo()">Load Video</button>
+            <div class="hint" style="margin-top: 8px;">Supports MP4, WebM, or direct video URLs</div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Playback Mode</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Mode</label>
+                <select id="playbackMode" onchange="updateMode()">
+                    <option value="normal">Normal (with controls)</option>
+                    <option value="autoplay">Autoplay (loop, muted)</option>
+                    <option value="analyze">Video Analyze (pause at marks)</option>
+                </select>
+            </div>
+            <div class="hint">Analyze mode pauses at marked timestamps to show annotations</div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Stage Settings</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Background Color</label>
+                <input type="color" id="bgColor" value="#000000">
+            </div>
+            <div class="control-group">
+                <label>Max Width (px, 0 = full)</label>
+                <input type="number" id="maxWidth" value="0" min="0">
+            </div>
+            <div class="control-group">
+                <label>Mobile Sticky Offset (px)</label>
+                <input type="number" id="mobileOffset" value="200">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Pause Marks (Analyze Mode)</h2>
+        <div class="section" id="marksSection">
+            <div class="hint" style="margin-bottom: 12px;">Seek video to desired moment, then click "Mark Current Time"</div>
+            <button class="primary" onclick="addMark()">+ Mark Current Time</button>
+            <div id="marksList" style="margin-top: 12px;"></div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Export</h2>
+        <div class="section">
+            <button class="primary" onclick="generateExport()">Generate Export</button>
+            <button onclick="copyCode()">Copy Code</button>
+            <div class="row" style="margin-top: 10px;">
+                <button onclick="saveProject()">Save Project</button>
+                <button onclick="loadProject()">Load Project</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="preview-area">
+        <div class="preview-container">
+            <div class="video-wrapper" id="videoWrapper">
+                <video id="videoPlayer" style="display: none;"></video>
+                <div style="color: #666; padding: 60px; text-align: center;">Load a video to begin</div>
+                <div class="pause-overlay" id="pauseOverlay">
+                    <div class="pause-caption" id="pauseCaption"></div>
+                    <button class="pause-continue" onclick="continuePlaying()">Continue ▶</button>
+                </div>
+            </div>
+        </div>
+        <div class="video-controls">
+            <button class="small" id="playBtn" onclick="togglePlay()">▶</button>
+            <span class="time-display"><span id="currentTime">0:00</span> / <span id="duration">0:00</span></span>
+            <div class="video-progress" id="progressBar" onclick="seekVideo(event)">
+                <div class="video-progress-fill" id="progressFill"></div>
+            </div>
+            <button class="small" onclick="markCurrentTime()">📍 Mark</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Export Code</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <textarea id="exportCode" readonly></textarea>
+        <button class="primary" onclick="copyExportCode()" style="margin-top: 12px;">Copy to Clipboard</button>
+    </div>
+</div>
+
+<script>
+// State
+let marks = [];
+let videoLoaded = false;
+let currentMarkIndex = -1;
+let triggeredMarks = new Set();
+
+// Utility
+function toggleSection(h2) {
+    const section = h2.nextElementSibling;
+    section.classList.toggle('collapsed');
+}
+
+function formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return m + ':' + (s < 10 ? '0' : '') + s;
+}
+
+function generateId() {
+    return 'm' + Math.random().toString(36).substr(2, 9);
+}
+
+// Video
+function loadVideo() {
+    const url = document.getElementById('videoUrl').value;
+    if (!url) return;
+    
+    const video = document.getElementById('videoPlayer');
+    const wrapper = document.getElementById('videoWrapper');
+    
+    video.src = url;
+    video.style.display = 'block';
+    wrapper.querySelector('div:not(.pause-overlay)').style.display = 'none';
+    
+    video.onloadedmetadata = () => {
+        videoLoaded = true;
+        document.getElementById('duration').textContent = formatTime(video.duration);
+        renderMarks();
+    };
+    
+    video.ontimeupdate = () => {
+        document.getElementById('currentTime').textContent = formatTime(video.currentTime);
+        const pct = (video.currentTime / video.duration) * 100;
+        document.getElementById('progressFill').style.width = pct + '%';
+        
+        // Check for pause marks in analyze mode
+        if (document.getElementById('playbackMode').value === 'analyze') {
+            checkPauseMarks();
+        }
+    };
+    
+    video.onplay = () => document.getElementById('playBtn').textContent = '⏸';
+    video.onpause = () => document.getElementById('playBtn').textContent = '▶';
+}
+
+function togglePlay() {
+    const video = document.getElementById('videoPlayer');
+    if (!videoLoaded) return;
+    if (video.paused) video.play();
+    else video.pause();
+}
+
+function seekVideo(e) {
+    const video = document.getElementById('videoPlayer');
+    if (!videoLoaded) return;
+    const rect = e.target.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    video.currentTime = pct * video.duration;
+}
+
+function markCurrentTime() {
+    addMark();
+}
+
+// Marks
+function addMark() {
+    const video = document.getElementById('videoPlayer');
+    if (!videoLoaded) return alert('Load a video first');
+    
+    const time = video.currentTime;
+    const mark = {
+        id: generateId(),
+        time: time,
+        caption: 'Pause point at ' + formatTime(time),
+        annotations: []
+    };
+    marks.push(mark);
+    marks.sort((a, b) => a.time - b.time);
+    renderMarks();
+}
+
+function removeMark(id) {
+    marks = marks.filter(m => m.id !== id);
+    renderMarks();
+}
+
+function updateMarkCaption(id, caption) {
+    const mark = marks.find(m => m.id === id);
+    if (mark) mark.caption = caption;
+}
+
+function addAnnotation(markId) {
+    const mark = marks.find(m => m.id === markId);
+    if (!mark) return;
+    mark.annotations.push({
+        type: 'circle',
+        x: 50,
+        y: 50,
+        width: 60,
+        height: 60,
+        text: ''
+    });
+    renderMarks();
+}
+
+function updateAnnotation(markId, idx, prop, value) {
+    const mark = marks.find(m => m.id === markId);
+    if (mark && mark.annotations[idx]) {
+        mark.annotations[idx][prop] = value;
+    }
+}
+
+function removeAnnotation(markId, idx) {
+    const mark = marks.find(m => m.id === markId);
+    if (mark) {
+        mark.annotations.splice(idx, 1);
+        renderMarks();
+    }
+}
+
+function seekToMark(time) {
+    const video = document.getElementById('videoPlayer');
+    if (videoLoaded) {
+        video.currentTime = time;
+    }
+}
+
+function renderMarks() {
+    const container = document.getElementById('marksList');
+    const progressBar = document.getElementById('progressBar');
+    
+    // Remove old marks from progress bar
+    progressBar.querySelectorAll('.video-progress-mark').forEach(el => el.remove());
+    
+    if (marks.length === 0) {
+        container.innerHTML = '<div class="hint">No marks added</div>';
+        return;
+    }
+    
+    const video = document.getElementById('videoPlayer');
+    const duration = video.duration || 1;
+    
+    // Add marks to progress bar
+    marks.forEach(m => {
+        const pct = (m.time / duration) * 100;
+        const marker = document.createElement('div');
+        marker.className = 'video-progress-mark';
+        marker.style.left = pct + '%';
+        progressBar.appendChild(marker);
+    });
+    
+    // Render mark list
+    container.innerHTML = marks.map(m => `
+        <div class="mark-item">
+            <div class="mark-header">
+                <span class="mark-time" style="cursor: pointer;" onclick="seekToMark(${m.time})">${formatTime(m.time)}</span>
+                <button class="small danger" onclick="removeMark('${m.id}')">×</button>
+            </div>
+            <div class="control-group" style="margin-bottom: 8px;">
+                <input type="text" value="${m.caption}" placeholder="Caption text..." onchange="updateMarkCaption('${m.id}', this.value)">
+            </div>
+            <div class="annotation-list">
+                <div style="font-size: 11px; color: #666; margin-bottom: 6px;">Annotations:</div>
+                ${m.annotations.map((a, i) => `
+                    <div class="annotation-item">
+                        <select onchange="updateAnnotation('${m.id}', ${i}, 'type', this.value)">
+                            <option value="circle" ${a.type === 'circle' ? 'selected' : ''}>Circle</option>
+                            <option value="box" ${a.type === 'box' ? 'selected' : ''}>Box</option>
+                            <option value="text" ${a.type === 'text' ? 'selected' : ''}>Text</option>
+                        </select>
+                        <input type="number" value="${a.x}" placeholder="X%" style="width: 50px;" onchange="updateAnnotation('${m.id}', ${i}, 'x', this.value)">
+                        <input type="number" value="${a.y}" placeholder="Y%" style="width: 50px;" onchange="updateAnnotation('${m.id}', ${i}, 'y', this.value)">
+                        ${a.type === 'text' ? `<input type="text" value="${a.text || ''}" placeholder="Text" onchange="updateAnnotation('${m.id}', ${i}, 'text', this.value)">` : ''}
+                        <button class="small danger" onclick="removeAnnotation('${m.id}', ${i})">×</button>
+                    </div>
+                `).join('')}
+                <button class="small" onclick="addAnnotation('${m.id}')" style="margin-top: 6px;">+ Add Annotation</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Analyze mode
+function checkPauseMarks() {
+    const video = document.getElementById('videoPlayer');
+    const currentTime = video.currentTime;
+    
+    for (let i = 0; i < marks.length; i++) {
+        const mark = marks[i];
+        // Check if we've crossed this mark (within 0.1s tolerance)
+        if (currentTime >= mark.time && currentTime < mark.time + 0.3 && !triggeredMarks.has(mark.id)) {
+            triggeredMarks.add(mark.id);
+            video.pause();
+            video.currentTime = mark.time; // Snap to exact time
+            showPauseOverlay(mark);
+            break;
+        }
+    }
+}
+
+function showPauseOverlay(mark) {
+    const overlay = document.getElementById('pauseOverlay');
+    const caption = document.getElementById('pauseCaption');
+    caption.textContent = mark.caption;
+    overlay.classList.add('active');
+    currentMarkIndex = marks.indexOf(mark);
+    
+    // TODO: Show annotations on video
+}
+
+function continuePlaying() {
+    const overlay = document.getElementById('pauseOverlay');
+    overlay.classList.remove('active');
+    
+    const video = document.getElementById('videoPlayer');
+    video.play();
+}
+
+function updateMode() {
+    const mode = document.getElementById('playbackMode').value;
+    const video = document.getElementById('videoPlayer');
+    const marksSection = document.getElementById('marksSection').parentElement;
+    
+    // Reset
+    triggeredMarks.clear();
+    
+    if (mode === 'analyze') {
+        marksSection.style.display = 'block';
+    }
+    
+    if (mode === 'autoplay' && videoLoaded) {
+        video.loop = true;
+        video.muted = true;
+        video.play();
+    } else if (videoLoaded) {
+        video.loop = false;
+        video.muted = false;
+    }
+}
+
+// Export
+function generateExport() {
+    const url = document.getElementById('videoUrl').value;
+    if (!url) return alert('Load a video first');
+    
+    const mode = document.getElementById('playbackMode').value;
+    const bgColor = document.getElementById('bgColor').value;
+    const maxWidth = parseInt(document.getElementById('maxWidth').value) || 0;
+    const mobileOffset = parseInt(document.getElementById('mobileOffset').value) || 200;
+    const uid = 'vid' + Math.random().toString(36).substr(2, 9);
+    
+    const maxWidthStyle = maxWidth > 0 ? `max-width:${maxWidth}px;` : '';
+    
+    let videoAttrs = '';
+    let extraHtml = '';
+    let extraCss = '';
+    let extraJs = '';
+    
+    if (mode === 'normal') {
+        videoAttrs = 'controls playsinline';
+    } else if (mode === 'autoplay') {
+        videoAttrs = 'autoplay loop muted playsinline';
+    } else if (mode === 'analyze') {
+        videoAttrs = 'playsinline';
+        const marksData = JSON.stringify(marks.map(m => ({ t: m.time, c: m.caption, a: m.annotations })));
+        
+        extraCss = `
+#${uid} .pause-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.3);display:none;align-items:center;justify-content:center;flex-direction:column}
+#${uid} .pause-overlay.active{display:flex}
+#${uid} .pause-caption{background:rgba(0,0,0,0.85);color:#fff;padding:16px 24px;border-radius:8px;max-width:80%;text-align:center;margin-bottom:16px;font-size:15px;line-height:1.5}
+#${uid} .pause-continue{background:#4a9eff;color:#000;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-family:system-ui,sans-serif;font-size:14px}`;
+        
+        extraHtml = `
+<div class="pause-overlay" id="${uid}-overlay">
+<div class="pause-caption" id="${uid}-caption"></div>
+<button class="pause-continue" onclick="document.getElementById('${uid}').querySelector('video').play();document.getElementById('${uid}-overlay').classList.remove('active');">Continue ▶</button>
+</div>`;
+        
+        extraJs = `
+var marks=${marksData},triggered={};
+v.ontimeupdate=function(){
+for(var i=0;i<marks.length;i++){
+var m=marks[i];
+if(v.currentTime>=m.t&&v.currentTime<m.t+0.3&&!triggered[i]){
+triggered[i]=true;v.pause();v.currentTime=m.t;
+document.getElementById('${uid}-caption').textContent=m.c;
+document.getElementById('${uid}-overlay').classList.add('active');
+break;
+}}};
+v.onended=function(){triggered={};};`;
+    }
+    
+    const code = `<style>
+#${uid}{position:relative;background:${bgColor};${maxWidthStyle}margin:0 auto}
+#${uid} .vid-wrap{position:relative}
+#${uid} video{display:block;width:100%;height:auto}${extraCss}
+@media(max-width:768px){#${uid}{margin-top:${mobileOffset}px}}
+</style>
+<div id="${uid}">
+<div class="vid-wrap">
+<video ${videoAttrs}>
+<source src="${url}" type="video/mp4">
+</video>${extraHtml}
+</div>
+</div>
+${mode === 'analyze' ? `<scr`+`ipt>
+(function(){
+var v=document.getElementById('${uid}').querySelector('video');${extraJs}
+})();
+<\/scr`+`ipt>` : ''}`;
+    
+    document.getElementById('exportCode').value = code;
+    document.getElementById('exportModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('exportModal').classList.remove('active');
+}
+
+function copyExportCode() {
+    const textarea = document.getElementById('exportCode');
+    textarea.select();
+    document.execCommand('copy');
+    alert('Copied!');
+}
+
+function copyCode() {
+    generateExport();
+}
+
+// Project save/load
+function saveProject() {
+    const project = {
+        version: 1,
+        videoUrl: document.getElementById('videoUrl').value,
+        playbackMode: document.getElementById('playbackMode').value,
+        bgColor: document.getElementById('bgColor').value,
+        maxWidth: document.getElementById('maxWidth').value,
+        mobileOffset: document.getElementById('mobileOffset').value,
+        marks: marks
+    };
+    
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'video-module-project.json';
+    a.click();
+}
+
+function loadProject() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+            try {
+                const proj = JSON.parse(ev.target.result);
+                document.getElementById('videoUrl').value = proj.videoUrl || '';
+                document.getElementById('playbackMode').value = proj.playbackMode || 'normal';
+                document.getElementById('bgColor').value = proj.bgColor || '#000000';
+                document.getElementById('maxWidth').value = proj.maxWidth || 0;
+                document.getElementById('mobileOffset').value = proj.mobileOffset || 200;
+                marks = proj.marks || [];
+                loadVideo();
+                renderMarks();
+                updateMode();
+            } catch (err) {
+                alert('Invalid project file');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+// Init
+renderMarks();
+</script>
+</body>
+</html>

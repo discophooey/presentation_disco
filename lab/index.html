@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrolltastic Lab</title>
+    <style>
+        @font-face { font-family: 'APRegular'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Regular.woff2') format('woff2'); }
+        @font-face { font-family: 'APMedium'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Medium.woff2') format('woff2'); }
+        @font-face { font-family: 'APBold'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Bold.woff2') format('woff2'); }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: APRegular, system-ui, sans-serif; 
+            background: linear-gradient(135deg, #0a0a12 0%, #1a1025 50%, #0a0a12 100%);
+            min-height: 100vh; 
+            color: #e0e0e0;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        h1 {
+            font-family: APBold, sans-serif;
+            font-size: 42px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #ff6b6b, #ffa500, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: #888;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .lab-badge {
+            display: inline-block;
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid rgba(255, 107, 107, 0.4);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: #ff6b6b;
+            margin-top: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+        
+        .module-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 28px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-card:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255, 107, 107, 0.3);
+            transform: translateY(-4px);
+        }
+        
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b6b, #ffa500);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .module-card:hover::before {
+            opacity: 1;
+        }
+        
+        .module-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+            display: block;
+        }
+        
+        .module-name {
+            font-family: APMedium, sans-serif;
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        
+        .module-desc {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.5;
+        }
+        
+        .module-status {
+            display: inline-block;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-experimental {
+            background: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+        }
+        
+        footer {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            color: #555;
+            font-size: 12px;
+        }
+        
+        footer a {
+            color: #888;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧪 Scrolltastic Lab</h1>
+            <div class="subtitle">Experimental Modules</div>
+            <div class="lab-badge">⚠️ Testing Environment</div>
+        </header>
+        
+        <div class="modules-grid">
+            <a href="layers-pro.html" class="module-card">
+                <span class="module-icon">🎬</span>
+                <div class="module-name">Layers Pro</div>
+                <div class="module-desc">Per-layer keyframes (position, scale, opacity) + master camera with pan/zoom. Complex scroll-driven animations.</div>
+                <span class="module-status status-experimental">Experimental</span>
+            </a>
+            
+            <a href="video-module.html" class="module-card">
+                <span class="module-icon">🎥</span>
+                <div class="module-name">Video Module</div>
+                <div class="module-desc">Normal playback, autoplay, or video analyze mode — pause at marks with annotations and callouts.</div>
+                <span class="module-status status-experimental">Experimental</span>
+            </a>
+            
+            <a href="flex.html" class="module-card">
+                <span class="module-icon">📐</span>
+                <div class="module-name">Flex Module</div>
+                <div class="module-desc">Grid-based composition builder. Add simplified/static variants of modules. Precise sizing, no scroll takeover.</div>
+                <span class="module-status status-experimental">Experimental</span>
+            </a>
+            
+            <a href="connection.html" class="module-card">
+                <span class="module-icon">🕸️</span>
+                <div class="module-name">Connection Module</div>
+                <div class="module-desc">Network mapping for investigations. Nodes, relationships, money flow visualization. Scroll reveal, click for details.</div>
+                <span class="module-status status-experimental">Experimental</span>
+            </a>
+            
+            <a href="database.html" class="module-card">
+                <span class="module-icon">🗄️</span>
+                <div class="module-name">Database Module</div>
+                <div class="module-desc">Upload CSV, auto-detect columns. Lookup search, filterable roster, Venn overlap visualization. Result card designer.</div>
+                <span class="module-status status-experimental">Experimental</span>
+            </a>
+            
+            <a href="ae-module.html" class="module-card">
+                <span class="module-icon">🎞️</span>
+                <div class="module-name">AE Module</div>
+                <div class="module-desc">Import After Effects compositions. Position/scale/opacity keyframes → scroll-driven web animation.</div>
+                <span class="module-status status-experimental">Experimental</span>
+            </a>
+        </div>
+        
+        <footer>
+            <p>Scrolltastic Lab — Isolated testing environment</p>
+            <p style="margin-top: 8px;"><a href="../presentation_disco_v137/index.html">← Back to Main Toolkit</a></p>
+        </footer>
+    </div>
+</body>
+</html>

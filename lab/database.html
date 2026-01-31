@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Module - Scrolltastic Lab</title>
+    <style>
+        @font-face { font-family: 'APRegular'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Regular.woff2') format('woff2'); }
+        @font-face { font-family: 'APMedium'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Medium.woff2') format('woff2'); }
+        @font-face { font-family: 'APBold'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Bold.woff2') format('woff2'); }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: APRegular, system-ui, sans-serif; background: #111; color: #e0e0e0; }
+        
+        .layout { display: flex; height: 100vh; }
+        .sidebar { width: 360px; background: #1a1a1a; overflow-y: auto; border-right: 1px solid #333; }
+        .preview-area { flex: 1; display: flex; flex-direction: column; background: #0a0a0a; }
+        
+        .sidebar-header { padding: 16px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
+        .sidebar-header h1 { font-family: APBold; font-size: 16px; }
+        .back-link { color: #888; text-decoration: none; font-size: 12px; }
+        .back-link:hover { color: #ff6b6b; }
+        
+        h2 { font-family: APMedium; font-size: 13px; padding: 12px 16px; background: #222; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        h2:hover { background: #282828; }
+        h2::after { content: '▼'; font-size: 10px; color: #666; }
+        
+        .section { padding: 16px; border-bottom: 1px solid #333; }
+        .section.collapsed { display: none; }
+        
+        .control-group { margin-bottom: 14px; }
+        .control-group label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; }
+        .control-group input[type="text"],
+        .control-group input[type="number"],
+        .control-group select,
+        .control-group textarea { width: 100%; padding: 8px 10px; border: 1px solid #333; border-radius: 6px; background: #222; color: #e0e0e0; font-size: 13px; }
+        .control-group input[type="range"] { width: 100%; }
+        .control-group input[type="color"] { width: 50px; height: 32px; border: none; border-radius: 4px; cursor: pointer; }
+        .control-group input[type="file"] { font-size: 12px; }
+        
+        .row { display: flex; gap: 10px; }
+        .row .control-group { flex: 1; }
+        
+        .range-val { float: right; color: #4a9eff; font-size: 11px; }
+        .hint { font-size: 11px; color: #666; margin-top: 4px; }
+        
+        button { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; background: #333; color: #e0e0e0; width: 100%; margin-top: 6px; }
+        button:hover { background: #444; }
+        button.primary { background: #4a9eff; color: #000; }
+        button.primary:hover { background: #6ab0ff; }
+        button.danger { background: #ff4a4a; color: #fff; }
+        button.danger:hover { background: #ff6b6b; }
+        button.small { width: auto; padding: 4px 10px; margin: 0; }
+        
+        .column-item { background: #222; border: 1px solid #333; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
+        .column-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .column-name { font-family: APMedium; font-size: 13px; }
+        .column-type { font-size: 10px; color: #666; }
+        .column-options { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+        .column-options label { font-size: 11px; color: #aaa; display: flex; align-items: center; gap: 4px; }
+        
+        .preview-toolbar { padding: 10px 16px; background: #1a1a1a; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 16px; }
+        .mode-btn { padding: 6px 12px; border: 1px solid #333; background: transparent; color: #888; cursor: pointer; font-size: 12px; border-radius: 4px; }
+        .mode-btn.active { background: #4a9eff; color: #000; border-color: #4a9eff; }
+        
+        .preview-content { flex: 1; overflow: auto; padding: 20px; }
+        
+        /* Preview Components */
+        .db-preview { max-width: 800px; margin: 0 auto; }
+        .db-search { display: flex; gap: 10px; margin-bottom: 20px; }
+        .db-search input { flex: 1; padding: 12px 16px; border: 1px solid #333; border-radius: 8px; background: #1a1a1a; color: #fff; font-size: 15px; }
+        .db-search button { width: auto; padding: 12px 24px; margin: 0; }
+        
+        .db-filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .db-filter { padding: 6px 12px; background: #222; border: 1px solid #333; border-radius: 20px; font-size: 12px; cursor: pointer; }
+        .db-filter.active { background: #4a9eff; color: #000; border-color: #4a9eff; }
+        
+        .db-results { display: grid; gap: 16px; }
+        .db-card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 20px; transition: all 0.2s; }
+        .db-card:hover { border-color: #4a9eff; transform: translateY(-2px); }
+        .db-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .db-card-title { font-family: APBold; font-size: 18px; color: #fff; }
+        .db-card-subtitle { font-size: 13px; color: #888; margin-top: 4px; }
+        .db-card-body { font-size: 14px; color: #aaa; line-height: 1.5; }
+        .db-card-tag { display: inline-block; padding: 4px 10px; background: rgba(74, 158, 255, 0.2); color: #4a9eff; border-radius: 12px; font-size: 11px; }
+        
+        .db-stats { text-align: center; padding: 20px; color: #666; font-size: 13px; }
+        
+        /* Venn Diagram */
+        .venn-container { display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .venn-svg { max-width: 500px; width: 100%; }
+        .venn-circle { fill-opacity: 0.3; stroke-width: 2; cursor: pointer; transition: fill-opacity 0.2s; }
+        .venn-circle:hover { fill-opacity: 0.5; }
+        .venn-label { font-family: APMedium; font-size: 14px; fill: #fff; text-anchor: middle; }
+        .venn-count { font-family: APBold; font-size: 20px; fill: #fff; text-anchor: middle; }
+        .venn-results { margin-top: 20px; width: 100%; max-width: 600px; }
+        
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #1a1a1a; border-radius: 12px; padding: 24px; width: 90%; max-width: 700px; max-height: 80vh; overflow: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-close { background: none; border: none; color: #888; font-size: 24px; cursor: pointer; width: auto; padding: 0; }
+        .modal textarea { width: 100%; height: 300px; font-family: monospace; font-size: 12px; background: #111; color: #0f0; border: 1px solid #333; border-radius: 6px; padding: 12px; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>🗄️ Database Module</h1>
+            <a href="index.html" class="back-link">← Lab</a>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Data Source</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Upload CSV</label>
+                <input type="file" id="csvFile" accept=".csv,.tsv" onchange="loadCSV(event)">
+            </div>
+            <div class="hint">Or paste CSV data below:</div>
+            <div class="control-group" style="margin-top: 8px;">
+                <textarea id="csvPaste" rows="4" placeholder="name,company,amount&#10;John Doe,Acme Inc,50000&#10;..."></textarea>
+            </div>
+            <button onclick="parseCSVText()">Parse Pasted Data</button>
+            <div id="dataStats" class="hint" style="margin-top: 10px;"></div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Column Settings</h2>
+        <div class="section">
+            <div id="columnsList">
+                <div class="hint">Load data to configure columns</div>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Card Layout</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Title Field</label>
+                <select id="titleField" onchange="updatePreview()"></select>
+            </div>
+            <div class="control-group">
+                <label>Subtitle Field</label>
+                <select id="subtitleField" onchange="updatePreview()"><option value="">None</option></select>
+            </div>
+            <div class="control-group">
+                <label>Body Fields (shown on card)</label>
+                <div id="bodyFieldsChecks"></div>
+            </div>
+            <div class="control-group">
+                <label>Tag Field (badge)</label>
+                <select id="tagField" onchange="updatePreview()"><option value="">None</option></select>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Modes</h2>
+        <div class="section">
+            <div class="control-group">
+                <label><input type="checkbox" id="enableLookup" checked onchange="updateModes()"> Enable Lookup (search bar)</label>
+            </div>
+            <div class="control-group">
+                <label><input type="checkbox" id="enableRoster" checked onchange="updateModes()"> Enable Roster (browse + filter)</label>
+            </div>
+            <div class="control-group">
+                <label><input type="checkbox" id="enableVenn" onchange="updateModes()"> Enable Venn (filter overlap view)</label>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Styling</h2>
+        <div class="section">
+            <div class="row">
+                <div class="control-group">
+                    <label>Background</label>
+                    <input type="color" id="bgColor" value="#0a0a0a" onchange="updatePreview()">
+                </div>
+                <div class="control-group">
+                    <label>Card BG</label>
+                    <input type="color" id="cardBgColor" value="#1a1a1a" onchange="updatePreview()">
+                </div>
+            </div>
+            <div class="control-group">
+                <label>Accent Color</label>
+                <input type="color" id="accentColor" value="#4a9eff" onchange="updatePreview()">
+            </div>
+            <div class="control-group">
+                <label>Max Width (px)</label>
+                <input type="number" id="maxWidth" value="800">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Export</h2>
+        <div class="section">
+            <button class="primary" onclick="generateExport()">Generate Export</button>
+            <button onclick="copyCode()">Copy Code</button>
+            <div class="row" style="margin-top: 10px;">
+                <button onclick="saveProject()">Save Project</button>
+                <button onclick="loadProject()">Load Project</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="preview-area">
+        <div class="preview-toolbar">
+            <button class="mode-btn active" id="lookupModeBtn" onclick="setPreviewMode('lookup')">Lookup</button>
+            <button class="mode-btn" id="rosterModeBtn" onclick="setPreviewMode('roster')">Roster</button>
+            <button class="mode-btn" id="vennModeBtn" onclick="setPreviewMode('venn')">Venn</button>
+            <span style="margin-left: auto; font-size: 12px; color: #666;" id="recordCount">0 records</span>
+        </div>
+        <div class="preview-content">
+            <div class="db-preview" id="dbPreview">
+                <div class="db-stats">Load CSV data to begin</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Export Code</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <textarea id="exportCode" readonly></textarea>
+        <button class="primary" onclick="copyExportCode()" style="margin-top: 12px;">Copy to Clipboard</button>
+    </div>
+</div>
+
+<script>
+// State
+let data = [];
+let columns = [];
+let columnSettings = {};
+let previewMode = 'lookup';
+let searchQuery = '';
+let activeFilters = {};
+let vennFilters = [];
+
+// Utility
+function toggleSection(h2) {
+    h2.nextElementSibling.classList.toggle('collapsed');
+}
+
+// CSV Parsing
+function loadCSV(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => parseCSV(e.target.result);
+    reader.readAsText(file);
+}
+
+function parseCSVText() {
+    const text = document.getElementById('csvPaste').value;
+    if (text.trim()) parseCSV(text);
+}
+
+function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    if (lines.length < 2) return alert('Need at least header + 1 row');
+    
+    const delimiter = lines[0].includes('\t') ? '\t' : ',';
+    columns = parseCSVLine(lines[0], delimiter);
+    
+    data = [];
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const values = parseCSVLine(lines[i], delimiter);
+        const row = {};
+        columns.forEach((col, idx) => row[col] = values[idx] || '');
+        data.push(row);
+    }
+    
+    // Auto-detect column types
+    columnSettings = {};
+    columns.forEach(col => {
+        const sample = data.slice(0, 10).map(r => r[col]).filter(v => v);
+        const isNumeric = sample.every(v => !isNaN(parseFloat(v)));
+        const uniqueValues = [...new Set(data.map(r => r[col]))];
+        const isFilterable = uniqueValues.length <= 20 && uniqueValues.length > 1;
+        
+        columnSettings[col] = {
+            searchable: !isNumeric,
+            filterable: isFilterable,
+            display: true,
+            filterValues: isFilterable ? uniqueValues : []
+        };
+    });
+    
+    document.getElementById('dataStats').textContent = `Loaded ${data.length} records, ${columns.length} columns`;
+    document.getElementById('recordCount').textContent = data.length + ' records';
+    
+    renderColumnSettings();
+    populateFieldSelects();
+    updatePreview();
+}
+
+function parseCSVLine(line, delimiter) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === delimiter && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current.trim());
+    return result;
+}
+
+function renderColumnSettings() {
+    const container = document.getElementById('columnsList');
+    if (columns.length === 0) {
+        container.innerHTML = '<div class="hint">Load data to configure columns</div>';
+        return;
+    }
+    
+    container.innerHTML = columns.map(col => `
+        <div class="column-item">
+            <div class="column-header">
+                <span class="column-name">${col}</span>
+                <span class="column-type">${columnSettings[col].filterValues.length > 0 ? columnSettings[col].filterValues.length + ' values' : ''}</span>
+            </div>
+            <div class="column-options">
+                <label><input type="checkbox" ${columnSettings[col].searchable ? 'checked' : ''} onchange="updateColumnSetting('${col}', 'searchable', this.checked)"> Searchable</label>
+                <label><input type="checkbox" ${columnSettings[col].filterable ? 'checked' : ''} onchange="updateColumnSetting('${col}', 'filterable', this.checked)"> Filterable</label>
+                <label><input type="checkbox" ${columnSettings[col].display ? 'checked' : ''} onchange="updateColumnSetting('${col}', 'display', this.checked)"> Display</label>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateColumnSetting(col, prop, value) {
+    columnSettings[col][prop] = value;
+    updatePreview();
+}
+
+function populateFieldSelects() {
+    const options = columns.map(c => `<option value="${c}">${c}</option>`).join('');
+    const optionsWithNone = '<option value="">None</option>' + options;
+    
+    document.getElementById('titleField').innerHTML = options;
+    document.getElementById('subtitleField').innerHTML = optionsWithNone;
+    document.getElementById('tagField').innerHTML = optionsWithNone;
+    
+    // Body fields checkboxes
+    document.getElementById('bodyFieldsChecks').innerHTML = columns.map(c => 
+        `<label style="display: block; font-size: 11px; margin-bottom: 4px;">
+            <input type="checkbox" data-field="${c}" checked onchange="updatePreview()"> ${c}
+        </label>`
+    ).join('');
+    
+    // Auto-select reasonable defaults
+    if (columns.length > 0) document.getElementById('titleField').value = columns[0];
+    if (columns.length > 1) document.getElementById('subtitleField').value = columns[1];
+}
+
+function updateModes() {
+    document.getElementById('lookupModeBtn').style.display = document.getElementById('enableLookup').checked ? '' : 'none';
+    document.getElementById('rosterModeBtn').style.display = document.getElementById('enableRoster').checked ? '' : 'none';
+    document.getElementById('vennModeBtn').style.display = document.getElementById('enableVenn').checked ? '' : 'none';
+}
+
+function setPreviewMode(mode) {
+    previewMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(mode + 'ModeBtn').classList.add('active');
+    updatePreview();
+}
+
+function updatePreview() {
+    const container = document.getElementById('dbPreview');
+    if (data.length === 0) {
+        container.innerHTML = '<div class="db-stats">Load CSV data to begin</div>';
+        return;
+    }
+    
+    const bg = document.getElementById('bgColor').value;
+    const cardBg = document.getElementById('cardBgColor').value;
+    const accent = document.getElementById('accentColor').value;
+    
+    container.style.setProperty('--accent', accent);
+    
+    if (previewMode === 'lookup') {
+        renderLookupMode(container, cardBg, accent);
+    } else if (previewMode === 'roster') {
+        renderRosterMode(container, cardBg, accent);
+    } else if (previewMode === 'venn') {
+        renderVennMode(container, accent);
+    }
+}
+
+function renderLookupMode(container, cardBg, accent) {
+    const searchableFields = columns.filter(c => columnSettings[c].searchable);
+    
+    let html = `
+        <div class="db-search">
+            <input type="text" id="searchInput" placeholder="Search ${searchableFields.join(', ')}..." value="${searchQuery}" oninput="handleSearch(this.value)">
+            <button class="primary small" onclick="handleSearch(document.getElementById('searchInput').value)">Search</button>
+        </div>
+        <div class="db-results" id="searchResults"></div>
+    `;
+    
+    container.innerHTML = html;
+    renderResults(filterData(), cardBg, accent);
+}
+
+function renderRosterMode(container, cardBg, accent) {
+    const filterableFields = columns.filter(c => columnSettings[c].filterable);
+    
+    let filtersHtml = '';
+    filterableFields.forEach(field => {
+        const values = columnSettings[field].filterValues;
+        filtersHtml += `<div style="margin-bottom: 10px;"><strong style="font-size: 11px; color: #888;">${field}:</strong><div class="db-filters">`;
+        values.forEach(v => {
+            const isActive = activeFilters[field] === v;
+            filtersHtml += `<div class="db-filter ${isActive ? 'active' : ''}" onclick="toggleFilter('${field}', '${v.replace(/'/g, "\\'")}')" style="${isActive ? 'background:' + accent + ';color:#000;border-color:' + accent : ''}">${v}</div>`;
+        });
+        filtersHtml += `</div></div>`;
+    });
+    
+    container.innerHTML = `
+        <div class="db-search">
+            <input type="text" id="searchInput" placeholder="Search..." value="${searchQuery}" oninput="handleSearch(this.value)">
+        </div>
+        ${filtersHtml}
+        <div class="db-results" id="searchResults"></div>
+    `;
+    
+    renderResults(filterData(), cardBg, accent);
+}
+
+function renderVennMode(container, accent) {
+    const filterableFields = columns.filter(c => columnSettings[c].filterable);
+    
+    if (filterableFields.length < 2) {
+        container.innerHTML = '<div class="db-stats">Need at least 2 filterable columns for Venn view</div>';
+        return;
+    }
+    
+    // Simple 2-circle Venn for first 2 filterable fields
+    const field1 = filterableFields[0];
+    const field2 = filterableFields[1];
+    const val1 = columnSettings[field1].filterValues[0];
+    const val2 = columnSettings[field2].filterValues[0];
+    
+    const set1 = data.filter(r => r[field1] === val1);
+    const set2 = data.filter(r => r[field2] === val2);
+    const intersection = data.filter(r => r[field1] === val1 && r[field2] === val2);
+    
+    container.innerHTML = `
+        <div class="venn-container">
+            <div style="margin-bottom: 20px;">
+                <select id="vennField1" onchange="updatePreview()" style="padding: 8px; background: #222; border: 1px solid #333; color: #fff; border-radius: 4px;">
+                    ${filterableFields.map(f => `<option value="${f}" ${f === field1 ? 'selected' : ''}>${f}</option>`).join('')}
+                </select>
+                <select id="vennVal1" onchange="updatePreview()" style="padding: 8px; background: #222; border: 1px solid #333; color: #fff; border-radius: 4px; margin-left: 8px;">
+                    ${columnSettings[field1].filterValues.map(v => `<option value="${v}">${v}</option>`).join('')}
+                </select>
+                <span style="margin: 0 16px; color: #666;">∩</span>
+                <select id="vennField2" onchange="updatePreview()" style="padding: 8px; background: #222; border: 1px solid #333; color: #fff; border-radius: 4px;">
+                    ${filterableFields.map(f => `<option value="${f}" ${f === field2 ? 'selected' : ''}>${f}</option>`).join('')}
+                </select>
+                <select id="vennVal2" onchange="updatePreview()" style="padding: 8px; background: #222; border: 1px solid #333; color: #fff; border-radius: 4px; margin-left: 8px;">
+                    ${columnSettings[field2].filterValues.map(v => `<option value="${v}">${v}</option>`).join('')}
+                </select>
+            </div>
+            <svg class="venn-svg" viewBox="0 0 400 300">
+                <circle class="venn-circle" cx="150" cy="150" r="100" fill="${accent}" stroke="${accent}"/>
+                <circle class="venn-circle" cx="250" cy="150" r="100" fill="#ff6b6b" stroke="#ff6b6b"/>
+                <text class="venn-count" x="110" y="155">${set1.length - intersection.length}</text>
+                <text class="venn-count" x="200" y="155">${intersection.length}</text>
+                <text class="venn-count" x="290" y="155">${set2.length - intersection.length}</text>
+                <text class="venn-label" x="110" y="180" style="font-size: 10px;">${field1}: ${val1}</text>
+                <text class="venn-label" x="290" y="180" style="font-size: 10px;">${field2}: ${val2}</text>
+            </svg>
+            <div class="venn-results">
+                <h3 style="font-family: APMedium; margin-bottom: 12px; color: #fff;">Intersection (${intersection.length})</h3>
+                <div class="db-results" id="searchResults"></div>
+            </div>
+        </div>
+    `;
+    
+    const resultsContainer = container.querySelector('#searchResults');
+    renderResultsInto(resultsContainer, intersection.slice(0, 10), document.getElementById('cardBgColor').value, accent);
+}
+
+function handleSearch(query) {
+    searchQuery = query;
+    updatePreview();
+}
+
+function toggleFilter(field, value) {
+    if (activeFilters[field] === value) {
+        delete activeFilters[field];
+    } else {
+        activeFilters[field] = value;
+    }
+    updatePreview();
+}
+
+function filterData() {
+    let filtered = data;
+    
+    // Search
+    if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        const searchableFields = columns.filter(c => columnSettings[c].searchable);
+        filtered = filtered.filter(row => 
+            searchableFields.some(f => (row[f] || '').toLowerCase().includes(q))
+        );
+    }
+    
+    // Filters
+    Object.entries(activeFilters).forEach(([field, value]) => {
+        filtered = filtered.filter(row => row[field] === value);
+    });
+    
+    return filtered;
+}
+
+function renderResults(results, cardBg, accent) {
+    const container = document.getElementById('searchResults');
+    renderResultsInto(container, results.slice(0, 20), cardBg, accent);
+}
+
+function renderResultsInto(container, results, cardBg, accent) {
+    if (results.length === 0) {
+        container.innerHTML = '<div class="db-stats">No results found</div>';
+        return;
+    }
+    
+    const titleField = document.getElementById('titleField').value;
+    const subtitleField = document.getElementById('subtitleField').value;
+    const tagField = document.getElementById('tagField').value;
+    const bodyFieldChecks = document.querySelectorAll('#bodyFieldsChecks input:checked');
+    const bodyFields = Array.from(bodyFieldChecks).map(c => c.dataset.field).filter(f => f !== titleField && f !== subtitleField);
+    
+    container.innerHTML = results.map(row => `
+        <div class="db-card" style="background: ${cardBg};">
+            <div class="db-card-header">
+                <div>
+                    <div class="db-card-title">${row[titleField] || 'Untitled'}</div>
+                    ${subtitleField && row[subtitleField] ? `<div class="db-card-subtitle">${row[subtitleField]}</div>` : ''}
+                </div>
+                ${tagField && row[tagField] ? `<span class="db-card-tag" style="background: ${accent}22; color: ${accent};">${row[tagField]}</span>` : ''}
+            </div>
+            <div class="db-card-body">
+                ${bodyFields.map(f => row[f] ? `<div><strong>${f}:</strong> ${row[f]}</div>` : '').join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+// Export
+function generateExport() {
+    if (data.length === 0) return alert('Load data first');
+    
+    const enableLookup = document.getElementById('enableLookup').checked;
+    const enableRoster = document.getElementById('enableRoster').checked;
+    const enableVenn = document.getElementById('enableVenn').checked;
+    const bg = document.getElementById('bgColor').value;
+    const cardBg = document.getElementById('cardBgColor').value;
+    const accent = document.getElementById('accentColor').value;
+    const maxWidth = document.getElementById('maxWidth').value;
+    const titleField = document.getElementById('titleField').value;
+    const subtitleField = document.getElementById('subtitleField').value;
+    const tagField = document.getElementById('tagField').value;
+    
+    const uid = 'db' + Math.random().toString(36).substr(2, 9);
+    const searchableFields = columns.filter(c => columnSettings[c].searchable);
+    const filterableFields = columns.filter(c => columnSettings[c].filterable);
+    
+    // Compress data for export
+    const exportData = JSON.stringify(data);
+    const exportSettings = JSON.stringify({
+        searchable: searchableFields,
+        filterable: filterableFields.map(f => ({ field: f, values: columnSettings[f].filterValues })),
+        title: titleField,
+        subtitle: subtitleField,
+        tag: tagField
+    });
+    
+    const code = `<style>
+#${uid}{background:${bg};padding:20px;font-family:system-ui,sans-serif}
+#${uid} .dbw{max-width:${maxWidth}px;margin:0 auto}
+#${uid} .dbs{display:flex;gap:10px;margin-bottom:20px}
+#${uid} .dbs input{flex:1;padding:12px 16px;border:1px solid #333;border-radius:8px;background:#1a1a1a;color:#fff;font-size:15px}
+#${uid} .dbs button{padding:12px 24px;background:${accent};color:#000;border:none;border-radius:8px;cursor:pointer}
+#${uid} .dbf{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+#${uid} .dbf span{padding:6px 12px;background:#222;border:1px solid #333;border-radius:20px;font-size:12px;cursor:pointer;color:#aaa}
+#${uid} .dbf span.on{background:${accent};color:#000;border-color:${accent}}
+#${uid} .dbr{display:grid;gap:16px}
+#${uid} .dbc{background:${cardBg};border:1px solid #333;border-radius:12px;padding:20px}
+#${uid} .dbc h3{font-size:18px;color:#fff;margin:0 0 4px 0}
+#${uid} .dbc .sub{font-size:13px;color:#888;margin-bottom:12px}
+#${uid} .dbc .tag{display:inline-block;padding:4px 10px;background:${accent}22;color:${accent};border-radius:12px;font-size:11px;float:right}
+#${uid} .dbc .body{font-size:14px;color:#aaa;line-height:1.5}
+#${uid} .stats{text-align:center;padding:20px;color:#666;font-size:13px}
+</style>
+<div id="${uid}">
+<div class="dbw">
+${enableLookup ? '<div class="dbs"><input type="text" id="' + uid + '-search" placeholder="Search..."><button onclick="' + uid + 'Search()">Search</button></div>' : ''}
+${enableRoster ? '<div class="dbf" id="' + uid + '-filters"></div>' : ''}
+<div class="dbr" id="${uid}-results"></div>
+</div>
+</div>
+<scr`+`ipt>
+(function(){
+var data=${exportData};
+var cfg=${exportSettings};
+var w=document.getElementById('${uid}');
+var results=w.querySelector('#${uid}-results');
+var query='',filters={};
+
+function render(){
+var f=data.filter(function(r){
+if(query){var q=query.toLowerCase();if(!cfg.searchable.some(function(s){return(r[s]||'').toLowerCase().indexOf(q)>=0}))return false;}
+for(var k in filters){if(filters[k]&&r[k]!==filters[k])return false;}
+return true;
+}).slice(0,50);
+if(f.length===0){results.innerHTML='<div class="stats">No results</div>';return;}
+results.innerHTML=f.map(function(r){
+return '<div class="dbc">'+(cfg.tag&&r[cfg.tag]?'<span class="tag">'+r[cfg.tag]+'</span>':'')+'<h3>'+r[cfg.title]+'</h3>'+(cfg.subtitle&&r[cfg.subtitle]?'<div class="sub">'+r[cfg.subtitle]+'</div>':'')+'</div>';
+}).join('');
+}
+${enableLookup ? `
+window.${uid}Search=function(){
+query=w.querySelector('#${uid}-search').value;
+render();
+};
+w.querySelector('#${uid}-search').addEventListener('keyup',function(e){if(e.key==='Enter')${uid}Search();});
+` : ''}
+${enableRoster ? `
+var fWrap=w.querySelector('#${uid}-filters');
+cfg.filterable.forEach(function(fc){
+fc.values.forEach(function(v){
+var sp=document.createElement('span');
+sp.textContent=v;
+sp.onclick=function(){
+if(filters[fc.field]===v){delete filters[fc.field];sp.classList.remove('on');}
+else{filters[fc.field]=v;fWrap.querySelectorAll('span').forEach(function(s){if(s.dataset.f===fc.field)s.classList.remove('on');});sp.classList.add('on');}
+render();
+};
+sp.dataset.f=fc.field;
+fWrap.appendChild(sp);
+});
+});
+` : ''}
+render();
+})();
+<\/scr`+`ipt>`;
+    
+    document.getElementById('exportCode').value = code;
+    document.getElementById('exportModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('exportModal').classList.remove('active');
+}
+
+function copyExportCode() {
+    document.getElementById('exportCode').select();
+    document.execCommand('copy');
+    alert('Copied!');
+}
+
+function copyCode() { generateExport(); }
+
+function saveProject() {
+    const project = {
+        version: 1,
+        data: data,
+        columns: columns,
+        columnSettings: columnSettings,
+        titleField: document.getElementById('titleField').value,
+        subtitleField: document.getElementById('subtitleField').value,
+        tagField: document.getElementById('tagField').value,
+        enableLookup: document.getElementById('enableLookup').checked,
+        enableRoster: document.getElementById('enableRoster').checked,
+        enableVenn: document.getElementById('enableVenn').checked,
+        bgColor: document.getElementById('bgColor').value,
+        cardBgColor: document.getElementById('cardBgColor').value,
+        accentColor: document.getElementById('accentColor').value,
+        maxWidth: document.getElementById('maxWidth').value
+    };
+    
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'database-module-project.json';
+    a.click();
+}
+
+function loadProject() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+            try {
+                const proj = JSON.parse(ev.target.result);
+                data = proj.data || [];
+                columns = proj.columns || [];
+                columnSettings = proj.columnSettings || {};
+                
+                document.getElementById('enableLookup').checked = proj.enableLookup !== false;
+                document.getElementById('enableRoster').checked = proj.enableRoster !== false;
+                document.getElementById('enableVenn').checked = proj.enableVenn || false;
+                document.getElementById('bgColor').value = proj.bgColor || '#0a0a0a';
+                document.getElementById('cardBgColor').value = proj.cardBgColor || '#1a1a1a';
+                document.getElementById('accentColor').value = proj.accentColor || '#4a9eff';
+                document.getElementById('maxWidth').value = proj.maxWidth || 800;
+                
+                renderColumnSettings();
+                populateFieldSelects();
+                
+                if (proj.titleField) document.getElementById('titleField').value = proj.titleField;
+                if (proj.subtitleField) document.getElementById('subtitleField').value = proj.subtitleField;
+                if (proj.tagField) document.getElementById('tagField').value = proj.tagField;
+                
+                document.getElementById('dataStats').textContent = `Loaded ${data.length} records, ${columns.length} columns`;
+                document.getElementById('recordCount').textContent = data.length + ' records';
+                
+                updateModes();
+                updatePreview();
+            } catch (err) {
+                alert('Invalid project file');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+// Init
+updateModes();
+</script>
+</body>
+</html>

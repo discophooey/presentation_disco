@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AE Module - Scrolltastic Lab</title>
+    <style>
+        @font-face { font-family: 'APRegular'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Regular.woff2') format('woff2'); }
+        @font-face { font-family: 'APMedium'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Medium.woff2') format('woff2'); }
+        @font-face { font-family: 'APBold'; src: url('https://www.ap.org/assets/static-assets/fonts/AP-Bold.woff2') format('woff2'); }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: APRegular, system-ui, sans-serif; background: #111; color: #e0e0e0; }
+        
+        .layout { display: flex; height: 100vh; }
+        .sidebar { width: 360px; background: #1a1a1a; overflow-y: auto; border-right: 1px solid #333; }
+        .preview-area { flex: 1; display: flex; flex-direction: column; }
+        
+        .sidebar-header { padding: 16px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
+        .sidebar-header h1 { font-family: APBold; font-size: 16px; }
+        .back-link { color: #888; text-decoration: none; font-size: 12px; }
+        .back-link:hover { color: #ff6b6b; }
+        
+        h2 { font-family: APMedium; font-size: 13px; padding: 12px 16px; background: #222; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        h2:hover { background: #282828; }
+        h2::after { content: '▼'; font-size: 10px; color: #666; }
+        
+        .section { padding: 16px; border-bottom: 1px solid #333; }
+        .section.collapsed { display: none; }
+        
+        .control-group { margin-bottom: 14px; }
+        .control-group label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; }
+        .control-group input[type="text"],
+        .control-group input[type="number"],
+        .control-group select,
+        .control-group textarea { width: 100%; padding: 8px 10px; border: 1px solid #333; border-radius: 6px; background: #222; color: #e0e0e0; font-size: 13px; }
+        .control-group input[type="range"] { width: 100%; }
+        .control-group input[type="color"] { width: 50px; height: 32px; border: none; border-radius: 4px; cursor: pointer; }
+        .control-group input[type="file"] { font-size: 12px; }
+        
+        .row { display: flex; gap: 10px; }
+        .row .control-group { flex: 1; }
+        
+        .range-val { float: right; color: #4a9eff; font-size: 11px; }
+        .hint { font-size: 11px; color: #666; margin-top: 4px; }
+        
+        button { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; background: #333; color: #e0e0e0; width: 100%; margin-top: 6px; }
+        button:hover { background: #444; }
+        button.primary { background: #4a9eff; color: #000; }
+        button.primary:hover { background: #6ab0ff; }
+        button.danger { background: #ff4a4a; color: #fff; }
+        button.danger:hover { background: #ff6b6b; }
+        button.small { width: auto; padding: 4px 10px; margin: 0; }
+        
+        .layer-item { background: #222; border: 1px solid #333; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
+        .layer-item.selected { border-color: #4a9eff; }
+        .layer-header { display: flex; justify-content: space-between; align-items: center; }
+        .layer-name { font-family: APMedium; font-size: 13px; }
+        .layer-type { font-size: 10px; color: #666; background: #333; padding: 2px 6px; border-radius: 4px; }
+        
+        .keyframe-badge { display: inline-block; font-size: 10px; color: #4a9eff; margin-left: 8px; }
+        
+        .preview-toolbar { padding: 10px 16px; background: #1a1a1a; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 16px; }
+        .preview-toolbar label { font-size: 12px; color: #888; display: flex; align-items: center; gap: 6px; }
+        .progress-display { font-family: APMedium; font-size: 12px; color: #4a9eff; }
+        
+        .preview-scroll { flex: 1; overflow-y: auto; background: #0a0a0a; }
+        .preview-container { position: relative; }
+        .preview-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .preview-comp { position: relative; overflow: hidden; }
+        .preview-layer { position: absolute; will-change: transform, opacity; }
+        .preview-layer img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        
+        .info-box { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+        .info-box h3 { font-family: APMedium; font-size: 14px; margin-bottom: 8px; color: #fff; }
+        .info-box pre { font-size: 11px; color: #888; line-height: 1.5; white-space: pre-wrap; background: #111; padding: 10px; border-radius: 4px; margin-top: 8px; overflow-x: auto; }
+        
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #1a1a1a; border-radius: 12px; padding: 24px; width: 90%; max-width: 700px; max-height: 80vh; overflow: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-close { background: none; border: none; color: #888; font-size: 24px; cursor: pointer; width: auto; padding: 0; }
+        .modal textarea { width: 100%; height: 300px; font-family: monospace; font-size: 12px; background: #111; color: #0f0; border: 1px solid #333; border-radius: 6px; padding: 12px; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>🎞️ AE Module</h1>
+            <a href="index.html" class="back-link">← Lab</a>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Import Composition</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Load AE Export JSON</label>
+                <input type="file" id="jsonFile" accept=".json" onchange="loadJSON(event)">
+            </div>
+            <div class="hint" style="margin-bottom: 12px;">Or paste JSON data:</div>
+            <div class="control-group">
+                <textarea id="jsonPaste" rows="4" placeholder='{"width":1920,"height":1080,...}'></textarea>
+            </div>
+            <button onclick="parseJSONText()">Parse JSON</button>
+            <button onclick="loadSampleComp()" style="margin-top: 8px;">Load Sample Comp</button>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Composition Info</h2>
+        <div class="section">
+            <div id="compInfo">
+                <div class="hint">Load a composition to see info</div>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Layers</h2>
+        <div class="section">
+            <div id="layersList">
+                <div class="hint">Load a composition to see layers</div>
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Scroll Settings</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Scroll Duration (vh) <span class="range-val" id="scrollDurVal">300</span></label>
+                <input type="range" id="scrollDuration" min="150" max="600" value="300" oninput="document.getElementById('scrollDurVal').textContent=this.value; setPreviewHeight();">
+            </div>
+            <div class="control-group">
+                <label>Mobile Sticky Offset (px)</label>
+                <input type="number" id="mobileOffset" value="200">
+            </div>
+            <div class="control-group">
+                <label>Background Color</label>
+                <input type="color" id="bgColor" value="#000000" onchange="updatePreview()">
+            </div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">JSON Format Reference</h2>
+        <div class="section">
+            <div class="info-box">
+                <h3>Expected JSON Structure</h3>
+                <pre>{
+  "width": 1920,
+  "height": 1080,
+  "duration": 5,
+  "fps": 30,
+  "layers": [
+    {
+      "name": "Layer 1",
+      "type": "image",
+      "src": "layer1.png",
+      "keyframes": {
+        "position": [
+          {"t": 0, "x": 960, "y": 540},
+          {"t": 2.5, "x": 500, "y": 540}
+        ],
+        "scale": [
+          {"t": 0, "s": 100},
+          {"t": 5, "s": 150}
+        ],
+        "opacity": [
+          {"t": 0, "o": 0},
+          {"t": 1, "o": 100}
+        ]
+      }
+    }
+  ]
+}</pre>
+            </div>
+            <div class="hint">Times (t) are in seconds. Position in pixels. Scale/opacity in percent.</div>
+        </div>
+        
+        <h2 onclick="toggleSection(this)">Export</h2>
+        <div class="section">
+            <button class="primary" onclick="generateExport()">Generate Export</button>
+            <button onclick="copyCode()">Copy Code</button>
+            <div class="row" style="margin-top: 10px;">
+                <button onclick="saveProject()">Save Project</button>
+                <button onclick="loadProject()">Load Project</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="preview-area">
+        <div class="preview-toolbar">
+            <span class="progress-display">Scroll: <span id="progressDisplay">0%</span></span>
+            <span class="progress-display" style="margin-left: 20px;">Time: <span id="timeDisplay">0.00s</span></span>
+            <label style="margin-left: auto;">
+                <input type="checkbox" id="fitFrame" checked onchange="updatePreview()">
+                Fit to frame
+            </label>
+        </div>
+        <div class="preview-scroll" id="previewScroll">
+            <div class="preview-container" id="previewContainer">
+                <div class="preview-stage" id="previewStage">
+                    <div class="preview-comp" id="previewComp">
+                        <div style="color: #666; text-align: center; padding: 40px;">Load an AE composition to begin</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Export Code</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <textarea id="exportCode" readonly></textarea>
+        <button class="primary" onclick="copyExportCode()" style="margin-top: 12px;">Copy to Clipboard</button>
+    </div>
+</div>
+
+<script>
+// State
+let comp = null;
+let currentScrollPct = 0;
+
+// Utility
+function toggleSection(h2) {
+    h2.nextElementSibling.classList.toggle('collapsed');
+}
+
+// JSON Loading
+function loadJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => parseComp(e.target.result);
+    reader.readAsText(file);
+}
+
+function parseJSONText() {
+    const text = document.getElementById('jsonPaste').value;
+    if (text.trim()) parseComp(text);
+}
+
+function parseComp(jsonStr) {
+    try {
+        comp = JSON.parse(jsonStr);
+        if (!comp.width || !comp.height || !comp.layers) {
+            throw new Error('Missing required fields');
+        }
+        renderCompInfo();
+        renderLayersList();
+        updatePreview();
+        setPreviewHeight();
+    } catch (err) {
+        alert('Invalid JSON: ' + err.message);
+    }
+}
+
+function loadSampleComp() {
+    const sample = {
+        width: 800,
+        height: 600,
+        duration: 4,
+        fps: 30,
+        layers: [
+            {
+                name: "Background",
+                type: "solid",
+                color: "#1a1a2e",
+                keyframes: {
+                    opacity: [{ t: 0, o: 100 }]
+                }
+            },
+            {
+                name: "Circle",
+                type: "shape",
+                shape: "circle",
+                color: "#4a9eff",
+                width: 150,
+                height: 150,
+                keyframes: {
+                    position: [
+                        { t: 0, x: 200, y: 300 },
+                        { t: 2, x: 600, y: 300 },
+                        { t: 4, x: 400, y: 150 }
+                    ],
+                    scale: [
+                        { t: 0, s: 100 },
+                        { t: 2, s: 150 },
+                        { t: 4, s: 80 }
+                    ],
+                    opacity: [
+                        { t: 0, o: 0 },
+                        { t: 0.5, o: 100 },
+                        { t: 3.5, o: 100 },
+                        { t: 4, o: 0 }
+                    ]
+                }
+            },
+            {
+                name: "Title",
+                type: "text",
+                text: "Scroll-Driven",
+                fontSize: 48,
+                color: "#ffffff",
+                keyframes: {
+                    position: [
+                        { t: 0, x: 400, y: 450 },
+                        { t: 4, x: 400, y: 350 }
+                    ],
+                    opacity: [
+                        { t: 0, o: 0 },
+                        { t: 1, o: 100 }
+                    ]
+                }
+            }
+        ]
+    };
+    comp = sample;
+    document.getElementById('jsonPaste').value = JSON.stringify(sample, null, 2);
+    renderCompInfo();
+    renderLayersList();
+    updatePreview();
+    setPreviewHeight();
+}
+
+function renderCompInfo() {
+    if (!comp) return;
+    document.getElementById('compInfo').innerHTML = `
+        <div class="row">
+            <div class="control-group">
+                <label>Width</label>
+                <input type="number" value="${comp.width}" onchange="comp.width=parseInt(this.value); updatePreview();">
+            </div>
+            <div class="control-group">
+                <label>Height</label>
+                <input type="number" value="${comp.height}" onchange="comp.height=parseInt(this.value); updatePreview();">
+            </div>
+        </div>
+        <div class="row">
+            <div class="control-group">
+                <label>Duration (sec)</label>
+                <input type="number" value="${comp.duration}" step="0.1" onchange="comp.duration=parseFloat(this.value);">
+            </div>
+            <div class="control-group">
+                <label>FPS</label>
+                <input type="number" value="${comp.fps || 30}" onchange="comp.fps=parseInt(this.value);">
+            </div>
+        </div>
+    `;
+}
+
+function renderLayersList() {
+    if (!comp || !comp.layers) {
+        document.getElementById('layersList').innerHTML = '<div class="hint">Load a composition to see layers</div>';
+        return;
+    }
+    
+    document.getElementById('layersList').innerHTML = comp.layers.map((layer, i) => {
+        const kfCount = Object.keys(layer.keyframes || {}).reduce((sum, k) => sum + (layer.keyframes[k]?.length || 0), 0);
+        return `
+            <div class="layer-item">
+                <div class="layer-header">
+                    <div>
+                        <span class="layer-name">${layer.name}</span>
+                        <span class="keyframe-badge">${kfCount} keyframes</span>
+                    </div>
+                    <span class="layer-type">${layer.type}</span>
+                </div>
+                ${layer.type === 'image' ? `<input type="text" value="${layer.src || ''}" placeholder="Image URL" style="margin-top: 8px; width: 100%;" onchange="comp.layers[${i}].src=this.value; updatePreview();">` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+// Preview
+function updatePreview() {
+    if (!comp) return;
+    
+    const compEl = document.getElementById('previewComp');
+    const stage = document.getElementById('previewStage');
+    const fit = document.getElementById('fitFrame').checked;
+    const bg = document.getElementById('bgColor').value;
+    
+    stage.style.background = bg;
+    
+    if (fit) {
+        compEl.style.width = '100%';
+        compEl.style.height = '100%';
+        compEl.style.maxWidth = '100%';
+        compEl.style.maxHeight = '100%';
+        compEl.style.aspectRatio = comp.width + '/' + comp.height;
+    } else {
+        compEl.style.width = comp.width + 'px';
+        compEl.style.height = comp.height + 'px';
+        compEl.style.aspectRatio = 'auto';
+    }
+    
+    // Render layers
+    compEl.innerHTML = '';
+    comp.layers.forEach((layer, i) => {
+        const el = document.createElement('div');
+        el.className = 'preview-layer';
+        el.dataset.index = i;
+        
+        if (layer.type === 'solid') {
+            el.style.width = '100%';
+            el.style.height = '100%';
+            el.style.background = layer.color || '#000';
+        } else if (layer.type === 'shape' && layer.shape === 'circle') {
+            el.style.width = (layer.width || 100) + 'px';
+            el.style.height = (layer.height || 100) + 'px';
+            el.style.background = layer.color || '#fff';
+            el.style.borderRadius = '50%';
+        } else if (layer.type === 'text') {
+            el.style.fontFamily = 'APBold, sans-serif';
+            el.style.fontSize = (layer.fontSize || 24) + 'px';
+            el.style.color = layer.color || '#fff';
+            el.style.whiteSpace = 'nowrap';
+            el.textContent = layer.text || '';
+        } else if (layer.type === 'image' && layer.src) {
+            el.style.width = (layer.width || 200) + 'px';
+            el.style.height = (layer.height || 200) + 'px';
+            el.innerHTML = `<img src="${layer.src}" alt="${layer.name}">`;
+        }
+        
+        compEl.appendChild(el);
+    });
+    
+    applyTransforms(currentScrollPct);
+}
+
+function setPreviewHeight() {
+    if (!comp) return;
+    const dur = parseInt(document.getElementById('scrollDuration').value) || 300;
+    const stage = document.getElementById('previewStage');
+    const container = document.getElementById('previewContainer');
+    container.style.height = (stage.offsetHeight * dur / 100) + 'px';
+}
+
+function applyTransforms(scrollPct) {
+    if (!comp) return;
+    
+    // Convert scroll percentage to time
+    const currentTime = (scrollPct / 100) * comp.duration;
+    document.getElementById('timeDisplay').textContent = currentTime.toFixed(2) + 's';
+    
+    const compEl = document.getElementById('previewComp');
+    const compRect = compEl.getBoundingClientRect();
+    const scaleX = compRect.width / comp.width;
+    const scaleY = compRect.height / comp.height;
+    
+    comp.layers.forEach((layer, i) => {
+        const el = compEl.querySelector(`[data-index="${i}"]`);
+        if (!el) return;
+        
+        const kf = layer.keyframes || {};
+        
+        // Get interpolated values
+        const pos = getInterpolated(kf.position, currentTime, ['x', 'y']);
+        const scale = getInterpolated(kf.scale, currentTime, ['s']);
+        const opacity = getInterpolated(kf.opacity, currentTime, ['o']);
+        
+        // Apply transforms
+        let transform = '';
+        if (pos) {
+            const x = (pos.x * scaleX) - (el.offsetWidth / 2);
+            const y = (pos.y * scaleY) - (el.offsetHeight / 2);
+            transform += `translate(${x}px, ${y}px) `;
+        }
+        if (scale) {
+            transform += `scale(${scale.s / 100}) `;
+        }
+        
+        el.style.transform = transform;
+        el.style.opacity = opacity ? opacity.o / 100 : 1;
+    });
+}
+
+function getInterpolated(keyframes, time, props) {
+    if (!keyframes || keyframes.length === 0) return null;
+    
+    if (keyframes.length === 1) {
+        const result = {};
+        props.forEach(p => result[p] = keyframes[0][p]);
+        return result;
+    }
+    
+    // Before first keyframe
+    if (time <= keyframes[0].t) {
+        const result = {};
+        props.forEach(p => result[p] = keyframes[0][p]);
+        return result;
+    }
+    
+    // After last keyframe
+    if (time >= keyframes[keyframes.length - 1].t) {
+        const result = {};
+        props.forEach(p => result[p] = keyframes[keyframes.length - 1][p]);
+        return result;
+    }
+    
+    // Find keyframe pair
+    for (let i = 0; i < keyframes.length - 1; i++) {
+        if (time >= keyframes[i].t && time <= keyframes[i + 1].t) {
+            const range = keyframes[i + 1].t - keyframes[i].t;
+            const t = range > 0 ? (time - keyframes[i].t) / range : 0;
+            const result = {};
+            props.forEach(p => {
+                const a = keyframes[i][p];
+                const b = keyframes[i + 1][p];
+                result[p] = a + (b - a) * t;
+            });
+            return result;
+        }
+    }
+    
+    return null;
+}
+
+function handleScroll() {
+    const scroller = document.getElementById('previewScroll');
+    const container = document.getElementById('previewContainer');
+    const scrollTop = scroller.scrollTop;
+    const scrollMax = container.offsetHeight - scroller.clientHeight;
+    const pct = scrollMax > 0 ? (scrollTop / scrollMax) * 100 : 0;
+    
+    currentScrollPct = pct;
+    document.getElementById('progressDisplay').textContent = Math.round(pct) + '%';
+    applyTransforms(pct);
+}
+
+// Export
+function generateExport() {
+    if (!comp) return alert('Load a composition first');
+    
+    const bg = document.getElementById('bgColor').value;
+    const dur = parseInt(document.getElementById('scrollDuration').value) || 300;
+    const mobileOffset = parseInt(document.getElementById('mobileOffset').value) || 200;
+    const uid = 'ae' + Math.random().toString(36).substr(2, 9);
+    const sm = dur / 100;
+    
+    // Generate layer HTML
+    let layersHtml = '';
+    let layersCss = '';
+    
+    comp.layers.forEach((layer, i) => {
+        let content = '';
+        let style = '';
+        
+        if (layer.type === 'solid') {
+            style = `width:100%;height:100%;background:${layer.color||'#000'}`;
+        } else if (layer.type === 'shape' && layer.shape === 'circle') {
+            style = `width:${layer.width||100}px;height:${layer.height||100}px;background:${layer.color||'#fff'};border-radius:50%`;
+        } else if (layer.type === 'text') {
+            style = `font-family:system-ui,sans-serif;font-weight:bold;font-size:${layer.fontSize||24}px;color:${layer.color||'#fff'};white-space:nowrap`;
+            content = layer.text || '';
+        } else if (layer.type === 'image' && layer.src) {
+            style = `width:${layer.width||200}px;height:${layer.height||200}px`;
+            content = `<img src="${layer.src}" style="width:100%;height:100%;object-fit:contain">`;
+        }
+        
+        layersHtml += `<div class="ael" data-i="${i}" style="${style}">${content}</div>\n`;
+    });
+    
+    const compData = JSON.stringify({
+        w: comp.width,
+        h: comp.height,
+        dur: comp.duration,
+        layers: comp.layers.map(l => ({ kf: l.keyframes }))
+    });
+    
+    const code = `<style>
+#${uid}{position:relative}
+#${uid} .aes{position:-webkit-sticky;position:sticky;top:0;height:100vh;background:${bg};overflow:hidden;display:flex;align-items:center;justify-content:center}
+#${uid} .aec{position:relative;width:100%;height:100%;max-width:100%;max-height:100%;aspect-ratio:${comp.width}/${comp.height};overflow:hidden}
+#${uid} .ael{position:absolute;will-change:transform,opacity}
+@media(max-width:768px){#${uid} .aes{top:${mobileOffset}px;height:calc(100vh - ${mobileOffset}px)}}
+</style>
+<div id="${uid}">
+<div class="aes">
+<div class="aec">
+${layersHtml}</div>
+</div>
+</div>
+<scr`+`ipt>
+(function(){
+var w=document.getElementById('${uid}'),comp=${compData};
+var compEl=w.querySelector('.aec');
+w.style.height=(w.querySelector('.aes').offsetHeight*${sm})+'px';
+window.addEventListener('resize',function(){w.style.height=(w.querySelector('.aes').offsetHeight*${sm})+'px';});
+
+function lerp(a,b,t){return a+(b-a)*t;}
+function getVal(kf,time,props){
+if(!kf||kf.length===0)return null;
+if(kf.length===1){var r={};props.forEach(function(p){r[p]=kf[0][p]});return r;}
+if(time<=kf[0].t){var r={};props.forEach(function(p){r[p]=kf[0][p]});return r;}
+if(time>=kf[kf.length-1].t){var r={};props.forEach(function(p){r[p]=kf[kf.length-1][p]});return r;}
+for(var i=0;i<kf.length-1;i++){
+if(time>=kf[i].t&&time<=kf[i+1].t){
+var rng=kf[i+1].t-kf[i].t;
+var t=rng>0?(time-kf[i].t)/rng:0;
+var r={};props.forEach(function(p){r[p]=lerp(kf[i][p],kf[i+1][p],t)});return r;
+}}
+return null;
+}
+
+function upd(){
+var rect=w.getBoundingClientRect();
+var scrolled=Math.max(0,-rect.top);
+var range=w.offsetHeight-window.innerHeight;
+var pct=range>0?(scrolled/range)*100:0;
+var time=(pct/100)*comp.dur;
+
+var cRect=compEl.getBoundingClientRect();
+var sx=cRect.width/comp.w,sy=cRect.height/comp.h;
+
+comp.layers.forEach(function(l,i){
+var el=compEl.querySelector('[data-i="'+i+'"]');
+if(!el)return;
+var kf=l.kf||{};
+var pos=getVal(kf.position,time,['x','y']);
+var scale=getVal(kf.scale,time,['s']);
+var opacity=getVal(kf.opacity,time,['o']);
+var tr='';
+if(pos){var x=pos.x*sx-el.offsetWidth/2,y=pos.y*sy-el.offsetHeight/2;tr+='translate('+x+'px,'+y+'px) ';}
+if(scale){tr+='scale('+(scale.s/100)+') ';}
+el.style.transform=tr;
+el.style.opacity=opacity?opacity.o/100:1;
+});
+}
+window.addEventListener('scroll',upd,{passive:true});
+upd();
+})();
+<\/scr`+`ipt>`;
+    
+    document.getElementById('exportCode').value = code;
+    document.getElementById('exportModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('exportModal').classList.remove('active');
+}
+
+function copyExportCode() {
+    document.getElementById('exportCode').select();
+    document.execCommand('copy');
+    alert('Copied!');
+}
+
+function copyCode() { generateExport(); }
+
+function saveProject() {
+    const project = {
+        version: 1,
+        comp: comp,
+        scrollDuration: document.getElementById('scrollDuration').value,
+        mobileOffset: document.getElementById('mobileOffset').value,
+        bgColor: document.getElementById('bgColor').value
+    };
+    
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'ae-module-project.json';
+    a.click();
+}
+
+function loadProject() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+            try {
+                const proj = JSON.parse(ev.target.result);
+                comp = proj.comp;
+                document.getElementById('scrollDuration').value = proj.scrollDuration || 300;
+                document.getElementById('scrollDurVal').textContent = proj.scrollDuration || 300;
+                document.getElementById('mobileOffset').value = proj.mobileOffset || 200;
+                document.getElementById('bgColor').value = proj.bgColor || '#000000';
+                
+                renderCompInfo();
+                renderLayersList();
+                updatePreview();
+                setPreviewHeight();
+            } catch (err) {
+                alert('Invalid project file');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+// Init
+document.getElementById('previewScroll').addEventListener('scroll', handleScroll);
+window.addEventListener('resize', () => { updatePreview(); setPreviewHeight(); });
+</script>
+</body>
+</html>
