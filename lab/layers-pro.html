@@ -91,15 +91,20 @@
         
         <h2 onclick="toggleSection(this)">Stage Settings</h2>
         <div class="section">
-            <div class="row">
-                <div class="control-group">
-                    <label>Width</label>
-                    <input type="number" id="stageWidth" value="1920" onchange="updateStage()">
-                </div>
-                <div class="control-group">
-                    <label>Height</label>
-                    <input type="number" id="stageHeight" value="1080" onchange="updateStage()">
-                </div>
+            <div class="control-group">
+                <label>Max Width (px)</label>
+                <input type="number" id="maxWidth" value="1200" min="300" max="2000" onchange="updateStage()">
+            </div>
+            <div class="control-group">
+                <label>Aspect Ratio</label>
+                <select id="aspectRatio" onchange="updateStage()">
+                    <option value="16:9">16:9 (Widescreen)</option>
+                    <option value="4:3">4:3 (Standard)</option>
+                    <option value="1:1">1:1 (Square)</option>
+                    <option value="9:16">9:16 (Vertical)</option>
+                    <option value="21:9">21:9 (Ultrawide)</option>
+                    <option value="3:2">3:2 (Photo)</option>
+                </select>
             </div>
             <div class="control-group">
                 <label>Background Color</label>
@@ -470,10 +475,19 @@ function getInterpolatedValue(keyframes, scrollPct, props) {
     return result;
 }
 
+// Helper to get stage dimensions from settings
+function getStageDimensions() {
+    const maxW = parseInt(document.getElementById('maxWidth').value) || 1200;
+    const ar = document.getElementById('aspectRatio').value;
+    const [aw, ah] = ar.split(':').map(Number);
+    const w = maxW;
+    const h = Math.round(maxW * ah / aw);
+    return { w, h, ar };
+}
+
 // Stage/Preview
 function updateStage() {
-    const w = parseInt(document.getElementById('stageWidth').value) || 1920;
-    const h = parseInt(document.getElementById('stageHeight').value) || 1080;
+    const { w, h, ar } = getStageDimensions();
     const bg = document.getElementById('bgColor').value;
     const fit = document.getElementById('fitFrame').checked;
     
@@ -568,8 +582,7 @@ function handleScroll() {
 function generateExport() {
     if (layers.length === 0) return alert('Add at least one layer');
     
-    const w = parseInt(document.getElementById('stageWidth').value) || 1920;
-    const h = parseInt(document.getElementById('stageHeight').value) || 1080;
+    const { w, h, ar } = getStageDimensions();
     const bg = document.getElementById('bgColor').value;
     const dur = parseInt(document.getElementById('scrollDuration').value) || 300;
     const mobileOffset = parseInt(document.getElementById('mobileOffset').value) || 200;
@@ -673,8 +686,8 @@ function copyCode() {
 function saveProject() {
     const project = {
         version: 1,
-        stageWidth: document.getElementById('stageWidth').value,
-        stageHeight: document.getElementById('stageHeight').value,
+        maxWidth: document.getElementById('maxWidth').value,
+        aspectRatio: document.getElementById('aspectRatio').value,
         bgColor: document.getElementById('bgColor').value,
         scrollDuration: document.getElementById('scrollDuration').value,
         mobileOffset: document.getElementById('mobileOffset').value,
@@ -700,8 +713,8 @@ function loadProject() {
         reader.onload = ev => {
             try {
                 const proj = JSON.parse(ev.target.result);
-                document.getElementById('stageWidth').value = proj.stageWidth || 1920;
-                document.getElementById('stageHeight').value = proj.stageHeight || 1080;
+                document.getElementById('maxWidth').value = proj.maxWidth || 1200;
+                document.getElementById('aspectRatio').value = proj.aspectRatio || '16:9';
                 document.getElementById('bgColor').value = proj.bgColor || '#000000';
                 document.getElementById('scrollDuration').value = proj.scrollDuration || 300;
                 document.getElementById('scrollDurVal').textContent = proj.scrollDuration || 300;
