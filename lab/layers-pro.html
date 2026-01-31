@@ -266,10 +266,29 @@ function renderLayerList() {
             </div>
             <div style="margin-top: 8px;">
                 <input type="text" placeholder="Layer name" value="${l.name}" onchange="updateLayerProp('${l.id}', 'name', this.value)" onclick="event.stopPropagation()" style="width: 100%; margin-bottom: 6px;">
-                <input type="text" placeholder="Image URL" value="${l.imageUrl}" onchange="updateLayerProp('${l.id}', 'imageUrl', this.value); updatePreview();" onclick="event.stopPropagation()">
+                <div style="display: flex; gap: 6px;">
+                    <input type="text" id="url_${l.id}" placeholder="Image URL" value="${l.imageUrl}" onclick="event.stopPropagation()" style="flex: 1;">
+                    <button onclick="event.stopPropagation(); loadLayerImage('${l.id}')">Load</button>
+                </div>
             </div>
         </div>
     `).join('');
+}
+
+function loadLayerImage(id) {
+    const input = document.getElementById('url_' + id);
+    const url = input.value.trim();
+    if (!url) return;
+    
+    const img = new Image();
+    img.onload = function() {
+        updateLayerProp(id, 'imageUrl', url);
+        updatePreview();
+    };
+    img.onerror = function() {
+        alert('Failed to load image. Check the URL.');
+    };
+    img.src = url;
 }
 
 function updateLayerProp(id, prop, value) {
