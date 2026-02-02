@@ -618,7 +618,7 @@ updateCaption();
                 }
             });
             
-            if (state.imageUrl) { document.getElementById("imageUrl").value = state.imageUrl; loadImage(); } renderList(); updatePreview(); updateStageBg();
+            if (state.imageUrl) { document.getElementById("imageUrl").value = state.imageUrl; loadImage(); } renderList(); updatePreview(); updateStageBg(); updateCaption();
         } catch(e) { console.warn('Load state error:', e); }
     }
     
