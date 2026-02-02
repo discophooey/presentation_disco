@@ -1573,7 +1573,7 @@ applyVisualStyle();
             rebuildPoints();
             rebuildLines();
             
-            renderPointList(); renderLinesList(); updatePreview(); updateStageBg();
+            renderPointList(); renderLinesList(); updatePreview(); updateStageBg(); updatePreviewHeight(); updateGlobeView();
         } catch(e) { console.warn('Load state error:', e); }
     }
     
