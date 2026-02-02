@@ -77,7 +77,7 @@ button.danger { background: #c0392b; color: #fff; }
 .preview-layer { position: absolute; inset: -10%; width: 120%; height: 120%; background-size: cover; background-position: center; opacity: 0; transition: opacity 0.3s; visibility: hidden; }
 .preview-layer.visible { opacity: 1; visibility: visible; }
 
-.preview-caption { width: 85%; max-width: 700px; padding: 12px 16px; font-size: 13px; line-height: 1.5; color: #ccc; text-align: left; opacity: 0; transition: opacity 0.4s; display: none; }
+.preview-caption { width: 85%; max-width: 700px; padding: 12px 16px; font-size: 13px; line-height: 1.5; color: #ccc; text-align: left; opacity: 0; transition: opacity 0.4s; display: none; align-self: flex-start; margin-left: 7.5%; }
 .preview-caption.on { opacity: 1; }
 .preview-caption.has-bg { background: rgba(0,0,0,0.7); border-radius: 6px; }
 .cap-text { }
@@ -761,7 +761,7 @@ function generateExport() {
     
     const capBgStyle = captionBgEnabled ? 'background:rgba(0,0,0,0.7);border-radius:6px;' : '';
     const capHtml = captionEnabled && captionText ? `<div class="ly-cap">${captionText}${captionCredit ? '<div class="ly-cred">' + captionCredit + '</div>' : ''}</div>` : '';
-    const capCss = captionEnabled && captionText ? `#${uid} .ly-cap{width:85%;max-width:700px;padding:12px 16px;font-size:13px;line-height:1.5;color:#ccc;text-align:left;opacity:0;transition:opacity .4s;${capBgStyle}}
+    const capCss = captionEnabled && captionText ? `#${uid} .ly-cap{width:85%;max-width:700px;padding:12px 16px;font-size:13px;line-height:1.5;color:#ccc;text-align:left;opacity:0;transition:opacity .4s;align-self:flex-start;margin-left:7.5%;${capBgStyle}}
 #${uid} .ly-cap.on{opacity:1}
 #${uid} .ly-cred{font-size:11px;color:#888;font-style:italic;margin-top:6px}` : '';
     const capJs = captionEnabled && captionText ? `var cap=wrap.querySelector('.ly-cap');` : '';
