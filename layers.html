@@ -498,7 +498,8 @@ function renderLayerList() {
         html += '<button class="small danger" onclick="removeLayer(' + l.id + ')">✕</button>';
         html += '</div></div>';
         html += '<div class="layer-body" id="layer-body-' + l.id + '">';
-        html += '<img class="layer-thumb" src="' + l.url + '">';
+        html += '<img class="layer-thumb" src="' + l.url + '" id="thumb-' + l.id + '">';
+        html += '<div class="control-group"><label>Image URL</label><input type="text" value="' + l.url + '" onchange="updateLayerUrl(' + l.id + ',this.value)" placeholder="Image URL..."></div>';
         html += '<div class="control-group"><label>Blend Mode</label><select onchange="updateLayer(' + l.id + ',\'blend\',this.value)">' + blendOptions.replace('value="' + l.blend + '"', 'value="' + l.blend + '" selected') + '</select></div>';
         html += '<div class="layer-grid">';
         html += '<div class="control-group"><label>Depth <span class="range-val">' + (l.depth * 100).toFixed(0) + '%</span></label>';
@@ -512,6 +513,22 @@ function renderLayerList() {
         html += '</div></div></div>';
     });
     document.getElementById('layerList').innerHTML = html;
+}
+
+function updateLayerUrl(id, url) {
+    if (!url) return;
+    const layer = layers.find(l => l.id === id);
+    if (!layer) return;
+    const img = new Image();
+    img.onload = function() {
+        layer.url = url;
+        document.getElementById('thumb-' + id).src = url;
+        updatePreview();
+    };
+    img.onerror = function() {
+        alert('Could not load image');
+    };
+    img.src = url;
 }
 
 function addTextLayer() {
