@@ -893,7 +893,7 @@ function mobileSpace(){
 var mob=window.innerWidth<1024;
 for(var i=0;i<txts.length;i++){
 var orig=parseFloat(txts[i].dataset.origTop)||50;
-txts[i].style.top=mob&&txts.length>1?(orig+i*8)+'%':txts[i].dataset.origTop;
+txts[i].style.top=mob&&txts.length>1?(orig+i*12)+'%':txts[i].dataset.origTop;
 }
 }
 mobileSpace();window.addEventListener("resize",mobileSpace);
