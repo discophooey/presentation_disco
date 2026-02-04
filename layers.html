@@ -67,6 +67,7 @@ button.danger { background: #c0392b; color: #fff; }
 .preview-area.fit-frame { background: #1a1a1a; }
 .preview-area.fit-frame .preview-stage,
 .preview-area.fit-frame .sticky-stage { border: 3px solid #4a9eff; box-sizing: border-box; max-width: 700px; margin: 0 auto; }
+.preview-area.fit-frame .preview-text { transform: translate(-50%, -50%) scale(0.5) !important; }
 
 .preview-header { padding: 10px 16px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; font-size: 11px; color: #666; }
 #progressDisplay { color: #4a9eff; font-weight: bold; }
@@ -233,6 +234,17 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                     <input type="range" id="bgBlur" min="0" max="30" value="8" oninput="document.getElementById('bgBlurVal').textContent=this.value+'px'; updatePreview();">
                 </div>
             </div>
+            <div class="control-group">
+                <label>Mobile Text Position</label>
+                <select id="mobileTextPosition">
+                    <option value="center">Center</option>
+                    <option value="top-left">Top Left</option>
+                    <option value="top-right">Top Right</option>
+                    <option value="bottom-left">Bottom Left</option>
+                    <option value="bottom-right">Bottom Right</option>
+                </select>
+                <div class="hint">Text repositions on mobile (&lt;768px)</div>
+            </div>
             <button onclick="addTextLayer()" style="margin-bottom:12px;">➕ Add Text Layer</button>
             <div id="textLayerList"></div>
         </div>
@@ -351,6 +363,7 @@ function saveProject() {
             scrollDuration: document.getElementById('scrollDuration').value,
             desktopOffset: document.getElementById('desktopOffset').value,
             mobileOffset: document.getElementById('mobileOffset').value,
+            mobileTextPosition: document.getElementById('mobileTextPosition').value,
             fullBleed: document.getElementById('fullBleed').checked,
             fontSize: document.getElementById('fontSize').value,
             textColor: document.getElementById('textColor').value,
@@ -392,6 +405,7 @@ function loadProject() {
                     document.getElementById('scrollDuration').value = project.settings.scrollDuration || 400;
                     document.getElementById('desktopOffset').value = project.settings.desktopOffset || 50;
                     document.getElementById('mobileOffset').value = project.settings.mobileOffset || 0;
+                    document.getElementById('mobileTextPosition').value = project.settings.mobileTextPosition || 'center';
                     document.getElementById('fullBleed').checked = project.settings.fullBleed || false;
                     document.getElementById('fontSize').value = project.settings.fontSize || 32;
                     document.getElementById('textColor').value = project.settings.textColor || '#ffffff';
@@ -748,6 +762,7 @@ function generateExport() {
     const dur = document.getElementById('scrollDuration').value;
     const desktopOffset = document.getElementById('desktopOffset').value;
     const mobileOffset = document.getElementById('mobileOffset').value;
+    const mobileTextPosition = document.getElementById('mobileTextPosition').value;
     const fontSize = document.getElementById('fontSize').value;
     const textColor = document.getElementById('textColor').value;
     const hasBg = document.getElementById('textBgEnabled').checked;
@@ -803,7 +818,14 @@ ${capCss}
 @media(max-width:768px){
 #${uid} .ly-stage{${mobileStageCSS}}
 #${uid} .ly-layer{inset:-15%;width:130%;height:130%}
-#${uid} .ly-txt{font-size:clamp(14px,4vw,${Math.round(fontSize * 0.7)}px)!important;white-space:normal;word-wrap:break-word;text-align:center!important;max-width:90%!important;padding:10px 14px;left:50%!important}
+#${uid} .ly-txt{font-size:clamp(14px,4vw,${Math.round(fontSize * 0.7)}px)!important;white-space:normal;word-wrap:break-word;max-width:90%!important;padding:10px 14px;${
+    mobileTextPosition === 'center' ? 'left:50%!important;top:50%!important;text-align:center!important' :
+    mobileTextPosition === 'top-left' ? 'left:5%!important;top:10%!important;transform:translate(0,0)!important;text-align:left!important' :
+    mobileTextPosition === 'top-right' ? 'left:auto!important;right:5%!important;top:10%!important;transform:translate(0,0)!important;text-align:right!important' :
+    mobileTextPosition === 'bottom-left' ? 'left:5%!important;top:auto!important;bottom:10%!important;transform:translate(0,0)!important;text-align:left!important' :
+    mobileTextPosition === 'bottom-right' ? 'left:auto!important;right:5%!important;top:auto!important;bottom:10%!important;transform:translate(0,0)!important;text-align:right!important' :
+    'left:50%!important;top:50%!important;text-align:center!important'
+}}
 #${uid} .ly-cap{width:92%;font-size:12px}
 }
 </style>
@@ -883,6 +905,24 @@ if(cap&&pct>5)cap.classList.add('on');
 function onScroll(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(upd);}
 window.addEventListener("scroll",onScroll,{passive:true});
 upd();
+var mobilePos="${mobileTextPosition}";
+function stackMobile(){
+if(window.innerWidth>=768||txts.length<2)return;
+var spacing=12;
+for(var i=0;i<txts.length;i++){
+var offset=i*spacing;
+if(mobilePos==="top-left"||mobilePos==="top-right"){
+txts[i].style.top=(10+offset)+"%";
+txts[i].style.bottom="auto";
+}else if(mobilePos==="bottom-left"||mobilePos==="bottom-right"){
+txts[i].style.bottom=(10+offset)+"%";
+txts[i].style.top="auto";
+}else{
+txts[i].style.top=(40+offset)+"%";
+}
+}
+}
+stackMobile();window.addEventListener("resize",stackMobile);
 })();
 <\/script>`;
     
