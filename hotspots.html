@@ -168,8 +168,12 @@ textarea.code { width: 100%; height: 250px; background: #0a0a0a; border: 1px sol
             <label>Stage Background</label>
             <div style="display:flex;align-items:center;gap:10px;">
                 <input type="color" id="stageBgColor" value="#000000" onchange="updateStageBg();">
-                <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="stageBgTransparent" onchange="updateStageBg();"> Transparent</label>
+                <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="stageBgTransparent" checked onchange="updateStageBg();"> Transparent</label>
             </div>
+        </div>
+        <div class="control-group">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="fullBleed"> Full Bleed (break out of container)</label>
+            <small style="color:#888;margin-top:4px;display:block;">Forces full viewport width even in narrow CMS containers</small>
         </div>
         <button onclick="generateExport()">Generate HTML</button>
         <button class="secondary" onclick="resetModule()">↺ Reset</button>
@@ -427,6 +431,8 @@ function generateExport() {
     const stageBgTransparent = document.getElementById('stageBgTransparent').checked;
     const stageBgColor = document.getElementById('stageBgColor').value;
     const stageBg = stageBgTransparent ? 'transparent' : stageBgColor;
+    const fullBleed = document.getElementById('fullBleed').checked;
+    const fullBleedCss = fullBleed ? 'width:100vw;margin-left:calc(-50vw + 50%);' : '';
     const capText = document.getElementById('captionText').value;
     const capCredit = document.getElementById('captionCredit').value;
     const fit = document.getElementById('imageFit').value;
@@ -445,7 +451,7 @@ function generateExport() {
     
     const code = `<style>
 #${uid}{position:relative}
-#${uid} .stage{position:-webkit-sticky;position:sticky;top:${offset}px;height:100vh;background:${stageBg};overflow:hidden}
+#${uid} .stage{position:-webkit-sticky;position:sticky;top:${offset}px;height:100vh;background:${stageBg};overflow:hidden;${fullBleedCss}}
 #${uid} .inner{position:relative;width:100%;height:100%}
 #${uid} .inner img{width:100%;height:100%;object-fit:${fit};display:block}
 #${uid} .hp{position:absolute;opacity:0;transform:scale(var(--sc,1));pointer-events:none;transition:opacity .3s}
@@ -458,7 +464,7 @@ function generateExport() {
 #${uid} .lbl.left{right:24px;top:50%;transform:translateY(-50%)}
 #${uid} .lbl.top{left:50%;bottom:24px;transform:translateX(-50%)}
 #${uid} .lbl.bottom{left:50%;top:24px;transform:translateX(-50%)}
-#${uid} .cap{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);width:85%;max-width:650px;background:rgba(0,0,0,.85);padding:12px 16px;border-radius:6px;opacity:0;transition:opacity .3s;z-index:10}
+#${uid} .cap{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);width:85%;max-width:650px;background:rgba(0,0,0,.85);padding:12px 16px;border-radius:6px;opacity:0;transition:opacity 0.4s;z-index:10}
 #${uid} .cap.on{opacity:1}
 #${uid} .cap-t{font:13px/1.5 system-ui,sans-serif;color:#e0e0e0}
 #${uid} .cap-c{font:11px system-ui,sans-serif;color:#888;font-style:italic;margin-top:6px}
@@ -475,7 +481,7 @@ ${capHtml}
 </div>
 <scr` + `ipt>
 (function(){
-var w=document.getElementById('${uid}'),st=w.querySelector('.stage');
+var w=document.getElementById('${uid}'),st=w.querySelector('.stage'),c=w.querySelector('.cap');
 w.style.height=(st.offsetHeight*${sm})+'px';
 window.addEventListener('resize',function(){w.style.height=(st.offsetHeight*${sm})+'px';});
 function upd(){
@@ -491,7 +497,7 @@ w.querySelectorAll('.hp').forEach(function(h){
 var s=parseFloat(h.dataset.s)||0,e=parseFloat(h.dataset.e)||100;
 h.classList.toggle('on',p>=s&&p<=e);
 });
-var c=w.querySelector('.cap');if(c)c.classList.toggle('on',p>5);
+if(c&&p>5)c.classList.add('on');
 }
 window.addEventListener('scroll',upd,{passive:true});
 upd();

@@ -211,8 +211,12 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 <label>Stage Background</label>
                 <div style="display:flex;align-items:center;gap:10px;">
                     <input type="color" id="stageBgColor" value="#000000" onchange="updateStageBg();">
-                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="stageBgTransparent" onchange="updateStageBg();"> Transparent</label>
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="stageBgTransparent" checked onchange="updateStageBg();"> Transparent</label>
                 </div>
+            </div>
+            <div class="control-group">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="fullBleed"> Full Bleed (break out of container)</label>
+                <small style="color:#888;margin-top:4px;display:block;">Forces full viewport width even in narrow CMS containers</small>
             </div>
             <button onclick="generateExport()" style="margin-top:10px;">Generate HTML</button>
             <button class="secondary" onclick="resetModule()" style="margin-top:8px;">↺ Reset</button>
@@ -329,7 +333,8 @@ function saveProject() {
             captionCredit: document.getElementById('captionCredit').value,
             scrollDuration: document.getElementById('scrollDuration').value,
             desktopOffset: document.getElementById('desktopOffset').value,
-            mobileOffset: document.getElementById('mobileOffset').value
+            mobileOffset: document.getElementById('mobileOffset').value,
+            fullBleed: document.getElementById('fullBleed').checked
         }
     };
     const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
@@ -376,6 +381,7 @@ function loadProject() {
                     document.getElementById('scrollDuration').value = project.settings.scrollDuration || 200;
                     document.getElementById('desktopOffset').value = project.settings.desktopOffset || 50;
                     document.getElementById('mobileOffset').value = project.settings.mobileOffset || 200;
+                    document.getElementById('fullBleed').checked = project.settings.fullBleed || false;
                     // Update display values
                     document.getElementById('intensityVal').textContent = project.settings.effectIntensity + '%';
                     document.getElementById('zoomStartVal').textContent = parseFloat(project.settings.zoomStart).toFixed(1) + 'x';
@@ -628,8 +634,8 @@ function applyEffect() {
         }
     });
     
-    // Caption - show after 5%
-    cap.classList.toggle('on', p >= 0.05);
+    // Caption - show after 5% and stay on
+    if (p >= 0.05) cap.classList.add('on');
 }
 
 document.getElementById('previewScroll').addEventListener('scroll', applyEffect, { passive: true });
@@ -653,6 +659,8 @@ function generateExport() {
     const stageBgTransparent = document.getElementById('stageBgTransparent').checked;
     const stageBgColor = document.getElementById('stageBgColor').value;
     const stageBg = stageBgTransparent ? 'transparent' : stageBgColor;
+    const fullBleed = document.getElementById('fullBleed').checked;
+    const fullBleedCss = fullBleed ? 'width:100vw;margin-left:calc(-50vw + 50%);' : '';
     
     const fontSize = document.getElementById('fontSize').value;
     const fontColor = document.getElementById('fontColor').value;
@@ -697,7 +705,7 @@ function generateExport() {
     
     const code = `<style>
 #${uid}.si-wrap{position:relative}
-#${uid} .si-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;height:100vh;background:${stageBg};overflow:hidden;${stageExtra}}
+#${uid} .si-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;height:100vh;background:${stageBg};overflow:hidden;${stageExtra}${fullBleedCss}}
 #${uid} .si-matte{${matteCSS}}
 #${uid} .si-matte img{width:100%;height:100%;object-fit:${fit};transform-origin:${anchor};will-change:transform,opacity,filter}
 #${uid} .si-txt{position:absolute;transform:translate(-50%,-50%);padding:12px 20px;border-radius:4px;font-size:${fontSize}px;color:${fontColor};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;transition:opacity 0.6s;z-index:10;pointer-events:none;box-sizing:border-box}
@@ -726,7 +734,7 @@ var cap=wrap.querySelector(".si-cap");
 var ef="${ef}",int=${int},zs=${zs},ze=${ze},kbDir="${kbDir}",eScale=${eScale};
 var data=${txtData};
 var scrollMult=${scrollMult};
-var raf=null,curP=0,tarP=0,capShown=false;
+var raf=null,curP=0,tarP=0;
 function setHeight(){wrap.style.height=(stage.offsetHeight*scrollMult)+"px";}
 setHeight();window.addEventListener("resize",setHeight);
 function lerp(a,b,t){return a+(b-a)*t;}
@@ -767,7 +775,7 @@ case"tilt":var tx=(p-0.5)*10*int,ty=(p-0.5)*5*int;tf="perspective(1000px) rotate
 }
 if(img){img.style.transform=tf;img.style.filter=fl;img.style.opacity=op;}
 for(var i=0;i<txts.length;i++){var d=data[i];txts[i].classList.toggle("on",p>=d.fadeIn&&p<=d.fadeOut);}
-if(cap&&p>=0.05&&!capShown){capShown=true;cap.classList.add("on");setTimeout(function(){cap.classList.remove("on");},5000);}
+if(cap&&p>=0.05)cap.classList.add("on");
 }
 function onScroll(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(upd);}
 window.addEventListener("scroll",onScroll,{passive:true});setTimeout(upd,100);upd();

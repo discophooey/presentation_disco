@@ -150,6 +150,7 @@ button.secondary:hover { background: #333; color: #fff; }
             <div class="control-group">
                 <label>Background</label>
                 <select id="bgType" onchange="updatePreview()">
+                    <option value="transparent" selected>Transparent</option>
                     <option value="solid">Solid Color</option>
                     <option value="gradient">Gradient</option>
                 </select>
@@ -319,6 +320,8 @@ function updatePreview() {
     
     if (bgType === 'gradient') {
         stage.style.background = 'linear-gradient(135deg, ' + bgColor1 + ' 0%, ' + bgColor2 + ' 100%)';
+    } else if (bgType === 'transparent') {
+        stage.style.background = 'transparent';
     } else {
         stage.style.background = bgColor1;
     }
@@ -424,9 +427,11 @@ function generateExport() {
     var captionSize = document.getElementById('captionSize').value;
     var containerHeight = document.getElementById('containerHeight').value;
     
-    var bgCSS = bgType === 'gradient' 
-        ? 'linear-gradient(135deg,' + bgColor1 + ' 0%,' + bgColor2 + ' 100%)'
-        : bgColor1;
+    var bgCSS = bgType === 'transparent' 
+        ? 'transparent'
+        : bgType === 'gradient' 
+            ? 'linear-gradient(135deg,' + bgColor1 + ' 0%,' + bgColor2 + ' 100%)'
+            : bgColor1;
     
     var effectCSS = '';
     var effectJS = '';

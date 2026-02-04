@@ -124,6 +124,7 @@ button.danger:hover { background: #e74c3c; }
                 <div class="control-group">
                     <label>Background Type</label>
                     <select id="bgType" onchange="updateBgInputs(); updateBlock();">
+                        <option value="transparent" selected>Transparent</option>
                         <option value="inherit">Inherit Previous</option>
                         <option value="color">Solid Color</option>
                         <option value="image">Image URL</option>
@@ -394,7 +395,7 @@ function loadBgImage() {
 function renderBlocksList() {
     var html = '';
     blocks.forEach(function(b, i) {
-        var bgText = b.bgType === 'inherit' ? '(inherits)' : b.bgType === 'color' ? b.bgColor : 'image';
+        var bgText = b.bgType === 'inherit' ? '(inherits)' : b.bgType === 'transparent' ? '(transparent)' : b.bgType === 'color' ? b.bgColor : 'image';
         html += '<div class="block-item ' + (i === selectedBlockIndex ? 'selected' : '') + '" onclick="selectBlock(' + i + ')">';
         html += '<div class="block-text">' + (b.text || '(empty)') + '</div>';
         html += '<div class="block-bg">BG: ' + bgText + ' | Pos: ' + (b.textOffsetX !== undefined ? b.textOffsetX : 50) + '%, ' + (b.textOffsetY !== undefined ? b.textOffsetY : 50) + '%</div>';
@@ -406,7 +407,7 @@ function renderBlocksList() {
 function addBlock() {
     blocks.push({
         text: 'Your statement here',
-        bgType: blocks.length === 0 ? 'color' : 'inherit',
+        bgType: blocks.length === 0 ? 'transparent' : 'inherit',
         bgColor: '#1a1a1a',
         bgImage: '',
         bgFit: 'cover',
@@ -496,7 +497,7 @@ function getResolvedBg(index) {
             return blocks[i];
         }
     }
-    return { bgType: 'color', bgColor: '#1a1a1a', bgImage: '', bgFit: 'cover', bgPosX: 50, bgPosY: 50 };
+    return { bgType: 'transparent', bgColor: '#1a1a1a', bgImage: '', bgFit: 'cover', bgPosX: 50, bgPosY: 50 };
 }
 
 function updatePreviewHeight() {
@@ -588,8 +589,9 @@ function updatePreview() {
     
     // Determine background content
     var hasImage = resolved.bgType === 'image' && resolved.bgImage;
+    var isTransparent = resolved.bgType === 'transparent';
     var bgImageUrl = hasImage ? resolved.bgImage : '';
-    var bgColor = resolved.bgColor || '#1a1a1a';
+    var bgColor = isTransparent ? 'transparent' : (resolved.bgColor || '#1a1a1a');
     var bgPosX = resolved.bgPosX || 50;
     var bgPosY = resolved.bgPosY || 50;
     var bgFit = resolved.bgFit || 'cover';
@@ -720,7 +722,7 @@ function generateExport() {
         return {
             text: b.text,
             bg: resolved.bgType === 'image' && resolved.bgImage ? resolved.bgImage : null,
-            color: resolved.bgType === 'color' ? resolved.bgColor : null,
+            color: resolved.bgType === 'transparent' ? 'transparent' : (resolved.bgType === 'color' ? resolved.bgColor : null),
             fit: resolved.bgFit || 'cover',
             posX: resolved.bgPosX || 50,
             posY: resolved.bgPosY || 50,
@@ -743,7 +745,7 @@ function generateExport() {
     }
     
     var code = '<style>\n' +
-'#' + uid + '{position:relative;background:#000}\n' +
+'#' + uid + '{position:relative}\n' +
 stageCSS +
 '#' + uid + ' .ts-bg{position:absolute;inset:0;background-color:#000;transition:opacity ' + speed + 'ms,transform 3s}\n' +
 '#' + uid + ' .ts-backdrop{position:absolute;inset:0;background:rgba(0,0,0,' + (darken/100) + ');' + (blur > 0 ? 'backdrop-filter:blur(' + blur + 'px);-webkit-backdrop-filter:blur(' + blur + 'px);' : '') + '}\n' +

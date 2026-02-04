@@ -166,7 +166,7 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 <label>Background Color</label>
                 <div style="display:flex;align-items:center;gap:10px;">
                     <input type="color" id="bgColor" value="#000000" onchange="updatePreview()">
-                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="bgTransparent" onchange="updatePreview();"> Transparent</label>
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="bgTransparent" checked onchange="updatePreview();"> Transparent</label>
                 </div>
             </div>
             <div class="control-group">
@@ -215,6 +215,9 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                     <input type="range" id="scrollDuration" min="100" max="300" value="150" oninput="document.getElementById('scrollDurationNum').value=this.value; updatePreviewHeight();">
                     <input type="number" id="scrollDurationNum" value="150" style="width:70px;" oninput="document.getElementById('scrollDuration').value=this.value; updatePreviewHeight();">
                 </div>
+            </div>
+            <div class="control-group">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="fullBleed"> Full Bleed (break out of container)</label>
             </div>
             <button onclick="generateExport()">Generate HTML</button>
             <button class="secondary" onclick="copyCode()" style="margin-top:8px;">📋 Copy Code</button>
@@ -532,6 +535,8 @@ function generateExport() {
     var cols = parseInt(document.getElementById('gridCols').value);
     var gap = parseInt(document.getElementById('gridGap').value);
     var scrollMult = parseInt(document.getElementById('scrollDuration').value) / 100;
+    var fullBleed = document.getElementById('fullBleed').checked;
+    var fullBleedCss = fullBleed ? 'width:100vw;margin-left:calc(-50vw + 50%);' : '';
     
     // Title settings
     var titleText = document.getElementById('titleText').value;
@@ -573,9 +578,9 @@ function generateExport() {
     
     var code = `<style>
 #${uid}{position:relative}
-#${uid} .c-stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;background:${bgColor}}
-#${uid} .c-wrap{position:relative;width:95%;max-width:1200px}
-#${uid} .c-area{position:relative;width:100%;aspect-ratio:16/10;background:${bgColor};border-radius:8px;overflow:hidden}
+#${uid} .c-stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;background:${bgColor};${fullBleedCss}}
+#${uid} .c-wrap{position:relative;width:95%;max-width:1200px;height:80%}
+#${uid} .c-area{position:relative;height:100%;max-width:100%;aspect-ratio:16/10;background:${bgColor};border-radius:8px;overflow:hidden}
 ${titleCSS}
 #${uid} .c-item{position:absolute;overflow:hidden;border-radius:4px;opacity:0;transform:translateY(30px);transition:all 0.5s;cursor:pointer}
 #${uid} .c-item.on{opacity:1;transform:translateY(0)}

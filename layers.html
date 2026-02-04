@@ -180,8 +180,12 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 <label>Background Color</label>
                 <div style="display:flex;align-items:center;gap:10px;">
                     <input type="color" id="bgColor" value="#000000" onchange="updatePreview();">
-                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="bgTransparent" onchange="updatePreview();"> Transparent</label>
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="bgTransparent" checked onchange="updatePreview();"> Transparent</label>
                 </div>
+            </div>
+            <div class="control-group">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="fullBleed"> Full Bleed (break out of container)</label>
+                <small style="color:#888;margin-top:4px;display:block;">Forces full viewport width even in narrow CMS containers</small>
             </div>
             <div class="control-group">
                 <label>Scroll Duration (vh) <span class="range-val" id="scrollDurVal">400</span></label>
@@ -347,6 +351,7 @@ function saveProject() {
             scrollDuration: document.getElementById('scrollDuration').value,
             desktopOffset: document.getElementById('desktopOffset').value,
             mobileOffset: document.getElementById('mobileOffset').value,
+            fullBleed: document.getElementById('fullBleed').checked,
             fontSize: document.getElementById('fontSize').value,
             textColor: document.getElementById('textColor').value,
             textBgEnabled: document.getElementById('textBgEnabled').checked,
@@ -387,6 +392,7 @@ function loadProject() {
                     document.getElementById('scrollDuration').value = project.settings.scrollDuration || 400;
                     document.getElementById('desktopOffset').value = project.settings.desktopOffset || 50;
                     document.getElementById('mobileOffset').value = project.settings.mobileOffset || 0;
+                    document.getElementById('fullBleed').checked = project.settings.fullBleed || false;
                     document.getElementById('fontSize').value = project.settings.fontSize || 32;
                     document.getElementById('textColor').value = project.settings.textColor || '#ffffff';
                     document.getElementById('textBgEnabled').checked = project.settings.textBgEnabled !== false;
@@ -700,9 +706,9 @@ function applyScroll() {
         el.style.opacity = (pct >= fadeIn && pct <= fadeOut) ? 1 : 0;
     });
     
-    // Caption - show after 5%
+    // Caption - show after 5% and stay on
     const caption = document.getElementById('previewCaption');
-    caption.classList.toggle('on', pct > 5);
+    if (pct > 5) caption.classList.add('on');
 }
 
 let rafId = null;
@@ -750,8 +756,10 @@ function generateExport() {
     const captionText = document.getElementById('captionText').value;
     const captionCredit = document.getElementById('captionCredit').value;
     const captionBgEnabled = document.getElementById('captionBgEnabled').checked;
+    const fullBleed = document.getElementById('fullBleed').checked;
     
     const bgStyle = hasBg ? 'background:rgba(0,0,0,' + bgOp + ');padding:10px 16px;border-radius:6px;backdrop-filter:blur(' + bgBlur + 'px);-webkit-backdrop-filter:blur(' + bgBlur + 'px);' : '';
+    const fullBleedCss = fullBleed ? 'width:100vw;margin-left:calc(-50vw + 50%);' : '';
     
     // Aspect ratio CSS
     let stageHeightCSS = 'height:100vh';
@@ -778,15 +786,13 @@ function generateExport() {
     
     const capBgStyle = captionBgEnabled ? 'background:rgba(0,0,0,0.7);border-radius:6px;' : '';
     const capHtml = captionEnabled && captionText ? `<div class="ly-cap">${captionText}${captionCredit ? '<div class="ly-cred">' + captionCredit + '</div>' : ''}</div>` : '';
-    const capCss = captionEnabled && captionText ? `#${uid} .ly-cap{width:85%;max-width:700px;padding:12px 16px;font-size:13px;line-height:1.5;color:#ccc;text-align:left;opacity:0;transition:opacity .4s;align-self:flex-start;margin-left:7.5%;${capBgStyle}}
+    const capCss = captionEnabled && captionText ? `#${uid} .ly-cap{width:85%;max-width:700px;padding:12px 16px;font-size:13px;line-height:1.5;color:#ccc;text-align:left;opacity:0;transition:opacity 0.4s;align-self:flex-start;margin-left:7.5%;${capBgStyle}}
 #${uid} .ly-cap.on{opacity:1}
 #${uid} .ly-cred{font-size:11px;color:#888;font-style:italic;margin-top:6px}` : '';
-    const capJs = captionEnabled && captionText ? `var cap=wrap.querySelector('.ly-cap');` : '';
-    const capUpdate = captionEnabled && captionText ? `if(cap)cap.classList.toggle('on',pct>5);` : '';
     
     const code = `<style>
 #${uid}.ly-wrap{position:relative}
-#${uid} .ly-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;${stageHeightCSS};background:${bgColor};overflow:hidden;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#${uid} .ly-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;${stageHeightCSS};background:${bgColor};overflow:hidden;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;${fullBleedCss}}
 #${uid} .ly-layers{position:relative;width:100%;height:100%;overflow:hidden}
 #${uid} .ly-layer{position:absolute;inset:-10%;width:120%;height:120%;background-size:${imageFit};background-position:center;opacity:0;transition:opacity 0.3s;will-change:transform,opacity}
 #${uid} .ly-txt{position:absolute;transform:translate(-50%,-50%);font-size:${fontSize}px;color:${textColor};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;max-width:90%}
@@ -815,7 +821,7 @@ var txtData=${JSON.stringify(txtData)};
 var effect="${effect}",intensity=${intensity};
 var curP=0,tarP=0,raf=null;
 var scrollMult=${scrollMult};
-${capJs}
+var cap=wrap.querySelector('.ly-cap');
 function setHeight(){
 var stage=wrap.querySelector(".ly-stage");
 wrap.style.height=(stage.offsetHeight*scrollMult)+"px";
@@ -870,7 +876,7 @@ for(var j=0;j<txts.length;j++){
 var t=txts[j],td=txtData[j];
 txts[j].classList.toggle("on",pct>=td.fadeIn&&pct<=td.fadeOut);
 }
-${capUpdate}
+if(cap&&pct>5)cap.classList.add('on');
 }
 function onScroll(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(upd);}
 window.addEventListener("scroll",onScroll,{passive:true});

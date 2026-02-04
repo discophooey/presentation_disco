@@ -59,7 +59,7 @@ button.small { width: auto; padding: 4px 10px; font-size: 11px; }
 .preview-vignette { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 150px 60px rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.3s; z-index: 5; }
 .preview-vignette.on { opacity: 1; }
 .preview-paper { position: absolute; inset: 0; pointer-events: none; opacity: 0; z-index: 4; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); mix-blend-mode: multiply; }
-.preview-caption { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 650px; background: rgba(0,0,0,0.85); padding: 12px 16px; border-radius: 6px; opacity: 0; transition: opacity 0.3s; z-index: 10; }
+.preview-caption { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 650px; background: rgba(0,0,0,0.85); padding: 12px 16px; border-radius: 6px; opacity: 0; transition: opacity 0.4s; z-index: 10; }
 .preview-caption.on { opacity: 1; }
 .cap-text { font-size: 13px; line-height: 1.5; color: #e0e0e0; }
 .cap-credit { font-size: 11px; color: #888; font-style: italic; margin-top: 6px; }
@@ -158,7 +158,10 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
             </div>
             <div class="control-group">
                 <label>Background Color</label>
-                <input type="color" id="bgColor" value="#000000" onchange="document.getElementById('previewStage').style.background=this.value;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <input type="color" id="bgColor" value="#000000" onchange="updateStageBg();">
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="bgTransparent" checked onchange="updateStageBg();"> Transparent</label>
+                </div>
             </div>
             <div class="control-group">
                 <label><input type="checkbox" id="vignetteEnabled" onchange="updateVignette()"> Enable Vignette</label>
@@ -257,6 +260,10 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 <label>Mobile Width Multiplier <span class="range-val" id="mobileWidthVal">1.0x</span></label>
                 <input type="range" id="mobileWidthMult" min="0.5" max="2" step="0.1" value="1" oninput="document.getElementById('mobileWidthVal').textContent=parseFloat(this.value).toFixed(1)+'x';">
                 <div class="hint">Scale highlight width on mobile (>1 = wider, <1 = narrower)</div>
+            </div>
+            <div class="control-group">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="fullBleed"> Full Bleed (break out of container)</label>
+                <div class="hint">Forces full viewport width even in narrow CMS containers</div>
             </div>
             <button onclick="generateExport()">Generate HTML</button>
             <button class="secondary" onclick="copyCode()">📋 Copy Code</button>
@@ -647,8 +654,8 @@ function rebuildPreview() {
     if (outputAspect === 'auto' || outputAspect === 'full') {
         matteStyle += `width:${outputScale}%;height:${outputScale}%;`;
     } else {
-        // Fixed aspect ratio - use scale percentage for width
-        matteStyle += `width:${outputScale}%;aspect-ratio:${outputAspect.replace(':', '/')};`;
+        // Fixed aspect ratio - use height as primary, constrain width
+        matteStyle += `height:${outputScale}%;max-width:${outputScale}%;aspect-ratio:${outputAspect.replace(':', '/')};`;
     }
     matte.style.cssText = matteStyle;
     
@@ -676,6 +683,12 @@ function updateCaption() {
     caption.style.display = enabled ? 'block' : 'none';
     document.getElementById('capText').textContent = document.getElementById('captionText').value;
     document.getElementById('capCredit').textContent = document.getElementById('captionCredit').value;
+}
+
+function updateStageBg() {
+    const transparent = document.getElementById('bgTransparent').checked;
+    const color = document.getElementById('bgColor').value;
+    document.getElementById('previewStage').style.background = transparent ? 'transparent' : color;
 }
 
 function updateVignette() {
@@ -754,8 +767,8 @@ function handleScroll() {
     
     currentScrollPct = pct;
     document.getElementById('progressDisplay').textContent = Math.round(pct) + '%';
-    document.getElementById('previewCaption').classList.toggle('on', pct > 5);
-    document.getElementById('previewBlurb').classList.toggle('on', pct > 5);
+    if (pct > 5) document.getElementById('previewCaption').classList.add('on');
+    if (pct > 5) document.getElementById('previewBlurb').classList.add('on');
     
     // Apply keyframe transform if keyframes exist
     if (keyframes.length > 0) {
@@ -795,7 +808,9 @@ function generateExport() {
     const capEnabled = document.getElementById('captionEnabled').checked;
     const capText = document.getElementById('captionText').value;
     const capCredit = document.getElementById('captionCredit').value;
-    const bgColor = document.getElementById('bgColor').value;
+    const bgColorValue = document.getElementById('bgColor').value;
+    const bgTransparent = document.getElementById('bgTransparent').checked;
+    const bgColor = bgTransparent ? 'transparent' : bgColorValue;
     const scale = parseFloat(document.getElementById('imageScale').value) || 1;
     const posX = parseFloat(document.getElementById('imagePosX').value);
     const posY = parseFloat(document.getElementById('imagePosY').value);
@@ -804,6 +819,8 @@ function generateExport() {
     const outputAspect = document.getElementById('outputAspect').value;
     const outputScale = parseInt(document.getElementById('outputScale').value) || 100;
     const mobileWidthMult = parseFloat(document.getElementById('mobileWidthMult').value) || 1;
+    const fullBleed = document.getElementById('fullBleed').checked;
+    const fullBleedCss = fullBleed ? 'width:100vw;margin-left:calc(-50vw + 50%);' : '';
     const sm = parseInt(dur) / 100;
     const uid = 'doc' + Math.random().toString(36).substr(2, 9);
     
@@ -885,8 +902,8 @@ function generateExport() {
     if (outputAspect === 'auto' || outputAspect === 'full') {
         matteCss = `#${uid} .matte{position:relative;width:${outputScale}%;height:${outputScale}%;display:flex;align-items:center;justify-content:center;overflow:hidden}`;
     } else {
-        // Fixed aspect ratio - use scale percentage for width
-        matteCss = `#${uid} .matte{position:relative;width:${outputScale}%;aspect-ratio:${outputAspect.replace(':', '/')};display:flex;align-items:center;justify-content:center;overflow:hidden}`;
+        // Fixed aspect ratio - use height as primary, constrain width
+        matteCss = `#${uid} .matte{position:relative;height:${outputScale}%;aspect-ratio:${outputAspect.replace(':', '/')};max-width:${outputScale}%;display:flex;align-items:center;justify-content:center;overflow:hidden}`;
     }
     
     // Content transform for scale and pan (only used if no keyframes)
@@ -916,13 +933,13 @@ return{s:${scale},x:${posX},y:${posY}};
     
     const code = `<style>
 #${uid}{position:relative}
-#${uid} .stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;background:${bgColor};display:flex;align-items:center;justify-content:center;overflow:hidden}
+#${uid} .stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;background:${bgColor};display:flex;align-items:center;justify-content:center;overflow:hidden;${fullBleedCss}}
 ${matteCss}
 #${uid} .content{aspect-ratio:${imgAspect};max-width:100%;max-height:100%;position:relative;${contentTransform}}
 #${uid} .content img{width:100%;height:100%;display:block}
 #${uid} .hl{position:absolute;pointer-events:none;overflow:hidden}
 #${uid} .hl-bar{height:100%;width:0%}
-${vigCss}${paperCss}${blurbCss}#${uid} .cap{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);width:85%;max-width:650px;background:rgba(0,0,0,.85);padding:12px 16px;border-radius:6px;opacity:0;transition:opacity .3s;z-index:10}
+${vigCss}${paperCss}${blurbCss}#${uid} .cap{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);width:85%;max-width:650px;background:rgba(0,0,0,.85);padding:12px 16px;border-radius:6px;opacity:0;transition:opacity 0.4s;z-index:10}
 #${uid} .cap.on{opacity:1}
 #${uid} .cap-t{font:13px/1.5 system-ui,sans-serif;color:#e0e0e0}
 #${uid} .cap-c{font:11px system-ui,sans-serif;color:#888;font-style:italic;margin-top:6px}
@@ -967,8 +984,9 @@ var a=parseFloat(el.dataset.a)||0;
 var prog=Math.max(0,Math.min(1,(p-a)/15));
 el.querySelector('.hl-bar').style.width=(ease(prog)*100)+'%';
 });
-var c=w.querySelector('.cap');if(c)c.classList.toggle('on',p>5);
-var b=w.querySelector('.blurb');if(b)b.classList.toggle('on',p>5);
+
+var b=w.querySelector('.blurb');if(b&&p>5)b.classList.add('on');
+var c=w.querySelector('.cap');if(c&&p>5)c.classList.add('on');
 }
 window.addEventListener('scroll',upd,{passive:true});
 upd();
@@ -1027,6 +1045,7 @@ function saveProject() {
             imagePosX: document.getElementById('imagePosX').value,
             imagePosY: document.getElementById('imagePosY').value,
             bgColor: document.getElementById('bgColor').value,
+            bgTransparent: document.getElementById('bgTransparent').checked,
             vignetteEnabled: document.getElementById('vignetteEnabled').checked,
             paperAmount: document.getElementById('paperAmount').value,
             captionEnabled: document.getElementById('captionEnabled').checked,
@@ -1041,7 +1060,8 @@ function saveProject() {
             blurbOffsetY: document.getElementById('blurbOffsetY').value,
             scrollDuration: document.getElementById('scrollDuration').value,
             stickyOffset: document.getElementById('stickyOffset').value,
-            mobileWidthMult: document.getElementById('mobileWidthMult').value
+            mobileWidthMult: document.getElementById('mobileWidthMult').value,
+            fullBleed: document.getElementById('fullBleed').checked
         }
     };
     const blob = new Blob([JSON.stringify(project,null,2)], {type:'application/json'});
@@ -1073,6 +1093,7 @@ function loadProject() {
                     document.getElementById('imagePosY').value = proj.settings.imagePosY || 50;
                     document.getElementById('posYVal').textContent = (proj.settings.imagePosY || 50) + '%';
                     document.getElementById('bgColor').value = proj.settings.bgColor || '#000000';
+                    document.getElementById('bgTransparent').checked = proj.settings.bgTransparent !== false;
                     document.getElementById('vignetteEnabled').checked = proj.settings.vignetteEnabled || false;
                     document.getElementById('paperAmount').value = proj.settings.paperAmount || 0;
                     document.getElementById('paperAmountVal').textContent = (proj.settings.paperAmount || 0) + '%';
@@ -1099,6 +1120,7 @@ function loadProject() {
                     document.getElementById('stickyOffset').value = proj.settings.stickyOffset || 200;
                     document.getElementById('mobileWidthMult').value = proj.settings.mobileWidthMult || 1;
                     document.getElementById('mobileWidthVal').textContent = parseFloat(proj.settings.mobileWidthMult || 1).toFixed(1) + 'x';
+                    document.getElementById('fullBleed').checked = proj.settings.fullBleed || false;
                 }
                 document.getElementById('imageUrl').value = imageUrl || '';
                 renderList();
@@ -1173,6 +1195,7 @@ function loadProject() {
             updateVignette();
             updateBlurb();
             updateCaption();
+            updateStageBg();
         } catch(e) { console.warn('Load state error:', e); }
     }
     

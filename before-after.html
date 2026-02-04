@@ -241,7 +241,7 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 <label>Stage Background</label>
                 <div style="display:flex;align-items:center;gap:10px;">
                     <input type="color" id="stageBgColor" value="#000000" onchange="updateStageBg();">
-                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="stageBgTransparent" onchange="updateStageBg();"> Transparent</label>
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="stageBgTransparent" checked onchange="updateStageBg();"> Transparent</label>
                 </div>
             </div>
             <button onclick="generateExport()">Generate HTML</button>

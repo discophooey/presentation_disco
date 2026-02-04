@@ -192,7 +192,10 @@ Continue writing your story here. The text will automatically wrap and maintain 
             </div>
             <div class="control-group">
                 <label>Background Color</label>
-                <input type="color" id="bgColor" value="#0a0a0a" onchange="updatePreview()">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <input type="color" id="bgColor" value="#0a0a0a" onchange="updatePreview()">
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="bgTransparent" checked onchange="updatePreview()"> Transparent</label>
+                </div>
             </div>
             <div class="control-group">
                 <label>Font Size (px)</label>
@@ -394,6 +397,7 @@ function updatePreview() {
     var textColor = document.getElementById('textColor').value;
     var headlineColor = document.getElementById('headlineColor').value;
     var bgColor = document.getElementById('bgColor').value;
+    var bgTransparent = document.getElementById('bgTransparent').checked;
     var fontSize = document.getElementById('fontSize').value;
     var maxWidth = document.getElementById('maxWidth').value;
     var captionText = document.getElementById('captionText').value;
@@ -403,7 +407,7 @@ function updatePreview() {
     
     document.getElementById('imageSettings').style.display = imageEnabled ? 'block' : 'none';
     
-    stage.style.background = bgColor;
+    stage.style.background = bgTransparent ? 'transparent' : bgColor;
     textEl.style.textAlign = textAlign;
     textEl.style.color = textColor;
     textEl.style.fontSize = fontSize + 'px';
@@ -543,7 +547,9 @@ function generateExport() {
     var imagePosition = document.getElementById('imagePosition').value;
     var textColor = document.getElementById('textColor').value;
     var headlineColor = document.getElementById('headlineColor').value;
-    var bgColor = document.getElementById('bgColor').value;
+    var bgColorValue = document.getElementById('bgColor').value;
+    var bgTransparent = document.getElementById('bgTransparent').checked;
+    var bgColor = bgTransparent ? 'transparent' : bgColorValue;
     var fontSize = document.getElementById('fontSize').value;
     var maxWidth = document.getElementById('maxWidth').value;
     var desktopOffset = document.getElementById('desktopOffset').value || 50;
