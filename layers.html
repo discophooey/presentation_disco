@@ -805,7 +805,7 @@ function generateExport() {
 #${uid} .ly-txt{position:absolute;transform:translate(-50%,-50%);font-size:${fontSize}px;color:${textColor};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;max-width:90%}
 #${uid} .ly-txt.on{opacity:1}
 ${capCss}
-@media(max-width:768px){
+@media(max-width:1024px){
 #${uid} .ly-stage{${mobileStageCSS}}
 #${uid} .ly-layer{inset:-15%;width:130%;height:130%}
 #${uid} .ly-txt{font-size:clamp(14px,4vw,${Math.round(fontSize * 0.7)}px)!important;white-space:normal;word-wrap:break-word;text-align:center!important;max-width:90%!important;padding:10px 14px;left:50%!important}
@@ -890,7 +890,7 @@ window.addEventListener("scroll",onScroll,{passive:true});
 upd();
 for(var i=0;i<txts.length;i++){txts[i].dataset.origTop=txts[i].style.top;}
 function mobileSpace(){
-var mob=window.innerWidth<768;
+var mob=window.innerWidth<1024;
 for(var i=0;i<txts.length;i++){
 var orig=parseFloat(txts[i].dataset.origTop)||50;
 txts[i].style.top=mob&&txts.length>1?(orig+i*8)+'%':txts[i].dataset.origTop;
