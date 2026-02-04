@@ -78,7 +78,7 @@ button.danger { background: #c0392b; color: #fff; }
 .preview-layer { position: absolute; inset: -10%; width: 120%; height: 120%; background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0; transition: opacity 0.3s; visibility: hidden; }
 .preview-layer.visible { opacity: 1; visibility: visible; }
 
-.preview-caption { position: relative; z-index: 10; width: 85%; max-width: 700px; padding: 12px 16px; font-size: 13px; line-height: 1.5; color: #ccc; text-align: left; opacity: 0; transition: opacity 0.4s; display: none; align-self: flex-start; margin-left: 7.5%; }
+.preview-caption { position: absolute; bottom: 20px; left: 7.5%; z-index: 10; width: 85%; max-width: 700px; padding: 12px 16px; font-size: 13px; line-height: 1.5; color: #ccc; text-align: left; opacity: 0; transition: opacity 0.4s; display: none; }
 .preview-caption.on { opacity: 1; }
 .preview-caption.has-bg { background: rgba(0,0,0,0.7); border-radius: 6px; }
 .cap-text { }
@@ -234,17 +234,7 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                     <input type="range" id="bgBlur" min="0" max="30" value="8" oninput="document.getElementById('bgBlurVal').textContent=this.value+'px'; updatePreview();">
                 </div>
             </div>
-            <div class="control-group">
-                <label>Mobile Text Position</label>
-                <select id="mobileTextPosition">
-                    <option value="center">Center</option>
-                    <option value="top-left">Top Left</option>
-                    <option value="top-right">Top Right</option>
-                    <option value="bottom-left">Bottom Left</option>
-                    <option value="bottom-right">Bottom Right</option>
-                </select>
-                <div class="hint">Text repositions on mobile (&lt;768px)</div>
-            </div>
+            <input type="hidden" id="mobileTextPosition" value="center">
             <button onclick="addTextLayer()" style="margin-bottom:12px;">➕ Add Text Layer</button>
             <div id="textLayerList"></div>
         </div>
@@ -803,7 +793,7 @@ function generateExport() {
     
     const capBgStyle = captionBgEnabled ? 'background:rgba(0,0,0,0.7);border-radius:6px;' : '';
     const capHtml = captionEnabled && captionText ? `<div class="ly-cap">${captionText}${captionCredit ? '<div class="ly-cred">' + captionCredit + '</div>' : ''}</div>` : '';
-    const capCss = captionEnabled && captionText ? `#${uid} .ly-cap{position:relative;z-index:10;width:85%;max-width:700px;padding:12px 16px;font-size:13px;line-height:1.5;color:#ccc;text-align:left;opacity:0;transition:opacity 0.4s;align-self:flex-start;margin-left:7.5%;${capBgStyle}}
+    const capCss = captionEnabled && captionText ? `#${uid} .ly-cap{position:absolute;bottom:20px;left:7.5%;z-index:10;width:85%;max-width:700px;padding:12px 16px;font-size:13px;line-height:1.5;color:#ccc;text-align:left;opacity:0;transition:opacity 0.4s;${capBgStyle}}
 #${uid} .ly-cap.on{opacity:1}
 #${uid} .ly-cred{font-size:11px;color:#888;font-style:italic;margin-top:6px}` : '';
     
@@ -818,14 +808,7 @@ ${capCss}
 @media(max-width:768px){
 #${uid} .ly-stage{${mobileStageCSS}}
 #${uid} .ly-layer{inset:-15%;width:130%;height:130%}
-#${uid} .ly-txt{font-size:clamp(14px,4vw,${Math.round(fontSize * 0.7)}px)!important;white-space:normal;word-wrap:break-word;max-width:90%!important;padding:10px 14px;${
-    mobileTextPosition === 'center' ? 'left:50%!important;top:50%!important;text-align:center!important' :
-    mobileTextPosition === 'top-left' ? 'left:5%!important;top:10%!important;transform:translate(0,0)!important;text-align:left!important' :
-    mobileTextPosition === 'top-right' ? 'left:auto!important;right:5%!important;top:10%!important;transform:translate(0,0)!important;text-align:right!important' :
-    mobileTextPosition === 'bottom-left' ? 'left:5%!important;top:auto!important;bottom:10%!important;transform:translate(0,0)!important;text-align:left!important' :
-    mobileTextPosition === 'bottom-right' ? 'left:auto!important;right:5%!important;top:auto!important;bottom:10%!important;transform:translate(0,0)!important;text-align:right!important' :
-    'left:50%!important;top:50%!important;text-align:center!important'
-}}
+#${uid} .ly-txt{font-size:clamp(14px,4vw,${Math.round(fontSize * 0.7)}px)!important;white-space:normal;word-wrap:break-word;text-align:center!important;max-width:90%!important;padding:10px 14px;left:50%!important}
 #${uid} .ly-cap{width:92%;font-size:12px}
 }
 </style>
@@ -905,24 +888,6 @@ if(cap&&pct>5)cap.classList.add('on');
 function onScroll(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(upd);}
 window.addEventListener("scroll",onScroll,{passive:true});
 upd();
-var mobilePos="${mobileTextPosition}";
-function stackMobile(){
-if(window.innerWidth>=768||txts.length<2)return;
-var spacing=12;
-for(var i=0;i<txts.length;i++){
-var offset=i*spacing;
-if(mobilePos==="top-left"||mobilePos==="top-right"){
-txts[i].style.top=(10+offset)+"%";
-txts[i].style.bottom="auto";
-}else if(mobilePos==="bottom-left"||mobilePos==="bottom-right"){
-txts[i].style.bottom=(10+offset)+"%";
-txts[i].style.top="auto";
-}else{
-txts[i].style.top=(40+offset)+"%";
-}
-}
-}
-stackMobile();window.addEventListener("resize",stackMobile);
 })();
 <\/script>`;
     
