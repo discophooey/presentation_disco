@@ -654,8 +654,8 @@ function rebuildPreview() {
     if (outputAspect === 'auto' || outputAspect === 'full') {
         matteStyle += `width:${outputScale}%;height:${outputScale}%;`;
     } else {
-        // Fixed aspect ratio - use height as primary, constrain width
-        matteStyle += `height:${outputScale}%;max-width:${outputScale}%;aspect-ratio:${outputAspect.replace(':', '/')};`;
+        // Fixed aspect ratio - width-based with max-height constraint
+        matteStyle += `width:${outputScale}%;max-height:${outputScale}%;aspect-ratio:${outputAspect.replace(':', '/')};`;
     }
     matte.style.cssText = matteStyle;
     
@@ -902,8 +902,8 @@ function generateExport() {
     if (outputAspect === 'auto' || outputAspect === 'full') {
         matteCss = `#${uid} .matte{position:relative;width:${outputScale}%;height:${outputScale}%;display:flex;align-items:center;justify-content:center;overflow:hidden}`;
     } else {
-        // Fixed aspect ratio - use height as primary, constrain width
-        matteCss = `#${uid} .matte{position:relative;height:${outputScale}%;aspect-ratio:${outputAspect.replace(':', '/')};max-width:${outputScale}%;display:flex;align-items:center;justify-content:center;overflow:hidden}`;
+        // Fixed aspect ratio - width-based with max-height constraint
+        matteCss = `#${uid} .matte{position:relative;width:${outputScale}%;max-height:${outputScale}%;aspect-ratio:${outputAspect.replace(':', '/')};display:flex;align-items:center;justify-content:center;overflow:hidden}`;
     }
     
     // Content transform for scale and pan (only used if no keyframes)
@@ -959,8 +959,10 @@ ${capHtml}
 ${blurbHtml}
 </div>
 </div>
-<scr` + `ipt>
-(function(){
+`;
+    
+    // Build JS separately for Base64 encoding (CMS-safe)
+    const js = `(function(){
 var w=document.getElementById('${uid}'),st=w.querySelector('.stage'),ct=w.querySelector('.content');
 w.style.height=(st.offsetHeight*${sm})+'px';
 window.addEventListener('resize',function(){w.style.height=(st.offsetHeight*${sm})+'px';});
@@ -990,10 +992,12 @@ var c=w.querySelector('.cap');if(c&&p>5)c.classList.add('on');
 }
 window.addEventListener('scroll',upd,{passive:true});
 upd();
-})();
-<\/scr` + `ipt>`;
+})();`;
+    
+    const b64 = btoa(js);
+    const finalCode = code + `<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onload="eval(atob('${b64}'))">`;
 
-    document.getElementById('exportCode').value = code;
+    document.getElementById('exportCode').value = finalCode;
     document.getElementById('exportModal').classList.add('active');
 }
 
