@@ -66,7 +66,7 @@ button.danger { background: #c0392b; color: #fff; }
 .preview-area { background: #000; display: flex; flex-direction: column; overflow: hidden; }
 .preview-area.fit-frame { background: #1a1a1a; }
 .preview-area.fit-frame .preview-stage,
-.preview-area.fit-frame .sticky-stage { border: 3px solid #4a9eff; box-sizing: border-box; }
+.preview-area.fit-frame .sticky-stage { border: 3px solid #4a9eff; box-sizing: border-box; max-width: 700px; margin: 0 auto; }
 
 .preview-header { padding: 10px 16px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; font-size: 11px; color: #666; }
 #progressDisplay { color: #4a9eff; font-weight: bold; }
@@ -74,10 +74,10 @@ button.danger { background: #c0392b; color: #fff; }
 .preview-container { position: relative; }
 .preview-stage { position: sticky; position: -webkit-sticky; top: 0; height: 100vh; background: #000; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
 .preview-layers { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; clip-path: inset(0); }
-.preview-layer { position: absolute; inset: -10%; width: 120%; height: 120%; background-size: cover; background-position: center; opacity: 0; transition: opacity 0.3s; visibility: hidden; }
+.preview-layer { position: absolute; inset: -10%; width: 120%; height: 120%; background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0; transition: opacity 0.3s; visibility: hidden; }
 .preview-layer.visible { opacity: 1; visibility: visible; }
 
-.preview-caption { width: 85%; max-width: 700px; padding: 12px 16px; font-size: 13px; line-height: 1.5; color: #ccc; text-align: left; opacity: 0; transition: opacity 0.4s; display: none; align-self: flex-start; margin-left: 7.5%; }
+.preview-caption { position: relative; z-index: 10; width: 85%; max-width: 700px; padding: 12px 16px; font-size: 13px; line-height: 1.5; color: #ccc; text-align: left; opacity: 0; transition: opacity 0.4s; display: none; align-self: flex-start; margin-left: 7.5%; }
 .preview-caption.on { opacity: 1; }
 .preview-caption.has-bg { background: rgba(0,0,0,0.7); border-radius: 6px; }
 .cap-text { }
@@ -788,7 +788,7 @@ function generateExport() {
     
     const capBgStyle = captionBgEnabled ? 'background:rgba(0,0,0,0.7);border-radius:6px;' : '';
     const capHtml = captionEnabled && captionText ? `<div class="ly-cap">${captionText}${captionCredit ? '<div class="ly-cred">' + captionCredit + '</div>' : ''}</div>` : '';
-    const capCss = captionEnabled && captionText ? `#${uid} .ly-cap{width:85%;max-width:700px;padding:12px 16px;font-size:13px;line-height:1.5;color:#ccc;text-align:left;opacity:0;transition:opacity 0.4s;align-self:flex-start;margin-left:7.5%;${capBgStyle}}
+    const capCss = captionEnabled && captionText ? `#${uid} .ly-cap{position:relative;z-index:10;width:85%;max-width:700px;padding:12px 16px;font-size:13px;line-height:1.5;color:#ccc;text-align:left;opacity:0;transition:opacity 0.4s;align-self:flex-start;margin-left:7.5%;${capBgStyle}}
 #${uid} .ly-cap.on{opacity:1}
 #${uid} .ly-cred{font-size:11px;color:#888;font-style:italic;margin-top:6px}` : '';
     
@@ -796,7 +796,7 @@ function generateExport() {
 #${uid}.ly-wrap{position:relative}
 #${uid} .ly-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;${stageHeightCSS};background:${bgColor};overflow:hidden;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;${fullBleedCss}}
 #${uid} .ly-layers{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden}
-#${uid} .ly-layer{position:absolute;inset:-10%;width:120%;height:120%;background-size:${imageFit};background-position:center;opacity:0;transition:opacity 0.3s;will-change:transform,opacity}
+#${uid} .ly-layer{position:absolute;inset:-10%;width:120%;height:120%;background-size:${imageFit};background-position:center;background-repeat:no-repeat;opacity:0;transition:opacity 0.3s;will-change:transform,opacity}
 #${uid} .ly-txt{position:absolute;transform:translate(-50%,-50%);font-size:${fontSize}px;color:${textColor};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;max-width:90%}
 #${uid} .ly-txt.on{opacity:1}
 ${capCss}
