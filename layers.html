@@ -888,6 +888,15 @@ if(cap&&pct>5)cap.classList.add('on');
 function onScroll(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(upd);}
 window.addEventListener("scroll",onScroll,{passive:true});
 upd();
+for(var i=0;i<txts.length;i++){txts[i].dataset.origTop=txts[i].style.top;}
+function mobileSpace(){
+var mob=window.innerWidth<768;
+for(var i=0;i<txts.length;i++){
+var orig=parseFloat(txts[i].dataset.origTop)||50;
+txts[i].style.top=mob&&txts.length>1?(orig+i*8)+'%':txts[i].dataset.origTop;
+}
+}
+mobileSpace();window.addEventListener("resize",mobileSpace);
 })();
 <\/script>`;
     
