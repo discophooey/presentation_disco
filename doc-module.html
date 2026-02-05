@@ -191,6 +191,20 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 <label><input type="checkbox" id="captionEnabled" checked onchange="updateCaption()"> Enable Caption</label>
             </div>
             <div class="control-group">
+                <label><input type="checkbox" id="captionBg" checked onchange="updateCaption()"> Caption Background</label>
+            </div>
+            <div class="control-group">
+                <label>Text Color</label>
+                <select id="captionColor" onchange="updateCaption()">
+                    <option value="white">White</option>
+                    <option value="black">Black</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Caption Y Offset: <span id="captionOffsetVal">0</span>px</label>
+                <input type="range" id="captionOffsetY" min="-300" max="300" value="0" oninput="document.getElementById('captionOffsetVal').textContent=this.value;updateCaption()">
+            </div>
+            <div class="control-group">
                 <label>Caption Text</label>
                 <textarea id="captionText" rows="2" oninput="updateCaption()">Document highlights animate as you scroll, drawing attention to key passages and evidence.</textarea>
             </div>
@@ -683,7 +697,16 @@ function handleClick(e) {
 function updateCaption() {
     const enabled = document.getElementById('captionEnabled').checked;
     const caption = document.getElementById('previewCaption');
+    const hasBg = document.getElementById('captionBg').checked;
+    const color = document.getElementById('captionColor').value;
+    const offsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
     caption.style.display = enabled ? 'block' : 'none';
+    caption.style.background = hasBg ? 'rgba(0,0,0,0.85)' : 'transparent';
+    caption.style.bottom = (4 + offsetY) + 'px';
+    const textColor = color === 'black' ? '#111' : '#e0e0e0';
+    const creditColor = color === 'black' ? '#444' : '#888';
+    document.getElementById('capText').style.color = textColor;
+    document.getElementById('capCredit').style.color = creditColor;
     document.getElementById('capText').textContent = document.getElementById('captionText').value;
     document.getElementById('capCredit').textContent = document.getElementById('captionCredit').value;
 }
@@ -811,6 +834,9 @@ function generateExport() {
     const capEnabled = document.getElementById('captionEnabled').checked;
     const capText = document.getElementById('captionText').value;
     const capCredit = document.getElementById('captionCredit').value;
+    const capBg = document.getElementById('captionBg').checked;
+    const capColor = document.getElementById('captionColor').value;
+    const capOffsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
     const bgColorValue = document.getElementById('bgColor').value;
     const bgTransparent = document.getElementById('bgTransparent').checked;
     const bgColor = bgTransparent ? 'transparent' : bgColorValue;
@@ -956,9 +982,9 @@ ${matteCss}
 #${uid} .content img{width:100%;height:100%;display:block}
 #${uid} .hl{position:absolute;pointer-events:none;overflow:hidden}
 #${uid} .hl-bar{height:100%;width:0%}
-${vigCss}${paperCss}${blurbCss}#${uid} .cap{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:calc(${outputScale}% - 32px);max-width:650px;background:rgba(0,0,0,.85);padding:12px 16px;border-radius:6px;z-index:10}
-#${uid} .cap-t{font:13px/1.5 system-ui,sans-serif;color:#e0e0e0}
-#${uid} .cap-c{font:11px system-ui,sans-serif;color:#888;font-style:italic;margin-top:6px}
+${vigCss}${paperCss}${blurbCss}#${uid} .cap{position:absolute;bottom:${4 + capOffsetY}px;left:50%;transform:translateX(-50%);width:calc(${outputScale}% - 32px);max-width:650px;${capBg ? 'background:rgba(0,0,0,.85);' : ''}padding:12px 16px;border-radius:6px;z-index:10}
+#${uid} .cap-t{font:13px/1.5 system-ui,sans-serif;color:${capColor === 'black' ? '#111' : '#e0e0e0'}}
+#${uid} .cap-c{font:11px system-ui,sans-serif;color:${capColor === 'black' ? '#444' : '#888'};font-style:italic;margin-top:6px}
 @media(max-width:768px){#${uid} .stage{top:${offset}px;height:${mobileStageHeight}}${mobileContentCss}${mobileHlCss}#${uid} .cap{width:calc(100% - 24px);padding:10px 14px}#${uid} .cap-t{font-size:12px}#${uid} .cap-c{font-size:10px}}
 </style>
 <div id="${uid}">
@@ -1070,6 +1096,9 @@ function saveProject() {
             vignetteEnabled: document.getElementById('vignetteEnabled').checked,
             paperAmount: document.getElementById('paperAmount').value,
             captionEnabled: document.getElementById('captionEnabled').checked,
+            captionBg: document.getElementById('captionBg').checked,
+            captionColor: document.getElementById('captionColor').value,
+            captionOffsetY: document.getElementById('captionOffsetY').value,
             captionText: document.getElementById('captionText').value,
             captionCredit: document.getElementById('captionCredit').value,
             blurbText: document.getElementById('blurbText').value,
@@ -1120,6 +1149,10 @@ function loadProject() {
                     document.getElementById('paperAmount').value = proj.settings.paperAmount || 0;
                     document.getElementById('paperAmountVal').textContent = (proj.settings.paperAmount || 0) + '%';
                     document.getElementById('captionEnabled').checked = proj.settings.captionEnabled !== false;
+                    document.getElementById('captionBg').checked = proj.settings.captionBg !== false;
+                    document.getElementById('captionColor').value = proj.settings.captionColor || 'white';
+                    document.getElementById('captionOffsetY').value = proj.settings.captionOffsetY || 0;
+                    document.getElementById('captionOffsetVal').textContent = proj.settings.captionOffsetY || 0;
                     document.getElementById('captionText').value = proj.settings.captionText || '';
                     document.getElementById('captionCredit').value = proj.settings.captionCredit || '';
                     // Backward compat: merge old blurbLine1/2/3 into blurbText if needed
