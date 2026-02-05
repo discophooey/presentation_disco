@@ -306,7 +306,7 @@ button.danger:hover { background: #e74c3c; }
         </div>
         <div class="modal-actions">
             <button onclick="copyCode()">📋 Copy</button>
-            <button onclick="downloadCode()">⬇️ Download</button>
+            <button onclick="downloadCode()">⬇️ Download</button><button onclick="downloadCodeTxt()" class="secondary">📄 .txt</button>
             <button onclick="sendToStackBuilder()">📚 Stack</button>
             <button class="secondary" onclick="closeModal('exportModal')">Close</button>
         </div>
@@ -805,7 +805,18 @@ function downloadCode() {
     var code = document.getElementById('exportCode').value;
     var filename = prompt('Save as:', 'key-facts');
     if (!filename) return;
-    var blob = new Blob([code], { type: 'text/html' });
+    var blob = new Blob([code], { type: 'text/html' }
+
+function downloadCodeTxt() {
+    const code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate code first'); return; }
+    const filename = prompt('Save as:', 'key-facts');
+    if (!filename) return;
+    const blob = new Blob([code], {type:'text/plain'});
+    const safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = safeName + '.txt'; a.click();
+}
+);
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = filename.replace(/[^a-z0-9_-]/gi, '_') + '.html';

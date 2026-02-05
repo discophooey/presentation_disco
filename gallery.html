@@ -598,7 +598,7 @@
  <h2>Generated HTML</h2>
  <textarea class="code" id="exportCode" readonly></textarea>
  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
- <button onclick="copyCode()" style="background: #34a853;">📋 Copy HTML</button>
+ <button onclick="copyCode()" style="background: #34a853;">📋 Copy HTML</button><button onclick="downloadCodeTxt()" class="secondary">📄 .txt</button>
  <button onclick="downloadHTML()" style="background: #4a9eff;">⬇️ Download File</button>
  <button onclick="sendToStackBuilder()" style="background: #666;">📚 Send to Stack</button>
  </div>
@@ -1399,6 +1399,17 @@ window.addEventListener('scroll',onScroll,{passive:true});setTimeout(upd,100);up
  document.execCommand('copy');
  alert('✓ HTML copied to clipboard!');
  }
+
+function downloadCodeTxt() {
+    const code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate code first'); return; }
+    const filename = prompt('Save as:', 'gallery');
+    if (!filename) return;
+    const blob = new Blob([code], {type:'text/plain'});
+    const safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = safeName + '.txt'; a.click();
+}
+
 
  function downloadHTML() {
  const code = document.getElementById('exportCode').value;

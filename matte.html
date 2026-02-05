@@ -305,7 +305,7 @@ textarea#exportCode { width: 100%; height: 300px; background: #1a1a1a; border: 1
         </div>
         <textarea id="exportCode" readonly></textarea>
         <div style="display:flex;gap:10px;margin-top:16px;">
-            <button class="btn btn-primary" style="flex:1;" onclick="copyCode()">📋 Copy Code</button>
+            <button class="btn btn-primary" style="flex:1;" onclick="copyCode()">📋 Copy Code</button><button onclick="downloadCodeTxt()" class="secondary">📄 .txt</button>
             <button class="btn btn-secondary" onclick="downloadHTML()">⬇️ Download</button>
             <button class="btn btn-secondary" onclick="sendToStackBuilder()">📚 Stack</button>
         </div>
@@ -656,6 +656,17 @@ function copyCode() {
     document.execCommand('copy');
     alert('Code copied to clipboard!');
 }
+
+function downloadCodeTxt() {
+    const code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate code first'); return; }
+    const filename = prompt('Save as:', 'matte');
+    if (!filename) return;
+    const blob = new Blob([code], {type:'text/plain'});
+    const safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = safeName + '.txt'; a.click();
+}
+
 
 function downloadHTML() {
     var code = document.getElementById('exportCode').value;

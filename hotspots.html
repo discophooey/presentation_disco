@@ -217,7 +217,7 @@ textarea.code { width: 100%; height: 250px; background: #0a0a0a; border: 1px sol
         <textarea class="code" id="exportCode" readonly></textarea>
         <div class="row" style="margin-top:10px;">
             <button onclick="copyCode()">📋 Copy</button>
-            <button onclick="downloadCode()" class="secondary">💾 Download</button>
+            <button onclick="downloadCode()" class="secondary">💾 Download</button><button onclick="downloadCodeTxt()" class="secondary">📄 .txt</button>
             <button onclick="sendToStackBuilder()" class="secondary">📚 Stack</button>
         </div>
     </div>
@@ -515,7 +515,18 @@ function downloadCode() {
     var filename = prompt('Save export as:', 'hotspots');
     if (!filename) return;
     var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
-    const blob = new Blob([document.getElementById('exportCode').value], {type:'text/html'});
+    const blob = new Blob([document.getElementById('exportCode').value], {type:'text/html'}
+
+function downloadCodeTxt() {
+    const code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate code first'); return; }
+    const filename = prompt('Save as:', 'hotspots');
+    if (!filename) return;
+    const blob = new Blob([code], {type:'text/plain'});
+    const safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = safeName + '.txt'; a.click();
+}
+);
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = safeName + '.html'; a.click();
 }
 function sendToStackBuilder() {
