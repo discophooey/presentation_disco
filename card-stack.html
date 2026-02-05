@@ -423,17 +423,6 @@ function copyCode() {
 function downloadCode() {
     var code = document.getElementById('exportCode').value;
     if (!code) { generateExport(); return; }
-
-function downloadCodeTxt() {
-    const code = document.getElementById('exportCode').value;
-    if (!code) { alert('Generate code first'); return; }
-    const filename = prompt('Save as:', 'card-stack');
-    if (!filename) return;
-    const blob = new Blob([code], {type:'text/plain'});
-    const safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = safeName + '.txt'; a.click();
-}
-
     var filename = prompt('Save export as:', 'card-stack');
     if (!filename) return;
     var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
@@ -528,6 +517,19 @@ updatePreview();
     
     setTimeout(loadState, 150);
 })();
+
+function downloadCodeTxt() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate code first'); return; }
+    var filename = prompt('Save as:', 'card-stack');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    var blob = new Blob([code], {type:'text/plain'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = safeName + '.txt';
+    a.click();
+}
 </script>
 </body>
 </html>

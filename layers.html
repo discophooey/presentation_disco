@@ -910,18 +910,7 @@ function downloadCode() {
     var filename = prompt('Save export as:', 'layers');
     if (!filename) return;
     var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
-    const blob = new Blob([document.getElementById('exportCode').value], {type:'text/html'}
-
-function downloadCodeTxt() {
-    const code = document.getElementById('exportCode').value;
-    if (!code) { alert('Generate code first'); return; }
-    const filename = prompt('Save as:', 'layers');
-    if (!filename) return;
-    const blob = new Blob([code], {type:'text/plain'});
-    const safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = safeName + '.txt'; a.click();
-}
-);
+    const blob = new Blob([document.getElementById('exportCode').value], {type:'text/html'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = safeName + '.html'; a.click();
 }
@@ -1014,6 +1003,19 @@ updateCaption();
     
     setTimeout(loadState, 150);
 })();
+
+function downloadCodeTxt() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { alert('Generate code first'); return; }
+    var filename = prompt('Save as:', 'layers');
+    if (!filename) return;
+    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
+    var blob = new Blob([code], {type:'text/plain'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = safeName + '.txt';
+    a.click();
+}
 </script>
 </body>
 </html>
