@@ -845,8 +845,8 @@ var scrollRange=wrap.offsetHeight-wh;
 if(scrollRange<=0)scrollRange=1;
 tarP=Math.max(0,Math.min(1,scrolled/scrollRange));
 }
-curP=lerp(curP,tarP,0.12);
-if(Math.abs(curP-tarP)>0.001){raf=requestAnimationFrame(upd);}
+curP=lerp(curP,tarP,0.18);
+if(Math.abs(curP-tarP)>0.0005){raf=requestAnimationFrame(upd);}else{curP=tarP;raf=null;}
 var p=curP;
 for(var i=0;i<layers.length;i++){
 var el=layers[i],d=data[i];
@@ -885,7 +885,7 @@ txts[j].classList.toggle("on",pct>=td.fadeIn&&pct<=td.fadeOut);
 }
 if(cap&&pct>5)cap.classList.add('on');
 }
-function onScroll(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(upd);}
+function onScroll(){if(!raf){raf=requestAnimationFrame(upd);}}
 window.addEventListener("scroll",onScroll,{passive:true});
 upd();
 for(var i=0;i<txts.length;i++){txts[i].dataset.origTop=txts[i].style.top;}
