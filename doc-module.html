@@ -271,6 +271,11 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 <div class="hint">Default 150px for AP mobile nav</div>
             </div>
             <div class="control-group">
+                <label>Desktop Top Offset (px)</label>
+                <input type="number" id="desktopOffset" value="0" min="0" max="300">
+                <div class="hint">Push stage down from top on desktop (e.g. for fixed nav)</div>
+            </div>
+            <div class="control-group">
                 <label>Mobile Width Multiplier <span class="range-val" id="mobileWidthVal">1.0x</span></label>
                 <input type="range" id="mobileWidthMult" min="0.5" max="2" step="0.1" value="1" oninput="document.getElementById('mobileWidthVal').textContent=parseFloat(this.value).toFixed(1)+'x';">
                 <div class="hint">Scale highlight width on mobile (>1 = wider, <1 = narrower)</div>
@@ -834,6 +839,7 @@ function generateExport() {
     if (!imageUrl) return alert('Load image first');
     const dur = document.getElementById('scrollDuration').value;
     const offset = parseInt(document.getElementById('stickyOffset').value) || 150;
+    const desktopOffset = parseInt(document.getElementById('desktopOffset').value) || 0;
     const capEnabled = document.getElementById('captionEnabled').checked;
     const capText = document.getElementById('captionText').value;
     const capCredit = document.getElementById('captionCredit').value;
@@ -965,7 +971,7 @@ return{s:${scale},x:${posX},y:${posY}};
     }
     
     // Mobile stage height - compute based on what's actually rendered
-    const capBuffer = capEnabled ? 80 : 0;
+    const capBuffer = capEnabled ? 120 : 0;
     let mobileStageHeight = `calc(100vh - ${offset}px)`;
     if (optimizeMobileFraming && imageNaturalWidth && imageNaturalHeight) {
         let preferredCalc;
@@ -980,7 +986,7 @@ return{s:${scale},x:${posX},y:${posY}};
 
     const code = `<style>
 #${uid}{position:relative}
-#${uid} .stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;background:${bgColor};display:flex;align-items:center;justify-content:center;overflow:hidden;${fullBleedCss}}
+#${uid} .stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;height:${desktopOffset ? `calc(100vh - ${desktopOffset}px)` : '100vh'};background:${bgColor};display:flex;align-items:center;justify-content:center;overflow:hidden;${fullBleedCss}}
 #${uid} .stage-in{display:flex;flex-direction:column;align-items:center;width:100%;height:100%;justify-content:center;gap:0}
 ${matteCss}
 #${uid} .content{aspect-ratio:${imgAspect};max-width:100%;max-height:100%;position:relative;${contentTransform}}
@@ -1117,6 +1123,7 @@ function saveProject() {
             blurbOffsetY: document.getElementById('blurbOffsetY').value,
             scrollDuration: document.getElementById('scrollDuration').value,
             stickyOffset: document.getElementById('stickyOffset').value,
+            desktopOffset: document.getElementById('desktopOffset').value,
             mobileWidthMult: document.getElementById('mobileWidthMult').value,
             fullBleed: document.getElementById('fullBleed').checked,
             optimizeMobileFraming: document.getElementById('optimizeMobileFraming').checked
@@ -1180,6 +1187,7 @@ function loadProject() {
                     document.getElementById('scrollDuration').value = proj.settings.scrollDuration || 300;
                     document.getElementById('scrollDurVal').textContent = proj.settings.scrollDuration || 300;
                     document.getElementById('stickyOffset').value = proj.settings.stickyOffset || 150;
+                    document.getElementById('desktopOffset').value = proj.settings.desktopOffset || 0;
                     document.getElementById('mobileWidthMult').value = proj.settings.mobileWidthMult || 1;
                     document.getElementById('mobileWidthVal').textContent = parseFloat(proj.settings.mobileWidthMult || 1).toFixed(1) + 'x';
                     document.getElementById('fullBleed').checked = proj.settings.fullBleed || false;
