@@ -847,10 +847,9 @@ var scrollRange=wrap.offsetHeight-wh;
 if(scrollRange<=0)scrollRange=1;
 tarP=Math.max(0,Math.min(1,scrolled/scrollRange));
 }
-if(isMob){curP=tarP;raf=null;}else{
-curP=lerp(curP,tarP,0.18);
+if(isMob){curP=lerp(curP,tarP,0.45);}else{
+curP=lerp(curP,tarP,0.18);}
 if(Math.abs(curP-tarP)>0.0005){raf=requestAnimationFrame(upd);}else{curP=tarP;raf=null;}
-}
 var p=curP;
 for(var i=0;i<layers.length;i++){
 var el=layers[i],d=data[i];
