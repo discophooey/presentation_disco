@@ -965,16 +965,17 @@ return{s:${scale},x:${posX},y:${posY}};
     }
     
     // Mobile stage height - compute based on what's actually rendered
+    const capBuffer = capEnabled ? 80 : 0;
     let mobileStageHeight = `calc(100vh - ${offset}px)`;
     if (optimizeMobileFraming && imageNaturalWidth && imageNaturalHeight) {
         let preferredCalc;
         if (outputAspect !== 'auto' && outputAspect !== 'full' && outputAspect.includes(':')) {
             const [aw, ah] = outputAspect.split(':').map(Number);
-            preferredCalc = `calc(100vw * ${outputScale / 100} * ${ah} / ${aw} + 40px)`;
+            preferredCalc = `calc(100vw * ${outputScale / 100} * ${ah} / ${aw} + ${40 + capBuffer}px)`;
         } else {
-            preferredCalc = `calc(100vw * ${outputScale / 100} * ${imageNaturalHeight} / ${imageNaturalWidth} + 40px)`;
+            preferredCalc = `calc(100vw * ${outputScale / 100} * ${imageNaturalHeight} / ${imageNaturalWidth} + ${40 + capBuffer}px)`;
         }
-        mobileStageHeight = `clamp(25vh, ${preferredCalc}, calc(100vh - ${offset}px))`;
+        mobileStageHeight = `clamp(${capEnabled ? '35vh' : '25vh'}, ${preferredCalc}, calc(100vh - ${offset}px))`;
     }
 
     const code = `<style>
@@ -989,7 +990,7 @@ ${matteCss}
 ${vigCss}${paperCss}${blurbCss}#${uid} .cap{flex-shrink:0;width:100%;max-width:650px;margin-top:${capOffsetY}px;${capBg ? 'background:rgba(0,0,0,.85);' : ''}padding:6px 16px 8px;border-radius:0 0 6px 6px;z-index:10;box-sizing:border-box}
 #${uid} .cap-t{font:13px/1.5 system-ui,sans-serif;color:${capColor === 'black' ? '#111' : '#e0e0e0'}}
 #${uid} .cap-c{font:11px system-ui,sans-serif;color:${capColor === 'black' ? '#333' : '#aaa'};font-style:italic;margin-top:6px}
-@media(max-width:768px){#${uid} .stage{top:${offset}px;height:${mobileStageHeight}}${mobileContentCss}${mobileHlCss}#${uid} .cap{width:calc(100% - 24px);padding:10px 14px}#${uid} .cap-t{font-size:12px}#${uid} .cap-c{font-size:10px}}
+@media(max-width:768px){#${uid} .stage{top:${offset}px;height:${mobileStageHeight}}#${uid} .stage-in{height:100%}${mobileContentCss}${mobileHlCss}#${uid} .cap{width:calc(100% - 24px);padding:10px 14px;margin-top:0}#${uid} .cap-t{font-size:12px}#${uid} .cap-c{font-size:10px}}
 </style>
 <div id="${uid}">
 <div class="stage">
