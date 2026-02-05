@@ -253,8 +253,8 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
             </div>
             <div class="control-group">
                 <label>Mobile Top Offset (px)</label>
-                <input type="number" id="stickyOffset" value="200" min="0" max="300">
-                <div class="hint">Default 200px for AP mobile nav</div>
+                <input type="number" id="stickyOffset" value="150" min="0" max="300">
+                <div class="hint">Default 150px for AP mobile nav</div>
             </div>
             <div class="control-group">
                 <label>Mobile Width Multiplier <span class="range-val" id="mobileWidthVal">1.0x</span></label>
@@ -264,6 +264,10 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
             <div class="control-group">
                 <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="fullBleed"> Full Bleed (break out of container)</label>
                 <div class="hint">Forces full viewport width even in narrow CMS containers</div>
+            </div>
+            <div class="control-group">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="optimizeMobileFraming" checked> Optimize mobile framing</label>
+                <div class="hint">Auto-fits stage height to content on mobile, reducing dead space</div>
             </div>
             <button onclick="generateExport()">Generate HTML</button>
             <button class="secondary" onclick="copyCode()">📋 Copy Code</button>
@@ -804,7 +808,7 @@ document.getElementById('previewScroll').addEventListener('scroll', handleScroll
 function generateExport() {
     if (!imageUrl) return alert('Load image first');
     const dur = document.getElementById('scrollDuration').value;
-    const offset = document.getElementById('stickyOffset').value;
+    const offset = parseInt(document.getElementById('stickyOffset').value) || 150;
     const capEnabled = document.getElementById('captionEnabled').checked;
     const capText = document.getElementById('captionText').value;
     const capCredit = document.getElementById('captionCredit').value;
@@ -820,6 +824,7 @@ function generateExport() {
     const outputScale = parseInt(document.getElementById('outputScale').value) || 100;
     const mobileWidthMult = parseFloat(document.getElementById('mobileWidthMult').value) || 1;
     const fullBleed = document.getElementById('fullBleed').checked;
+    const optimizeMobileFraming = document.getElementById('optimizeMobileFraming').checked;
     const fullBleedCss = fullBleed ? 'width:100vw;margin-left:calc(-50vw + 50%);' : '';
     const sm = parseInt(dur) / 100;
     const uid = 'doc' + Math.random().toString(36).substr(2, 9);
@@ -845,8 +850,8 @@ function generateExport() {
         }).join('');
     }
     
-    // Mobile content offset compensation - shift content up to compensate for sticky offset
-    const mobileContentOffset = parseFloat(offset) / 2;
+    // Mobile content offset compensation - skip when optimizeMobileFraming is on
+    const mobileContentOffset = optimizeMobileFraming ? 0 : parseFloat(offset) / 2;
     const mobileContentCss = mobileContentOffset > 0 ? `#${uid} .content{transform:scale(${scale}) translate(${(-panX).toFixed(2)}%, ${(-panY).toFixed(2)}%) translateY(-${mobileContentOffset}px);transform-origin:${posX}% ${posY}%}` : '';
     
     const capHtml = capEnabled ? 
@@ -931,6 +936,19 @@ return{s:${scale},x:${posX},y:${posY}};
 }`;
     }
     
+    // Mobile stage height - compute based on what's actually rendered
+    let mobileStageHeight = `calc(100vh - ${offset}px)`;
+    if (optimizeMobileFraming && imageNaturalWidth && imageNaturalHeight) {
+        let preferredCalc;
+        if (outputAspect !== 'auto' && outputAspect !== 'full' && outputAspect.includes(':')) {
+            const [aw, ah] = outputAspect.split(':').map(Number);
+            preferredCalc = `calc(100vw * ${outputScale / 100} * ${ah} / ${aw} + 40px)`;
+        } else {
+            preferredCalc = `calc(100vw * ${outputScale / 100} * ${imageNaturalHeight} / ${imageNaturalWidth} + 40px)`;
+        }
+        mobileStageHeight = `clamp(25vh, ${preferredCalc}, calc(100vh - ${offset}px))`;
+    }
+
     const code = `<style>
 #${uid}{position:relative}
 #${uid} .stage{position:-webkit-sticky;position:sticky;top:0;height:100vh;background:${bgColor};display:flex;align-items:center;justify-content:center;overflow:hidden;${fullBleedCss}}
@@ -943,7 +961,7 @@ ${vigCss}${paperCss}${blurbCss}#${uid} .cap{position:absolute;bottom:10px;left:5
 #${uid} .cap.on{opacity:1}
 #${uid} .cap-t{font:13px/1.5 system-ui,sans-serif;color:#e0e0e0}
 #${uid} .cap-c{font:11px system-ui,sans-serif;color:#888;font-style:italic;margin-top:6px}
-@media(max-width:768px){#${uid} .stage{top:${offset}px;height:calc(100vh - ${offset}px)}${mobileContentCss}${mobileHlCss}#${uid} .cap{width:92%;bottom:8px;padding:10px 14px}#${uid} .cap-t{font-size:12px}#${uid} .cap-c{font-size:10px}}
+@media(max-width:768px){#${uid} .stage{top:${offset}px;height:${mobileStageHeight}}${mobileContentCss}${mobileHlCss}#${uid} .cap{width:92%;bottom:8px;padding:10px 14px}#${uid} .cap-t{font-size:12px}#${uid} .cap-c{font-size:10px}}
 </style>
 <div id="${uid}">
 <div class="stage">
@@ -964,8 +982,9 @@ ${blurbHtml}
     // Build JS separately for Base64 encoding (CMS-safe)
     const js = `(function(){
 var w=document.getElementById('${uid}'),st=w.querySelector('.stage'),ct=w.querySelector('.content');
-w.style.height=(st.offsetHeight*${sm})+'px';
-window.addEventListener('resize',function(){w.style.height=(st.offsetHeight*${sm})+'px';});
+var sb=window.innerWidth<=768&&${optimizeMobileFraming}?window.innerHeight:st.offsetHeight;
+w.style.height=(sb*${sm})+'px';
+window.addEventListener('resize',function(){var sb=window.innerWidth<=768&&${optimizeMobileFraming}?window.innerHeight:st.offsetHeight;w.style.height=(sb*${sm})+'px';});
 function ease(t){return 1-Math.pow(1-t,3);}${keyframeJs}
 function upd(){
 var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS['${uid}'];
@@ -1065,7 +1084,8 @@ function saveProject() {
             scrollDuration: document.getElementById('scrollDuration').value,
             stickyOffset: document.getElementById('stickyOffset').value,
             mobileWidthMult: document.getElementById('mobileWidthMult').value,
-            fullBleed: document.getElementById('fullBleed').checked
+            fullBleed: document.getElementById('fullBleed').checked,
+            optimizeMobileFraming: document.getElementById('optimizeMobileFraming').checked
         }
     };
     const blob = new Blob([JSON.stringify(project,null,2)], {type:'application/json'});
@@ -1121,10 +1141,11 @@ function loadProject() {
                     document.getElementById('blurbOffsetYVal').textContent = (proj.settings.blurbOffsetY || 0) + 'px';
                     document.getElementById('scrollDuration').value = proj.settings.scrollDuration || 300;
                     document.getElementById('scrollDurVal').textContent = proj.settings.scrollDuration || 300;
-                    document.getElementById('stickyOffset').value = proj.settings.stickyOffset || 200;
+                    document.getElementById('stickyOffset').value = proj.settings.stickyOffset || 150;
                     document.getElementById('mobileWidthMult').value = proj.settings.mobileWidthMult || 1;
                     document.getElementById('mobileWidthVal').textContent = parseFloat(proj.settings.mobileWidthMult || 1).toFixed(1) + 'x';
                     document.getElementById('fullBleed').checked = proj.settings.fullBleed || false;
+                    document.getElementById('optimizeMobileFraming').checked = proj.settings.optimizeMobileFraming !== false;
                 }
                 document.getElementById('imageUrl').value = imageUrl || '';
                 renderList();
