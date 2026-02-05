@@ -939,10 +939,10 @@ function generateExport() {
     // Matte CSS - clips to output aspect ratio
     let matteCss = '';
     if (outputAspect === 'auto' || outputAspect === 'full') {
-        matteCss = `#${uid} .matte{position:relative;width:${outputScale}%;height:${outputScale}%;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:0;flex-shrink:0}`;
+        matteCss = `#${uid} .matte{position:relative;width:${outputScale}%;height:${outputScale}%;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:50%;flex-shrink:1}`;
     } else {
         // Fixed aspect ratio - width-based with max-height constraint
-        matteCss = `#${uid} .matte{position:relative;width:${outputScale}%;max-height:${outputScale}%;aspect-ratio:${outputAspect.replace(':', '/')};display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:0;flex-shrink:0}`;
+        matteCss = `#${uid} .matte{position:relative;width:${outputScale}%;max-height:${outputScale}%;aspect-ratio:${outputAspect.replace(':', '/')};display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:50%;flex-shrink:1}`;
     }
     
     // Content transform for scale and pan (only used if no keyframes)
@@ -996,7 +996,7 @@ ${matteCss}
 ${vigCss}${paperCss}${blurbCss}#${uid} .cap{flex-shrink:0;width:100%;max-width:650px;margin-top:${capOffsetY}px;${capBg ? 'background:rgba(0,0,0,.85);' : ''}padding:6px 16px 8px;border-radius:0 0 6px 6px;z-index:10;box-sizing:border-box}
 #${uid} .cap-t{font:13px/1.5 system-ui,sans-serif;color:${capColor === 'black' ? '#111' : '#e0e0e0'}}
 #${uid} .cap-c{font:11px system-ui,sans-serif;color:${capColor === 'black' ? '#333' : '#aaa'};font-style:italic;margin-top:6px}
-@media(max-width:768px){#${uid} .stage{top:${offset}px;height:${mobileStageHeight}}#${uid} .stage-in{height:100%;justify-content:flex-start;padding-top:10px}#${uid} .matte{flex-shrink:0}${mobileContentCss}${mobileHlCss}#${uid} .cap{width:calc(100% - 24px);padding:10px 14px;margin-top:6px}#${uid} .cap-t{font-size:12px}#${uid} .cap-c{font-size:10px}}
+@media(max-width:768px){#${uid} .stage{top:${offset}px;height:${mobileStageHeight}}#${uid} .stage-in{height:100%;justify-content:flex-start;padding-top:10px}#${uid} .matte{min-height:40%}${mobileContentCss}${mobileHlCss}#${uid} .cap{width:calc(100% - 24px);padding:10px 14px;margin-top:6px}#${uid} .cap-t{font-size:12px}#${uid} .cap-c{font-size:10px}}
 </style>
 <div id="${uid}">
 <div class="stage">
