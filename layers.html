@@ -829,27 +829,27 @@ var effect="${effect}",intensity=${intensity};
 var curP=0,tarP=0,raf=null;
 var scrollMult=${scrollMult};
 var cap=wrap.querySelector('.ly-cap');
-function setHeight(){
+var wrapTop=0,wrapH=0,winH=0;
+function measure(){
 var stage=wrap.querySelector(".ly-stage");
 wrap.style.height=(stage.offsetHeight*scrollMult)+"px";
+wrapTop=wrap.offsetTop;wrapH=wrap.offsetHeight;winH=window.innerHeight;
 }
-setHeight();window.addEventListener("resize",setHeight);
+measure();window.addEventListener("resize",measure);
 var isMob=window.innerWidth<1024;
 window.addEventListener("resize",function(){isMob=window.innerWidth<1024;});
 function lerp(a,b,t){return a+(b-a)*t;}
+var scrolling=false,scrollTimer=null;
 function upd(){
 var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["${uid}"];
 if(extP!==undefined){tarP=extP;}else{
-var r=wrap.getBoundingClientRect();
-var wh=window.innerHeight;
-var scrolled=Math.max(0,-r.top);
-var scrollRange=wrap.offsetHeight-wh;
+var scrolled=Math.max(0,window.pageYOffset-wrapTop);
+var scrollRange=wrapH-winH;
 if(scrollRange<=0)scrollRange=1;
 tarP=Math.max(0,Math.min(1,scrolled/scrollRange));
 }
-if(isMob){curP=lerp(curP,tarP,0.45);}else{
+if(isMob){curP=lerp(curP,tarP,0.5);}else{
 curP=lerp(curP,tarP,0.18);}
-if(Math.abs(curP-tarP)>0.0005){raf=requestAnimationFrame(upd);}else{curP=tarP;raf=null;}
 var p=curP;
 for(var i=0;i<layers.length;i++){
 var el=layers[i],d=data[i];
@@ -887,8 +887,13 @@ var t=txts[j],td=txtData[j];
 txts[j].classList.toggle("on",pct>=td.fadeIn&&pct<=td.fadeOut);
 }
 if(cap&&pct>5)cap.classList.add('on');
+if(scrolling||Math.abs(curP-tarP)>0.0005){raf=requestAnimationFrame(upd);}else{raf=null;}
 }
-function onScroll(){if(!raf){raf=requestAnimationFrame(upd);}}
+function onScroll(){
+scrolling=true;clearTimeout(scrollTimer);
+scrollTimer=setTimeout(function(){scrolling=false;},150);
+if(!raf){raf=requestAnimationFrame(upd);}
+}
 window.addEventListener("scroll",onScroll,{passive:true});
 upd();
 for(var i=0;i<txts.length;i++){txts[i].dataset.origTop=txts[i].style.top;}
