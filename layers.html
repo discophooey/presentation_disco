@@ -802,7 +802,7 @@ function generateExport() {
 #${uid} .ly-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;${stageHeightCSS};background:${bgColor};overflow:hidden;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;${fullBleedCss}}
 #${uid} .ly-layers{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden}
 #${uid} .ly-layer{position:absolute;inset:-10%;width:120%;height:120%;background-size:${imageFit};background-position:center;background-repeat:no-repeat;opacity:0;will-change:transform,opacity;-webkit-backface-visibility:hidden;backface-visibility:hidden;transform:translate3d(0,0,0)}
-#${uid} .ly-txt{position:absolute;transform:translate3d(-50%,-50%,0);font-size:${fontSize}px;color:${textColor};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;pointer-events:none;white-space:nowrap;max-width:90%;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+#${uid} .ly-txt{position:absolute;transform:translate3d(-50%,-50%,0);font-size:${fontSize}px;color:${textColor};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;transition:opacity 0.4s;pointer-events:none;white-space:nowrap;max-width:90%;-webkit-backface-visibility:hidden;backface-visibility:hidden}
 #${uid} .ly-txt.on{opacity:1}
 ${capCss}
 @media(max-width:1024px){
@@ -834,6 +834,8 @@ var stage=wrap.querySelector(".ly-stage");
 wrap.style.height=(stage.offsetHeight*scrollMult)+"px";
 }
 setHeight();window.addEventListener("resize",setHeight);
+var isMob=window.innerWidth<1024;
+window.addEventListener("resize",function(){isMob=window.innerWidth<1024;});
 function lerp(a,b,t){return a+(b-a)*t;}
 function upd(){
 var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["${uid}"];
@@ -845,8 +847,10 @@ var scrollRange=wrap.offsetHeight-wh;
 if(scrollRange<=0)scrollRange=1;
 tarP=Math.max(0,Math.min(1,scrolled/scrollRange));
 }
+if(isMob){curP=tarP;raf=null;}else{
 curP=lerp(curP,tarP,0.18);
 if(Math.abs(curP-tarP)>0.0005){raf=requestAnimationFrame(upd);}else{curP=tarP;raf=null;}
+}
 var p=curP;
 for(var i=0;i<layers.length;i++){
 var el=layers[i],d=data[i];
