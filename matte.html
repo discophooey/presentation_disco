@@ -64,8 +64,8 @@ input[type="range"] { width: 100%; margin: 8px 0; }
 .preview-header { padding: 10px 16px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; font-size: 11px; color: #666; }
 .preview-scroll { flex: 1; overflow-y: auto; }
 .preview-container { position: relative; }
-.preview-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; background: #000; padding: 20px; box-sizing: border-box; }
-.preview-caption { flex-shrink: 0; max-width: 700px; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; display: none; }
+.preview-stage { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000; }
+.preview-caption { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 650px; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; display: none; }
 .cap-text { font-size: 13px; line-height: 1.5; color: #e0e0e0; }
 .cap-credit { font-size: 11px; color: #888; font-style: italic; margin-top: 6px; }
 
@@ -635,19 +635,12 @@ document.getElementById('previewScroll').addEventListener('scroll', onScroll, { 
 function updateCaption() {
     var enabled = document.getElementById('captionEnabled').checked;
     var caption = document.getElementById('previewCaption');
-    var matteWrap = document.getElementById('matteWrap');
     var hasBg = document.getElementById('captionBg').checked;
     var color = document.getElementById('captionColor').value;
     var offsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
     caption.style.display = enabled ? 'block' : 'none';
     caption.style.background = hasBg ? 'rgba(0,0,0,0.85)' : 'transparent';
-    caption.style.marginTop = offsetY + 'px';
-    // Sync caption width with matte-wrap
-    requestAnimationFrame(function() {
-        if (matteWrap && caption.style.display !== 'none') {
-            caption.style.width = matteWrap.offsetWidth + 'px';
-        }
-    });
+    caption.style.bottom = (20 - offsetY) + 'px';
     var textColor = color === 'black' ? '#111' : '#e0e0e0';
     var creditColor = color === 'black' ? '#333' : '#888';
     document.getElementById('capText').style.color = textColor;
