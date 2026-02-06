@@ -71,19 +71,18 @@ button.danger { background: #c53030; color: #fff; }
 .preview-area.fit-frame { background: #1a1a1a; }
 .preview-area.fit-frame .preview-stage,
 .preview-area.fit-frame .sticky-stage { border: 3px solid #4a9eff; box-sizing: border-box; max-width: 700px; margin: 0 auto; }
-.preview-area.fit-frame .preview-stage { height: auto; aspect-ratio: 16/9; }
 
 .preview-header { padding: 10px 16px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; font-size: 11px; color: #666; }
 #progressDisplay { color: #4a9eff; font-weight: bold; }
 .preview-scroll { flex: 1; overflow-y: auto; }
 .preview-container { position: relative; }
 .preview-stage { position: sticky; top: 0; height: 100vh; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-.preview-stage-in { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; justify-content: center; gap: 0; }
-.preview-matte { position: relative; width: 100%; overflow: hidden; flex: 1; min-height: 50%; }
+.preview-stage-in { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; justify-content: center; gap: 0; padding: 20px; box-sizing: border-box; }
+.preview-matte { position: relative; width: 100%; overflow: hidden; flex-shrink: 1; min-height: 50%; }
 .preview-matte img { width: 100%; height: 100%; object-fit: cover; will-change: transform, opacity, filter; }
 .preview-txt { position: absolute; padding: 12px 20px; border-radius: 4px; opacity: 0; transition: opacity 0.6s; pointer-events: none; z-index: 10; font-family: 'APRegular', 'APMedium', 'APBold', sans-serif; }
 .preview-txt.on { opacity: 1; }
-.preview-caption { flex-shrink: 0; width: 100%; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; display: none; }
+.preview-caption { flex-shrink: 0; width: 100%; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; display: none; align-self: center; }
 .cap-text { font-size: 13px; line-height: 1.5; color: #e0e0e0; }
 .cap-credit { font-size: 11px; color: #888; font-style: italic; margin-top: 6px; }
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
@@ -297,6 +296,7 @@ function toggleFitFrame() {
             stage.style.transformOrigin = '';
         }
     }
+    setTimeout(updateCaption, 50);
 }
 
 let imageUrl = null;
@@ -556,28 +556,13 @@ function updatePreview() {
     }
     
     if (aspect !== 'full' && aspectW && aspectH) {
-        matte.style.position = 'relative';
-        matte.style.width = '100%';
-        matte.style.height = 'auto';
-        matte.style.maxHeight = '100%';
-        matte.style.maxWidth = '100%';
-        matte.style.aspectRatio = aspectW + '/' + aspectH;
-        matte.style.flex = '0 1 auto';
-        matte.style.minHeight = '50%';
-        matte.style.overflow = 'hidden';
+        matte.style.cssText = `position:relative;width:100%;max-height:100%;aspect-ratio:${aspectW}/${aspectH};overflow:hidden;flex-shrink:1;min-height:50%`;
     } else {
-        matte.style.position = 'relative';
-        matte.style.width = '100%';
-        matte.style.height = '';
-        matte.style.aspectRatio = '';
-        matte.style.maxHeight = '';
-        matte.style.maxWidth = '';
-        matte.style.flex = '1';
-        matte.style.minHeight = '50%';
-        matte.style.overflow = 'hidden';
+        matte.style.cssText = 'position:relative;width:100%;height:100%;overflow:hidden;flex-shrink:1;min-height:50%';
     }
     
     // Caption handled by updateCaption()
+    updateCaption();
     
     applyEffect();
 }
@@ -655,12 +640,19 @@ document.getElementById('previewScroll').addEventListener('scroll', applyEffect,
 function updateCaption() {
     const enabled = document.getElementById('captionEnabled').checked;
     const caption = document.getElementById('previewCaption');
+    const matte = document.getElementById('previewMatte');
     const hasBg = document.getElementById('captionBg').checked;
     const color = document.getElementById('captionColor').value;
     const offsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
     caption.style.display = enabled ? 'block' : 'none';
     caption.style.background = hasBg ? 'rgba(0,0,0,0.85)' : 'transparent';
     caption.style.marginTop = offsetY + 'px';
+    // Sync caption width with matte rendered width
+    requestAnimationFrame(() => {
+        if (matte && caption.style.display !== 'none') {
+            caption.style.width = matte.offsetWidth + 'px';
+        }
+    });
     const textColor = color === 'black' ? '#111' : '#e0e0e0';
     const creditColor = color === 'black' ? '#333' : '#888';
     document.getElementById('capText').style.color = textColor;
@@ -744,7 +736,7 @@ ${matteCSS}
 #${uid} .cap{flex-shrink:0;width:100%;margin-top:${captionOffsetY}px;${captionBg ? 'background:rgba(0,0,0,.85);' : ''}padding:6px 16px 8px;border-radius:0 0 6px 6px;z-index:10;box-sizing:border-box}
 #${uid} .cap-t{font:13px/1.5 system-ui,sans-serif;color:${captionColor === 'black' ? '#111' : '#e0e0e0'}}
 #${uid} .cap-c{font:11px system-ui,sans-serif;color:${captionColor === 'black' ? '#333' : '#aaa'};font-style:italic;margin-top:6px}
-@media(max-width:768px){#${uid} .si-stage{top:${mobileOffset}px;height:calc(100vh - ${mobileOffset}px)}#${uid} .si-in{justify-content:flex-start;padding-top:10px}#${uid} .si-matte{min-height:40%}#${uid} .si-txt{font-size:14px!important;padding:8px 12px}#${uid} .cap{width:calc(100% - 24px);padding:10px 14px;margin-top:6px}#${uid} .cap-t{font-size:12px}#${uid} .cap-c{font-size:10px}}
+@media(max-width:768px){#${uid} .si-stage{top:${mobileOffset}px;height:calc(100vh - ${mobileOffset}px)}#${uid} .si-in{justify-content:flex-start;padding-top:10px}#${uid} .si-matte{min-height:40%}#${uid} .si-txt{font-size:14px!important;padding:8px 12px}#${uid} .cap{width:calc(100% - 24px)!important;padding:10px 14px;margin-top:6px!important}#${uid} .cap-t{font-size:12px}#${uid} .cap-c{font-size:10px}}
 </style>
 <div id="${uid}">
 <div class="si-stage">
@@ -765,9 +757,11 @@ var img=wrap.querySelector("img");
 var txts=wrap.querySelectorAll(".si-txt");
 var ef="${ef}",int=${int},zs=${zs},ze=${ze},kbDir="${kbDir}",eScale=${eScale};
 var data=${txtData};
+var cap=wrap.querySelector(".cap");
 var scrollMult=${scrollMult};
 var raf=null,curP=0,tarP=0;
-function setHeight(){wrap.style.height=(stage.offsetHeight*scrollMult)+"px";}
+function syncCap(){if(cap&&matte)cap.style.width=matte.offsetWidth+"px";}
+function setHeight(){wrap.style.height=(stage.offsetHeight*scrollMult)+"px";syncCap();}
 setHeight();window.addEventListener("resize",setHeight);
 function lerp(a,b,t){return a+(b-a)*t;}
 function upd(){
