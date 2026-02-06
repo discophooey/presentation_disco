@@ -64,8 +64,8 @@ input[type="range"] { width: 100%; margin: 8px 0; }
 .preview-header { padding: 10px 16px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; font-size: 11px; color: #666; }
 .preview-scroll { flex: 1; overflow-y: auto; }
 .preview-container { position: relative; }
-.preview-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; background: #000; }
-.preview-caption { flex-shrink: 0; width: 90%; max-width: 650px; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; display: none; }
+.preview-stage { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000; }
+.preview-caption { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 650px; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 6px; z-index: 11; box-sizing: border-box; display: none; }
 .cap-text { font-size: 13px; line-height: 1.5; color: #e0e0e0; }
 .cap-credit { font-size: 11px; color: #888; font-style: italic; margin-top: 6px; }
 
@@ -206,7 +206,7 @@ textarea#exportCode { width: 100%; height: 300px; background: #1a1a1a; border: 1
                 <label>Surround Color</label>
                 <div class="row">
                     <input type="color" id="surround-color" value="#000000" oninput="updatePreview()">
-                    <span style="color:#888;font-size:12px;">Color that fades in around the matte</span>
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="surround-transparent" onchange="updatePreview()"> Transparent</label>
                 </div>
             </div>
         </div>
@@ -446,7 +446,7 @@ function updatePreview() {
     config.fontSizeMobile = parseInt(document.getElementById('font-size-mobile').value) || 65;
     config.letterStagger = parseInt(document.getElementById('letter-stagger').value) || 50;
     config.bgImageUrl = document.getElementById('bg-image-url').value;
-    config.surroundColor = document.getElementById('surround-color').value;
+    config.surroundColor = document.getElementById('surround-transparent').checked ? 'transparent' : document.getElementById('surround-color').value;
     config.containerHeight = parseInt(document.getElementById('container-height').value) || 500;
     
     var wrap = document.getElementById('matteWrap');
@@ -457,7 +457,11 @@ function updatePreview() {
     
     // Container sizing
     wrap.className = 'matte-wrap ' + config.sizing;
-    wrap.style.minHeight = config.containerHeight + 'px';
+    if (config.sizing === 'contain') {
+        wrap.style.minHeight = '';
+    } else {
+        wrap.style.minHeight = config.containerHeight + 'px';
+    }
     
     // Background
     if (config.bgImageUrl) {
@@ -634,7 +638,7 @@ function updateCaption() {
     var offsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
     caption.style.display = enabled ? 'block' : 'none';
     caption.style.background = hasBg ? 'rgba(0,0,0,0.85)' : 'transparent';
-    caption.style.marginTop = offsetY + 'px';
+    caption.style.bottom = (20 - offsetY) + 'px';
     var textColor = color === 'black' ? '#111' : '#e0e0e0';
     var creditColor = color === 'black' ? '#333' : '#888';
     document.getElementById('capText').style.color = textColor;
