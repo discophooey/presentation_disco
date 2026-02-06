@@ -76,13 +76,12 @@ button.danger { background: #c53030; color: #fff; }
 #progressDisplay { color: #4a9eff; font-weight: bold; }
 .preview-scroll { flex: 1; overflow-y: auto; }
 .preview-container { position: relative; }
-.preview-stage { position: sticky; top: 0; height: 100vh; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-.preview-stage-in { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; justify-content: center; gap: 0; }
-.preview-matte { position: relative; overflow: hidden; }
+.preview-stage { position: sticky; top: 0; height: 100vh; background: #000; overflow: hidden; }
+.preview-matte { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; }
 .preview-matte img { width: 100%; height: 100%; object-fit: cover; will-change: transform, opacity, filter; }
 .preview-txt { position: absolute; padding: 12px 20px; border-radius: 4px; opacity: 0; transition: opacity 0.6s; pointer-events: none; z-index: 10; font-family: 'APRegular', 'APMedium', 'APBold', sans-serif; }
 .preview-txt.on { opacity: 1; }
-.preview-caption { flex-shrink: 0; width: 100%; max-width: 650px; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; display: none; }
+.preview-caption { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 650px; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; display: none; }
 .cap-text { font-size: 13px; line-height: 1.5; color: #e0e0e0; }
 .cap-credit { font-size: 11px; color: #888; font-style: italic; margin-top: 6px; }
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
@@ -188,20 +187,14 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         
         <h2 onclick="toggleSection(this)" class="collapsed">Caption</h2>
         <div class="section collapsed">
-            <div class="control-group"><label><input type="checkbox" id="captionEnabled" checked onchange="updateCaption()">Enable Caption</label></div>
-            <div class="control-group" style="display:flex;gap:12px;align-items:center;">
-                <label><input type="checkbox" id="captionBg" checked onchange="updateCaption()"> Caption Background</label>
-                <select id="captionColor" onchange="updateCaption()">
-                    <option value="white">White Text</option>
-                    <option value="black">Black Text</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label>Caption Y Offset: <span id="captionOffsetVal">0</span>px</label>
-                <input type="range" id="captionOffsetY" min="-50" max="100" value="0" oninput="document.getElementById('captionOffsetVal').textContent=this.value;updateCaption()">
-            </div>
+            <div class="control-group"><label><input type="checkbox" id="captionEnabled" checked onchange="updateCaption()"> Enable Caption</label></div>
+            <div class="control-group"><label><input type="checkbox" id="captionBg" checked onchange="updateCaption()"> Caption Background</label></div>
+            <div class="control-group"><label>Text Color</label>
+                <select id="captionColor" onchange="updateCaption()"><option value="white">White</option><option value="black">Black</option></select></div>
+            <div class="control-group"><label>Caption Y Offset: <span id="captionOffsetVal">0</span>px</label>
+                <input type="range" id="captionOffsetY" min="-50" max="100" value="0" oninput="document.getElementById('captionOffsetVal').textContent=this.value;updateCaption()"></div>
             <div class="control-group"><label>Caption Text</label><textarea id="captionText" rows="2" oninput="updateCaption()">Display a single image with scroll-driven effects including zoom, pan, blur, parallax, Ken Burns, vignette, and tilt.</textarea></div>
-            <div class="control-group"><label>Credit / Source</label><input type="text" id="captionCredit" value="Marshall Ritzel" oninput="updateCaption()"></div>
+            <div class="control-group"><label>Credit</label><input type="text" id="captionCredit" value="Marshall Ritzel" oninput="updateCaption()"></div>
         </div>
         
         <h2 onclick="toggleSection(this)" class="collapsed">Export Settings</h2>
@@ -249,14 +242,12 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         <div class="preview-scroll" id="previewScroll">
             <div class="preview-container" id="previewContainer">
                 <div class="preview-stage" id="previewStage">
-                    <div class="preview-stage-in">
                     <div class="preview-matte" id="previewMatte">
                         <div style="color:#666;padding:40px;text-align:center;">Load an image to begin</div>
                     </div>
                     <div class="preview-caption" id="previewCaption">
                         <div class="cap-text" id="capText"></div>
                         <div class="cap-credit" id="capCredit"></div>
-                    </div>
                     </div>
                 </div>
             </div>
@@ -268,7 +259,7 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
     <div class="modal-content">
         <div class="modal-header"><h2 style="margin:0;border:0;padding:0;background:none;">Export HTML</h2><button class="modal-close" onclick="closeModal()">×</button></div>
         <textarea class="code" id="exportCode" readonly></textarea>
-        <div class="row" style="margin-top:12px;"><button onclick="copyCode()">📋 Copy</button><button onclick="downloadCode()" class="secondary">💾 Download</button><button onclick="downloadCodeTxt()" class="secondary">📄 .txt</button><button onclick="sendToStackBuilder()" class="secondary">📚 Send to Stack</button></div>
+        <div class="row" style="margin-top:12px;"><button onclick="copyCode()">📋 Copy</button><button onclick="downloadCode()" class="secondary">💾 Download</button><button onclick="sendToStackBuilder()" class="secondary">📚 Send to Stack</button></div>
     </div>
 </div>
 
@@ -296,7 +287,6 @@ function toggleFitFrame() {
             stage.style.transformOrigin = '';
         }
     }
-    setTimeout(updateCaption, 50);
 }
 
 let imageUrl = null;
@@ -400,7 +390,7 @@ function loadProject() {
                     document.getElementById('captionBg').checked = project.settings.captionBg !== false;
                     document.getElementById('captionColor').value = project.settings.captionColor || 'white';
                     document.getElementById('captionOffsetY').value = project.settings.captionOffsetY || 0;
-                    document.getElementById('captionOffsetVal').textContent = project.settings.captionOffsetY || 0;
+                    if (document.getElementById('captionOffsetVal')) document.getElementById('captionOffsetVal').textContent = project.settings.captionOffsetY || 0;
                     document.getElementById('captionText').value = project.settings.captionText || '';
                     document.getElementById('captionCredit').value = project.settings.captionCredit || '';
                     document.getElementById('scrollDuration').value = project.settings.scrollDuration || 200;
@@ -458,6 +448,23 @@ function getAnchorOrigin(anchor) {
 function updatePreviewHeight() {
     const dur = parseInt(document.getElementById('scrollDuration').value) || 200;
     document.getElementById('previewContainer').style.height = dur + 'vh';
+}
+
+function updateCaption() {
+    const enabled = document.getElementById('captionEnabled').checked;
+    const caption = document.getElementById('previewCaption');
+    const hasBg = document.getElementById('captionBg').checked;
+    const color = document.getElementById('captionColor').value;
+    const offsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
+    caption.style.display = enabled ? 'block' : 'none';
+    caption.style.background = hasBg ? 'rgba(0,0,0,0.85)' : 'transparent';
+    caption.style.bottom = (10 + offsetY) + 'px';
+    const textColor = color === 'black' ? '#111' : '#e0e0e0';
+    const creditColor = color === 'black' ? '#333' : '#aaa';
+    document.getElementById('capText').style.color = textColor;
+    document.getElementById('capCredit').style.color = creditColor;
+    document.getElementById('capText').textContent = document.getElementById('captionText').value;
+    document.getElementById('capCredit').textContent = document.getElementById('captionCredit').value;
 }
 
 function updateStageBg() {
@@ -556,12 +563,32 @@ function updatePreview() {
     }
     
     if (aspect !== 'full' && aspectW && aspectH) {
-        matte.style.cssText = `position:relative;width:100%;max-height:100%;aspect-ratio:${aspectW}/${aspectH};overflow:hidden;`;
+        stage.style.display = 'flex';
+        stage.style.alignItems = 'center';
+        stage.style.justifyContent = 'center';
+        matte.style.position = 'relative';
+        matte.style.width = '100%';
+        matte.style.height = 'auto';
+        matte.style.maxHeight = '100%';
+        matte.style.maxWidth = '100%';
+        matte.style.aspectRatio = aspectW + '/' + aspectH;
+        matte.style.overflow = 'hidden';
     } else {
-        matte.style.cssText = 'position:relative;width:100%;height:100%;overflow:hidden;';
+        stage.style.display = '';
+        stage.style.alignItems = '';
+        stage.style.justifyContent = '';
+        matte.style.position = 'absolute';
+        matte.style.top = '0';
+        matte.style.left = '0';
+        matte.style.width = '100%';
+        matte.style.height = '100%';
+        matte.style.aspectRatio = '';
+        matte.style.maxHeight = '';
+        matte.style.maxWidth = '';
+        matte.style.overflow = 'hidden';
     }
     
-    // Caption handled by updateCaption()
+    // Caption
     updateCaption();
     
     applyEffect();
@@ -631,28 +658,9 @@ function applyEffect() {
             el.classList.toggle('on', visible);
         }
     });
-    
-
 }
 
 document.getElementById('previewScroll').addEventListener('scroll', applyEffect, { passive: true });
-
-function updateCaption() {
-    const enabled = document.getElementById('captionEnabled').checked;
-    const caption = document.getElementById('previewCaption');
-    const hasBg = document.getElementById('captionBg').checked;
-    const color = document.getElementById('captionColor').value;
-    const offsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
-    caption.style.display = enabled ? 'block' : 'none';
-    caption.style.background = hasBg ? 'rgba(0,0,0,0.85)' : 'transparent';
-    caption.style.marginTop = offsetY + 'px';
-    const textColor = color === 'black' ? '#111' : '#e0e0e0';
-    const creditColor = color === 'black' ? '#333' : '#888';
-    document.getElementById('capText').style.color = textColor;
-    document.getElementById('capCredit').style.color = creditColor;
-    document.getElementById('capText').textContent = document.getElementById('captionText').value;
-    document.getElementById('capCredit').textContent = document.getElementById('captionCredit').value;
-}
 
 function generateExport() {
     if (!imageUrl) { alert('Load image first'); return; }
@@ -686,9 +694,9 @@ function generateExport() {
     const captionEnabled = document.getElementById('captionEnabled').checked;
     const captionText = document.getElementById('captionText').value;
     const captionCredit = document.getElementById('captionCredit').value;
-    const captionBg = document.getElementById('captionBg').checked;
-    const captionColor = document.getElementById('captionColor').value;
-    const captionOffsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
+    const capBg = document.getElementById('captionBg').checked;
+    const capColor = document.getElementById('captionColor').value;
+    const capOffsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
     
     // Build text layer HTML
     let txtHtml = '';
@@ -697,7 +705,8 @@ function generateExport() {
     });
     
     // Caption HTML
-    const capHtml = captionEnabled ? `<div class="cap"><div class="cap-t">${captionText}</div>${captionCredit ? '<div class="cap-c">' + captionCredit + '</div>' : ''}</div>` : '';
+    const capHtml = captionEnabled ? 
+        `<div class="cap"><div class="cap-t">${captionText}</div>${captionCredit?`<div class="cap-c">${captionCredit}</div>`:''}</div>` : '';
     
     // Aspect ratio CSS
     let matteCSS;
@@ -710,28 +719,28 @@ function generateExport() {
     }
     
     if (aspect !== 'full' && aspectW && aspectH) {
-        matteCSS = `#${uid} .si-matte{position:relative;width:100%;max-height:100%;aspect-ratio:${aspectW}/${aspectH};overflow:hidden;flex-shrink:1;min-height:50%}`;
+        matteCSS = `position:relative;width:100%;max-height:100%;aspect-ratio:${aspectW}/${aspectH};overflow:hidden;flex-shrink:1`;
     } else {
-        matteCSS = `#${uid} .si-matte{position:relative;width:100%;height:100%;overflow:hidden;flex-shrink:1;min-height:50%}`;
+        matteCSS = 'position:relative;width:100%;height:100%;overflow:hidden;flex-shrink:1';
     }
     
     // Text data for JS
     const txtData = JSON.stringify(textLayers.map(t => ({ x: t.x, y: t.y, fadeIn: t.fadeIn / 100, fadeOut: t.fadeOut / 100 })));
     
     const code = `<style>
-#${uid}{position:relative}
-#${uid} .si-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;height:${desktopOffset ? `calc(100vh - ${desktopOffset}px)` : '100vh'};background:${stageBg};display:flex;align-items:center;justify-content:center;overflow:hidden;${fullBleedCss}}
+#${uid}.si-wrap{position:relative}
+#${uid} .si-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;height:100vh;background:${stageBg};overflow:hidden;display:flex;align-items:center;justify-content:center;${fullBleedCss}}
 #${uid} .si-in{display:flex;flex-direction:column;align-items:center;width:100%;height:100%;justify-content:center;gap:0}
-${matteCSS}
+#${uid} .si-matte{${matteCSS}}
 #${uid} .si-matte img{width:100%;height:100%;object-fit:${fit};transform-origin:${anchor};will-change:transform,opacity,filter}
 #${uid} .si-txt{position:absolute;transform:translate(-50%,-50%);padding:12px 20px;border-radius:4px;font-size:${fontSize}px;color:${fontColor};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;transition:opacity 0.6s;z-index:10;pointer-events:none;box-sizing:border-box}
 #${uid} .si-txt.on{opacity:1}
-#${uid} .cap{flex-shrink:0;width:100%;margin-top:${captionOffsetY}px;${captionBg ? 'background:rgba(0,0,0,.85);' : ''}padding:6px 16px 8px;border-radius:0 0 6px 6px;z-index:10;box-sizing:border-box}
-#${uid} .cap-t{font:13px/1.5 system-ui,sans-serif;color:${captionColor === 'black' ? '#111' : '#e0e0e0'}}
-#${uid} .cap-c{font:11px system-ui,sans-serif;color:${captionColor === 'black' ? '#333' : '#aaa'};font-style:italic;margin-top:6px}
-@media(max-width:768px){#${uid} .si-stage{top:${mobileOffset}px;height:calc(100vh - ${mobileOffset}px)}#${uid} .si-in{justify-content:flex-start;padding-top:10px}#${uid} .si-matte{min-height:40%}#${uid} .si-txt{font-size:14px!important;padding:8px 12px}#${uid} .cap{width:calc(100% - 24px);padding:10px 14px;margin-top:6px}#${uid} .cap-t{font-size:12px}#${uid} .cap-c{font-size:10px}}
+#${uid} .cap{flex-shrink:0;width:100%;max-width:100%;margin-top:${capOffsetY}px;${capBg ? 'background:rgba(0,0,0,.85);' : ''}padding:6px 16px 8px;border-radius:0 0 6px 6px;z-index:10;box-sizing:border-box}
+#${uid} .cap-t{font:13px/1.5 system-ui,sans-serif;color:${capColor === 'black' ? '#111' : '#e0e0e0'}}
+#${uid} .cap-c{font:11px/1.4 system-ui,sans-serif;color:${capColor === 'black' ? '#333' : '#aaa'};font-style:italic;margin-top:4px}
+@media(max-width:768px){#${uid} .si-stage{top:${mobileOffset}px}#${uid} .si-txt{font-size:14px!important;padding:8px 12px}#${uid} .si-in{height:100%;justify-content:flex-start;padding-top:10px}#${uid} .si-matte{min-height:40%}#${uid} .cap{width:calc(100% - 24px);padding:10px 14px;margin-top:6px}#${uid} .cap-t{font-size:12px}#${uid} .cap-c{font-size:10px}}
 </style>
-<div id="${uid}">
+<div id="${uid}" class="si-wrap">
 <div class="si-stage">
 <div class="si-in">
 <div class="si-matte">
@@ -748,6 +757,7 @@ var stage=wrap.querySelector(".si-stage");
 var matte=wrap.querySelector(".si-matte");
 var img=wrap.querySelector("img");
 var txts=wrap.querySelectorAll(".si-txt");
+var cap=wrap.querySelector(".cap");
 var ef="${ef}",int=${int},zs=${zs},ze=${ze},kbDir="${kbDir}",eScale=${eScale};
 var data=${txtData};
 var scrollMult=${scrollMult};
@@ -792,7 +802,7 @@ case"tilt":var tx=(p-0.5)*10*int,ty=(p-0.5)*5*int;tf="perspective(1000px) rotate
 }
 if(img){img.style.transform=tf;img.style.filter=fl;img.style.opacity=op;}
 for(var i=0;i<txts.length;i++){var d=data[i];txts[i].classList.toggle("on",p>=d.fadeIn&&p<=d.fadeOut);}
-
+if(cap)cap.style.display="";
 }
 function onScroll(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(upd);}
 window.addEventListener("scroll",onScroll,{passive:true});setTimeout(upd,100);upd();
@@ -830,7 +840,6 @@ function sendToStackBuilder() {
 
 updateEffectControls();
 updatePreviewHeight();
-updateCaption();
 </script>
 <script>
 (function(){
@@ -905,19 +914,6 @@ updateCaption();
     
     setTimeout(loadState, 150);
 })();
-
-function downloadCodeTxt() {
-    var code = document.getElementById('exportCode').value;
-    if (!code) { alert('Generate code first'); return; }
-    var filename = prompt('Save as:', 'single-image');
-    if (!filename) return;
-    var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
-    var blob = new Blob([code], {type:'text/plain'});
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = safeName + '.txt';
-    a.click();
-}
 </script>
 </body>
 </html>

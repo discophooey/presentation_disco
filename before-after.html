@@ -422,14 +422,6 @@ function updatePreview() {
     
     matte.innerHTML = html;
     
-    // Apply aspect ratio to preview matte
-    var aspect = document.getElementById('aspectRatio').value;
-    var ar = aspect.split(':');
-    var maxW = document.getElementById('maxWidth').value;
-    matte.style.aspectRatio = ar[0] + '/' + ar[1];
-    matte.style.maxWidth = maxW;
-    matte.style.maxHeight = '100%';
-    
     sliderPos = parseInt(document.getElementById('startPos').value);
     updateImageStyle();
     updateSlider();
