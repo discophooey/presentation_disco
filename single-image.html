@@ -339,8 +339,11 @@ function rebuildPreview() {
     matte.innerHTML = html;
 
     var matteStyle = 'position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;';
-    if (outputAspect === 'auto' || outputAspect === 'full') {
+    var imgAspect = imageNaturalWidth && imageNaturalHeight ? imageNaturalWidth + '/' + imageNaturalHeight : '4/3';
+    if (outputAspect === 'full') {
         matteStyle += 'width:' + outputScale + '%;height:' + outputScale + '%;';
+    } else if (outputAspect === 'auto') {
+        matteStyle += 'width:' + outputScale + '%;aspect-ratio:' + imgAspect + ';max-height:' + outputScale + '%;';
     } else {
         matteStyle += 'width:' + outputScale + '%;max-height:' + outputScale + '%;aspect-ratio:' + outputAspect.replace(':', '/') + ';';
     }
@@ -463,10 +466,12 @@ function generateExport() {
     var imgAspect = (imageNaturalWidth && imageNaturalHeight) ? imageNaturalWidth + '/' + imageNaturalHeight : '4/3';
 
     var matteCss;
-    if (outputAspect === 'auto' || outputAspect === 'full') {
+    if (outputAspect === 'full') {
         matteCss = '#' + uid + ' .matte{position:relative;width:' + outputScale + '%;height:' + outputScale + '%;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:50%;flex-shrink:1}';
+    } else if (outputAspect === 'auto') {
+        matteCss = '#' + uid + ' .matte{position:relative;width:' + outputScale + '%;aspect-ratio:' + imgAspect + ';max-height:' + outputScale + '%;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:1}';
     } else {
-        matteCss = '#' + uid + ' .matte{position:relative;width:' + outputScale + '%;max-height:' + outputScale + '%;aspect-ratio:' + outputAspect.replace(':', '/') + ';display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:50%;flex-shrink:1}';
+        matteCss = '#' + uid + ' .matte{position:relative;width:' + outputScale + '%;max-height:' + outputScale + '%;aspect-ratio:' + outputAspect.replace(':', '/') + ';display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:1}';
     }
 
     var contentTransform = 'transform:scale(' + scale + ') translate(' + (-panX).toFixed(2) + '%, ' + (-panY).toFixed(2) + '%);transform-origin:' + posX + '% ' + posY + '%';
