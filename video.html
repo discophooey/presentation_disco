@@ -182,6 +182,24 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
             <div id="textLayerList"></div>
         </div>
         
+        <h2 onclick="toggleSection(this)" class="collapsed">Caption</h2>
+        <div class="section collapsed">
+            <div class="control-group"><label><input type="checkbox" id="captionEnabled" onchange="updatePreview()"> Enable Caption</label></div>
+            <div class="control-group" style="display:flex;gap:12px;align-items:center;">
+                <label><input type="checkbox" id="captionBg" checked onchange="updatePreview()"> Caption Background</label>
+                <select id="captionColor" onchange="updatePreview()">
+                    <option value="white">White Text</option>
+                    <option value="black">Black Text</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Caption Y Offset: <span id="captionOffsetVal">0</span>px</label>
+                <input type="range" id="captionOffsetY" min="-50" max="100" value="0" oninput="document.getElementById('captionOffsetVal').textContent=this.value;updatePreview();">
+            </div>
+            <div class="control-group"><label>Caption Text</label><textarea id="captionText" oninput="updatePreview()">Scroll-driven video that plays through as you scroll the page.</textarea></div>
+            <div class="control-group"><label>Credit / Source</label><input type="text" id="captionCredit" value="Marshall Ritzel" oninput="updatePreview();"></div>
+        </div>
+        
         <h2 onclick="toggleSection(this)">Mobile</h2>
         <div class="section">
             <div class="control-group">
@@ -238,9 +256,13 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         </div>
         <div class="preview-scroll" id="previewScroll">
             <div class="preview-container" id="previewContainer">
-                <div class="preview-stage">
+                <div class="preview-stage" id="previewStage">
                     <video class="preview-video" id="previewVideo" muted playsinline preload="auto"></video>
                     <div class="preview-texts" id="previewTexts"></div>
+                    <div id="previewCaption" style="display:none;position:absolute;bottom:40px;left:50%;transform:translateX(-50%);width:85%;max-width:700px;padding:12px 16px;background:rgba(0,0,0,0.85);border-radius:8px;box-sizing:border-box;z-index:100;">
+                        <div id="previewCapText" style="font-size:13px;line-height:1.5;color:#e0e0e0;"></div>
+                        <div id="previewCapCredit" style="font-size:11px;color:#aaa;font-style:italic;margin-top:4px;"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -391,6 +413,22 @@ function updatePreview() {
     });
     document.getElementById('previewTexts').innerHTML = html;
     
+    // Caption
+    var capEnabled = document.getElementById('captionEnabled') && document.getElementById('captionEnabled').checked;
+    var capEl = document.getElementById('previewCaption');
+    if (capEl) {
+        var capBg = document.getElementById('captionBg').checked;
+        var capColor = document.getElementById('captionColor').value;
+        var capOffsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
+        capEl.style.display = capEnabled ? 'block' : 'none';
+        capEl.style.background = capBg ? 'rgba(0,0,0,0.85)' : 'transparent';
+        capEl.style.bottom = (40 - capOffsetY) + 'px';
+        document.getElementById('previewCapText').textContent = document.getElementById('captionText').value;
+        document.getElementById('previewCapCredit').textContent = document.getElementById('captionCredit').value;
+        document.getElementById('previewCapText').style.color = capColor === 'black' ? '#111' : '#e0e0e0';
+        document.getElementById('previewCapCredit').style.color = capColor === 'black' ? '#333' : '#aaa';
+    }
+    
     applyScroll();
 }
 
@@ -450,6 +488,13 @@ function generateExport() {
     const tapScale = document.getElementById('tapScale').value;
     const tapColor = document.getElementById('tapColor').value;
     const scrollMult = dur / 100;
+    const capEnabled = document.getElementById('captionEnabled').checked;
+    const capText = document.getElementById('captionText').value;
+    const capCredit = document.getElementById('captionCredit').value;
+    const capBg = document.getElementById('captionBg').checked;
+    const capColor = document.getElementById('captionColor').value;
+    const capOffsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
+    const capHtml = capEnabled && capText ? `<div class="v-cap"><div class="v-cap-t">${capText}</div>${capCredit ? '<div class="v-cap-c">' + capCredit + '</div>' : ''}</div>` : '';
     
     const bgStyle = hasBg ? 'background:rgba(0,0,0,' + bgOp + ');padding:10px 16px;border-radius:6px;backdrop-filter:blur(' + bgBlur + 'px);-webkit-backdrop-filter:blur(' + bgBlur + 'px);' : '';
     
@@ -476,7 +521,11 @@ function generateExport() {
 #${uid} .v-tap{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:${tapAlignItems};justify-content:center;padding:${tapPadding};z-index:100;cursor:pointer;box-sizing:border-box}
 #${uid} .v-tap span{color:#fff;font-size:${18 * tapScale}px;padding:${16 * tapScale}px ${32 * tapScale}px;background:${tapColor};border-radius:8px;font-weight:600}
 #${uid} .v-tap.hidden{display:none}
-@media(max-width:768px){#${uid} .v-stage{top:${mobileOffset}px}}
+#${uid} .v-cap{position:absolute;bottom:${40 - capOffsetY}px;left:50%;transform:translateX(-50%);width:85%;max-width:700px;padding:12px 16px;${capBg ? 'background:rgba(0,0,0,.85);' : ''}border-radius:8px;box-sizing:border-box;z-index:100;opacity:0;transition:opacity 0.6s}
+#${uid} .v-cap.on{opacity:1}
+#${uid} .v-cap-t{font:13px/1.5 system-ui,sans-serif;color:${capColor === 'black' ? '#111' : '#e0e0e0'}}
+#${uid} .v-cap-c{font:11px system-ui,sans-serif;color:${capColor === 'black' ? '#333' : '#aaa'};font-style:italic;margin-top:4px}
+@media(max-width:768px){#${uid} .v-stage{top:${mobileOffset}px}#${uid} .v-cap{width:92%;bottom:20px;font-size:11px}#${uid} .v-cap-t{font-size:12px}#${uid} .v-cap-c{font-size:10px}}
 </style>
 <div id="${uid}" class="v-wrap">
 <div class="v-stage">
@@ -484,6 +533,7 @@ function generateExport() {
 <video muted playsinline webkit-playsinline preload="auto" src="${videoUrl}"></video>
 <div class="v-tap"><span>${tapText}</span></div>
 ${txtHtml}</div>
+${capHtml}
 </div>
 </div>
 <script>
@@ -491,6 +541,7 @@ ${txtHtml}</div>
 var wrap=document.getElementById("${uid}");
 var v=wrap.querySelector("video");
 var txts=wrap.querySelectorAll(".v-txt");
+var cap=wrap.querySelector(".v-cap");
 var tap=wrap.querySelector(".v-tap");
 var data=${JSON.stringify(txtData)};
 var vidDur=0,curP=0,tarP=0,raf=null,activated=false;
@@ -534,6 +585,7 @@ for(var i=0;i<txts.length;i++){
 var d=data[i];
 txts[i].classList.toggle("on",pct>=d.fadeIn&&pct<=d.fadeOut);
 }
+if(cap&&curP>0.02)cap.classList.add("on");
 }
 function onScroll(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(upd);}
 window.addEventListener("scroll",onScroll,{passive:true});

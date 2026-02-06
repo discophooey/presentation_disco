@@ -81,9 +81,10 @@ button.danger { background: #c53030; color: #fff; }
 .preview-matte img { width: 100%; height: 100%; object-fit: cover; will-change: transform, opacity, filter; }
 .preview-txt { position: absolute; padding: 12px 20px; border-radius: 4px; opacity: 0; transition: opacity 0.6s; pointer-events: none; z-index: 10; font-family: 'APRegular', 'APMedium', 'APBold', sans-serif; }
 .preview-txt.on { opacity: 1; }
-.preview-cap { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 700px; padding: 12px 16px; background: rgba(0,0,0,0.8); border-radius: 8px; font-size: 13px; line-height: 1.5; color: #e0e0e0; opacity: 0; transition: opacity 0.6s; z-index: 100; font-family: 'APRegular', 'APMedium', 'APBold', sans-serif; }
+.preview-cap { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 700px; padding: 12px 16px; background: rgba(0,0,0,0.8); border-radius: 8px; font-size: 13px; line-height: 1.5; color: #e0e0e0; opacity: 0; transition: opacity 0.6s; z-index: 100; font-family: 'APRegular', 'APMedium', 'APBold', sans-serif; box-sizing: border-box; }
 .preview-cap.on { opacity: 1; }
-.preview-cred { color: #999; font-size: 11px; font-style: italic; margin-top: 4px; }
+.preview-cap .cap-t { font-size: 13px; line-height: 1.5; }
+.preview-cap .cap-c { font-size: 11px; font-style: italic; margin-top: 4px; }
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
 .modal.active { display: flex; }
 .modal-content { background: #111; border-radius: 12px; padding: 24px; width: 90%; max-width: 800px; max-height: 85vh; overflow: auto; }
@@ -188,6 +189,17 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         <h2 onclick="toggleSection(this)" class="collapsed">Caption</h2>
         <div class="section collapsed">
             <div class="control-group"><label><input type="checkbox" id="captionEnabled" checked onchange="updatePreview();">Enable Caption</label></div>
+            <div class="control-group" style="display:flex;gap:12px;align-items:center;">
+                <label><input type="checkbox" id="captionBg" checked onchange="updatePreview();"> Caption Background</label>
+                <select id="captionColor" onchange="updatePreview();">
+                    <option value="white">White Text</option>
+                    <option value="black">Black Text</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Caption Y Offset: <span id="captionOffsetVal">0</span>px</label>
+                <input type="range" id="captionOffsetY" min="-50" max="100" value="0" oninput="document.getElementById('captionOffsetVal').textContent=this.value;updatePreview();">
+            </div>
             <div class="control-group"><label>Caption Text</label><textarea id="captionText" oninput="updatePreview();">Display a single image with scroll-driven effects including zoom, pan, blur, parallax, Ken Burns, vignette, and tilt.</textarea></div>
             <div class="control-group"><label>Credit / Source</label><input type="text" id="captionCredit" value="Marshall Ritzel" oninput="updatePreview();"></div>
         </div>
@@ -240,7 +252,10 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                     <div class="preview-matte" id="previewMatte">
                         <div style="color:#666;padding:40px;text-align:center;">Load an image to begin</div>
                     </div>
-                    <div class="preview-cap" id="previewCap"></div>
+                    <div class="preview-cap" id="previewCap">
+                        <div class="cap-t" id="previewCapText"></div>
+                        <div class="cap-c" id="previewCapCredit"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -329,6 +344,9 @@ function saveProject() {
             bgOpacity: document.getElementById('bgOpacity').value,
             bgBlur: document.getElementById('bgBlur').value,
             captionEnabled: document.getElementById('captionEnabled').checked,
+            captionBg: document.getElementById('captionBg').checked,
+            captionColor: document.getElementById('captionColor').value,
+            captionOffsetY: document.getElementById('captionOffsetY').value,
             captionText: document.getElementById('captionText').value,
             captionCredit: document.getElementById('captionCredit').value,
             scrollDuration: document.getElementById('scrollDuration').value,
@@ -376,6 +394,10 @@ function loadProject() {
                     document.getElementById('bgOpacity').value = project.settings.bgOpacity || 70;
                     document.getElementById('bgBlur').value = project.settings.bgBlur || 8;
                     document.getElementById('captionEnabled').checked = project.settings.captionEnabled !== false;
+                    document.getElementById('captionBg').checked = project.settings.captionBg !== false;
+                    document.getElementById('captionColor').value = project.settings.captionColor || 'white';
+                    document.getElementById('captionOffsetY').value = project.settings.captionOffsetY || 0;
+                    document.getElementById('captionOffsetVal').textContent = project.settings.captionOffsetY || 0;
                     document.getElementById('captionText').value = project.settings.captionText || '';
                     document.getElementById('captionCredit').value = project.settings.captionCredit || '';
                     document.getElementById('scrollDuration').value = project.settings.scrollDuration || 200;
@@ -561,9 +583,19 @@ function updatePreview() {
     const captionEnabled = document.getElementById('captionEnabled').checked;
     const captionText = document.getElementById('captionText').value;
     const captionCredit = document.getElementById('captionCredit').value;
+    const captionBg = document.getElementById('captionBg').checked;
+    const captionColor = document.getElementById('captionColor').value;
+    const captionOffsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
     
-    cap.innerHTML = captionText + (captionCredit ? `<div class="preview-cred">${captionCredit}</div>` : '');
+    document.getElementById('previewCapText').textContent = captionText;
+    document.getElementById('previewCapCredit').textContent = captionCredit;
     cap.style.display = captionEnabled && captionText ? 'block' : 'none';
+    cap.style.background = captionBg ? 'rgba(0,0,0,0.8)' : 'transparent';
+    cap.style.bottom = (40 - captionOffsetY) + 'px';
+    const textColor = captionColor === 'black' ? '#111' : '#e0e0e0';
+    const creditColor = captionColor === 'black' ? '#333' : '#999';
+    document.getElementById('previewCapText').style.color = textColor;
+    document.getElementById('previewCapCredit').style.color = creditColor;
     
     applyEffect();
 }
@@ -672,6 +704,9 @@ function generateExport() {
     const captionEnabled = document.getElementById('captionEnabled').checked;
     const captionText = document.getElementById('captionText').value;
     const captionCredit = document.getElementById('captionCredit').value;
+    const captionBg = document.getElementById('captionBg').checked;
+    const captionColor = document.getElementById('captionColor').value;
+    const captionOffsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
     
     // Build text layer HTML
     let txtHtml = '';
@@ -680,7 +715,7 @@ function generateExport() {
     });
     
     // Caption HTML
-    const capHtml = captionEnabled && captionText ? `<div class="si-cap">${captionText}${captionCredit ? '<div class="si-cred">' + captionCredit + '</div>' : ''}</div>` : '';
+    const capHtml = captionEnabled && captionText ? `<div class="si-cap"><div class="si-cap-t">${captionText}</div>${captionCredit ? '<div class="si-cap-c">' + captionCredit + '</div>' : ''}</div>` : '';
     
     // Aspect ratio CSS
     let matteCSS, stageExtra;
@@ -710,10 +745,11 @@ function generateExport() {
 #${uid} .si-matte img{width:100%;height:100%;object-fit:${fit};transform-origin:${anchor};will-change:transform,opacity,filter}
 #${uid} .si-txt{position:absolute;transform:translate(-50%,-50%);padding:12px 20px;border-radius:4px;font-size:${fontSize}px;color:${fontColor};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;transition:opacity 0.6s;z-index:10;pointer-events:none;box-sizing:border-box}
 #${uid} .si-txt.on{opacity:1}
-#${uid} .si-cap{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);width:85%;max-width:700px;padding:12px 16px;background:rgba(0,0,0,0.8);border-radius:8px;font-size:13px;line-height:1.5;color:#e0e0e0;opacity:0;transition:opacity 0.6s;z-index:100}
+#${uid} .si-cap{position:absolute;bottom:${40 - captionOffsetY}px;left:50%;transform:translateX(-50%);width:85%;max-width:700px;padding:12px 16px;${captionBg ? 'background:rgba(0,0,0,0.8);' : ''}border-radius:8px;font-size:13px;line-height:1.5;opacity:0;transition:opacity 0.6s;z-index:100;box-sizing:border-box}
 #${uid} .si-cap.on{opacity:1}
-#${uid} .si-cred{color:#999;font-size:11px;font-style:italic;margin-top:4px}
-@media(max-width:768px){#${uid} .si-stage{top:${mobileOffset}px}#${uid} .si-txt{font-size:14px!important;padding:8px 12px}#${uid} .si-cap{width:92%;bottom:20px;font-size:11px}}
+#${uid} .si-cap-t{color:${captionColor === 'black' ? '#111' : '#e0e0e0'}}
+#${uid} .si-cap-c{color:${captionColor === 'black' ? '#333' : '#999'};font-size:11px;font-style:italic;margin-top:4px}
+@media(max-width:768px){#${uid} .si-stage{top:${mobileOffset}px}#${uid} .si-txt{font-size:14px!important;padding:8px 12px}#${uid} .si-cap{width:92%;bottom:20px;font-size:11px}#${uid} .si-cap-t{font-size:12px}#${uid} .si-cap-c{font-size:10px}}
 </style>
 <div id="${uid}" class="si-wrap">
 <div class="si-stage">
