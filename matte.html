@@ -438,12 +438,15 @@ function updatePreview() {
     var aspectRatio = document.getElementById('aspectRatio').value;
     wrap.className = 'matte-wrap ' + config.sizing;
     if (aspectRatio !== 'auto') {
-        wrap.style.minHeight = '';
+        wrap.style.minHeight = '0';
         wrap.style.aspectRatio = aspectRatio.replace(':', '/');
-        wrap.style.height = '';
+        wrap.style.height = 'auto';
+        wrap.style.maxHeight = '90vh';
     } else {
         wrap.style.minHeight = config.containerHeight + 'px';
         wrap.style.aspectRatio = '';
+        wrap.style.height = '';
+        wrap.style.maxHeight = '';
     }
     
     // Background
