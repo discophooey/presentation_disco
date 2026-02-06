@@ -59,7 +59,7 @@ button.secondary { background: #333; color: #fff; }
 .preview-scroll { flex: 1; overflow-y: auto; }
 .preview-container { position: relative; }
 .preview-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; background: #000; }
-.ba-matte { position: relative; width: 100%; overflow: hidden; background: #000; flex-shrink: 1; }
+.ba-matte { position: relative; width: 100%; overflow: hidden; background: #000; flex: 1; min-height: 0; }
 .preview-caption { flex-shrink: 0; width: 100%; max-width: 650px; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; display: none; }
 .cap-text { font-size: 13px; line-height: 1.5; color: #e0e0e0; }
 .cap-credit { font-size: 11px; color: #888; font-style: italic; margin-top: 6px; }
@@ -421,6 +421,14 @@ function updatePreview() {
     }
     
     matte.innerHTML = html;
+    
+    // Apply aspect ratio to preview matte
+    var aspect = document.getElementById('aspectRatio').value;
+    var ar = aspect.split(':');
+    var maxW = document.getElementById('maxWidth').value;
+    matte.style.aspectRatio = ar[0] + '/' + ar[1];
+    matte.style.maxWidth = maxW;
+    matte.style.maxHeight = '100%';
     
     sliderPos = parseInt(document.getElementById('startPos').value);
     updateImageStyle();
