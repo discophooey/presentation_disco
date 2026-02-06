@@ -53,6 +53,7 @@ button.secondary { background: #333; color: #fff; }
 .preview-area.fit-frame { background: #1a1a1a; }
 .preview-area.fit-frame .preview-stage,
 .preview-area.fit-frame .sticky-stage { border: 3px solid #4a9eff; box-sizing: border-box; max-width: 700px; margin: 0 auto; }
+.preview-area.fit-frame .preview-stage { height: auto; aspect-ratio: 16/9; }
 
 .preview-header { padding: 10px 16px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; font-size: 11px; color: #666; }
 #progressDisplay { color: #4a9eff; font-weight: bold; }
@@ -60,7 +61,7 @@ button.secondary { background: #333; color: #fff; }
 .preview-container { position: relative; }
 .preview-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; background: #000; }
 .ba-matte { position: relative; width: 100%; overflow: hidden; background: #000; flex-shrink: 1; min-height: 50%; }
-.preview-caption { flex-shrink: 0; width: 100%; max-width: 650px; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; display: none; }
+.preview-caption { flex-shrink: 0; width: 100%; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; display: none; }
 .cap-text { font-size: 13px; line-height: 1.5; color: #e0e0e0; }
 .cap-credit { font-size: 11px; color: #888; font-style: italic; margin-top: 6px; }
 
@@ -508,14 +509,12 @@ document.getElementById('previewScroll').addEventListener('scroll', function() {
 function updateCaption() {
     var enabled = document.getElementById('captionEnabled').checked;
     var caption = document.getElementById('previewCaption');
-    var matte = document.getElementById('baMatte');
     var hasBg = document.getElementById('captionBg').checked;
     var color = document.getElementById('captionColor').value;
     var offsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
     caption.style.display = enabled ? 'block' : 'none';
     caption.style.background = hasBg ? 'rgba(0,0,0,0.85)' : 'transparent';
     caption.style.marginTop = offsetY + 'px';
-    if (matte) { caption.style.width = matte.offsetWidth + 'px'; caption.style.maxWidth = 'none'; }
     var textColor = color === 'black' ? '#111' : '#e0e0e0';
     var creditColor = color === 'black' ? '#333' : '#888';
     document.getElementById('capText').style.color = textColor;

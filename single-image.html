@@ -71,6 +71,7 @@ button.danger { background: #c53030; color: #fff; }
 .preview-area.fit-frame { background: #1a1a1a; }
 .preview-area.fit-frame .preview-stage,
 .preview-area.fit-frame .sticky-stage { border: 3px solid #4a9eff; box-sizing: border-box; max-width: 700px; margin: 0 auto; }
+.preview-area.fit-frame .preview-stage { height: auto; aspect-ratio: 16/9; }
 
 .preview-header { padding: 10px 16px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; font-size: 11px; color: #666; }
 #progressDisplay { color: #4a9eff; font-weight: bold; }
@@ -82,7 +83,7 @@ button.danger { background: #c53030; color: #fff; }
 .preview-matte img { width: 100%; height: 100%; object-fit: cover; will-change: transform, opacity, filter; }
 .preview-txt { position: absolute; padding: 12px 20px; border-radius: 4px; opacity: 0; transition: opacity 0.6s; pointer-events: none; z-index: 10; font-family: 'APRegular', 'APMedium', 'APBold', sans-serif; }
 .preview-txt.on { opacity: 1; }
-.preview-caption { flex-shrink: 0; width: 100%; max-width: 650px; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; display: none; }
+.preview-caption { flex-shrink: 0; width: 100%; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; display: none; }
 .cap-text { font-size: 13px; line-height: 1.5; color: #e0e0e0; }
 .cap-credit { font-size: 11px; color: #888; font-style: italic; margin-top: 6px; }
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
@@ -654,15 +655,12 @@ document.getElementById('previewScroll').addEventListener('scroll', applyEffect,
 function updateCaption() {
     const enabled = document.getElementById('captionEnabled').checked;
     const caption = document.getElementById('previewCaption');
-    const matte = document.getElementById('previewMatte');
     const hasBg = document.getElementById('captionBg').checked;
     const color = document.getElementById('captionColor').value;
     const offsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
     caption.style.display = enabled ? 'block' : 'none';
     caption.style.background = hasBg ? 'rgba(0,0,0,0.85)' : 'transparent';
     caption.style.marginTop = offsetY + 'px';
-    if (matte) caption.style.width = matte.offsetWidth + 'px';
-    caption.style.maxWidth = 'none';
     const textColor = color === 'black' ? '#111' : '#e0e0e0';
     const creditColor = color === 'black' ? '#333' : '#888';
     document.getElementById('capText').style.color = textColor;
@@ -743,7 +741,7 @@ ${matteCSS}
 #${uid} .si-matte img{width:100%;height:100%;object-fit:${fit};transform-origin:${anchor};will-change:transform,opacity,filter}
 #${uid} .si-txt{position:absolute;transform:translate(-50%,-50%);padding:12px 20px;border-radius:4px;font-size:${fontSize}px;color:${fontColor};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;transition:opacity 0.6s;z-index:10;pointer-events:none;box-sizing:border-box}
 #${uid} .si-txt.on{opacity:1}
-#${uid} .cap{flex-shrink:0;margin-top:${captionOffsetY}px;${captionBg ? 'background:rgba(0,0,0,.85);' : ''}padding:6px 16px 8px;border-radius:0 0 6px 6px;z-index:10;box-sizing:border-box}
+#${uid} .cap{flex-shrink:0;width:100%;margin-top:${captionOffsetY}px;${captionBg ? 'background:rgba(0,0,0,.85);' : ''}padding:6px 16px 8px;border-radius:0 0 6px 6px;z-index:10;box-sizing:border-box}
 #${uid} .cap-t{font:13px/1.5 system-ui,sans-serif;color:${captionColor === 'black' ? '#111' : '#e0e0e0'}}
 #${uid} .cap-c{font:11px system-ui,sans-serif;color:${captionColor === 'black' ? '#333' : '#aaa'};font-style:italic;margin-top:6px}
 @media(max-width:768px){#${uid} .si-stage{top:${mobileOffset}px;height:calc(100vh - ${mobileOffset}px)}#${uid} .si-in{justify-content:flex-start;padding-top:10px}#${uid} .si-matte{min-height:40%}#${uid} .si-txt{font-size:14px!important;padding:8px 12px}#${uid} .cap{width:calc(100% - 24px);padding:10px 14px;margin-top:6px}#${uid} .cap-t{font-size:12px}#${uid} .cap-c{font-size:10px}}
@@ -765,12 +763,11 @@ var stage=wrap.querySelector(".si-stage");
 var matte=wrap.querySelector(".si-matte");
 var img=wrap.querySelector("img");
 var txts=wrap.querySelectorAll(".si-txt");
-var cap=wrap.querySelector(".cap");
 var ef="${ef}",int=${int},zs=${zs},ze=${ze},kbDir="${kbDir}",eScale=${eScale};
 var data=${txtData};
 var scrollMult=${scrollMult};
 var raf=null,curP=0,tarP=0;
-function setHeight(){wrap.style.height=(stage.offsetHeight*scrollMult)+"px";if(cap)cap.style.width=matte.offsetWidth+"px";}
+function setHeight(){wrap.style.height=(stage.offsetHeight*scrollMult)+"px";}
 setHeight();window.addEventListener("resize",setHeight);
 function lerp(a,b,t){return a+(b-a)*t;}
 function upd(){
