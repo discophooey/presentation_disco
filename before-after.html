@@ -58,8 +58,12 @@ button.secondary { background: #333; color: #fff; }
 #progressDisplay { color: #4a9eff; font-weight: bold; }
 .preview-scroll { flex: 1; overflow-y: auto; }
 .preview-container { position: relative; }
-.preview-stage { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000; }
-.ba-matte { position: relative; width: 100%; height: 100%; overflow: hidden; background: #000; }
+.preview-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; background: #000; }
+.ba-matte { position: relative; width: 100%; overflow: hidden; background: #000; flex: 1; min-height: 50%; }
+.preview-caption { flex-shrink: 0; width: 100%; max-width: 650px; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; display: none; }
+.cap-text { font-size: 13px; line-height: 1.5; color: #e0e0e0; }
+.cap-credit { font-size: 11px; color: #888; font-style: italic; margin-top: 6px; }
+
 .ba-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
 .ba-before { z-index: 1; }
 .ba-after { z-index: 2; }
@@ -188,26 +192,26 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         <h2 onclick="toggleSection(this)">Caption</h2>
         <div class="section">
             <div class="control-group">
-                <label><input type="checkbox" id="captionEnabled" onchange="updatePreview()"> Enable Caption</label>
+                <label><input type="checkbox" id="captionEnabled" onchange="updateCaption()"> Enable Caption</label>
             </div>
             <div class="control-group" style="display:flex;gap:12px;align-items:center;">
-                <label><input type="checkbox" id="captionBg" checked onchange="updatePreview()"> Caption Background</label>
-                <select id="captionColor" onchange="updatePreview()">
+                <label><input type="checkbox" id="captionBg" checked onchange="updateCaption()"> Caption Background</label>
+                <select id="captionColor" onchange="updateCaption()">
                     <option value="white">White Text</option>
                     <option value="black">Black Text</option>
                 </select>
             </div>
             <div class="control-group">
                 <label>Caption Y Offset: <span id="captionOffsetVal">0</span>px</label>
-                <input type="range" id="captionOffsetY" min="-50" max="100" value="0" oninput="document.getElementById('captionOffsetVal').textContent=this.value;updatePreview();">
+                <input type="range" id="captionOffsetY" min="-50" max="100" value="0" oninput="document.getElementById('captionOffsetVal').textContent=this.value;updateCaption()">
             </div>
             <div class="control-group">
                 <label>Caption Text</label>
-                <textarea id="captionText" oninput="updatePreview()">Compare two images with an interactive slider. Scroll to animate or drag the divider to explore the difference.</textarea>
+                <textarea id="captionText" rows="2" oninput="updateCaption()">Compare two images with an interactive slider. Scroll to animate or drag the divider to explore the difference.</textarea>
             </div>
             <div class="control-group">
-                <label>Credit</label>
-                <input type="text" id="captionCredit" value="Marshall Ritzel" oninput="updatePreview()">
+                <label>Credit / Source</label>
+                <input type="text" id="captionCredit" value="Marshall Ritzel" oninput="updateCaption()">
             </div>
         </div>
         
@@ -275,6 +279,10 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 <div class="preview-stage" id="previewStage">
                     <div class="ba-matte" id="baMatte">
                         <div style="padding:80px;text-align:center;color:#555;">Load images</div>
+                    </div>
+                    <div class="preview-caption" id="previewCaption">
+                        <div class="cap-text" id="capText"></div>
+                        <div class="cap-credit" id="capCredit"></div>
                     </div>
                 </div>
             </div>
@@ -491,6 +499,23 @@ document.getElementById('previewScroll').addEventListener('scroll', function() {
     requestAnimationFrame(applyScrollEffect);
 }, { passive: true });
 
+function updateCaption() {
+    var enabled = document.getElementById('captionEnabled').checked;
+    var caption = document.getElementById('previewCaption');
+    var hasBg = document.getElementById('captionBg').checked;
+    var color = document.getElementById('captionColor').value;
+    var offsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
+    caption.style.display = enabled ? 'block' : 'none';
+    caption.style.background = hasBg ? 'rgba(0,0,0,0.85)' : 'transparent';
+    caption.style.marginTop = offsetY + 'px';
+    var textColor = color === 'black' ? '#111' : '#e0e0e0';
+    var creditColor = color === 'black' ? '#333' : '#888';
+    document.getElementById('capText').style.color = textColor;
+    document.getElementById('capCredit').style.color = creditColor;
+    document.getElementById('capText').textContent = document.getElementById('captionText').value;
+    document.getElementById('capCredit').textContent = document.getElementById('captionCredit').value;
+}
+
 function generateExport() {
     if (!beforeUrl || !afterUrl) { alert('Load both images'); return; }
     
@@ -533,17 +558,14 @@ function generateExport() {
     var labelsHtml = showLabels ? '<div class="l lb">' + bLabel + '</div><div class="l la">' + aLabel + '</div>' : '';
     
     var captionHtml = '';
-    if (captionEnabled && (captionText || captionCredit)) {
-        captionHtml = '<div class="cap">';
-        if (captionText) captionHtml += '<div class="cap-t">' + captionText + '</div>';
-        if (captionCredit) captionHtml += '<div class="cap-c">' + captionCredit + '</div>';
-        captionHtml += '</div>';
+    if (captionEnabled) {
+        captionHtml = '<div class="cap"><div class="cap-t">' + captionText + '</div>' + (captionCredit ? '<div class="cap-c">' + captionCredit + '</div>' : '') + '</div>';
     }
 
     var code = `<style>
 #${uid}{position:relative;background:${stageBg}}
-#${uid} .wrap{position:-webkit-sticky;position:sticky;top:${offset}px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
-#${uid} .matte{position:relative;width:100%;max-width:${maxW};aspect-ratio:${ar[0]}/${ar[1]};overflow:hidden;background:${stageBg}}
+#${uid} .wrap{position:-webkit-sticky;position:sticky;top:${offset}px;height:calc(100vh - ${offset}px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
+#${uid} .matte{position:relative;width:100%;max-width:${maxW};aspect-ratio:${ar[0]}/${ar[1]};overflow:hidden;background:${stageBg};flex-shrink:1;min-height:50%}
 #${uid} .img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
 #${uid} .b{z-index:1}
 #${uid} .a{z-index:2}
@@ -552,16 +574,17 @@ function generateExport() {
 #${uid} .l{position:absolute;bottom:15px;padding:6px 12px;background:rgba(0,0,0,.7);color:#fff;font-size:12px;font-weight:600;border-radius:4px;z-index:5}
 #${uid} .lb{left:15px}
 #${uid} .la{right:15px}
-#${uid} .cap{width:85%;max-width:700px;padding:12px 16px;margin-top:${captionOffsetY}px;font-size:13px;line-height:1.5;text-align:left;${captionBg ? 'background:rgba(0,0,0,.85);border-radius:0 0 6px 6px;' : ''}box-sizing:border-box}
-#${uid} .cap-t{color:${captionColor === 'black' ? '#111' : '#e0e0e0'}}
-#${uid} .cap-c{color:${captionColor === 'black' ? '#333' : '#aaa'};font-size:11px;font-style:italic;margin-top:4px}
+#${uid} .cap{flex-shrink:0;width:85%;max-width:700px;margin-top:${captionOffsetY}px;${captionBg ? 'background:rgba(0,0,0,.85);' : ''}padding:6px 16px 8px;border-radius:0 0 6px 6px;z-index:10;box-sizing:border-box}
+#${uid} .cap-t{font:13px/1.5 system-ui,sans-serif;color:${captionColor === 'black' ? '#111' : '#e0e0e0'}}
+#${uid} .cap-c{font:11px system-ui,sans-serif;color:${captionColor === 'black' ? '#333' : '#aaa'};font-style:italic;margin-top:6px}
 @media(max-width:768px){
-#${uid} .wrap{top:${mobileOffset}px;padding:10px}
+#${uid} .wrap{top:${mobileOffset}px;height:calc(100vh - ${mobileOffset}px);padding:10px}
 #${uid} .l{font-size:10px;padding:4px 8px;bottom:10px}
 #${uid} .lb{left:8px}
 #${uid} .la{right:8px}
 #${uid} .h{width:30px;height:30px;font-size:10px}
-#${uid} .cap{width:calc(100% - 24px);padding:10px 14px;margin-top:6px;font-size:12px}
+#${uid} .matte{min-height:40%}
+#${uid} .cap{width:calc(100% - 24px);padding:10px 14px;margin-top:6px}
 #${uid} .cap-t{font-size:12px}
 #${uid} .cap-c{font-size:10px}
 }

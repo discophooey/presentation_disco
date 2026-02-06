@@ -56,7 +56,8 @@ button.secondary { background: #333; color: #fff; }
 #progressDisplay { color: #4a9eff; font-weight: bold; }
 .preview-scroll { flex: 1; overflow-y: auto; }
 .preview-container { position: relative; }
-.preview-stage { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000; }
+.preview-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; background: #000; }
+.zoom-wrapper { position: relative; flex-shrink: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
 
 .zoom-wrapper { position: relative; width: 100%; max-width: 1200px; display: flex; flex-direction: column; align-items: center; }
 .zoom-matte { position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; background: #000; }
@@ -65,9 +66,9 @@ button.secondary { background: #333; color: #fff; }
 .zoom-marker.visible { opacity: 1; }
 .zoom-annotation { position: absolute; background: rgba(0,0,0,0.9); color: #fff; padding: 10px 14px; border-radius: 6px; font-size: 13px; max-width: 280px; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: normal; line-height: 1.4; }
 .zoom-annotation.visible { opacity: 1; }
-.zoom-caption { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 700px; padding: 12px 16px; background: rgba(0,0,0,0.8); border-radius: 8px; font-size: 13px; line-height: 1.5; text-align: left; opacity: 0; transition: opacity 0.4s; display: none; }
-.zoom-caption.visible { display: block; opacity: 1; }
-.zoom-credit { color: #888; font-size: 11px; font-style: italic; margin-top: 4px; }
+.preview-caption { flex-shrink: 0; width: 100%; max-width: 650px; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; display: none; }
+.cap-text { font-size: 13px; line-height: 1.5; color: #e0e0e0; }
+.cap-credit { font-size: 11px; color: #888; font-style: italic; margin-top: 6px; }
 
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
 .modal.active { display: flex; }
@@ -180,26 +181,26 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         <h2 onclick="toggleSection(this)">Caption</h2>
         <div class="section">
             <div class="control-group">
-                <label><input type="checkbox" id="captionEnabled" onchange="applyEffect()"> Enable Caption</label>
+                <label><input type="checkbox" id="captionEnabled" onchange="updateCaption()"> Enable Caption</label>
             </div>
             <div class="control-group" style="display:flex;gap:12px;align-items:center;">
-                <label><input type="checkbox" id="captionBg" checked onchange="applyEffect()"> Caption Background</label>
-                <select id="captionColor" onchange="applyEffect()">
+                <label><input type="checkbox" id="captionBg" checked onchange="updateCaption()"> Caption Background</label>
+                <select id="captionColor" onchange="updateCaption()">
                     <option value="white">White Text</option>
                     <option value="black">Black Text</option>
                 </select>
             </div>
             <div class="control-group">
                 <label>Caption Y Offset: <span id="captionOffsetVal">0</span>px</label>
-                <input type="range" id="captionOffsetY" min="-50" max="100" value="0" oninput="document.getElementById('captionOffsetVal').textContent=this.value;applyEffect();">
+                <input type="range" id="captionOffsetY" min="-50" max="100" value="0" oninput="document.getElementById('captionOffsetVal').textContent=this.value;updateCaption()">
             </div>
             <div class="control-group">
                 <label>Caption Text</label>
-                <textarea id="captionText" oninput="applyEffect()" placeholder="Describe the image...">Image that zooms into specific regions with callout annotations on scroll.</textarea>
+                <textarea id="captionText" rows="2" oninput="updateCaption()" placeholder="Describe the image...">Image that zooms into specific regions with callout annotations on scroll.</textarea>
             </div>
             <div class="control-group">
-                <label>Credit</label>
-                <input type="text" id="captionCredit" placeholder="Credit" value="Marshall Ritzel" oninput="applyEffect()">
+                <label>Credit / Source</label>
+                <input type="text" id="captionCredit" placeholder="Credit" value="Marshall Ritzel" oninput="updateCaption()">
             </div>
         </div>
         
@@ -253,10 +254,10 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                         <div class="zoom-matte" id="zoomMatte" onclick="setTarget(event)">
                             <div style="color:#444;text-align:center;padding:60px;">Load an image to begin</div>
                         </div>
-                        <div class="zoom-caption" id="zoomCaption">
-                            <div id="captionTextEl"></div>
-                            <div class="zoom-credit" id="captionCreditEl"></div>
-                        </div>
+                    </div>
+                    <div class="preview-caption" id="previewCaption">
+                        <div class="cap-text" id="capText"></div>
+                        <div class="cap-credit" id="capCredit"></div>
                     </div>
                 </div>
             </div>
@@ -380,7 +381,6 @@ function applyEffect() {
     var img = document.getElementById('zoomImg');
     var marker = document.getElementById('zoomMarker');
     var annotation = document.getElementById('zoomAnnotation');
-    var caption = document.getElementById('zoomCaption');
     if (!img) return;
     
     var scroll = document.getElementById('previewScroll');
@@ -427,17 +427,7 @@ function applyEffect() {
     else if (annotationPos === 'bottom') annotation.style.transform = 'translate(-50%, 20px)';
     annotation.classList.toggle('visible', annotationEnabled && progress > 0.6);
     
-    var captionEnabled = document.getElementById('captionEnabled').checked;
-    var captionBg = document.getElementById('captionBg').checked;
-    var captionColor = document.getElementById('captionColor').value;
-    var captionOffsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
-    document.getElementById('captionTextEl').textContent = document.getElementById('captionText').value;
-    document.getElementById('captionCreditEl').textContent = document.getElementById('captionCredit').value;
-    caption.style.background = captionBg ? 'rgba(0,0,0,0.8)' : 'transparent';
-    caption.style.bottom = (40 - captionOffsetY) + 'px';
-    document.getElementById('captionTextEl').style.color = captionColor === 'black' ? '#111' : '#ccc';
-    document.getElementById('captionCreditEl').style.color = captionColor === 'black' ? '#333' : '#888';
-    if (captionEnabled && progress > 0.05) caption.classList.add('visible');
+    // Caption handled by updateCaption()
 }
 
 var rafId = null;
@@ -452,6 +442,23 @@ function onScroll() {
     animate();
 }
 document.getElementById('previewScroll').addEventListener('scroll', onScroll, { passive: true });
+
+function updateCaption() {
+    var enabled = document.getElementById('captionEnabled').checked;
+    var caption = document.getElementById('previewCaption');
+    var hasBg = document.getElementById('captionBg').checked;
+    var color = document.getElementById('captionColor').value;
+    var offsetY = parseInt(document.getElementById('captionOffsetY').value) || 0;
+    caption.style.display = enabled ? 'block' : 'none';
+    caption.style.background = hasBg ? 'rgba(0,0,0,0.85)' : 'transparent';
+    caption.style.marginTop = offsetY + 'px';
+    var textColor = color === 'black' ? '#111' : '#e0e0e0';
+    var creditColor = color === 'black' ? '#333' : '#888';
+    document.getElementById('capText').style.color = textColor;
+    document.getElementById('capCredit').style.color = creditColor;
+    document.getElementById('capText').textContent = document.getElementById('captionText').value;
+    document.getElementById('capCredit').textContent = document.getElementById('captionCredit').value;
+}
 
 function generateExport() {
     if (!imageUrl) { alert('Load an image first'); return; }
@@ -489,9 +496,9 @@ function generateExport() {
     
     var markerHtml = showMarker ? '<div class="zd-mk"></div>' : '';
     var annHtml = annotationEnabled ? '<div class="zd-ann">' + annotationText + '</div>' : '';
-    var capHtml = captionEnabled ? '<div class="zd-cap"><div class="zd-cap-t">' + captionText + '</div>' + (captionCredit ? '<div class="zd-cap-c">' + captionCredit + '</div>' : '') + '</div>' : '';
+    var capHtml = captionEnabled ? '<div class="cap"><div class="cap-t">' + captionText + '</div>' + (captionCredit ? '<div class="cap-c">' + captionCredit + '</div>' : '') + '</div>' : '';
     
-    var code = '<style>\n#' + uid + '{position:relative}\n#' + uid + ' .zd-stage{position:-webkit-sticky;position:sticky;top:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:' + bgColor + ';overflow:hidden;' + fullBleedCss + '}\n#' + uid + ' .zd-wrap{position:relative;width:100%;max-width:1200px}\n#' + uid + ' .zd-matte{position:relative;width:100%;aspect-ratio:' + aspectParts[0] + '/' + aspectParts[1] + ';overflow:hidden;background:#000}\n#' + uid + ' .zd-matte img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:' + fit + ';display:block;will-change:transform}\n#' + uid + ' .zd-mk{position:absolute;left:' + targetX + '%;top:' + targetY + '%;width:24px;height:24px;border:3px solid ' + markerColor + ';border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.3s;box-shadow:0 0 0 4px ' + markerColor + '40}\n#' + uid + ' .zd-mk.on{opacity:1}\n#' + uid + ' .zd-ann{position:absolute;left:' + targetX + '%;top:' + targetY + '%;background:rgba(0,0,0,0.9);color:#fff;padding:10px 14px;border-radius:6px;font-size:13px;opacity:0;transition:opacity 0.3s;transform:' + annTransform + ';max-width:280px;white-space:normal;line-height:1.4;box-sizing:border-box}\n#' + uid + ' .zd-ann.on{opacity:1}\n#' + uid + ' .zd-cap{width:85%;max-width:700px;padding:12px 16px;font-size:13px;line-height:1.5;text-align:left;margin-top:' + captionOffsetY + 'px;' + (captionBg ? 'background:rgba(0,0,0,.85);border-radius:0 0 6px 6px;' : '') + 'opacity:0;transition:opacity 0.4s;box-sizing:border-box}\n#' + uid + ' .zd-cap.on{opacity:1}\n#' + uid + ' .zd-cap-t{color:' + (captionColor === 'black' ? '#111' : '#e0e0e0') + '}\n#' + uid + ' .zd-cap-c{color:' + (captionColor === 'black' ? '#333' : '#aaa') + ';font-size:11px;font-style:italic;margin-top:4px}\n@media(max-width:768px){#' + uid + ' .zd-stage{top:200px;padding:10px}#' + uid + ' .zd-ann{font-size:11px;padding:6px 10px;max-width:200px}#' + uid + ' .zd-cap{width:calc(100% - 24px);padding:10px 14px;margin-top:6px;font-size:12px}#' + uid + ' .zd-cap-t{font-size:12px}#' + uid + ' .zd-cap-c{font-size:10px}}\n</style>\n<div id="' + uid + '">\n<div class="zd-stage">\n<div class="zd-wrap">\n<div class="zd-matte"><img src="' + imageUrl + '" alt="">' + markerHtml + annHtml + '</div>\n</div>\n' + capHtml + '\n</div>\n</div>\n<script>\n(function(){\nvar w=document.getElementById("' + uid + '");\nvar s=w.querySelector(".zd-stage");\nvar img=w.querySelector("img");\nvar mk=w.querySelector(".zd-mk");\nvar ann=w.querySelector(".zd-ann");\nvar cap=w.querySelector(".zd-cap");\nvar tx=' + targetX + ',ty=' + targetY + ',sz=' + startZoom + ',ez=' + endZoom + ';\nvar scrollMult=' + scrollMult + ';\nvar curP=0,tarP=0;\nfunction setH(){w.style.height=(s.offsetHeight*scrollMult)+"px";}\nsetH();window.addEventListener("resize",setH);\nfunction lerp(a,b,t){return a+(b-a)*t;}\nfunction upd(){\nvar extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\nif(extP!==undefined){tarP=extP;}else{\nvar r=w.getBoundingClientRect();\nvar wh=window.innerHeight;\nvar scrolled=Math.max(0,-r.top);\nvar scrollRange=w.offsetHeight-wh;\nif(scrollRange<=0)scrollRange=1;\ntarP=Math.max(0,Math.min(1,scrolled/scrollRange));\n}\ncurP=lerp(curP,tarP,0.1);\nvar zm=sz+(ez-sz)*curP;\nvar px=(50-tx)*(zm-1)/zm;\nvar py=(50-ty)*(zm-1)/zm;\nimg.style.transformOrigin=tx+"% "+ty+"%";\nimg.style.transform="scale("+zm+") translate("+px+"%,"+py+"%)";\nif(mk)mk.classList.toggle("on",curP>0.5);\nif(ann)ann.classList.toggle("on",curP>0.6);\nif(cap&&curP>0.05)cap.classList.add("on");\nrequestAnimationFrame(upd);\n}\nupd();\n})();\n<\/script>';
+    var code = '<style>\n#' + uid + '{position:relative}\n#' + uid + ' .zd-stage{position:-webkit-sticky;position:sticky;top:50px;height:calc(100vh - 50px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;background:' + bgColor + ';overflow:hidden;' + fullBleedCss + '}\n#' + uid + ' .zd-wrap{position:relative;width:100%;max-width:1200px;flex-shrink:1;min-height:0}\n#' + uid + ' .zd-matte{position:relative;width:100%;aspect-ratio:' + aspectParts[0] + '/' + aspectParts[1] + ';overflow:hidden;background:#000}\n#' + uid + ' .zd-matte img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:' + fit + ';display:block;will-change:transform}\n#' + uid + ' .zd-mk{position:absolute;left:' + targetX + '%;top:' + targetY + '%;width:24px;height:24px;border:3px solid ' + markerColor + ';border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.3s;box-shadow:0 0 0 4px ' + markerColor + '40}\n#' + uid + ' .zd-mk.on{opacity:1}\n#' + uid + ' .zd-ann{position:absolute;left:' + targetX + '%;top:' + targetY + '%;background:rgba(0,0,0,0.9);color:#fff;padding:10px 14px;border-radius:6px;font-size:13px;opacity:0;transition:opacity 0.3s;transform:' + annTransform + ';max-width:280px;white-space:normal;line-height:1.4;box-sizing:border-box}\n#' + uid + ' .zd-ann.on{opacity:1}\n#' + uid + ' .cap{flex-shrink:0;width:85%;max-width:700px;margin-top:' + captionOffsetY + 'px;' + (captionBg ? 'background:rgba(0,0,0,.85);' : '') + 'padding:6px 16px 8px;border-radius:0 0 6px 6px;z-index:10;box-sizing:border-box}\n#' + uid + ' .cap-t{font:13px/1.5 system-ui,sans-serif;color:' + (captionColor === 'black' ? '#111' : '#e0e0e0') + '}\n#' + uid + ' .cap-c{font:11px system-ui,sans-serif;color:' + (captionColor === 'black' ? '#333' : '#aaa') + ';font-style:italic;margin-top:6px}\n@media(max-width:768px){#' + uid + ' .zd-stage{top:200px;height:calc(100vh - 200px);padding:10px}#' + uid + ' .zd-wrap{min-height:40%}#' + uid + ' .zd-ann{font-size:11px;padding:6px 10px;max-width:200px}#' + uid + ' .cap{width:calc(100% - 24px);padding:10px 14px;margin-top:6px}#' + uid + ' .cap-t{font-size:12px}#' + uid + ' .cap-c{font-size:10px}}\n</style>\n<div id="' + uid + '">\n<div class="zd-stage">\n<div class="zd-wrap">\n<div class="zd-matte"><img src="' + imageUrl + '" alt="">' + markerHtml + annHtml + '</div>\n</div>\n' + capHtml + '\n</div>\n</div>\n<script>\n(function(){\nvar w=document.getElementById("' + uid + '");\nvar s=w.querySelector(".zd-stage");\nvar img=w.querySelector("img");\nvar mk=w.querySelector(".zd-mk");\nvar ann=w.querySelector(".zd-ann");\n\nvar tx=' + targetX + ',ty=' + targetY + ',sz=' + startZoom + ',ez=' + endZoom + ';\nvar scrollMult=' + scrollMult + ';\nvar curP=0,tarP=0;\nfunction setH(){w.style.height=(s.offsetHeight*scrollMult)+"px";}\nsetH();window.addEventListener("resize",setH);\nfunction lerp(a,b,t){return a+(b-a)*t;}\nfunction upd(){\nvar extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\nif(extP!==undefined){tarP=extP;}else{\nvar r=w.getBoundingClientRect();\nvar wh=window.innerHeight;\nvar scrolled=Math.max(0,-r.top);\nvar scrollRange=w.offsetHeight-wh;\nif(scrollRange<=0)scrollRange=1;\ntarP=Math.max(0,Math.min(1,scrolled/scrollRange));\n}\ncurP=lerp(curP,tarP,0.1);\nvar zm=sz+(ez-sz)*curP;\nvar px=(50-tx)*(zm-1)/zm;\nvar py=(50-ty)*(zm-1)/zm;\nimg.style.transformOrigin=tx+"% "+ty+"%";\nimg.style.transform="scale("+zm+") translate("+px+"%,"+py+"%)";\nif(mk)mk.classList.toggle("on",curP>0.5);\nif(ann)ann.classList.toggle("on",curP>0.6);\nrequestAnimationFrame(upd);\n}\nupd();\n})();\n<\/script>';
     
     document.getElementById('exportCode').value = code;
     document.getElementById('exportModal').classList.add('active');
