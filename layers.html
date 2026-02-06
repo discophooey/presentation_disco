@@ -801,13 +801,13 @@ function generateExport() {
 #${uid}.ly-wrap{position:relative}
 #${uid} .ly-stage{position:-webkit-sticky;position:sticky;top:${desktopOffset}px;${stageHeightCSS};background:${bgColor};overflow:hidden;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;${fullBleedCss}}
 #${uid} .ly-layers{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden}
-#${uid} .ly-layer{position:absolute;inset:-10%;width:120%;height:120%;background-size:${imageFit};background-position:center;background-repeat:no-repeat;opacity:0;will-change:transform,opacity;-webkit-backface-visibility:hidden;backface-visibility:hidden;transform:translate3d(0,0,0)}
-#${uid} .ly-txt{position:absolute;transform:translate3d(-50%,-50%,0);font-size:${fontSize}px;color:${textColor};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;transition:opacity 0.4s;pointer-events:none;white-space:nowrap;max-width:90%;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+#${uid} .ly-layer{position:absolute;inset:-10%;width:120%;height:120%;background-size:${imageFit};background-position:center;background-repeat:no-repeat;opacity:0;transition:opacity 0.3s;will-change:transform,opacity}
+#${uid} .ly-txt{position:absolute;transform:translate(-50%,-50%);font-size:${fontSize}px;color:${textColor};font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.9);${bgStyle}opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;max-width:90%}
 #${uid} .ly-txt.on{opacity:1}
 ${capCss}
 @media(max-width:1024px){
 #${uid} .ly-stage{${mobileStageCSS}}
-#${uid} .ly-layer{inset:-7%;width:114%;height:114%}
+#${uid} .ly-layer{inset:-15%;width:130%;height:130%}
 #${uid} .ly-txt{font-size:clamp(14px,4vw,${Math.round(fontSize * 0.7)}px)!important;white-space:normal;word-wrap:break-word;text-align:center!important;max-width:90%!important;padding:10px 14px;left:50%!important}
 #${uid} .ly-cap{max-width:92%;font-size:12px}
 }
@@ -829,20 +829,24 @@ var effect="${effect}",intensity=${intensity};
 var curP=0,tarP=0,raf=null;
 var scrollMult=${scrollMult};
 var cap=wrap.querySelector('.ly-cap');
-var wrapTop=0,wrapH=0,winH=0,inView=false;
-function measure(){
+function setHeight(){
 var stage=wrap.querySelector(".ly-stage");
 wrap.style.height=(stage.offsetHeight*scrollMult)+"px";
-wrapTop=wrap.offsetTop;wrapH=wrap.offsetHeight;winH=window.innerHeight;
 }
-measure();window.addEventListener("resize",measure);
-var isMob='ontouchstart'in window||navigator.maxTouchPoints>0;
+setHeight();window.addEventListener("resize",setHeight);
+function lerp(a,b,t){return a+(b-a)*t;}
 function upd(){
-var scrolled=Math.max(0,window.pageYOffset-wrapTop);
-var scrollRange=wrapH-winH;
+var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["${uid}"];
+if(extP!==undefined){tarP=extP;}else{
+var r=wrap.getBoundingClientRect();
+var wh=window.innerHeight;
+var scrolled=Math.max(0,-r.top);
+var scrollRange=wrap.offsetHeight-wh;
 if(scrollRange<=0)scrollRange=1;
 tarP=Math.max(0,Math.min(1,scrolled/scrollRange));
-curP=isMob?tarP:curP+(tarP-curP)*0.18;
+}
+curP=lerp(curP,tarP,0.12);
+if(Math.abs(curP-tarP)>0.001){raf=requestAnimationFrame(upd);}
 var p=curP;
 for(var i=0;i<layers.length;i++){
 var el=layers[i],d=data[i];
@@ -851,25 +855,25 @@ if(p*100<d.fadeIn||p*100>d.fadeOut)op=0;
 var tf="";
 if(effect==="parallax"){
 var offset=(p-0.5)*100*d.depth*intensity;
-tf="translate3d(0,"+offset+"px,0) scale("+(1+d.depth*0.1*intensity)+")";
+tf="translateY("+offset+"px) scale("+(1+d.depth*0.1*intensity)+")";
 }else if(effect==="zoomIn"){
-tf="translate3d(0,0,0) scale("+(1+p*0.5*intensity)+")";
+tf="scale("+(1+p*0.5*intensity)+")";
 }else if(effect==="zoomOut"){
-tf="translate3d(0,0,0) scale("+(1.5-p*0.5*intensity)+")";
+tf="scale("+(1.5-p*0.5*intensity)+")";
 }else if(effect==="depthFloat"){
 var floatAmt=(p-0.5)*60*(1-d.depth*0.7)*intensity;
-tf="translate3d(0,"+floatAmt+"px,0)";
+tf="translateY("+floatAmt+"px)";
 }else if(effect==="sway"){
 var swayAmt=(p-0.5)*80*(1-d.depth*0.7)*intensity;
-tf="translate3d("+swayAmt+"px,0,0)";
+tf="translateX("+swayAmt+"px)";
 }else if(effect==="drift"){
 var driftX=(p-0.5)*50*(1-d.depth*0.6)*intensity;
 var driftY=(p-0.5)*40*(1-d.depth*0.8)*intensity;
-tf="translate3d("+driftX+"px,"+driftY+"px,0)";
+tf="translate("+driftX+"px,"+driftY+"px)";
 }else if(effect==="breathe"){
 var breathePhase=(p*4+d.depth*2)*Math.PI;
 var breatheScale=1+Math.sin(breathePhase)*0.03*intensity;
-tf="translate3d(0,0,0) scale("+breatheScale+")";
+tf="scale("+breatheScale+")";
 }
 el.style.opacity=op;
 el.style.transform=tf;
@@ -880,13 +884,9 @@ var t=txts[j],td=txtData[j];
 txts[j].classList.toggle("on",pct>=td.fadeIn&&pct<=td.fadeOut);
 }
 if(cap&&pct>5)cap.classList.add('on');
-if(inView)raf=requestAnimationFrame(upd);
 }
-var obs=new IntersectionObserver(function(e){
-inView=e[0].isIntersecting;
-if(inView&&!raf)raf=requestAnimationFrame(upd);
-},{threshold:0});
-obs.observe(wrap);
+function onScroll(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(upd);}
+window.addEventListener("scroll",onScroll,{passive:true});
 upd();
 for(var i=0;i<txts.length;i++){txts[i].dataset.origTop=txts[i].style.top;}
 function mobileSpace(){
