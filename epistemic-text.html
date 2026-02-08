@@ -424,6 +424,7 @@ function addClaimFromSelection() {
   switchTab('claims', document.querySelectorAll('.tab-btn')[1]);
   renderClaims();
   updatePreview();
+  saveState();
 
   // Scroll to new claim
   setTimeout(() => {
@@ -442,12 +443,14 @@ function addClaim() {
   claims.push(getDefaultClaim());
   renderClaims();
   updatePreview();
+  saveState();
 }
 
 function removeClaim(idx) {
   claims.splice(idx, 1);
   renderClaims();
   updatePreview();
+  saveState();
 }
 
 function updateClaimField(idx, field, val) {
@@ -457,15 +460,17 @@ function updateClaimField(idx, field, val) {
     renderClaims();
   }
   updatePreview();
+  saveState();
 }
 
-function addSource(ci) { claims[ci].sources.push(getDefaultSource()); renderClaims(); }
-function removeSource(ci, si) { claims[ci].sources.splice(si, 1); renderClaims(); updatePreview(); }
-function updateSourceField(ci, si, field, val) { claims[ci].sources[si][field] = val; updatePreview(); }
+function addSource(ci) { claims[ci].sources.push(getDefaultSource()); renderClaims(); saveState(); }
+function removeSource(ci, si) { claims[ci].sources.splice(si, 1); renderClaims(); updatePreview(); saveState(); }
+function updateSourceField(ci, si, field, val) { claims[ci].sources[si][field] = val; updatePreview(); saveState(); }
 function updateContested(ci, side, val) {
   if (!claims[ci].contestedSides) claims[ci].contestedSides = { side_a: '', side_b: '' };
   claims[ci].contestedSides[side] = val;
   updatePreview();
+  saveState();
 }
 function toggleClaim(ci) {
   claims[ci].collapsed = !claims[ci].collapsed;
@@ -473,12 +478,13 @@ function toggleClaim(ci) {
 }
 function loadClaimImage(ci) {
   const url = document.getElementById('imgUrl_'+ci).value.trim();
-  if (url) { claims[ci].image = url; renderClaims(); updatePreview(); }
+  if (url) { claims[ci].image = url; renderClaims(); updatePreview(); saveState(); }
 }
 function clearClaimImage(ci) {
   claims[ci].image = '';
   renderClaims();
   updatePreview();
+  saveState();
 }
 
 function renderClaims() {
@@ -1091,25 +1097,25 @@ function resetModule() {
 }
 
 // --- Persistence ---
-(function(){
-  var KEY = 'disco_epistemic-text';
-  function autoSave() {
+var _PERSIST_KEY = 'disco_epistemic-text';
+function saveState() {
     try {
       var state = getCurrentState();
-      localStorage.setItem(KEY, JSON.stringify(state));
-      localStorage.removeItem(KEY + '_from_planner');
+      localStorage.setItem(_PERSIST_KEY, JSON.stringify(state));
+      localStorage.removeItem(_PERSIST_KEY + '_from_planner');
     } catch(e) {}
-  }
+}
+(function(){
   function autoLoad() {
     try {
-      var saved = localStorage.getItem(KEY);
+      var saved = localStorage.getItem(_PERSIST_KEY);
       if (!saved) { loadSample(); return; }
       var data = JSON.parse(saved);
       loadState(data);
     } catch(e) { console.warn('Load state error:', e); loadSample(); }
   }
-  document.addEventListener('change', autoSave);
-  document.addEventListener('input', autoSave);
+  document.addEventListener('change', saveState);
+  document.addEventListener('input', saveState);
   setTimeout(autoLoad, 150);
 })();
 </script>

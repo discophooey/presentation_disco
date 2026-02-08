@@ -262,7 +262,7 @@ function setTextColor(c){
   document.getElementById('txtWhite').style.background=c==='white'?'var(--ui-accent)':'var(--ui-surface)';
   document.getElementById('txtWhite').style.color=c==='white'?'white':'var(--ui-text)';
   document.getElementById('txtWhite').style.borderColor=c==='white'?'var(--ui-accent)':'var(--ui-border)';
-  updatePreview();
+  updatePreview();saveState();
 }
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
@@ -273,12 +273,12 @@ function addChallenge(){
   const id=Date.now();
   challenges.push({id,question:'',evidence:[],followup:'',followupLabel:'What could change this?'});
   challengeCollapseState[id]=true;
-  renderChallenges();updatePreview();
+  renderChallenges();updatePreview();saveState();
 }
 function removeChallenge(i){
   delete challengeCollapseState[challenges[i].id];
   challenges.splice(i,1);
-  renderChallenges();updatePreview();
+  renderChallenges();updatePreview();saveState();
 }
 function updateChallengeField(i,f,v){challenges[i][f]=v;updatePreview();}
 
@@ -296,18 +296,18 @@ function addEvidence(ci){
   challenges[ci].evidence.push({nodeType:'doc',type:'',text:'',link:'',mediaUrl:'',mediaLoaded:false});
   const key=ci+'-'+(challenges[ci].evidence.length-1);
   evidenceCollapseState[key]=true;
-  renderChallenges();
+  renderChallenges();saveState();
 }
-function removeEvidence(ci,ei){challenges[ci].evidence.splice(ei,1);renderChallenges();updatePreview();}
+function removeEvidence(ci,ei){challenges[ci].evidence.splice(ei,1);renderChallenges();updatePreview();saveState();}
 function updateEvField(ci,ei,f,v){challenges[ci].evidence[ei][f]=v;updatePreview();}
 function setNodeType(ci,ei,t){
   challenges[ci].evidence[ei].nodeType=t;
   if(t!=='image'&&t!=='video'){challenges[ci].evidence[ei].mediaUrl='';challenges[ci].evidence[ei].mediaLoaded=false;}
-  renderChallenges();updatePreview();
+  renderChallenges();updatePreview();saveState();
 }
 function loadMedia(ci,ei){
   const url=challenges[ci].evidence[ei].mediaUrl;
-  if(url){challenges[ci].evidence[ei].mediaLoaded=true;updatePreview();}
+  if(url){challenges[ci].evidence[ei].mediaLoaded=true;updatePreview();saveState();}
 }
 
 function renderChallenges(){
@@ -562,7 +562,7 @@ function loadSample(){
   ];
 
   challengeCollapseState={};evidenceCollapseState={};
-  renderChallenges();updatePreview();
+  renderChallenges();updatePreview();saveState();
 }
 
 function exportJSON(){
@@ -808,25 +808,25 @@ function resetModule(){
 }
 
 // --- Persistence ---
+var _PERSIST_KEY='disco_adversarial-verification';
+function saveState(){
+  try{
+    var state=getCurrentState();
+    localStorage.setItem(_PERSIST_KEY,JSON.stringify(state));
+    localStorage.removeItem(_PERSIST_KEY+'_from_planner');
+  }catch(e){}
+}
 (function(){
-  var KEY='disco_adversarial-verification';
-  function autoSave(){
-    try{
-      var state=getCurrentState();
-      localStorage.setItem(KEY,JSON.stringify(state));
-      localStorage.removeItem(KEY+'_from_planner');
-    }catch(e){}
-  }
   function autoLoad(){
     try{
-      var saved=localStorage.getItem(KEY);
+      var saved=localStorage.getItem(_PERSIST_KEY);
       if(!saved){loadSample();return;}
       var data=JSON.parse(saved);
       loadState(data);
     }catch(e){console.warn('Load state error:',e);loadSample();}
   }
-  document.addEventListener('change',autoSave);
-  document.addEventListener('input',autoSave);
+  document.addEventListener('change',saveState);
+  document.addEventListener('input',saveState);
   setTimeout(autoLoad,150);
 })();
 </script>
