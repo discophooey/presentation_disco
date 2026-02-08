@@ -226,6 +226,9 @@ const moduleTypes = [
     { id: 'chapter-marker', name: 'Chapter Marker', color: '#8e44ad' },
     { id: 'key-facts', name: 'Key Facts', color: '#27ae60' },
     { id: 'body-module', name: 'Body Module', color: '#7f8c8d' },
+    { id: 'silence-mapping', name: 'Silence Mapping', color: '#e74c3c' },
+    { id: 'epistemic-text', name: 'Epistemic Text', color: '#2ecc71' },
+    { id: 'adversarial-verification', name: 'Adversarial Verification', color: '#e67e22' },
     { id: 'text', name: 'Text Block', color: '#95a5a6' },
 ];
 
@@ -803,6 +806,88 @@ function getModuleInputsHtml(section) {
                     </select>
                 </div>`;
         
+        case 'silence-mapping':
+            var gapsList = (c.gaps || []).map((g, i) => `<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"><span style="color:#e74c3c;font-size:12px;flex:1;">● ${g.label || 'Gap ' + (i+1)}${g.description ? ' — ' + g.description.substring(0,40) : ''}</span><button class="btn" style="padding:2px 6px;font-size:11px;" onclick="removeContentItem(${id}, 'gaps', ${i})">✕</button></div>`).join('');
+            return `
+                <div class="edit-field" style="grid-column: span 2;">
+                    <label>Section Title</label>
+                    <input type="text" value="${c.title || ''}" placeholder="What's Missing From This Story" onchange="updateContent(${id}, 'title', this.value)">
+                </div>
+                <div class="edit-field" style="grid-column: span 2;">
+                    <label>Intro Text</label>
+                    <textarea onchange="updateContent(${id}, 'intro', this.value)" placeholder="Introductory context about the silence gaps...">${c.intro || ''}</textarea>
+                </div>
+                <div class="edit-field" style="grid-column: span 2;">
+                    <label>Footer Text</label>
+                    <textarea onchange="updateContent(${id}, 'footer', this.value)" placeholder="Closing context or methodology note...">${c.footer || ''}</textarea>
+                </div>
+                <div class="edit-field" style="grid-column: span 2;">
+                    <label>Silence Gaps</label>
+                    ${gapsList || '<p style="color:#666;font-size:11px;">No gaps added yet</p>'}
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;">
+                        <input type="text" id="input_${id}_gapLabel" placeholder="Gap label (e.g. Missing Voices)">
+                        <input type="text" id="input_${id}_gapDesc" placeholder="Description">
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:4px;">
+                        <select id="input_${id}_gapType"><option value="omission">Omission</option><option value="framing">Framing</option><option value="sourcing">Sourcing</option><option value="temporal">Temporal</option></select>
+                        <input type="number" id="input_${id}_gapSeverity" placeholder="Severity 1-10" min="1" max="10" value="5">
+                        <button class="btn" onclick="addSilenceGap(${id})">+ Add Gap</button>
+                    </div>
+                </div>`;
+
+        case 'epistemic-text':
+            var claimsList = (c.claims || []).map((cl, i) => `<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"><span style="color:${cl.level === 'high' ? '#2ecc71' : cl.level === 'contested' ? '#e74c3c' : '#f39c12'};font-size:12px;flex:1;">● [${cl.level || 'high'}] ${(cl.text || '').substring(0,50)}${(cl.text || '').length > 50 ? '...' : ''}</span><button class="btn" style="padding:2px 6px;font-size:11px;" onclick="removeContentItem(${id}, 'claims', ${i})">✕</button></div>`).join('');
+            return `
+                <div class="edit-field" style="grid-column: span 2;">
+                    <label>Headline</label>
+                    <input type="text" value="${c.headline || ''}" placeholder="Story headline" onchange="updateContent(${id}, 'headline', this.value)">
+                </div>
+                <div class="edit-field" style="grid-column: span 2;">
+                    <label>Body Text (Annotate with [H], [M], [C] for confidence levels)</label>
+                    <textarea style="min-height:100px;" onchange="updateContent(${id}, 'bodyText', this.value)" placeholder="Body text with epistemic annotations...">${c.bodyText || ''}</textarea>
+                </div>
+                <div class="edit-field" style="grid-column: span 2;">
+                    <label>Claims / Sources</label>
+                    ${claimsList || '<p style="color:#666;font-size:11px;">No claims added yet</p>'}
+                    <div style="display:grid;grid-template-columns:2fr 1fr;gap:6px;margin-top:8px;">
+                        <input type="text" id="input_${id}_claimText" placeholder="Claim text">
+                        <select id="input_${id}_claimLevel"><option value="high">High confidence</option><option value="medium">Medium confidence</option><option value="contested">Contested</option></select>
+                    </div>
+                    <div style="display:grid;grid-template-columns:2fr 1fr;gap:6px;margin-top:4px;">
+                        <input type="text" id="input_${id}_claimSource" placeholder="Source (optional)">
+                        <button class="btn" onclick="addEpistemicClaim(${id})">+ Add Claim</button>
+                    </div>
+                </div>`;
+
+        case 'adversarial-verification':
+            var challengesList = (c.challenges || []).map((ch, i) => `<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"><span style="color:#e67e22;font-size:12px;flex:1;">● ${(ch.text || '').substring(0,50)}${(ch.text || '').length > 50 ? '...' : ''}</span><button class="btn" style="padding:2px 6px;font-size:11px;" onclick="removeContentItem(${id}, 'challenges', ${i})">✕</button></div>`).join('');
+            return `
+                <div class="edit-field" style="grid-column: span 2;">
+                    <label>Central Claim</label>
+                    <textarea onchange="updateContent(${id}, 'claim', this.value)" placeholder="The claim to be verified...">${c.claim || ''}</textarea>
+                </div>
+                <div class="edit-field">
+                    <label>Source</label>
+                    <input type="text" value="${c.source || ''}" placeholder="Source attribution" onchange="updateContent(${id}, 'source', this.value)">
+                </div>
+                <div class="edit-field">
+                    <label>Kicker</label>
+                    <input type="text" value="${c.kicker || ''}" placeholder="Section kicker" onchange="updateContent(${id}, 'kicker', this.value)">
+                </div>
+                <div class="edit-field" style="grid-column: span 2;">
+                    <label>Context</label>
+                    <textarea onchange="updateContent(${id}, 'context', this.value)" placeholder="Background context for the claim...">${c.context || ''}</textarea>
+                </div>
+                <div class="edit-field" style="grid-column: span 2;">
+                    <label>Challenges</label>
+                    ${challengesList || '<p style="color:#666;font-size:11px;">No challenges added yet</p>'}
+                    <div style="display:grid;grid-template-columns:2fr 1fr;gap:6px;margin-top:8px;">
+                        <input type="text" id="input_${id}_challengeText" placeholder="Challenge / counter-argument">
+                        <input type="text" id="input_${id}_challengeVerdict" placeholder="Verdict (e.g. Upheld)">
+                    </div>
+                    <button class="btn" style="margin-top:4px;" onclick="addVerificationChallenge(${id})">+ Add Challenge</button>
+                </div>`;
+
         case 'text':
         default:
             return `<p style="color:#666;font-size:12px;">Text blocks don't export to modules — use the notes field for planning.</p>`;
@@ -870,6 +955,36 @@ function addKeyFactItem(sectionId) {
     if (!text) return;
     addContentObject(sectionId, 'facts', { text, icon });
     document.getElementById(`input_${sectionId}_factText`).value = '';
+}
+
+function addSilenceGap(sectionId) {
+    const label = document.getElementById(`input_${sectionId}_gapLabel`).value;
+    const desc = document.getElementById(`input_${sectionId}_gapDesc`).value;
+    const type = document.getElementById(`input_${sectionId}_gapType`).value;
+    const severity = parseInt(document.getElementById(`input_${sectionId}_gapSeverity`).value) || 5;
+    if (!label) return;
+    addContentObject(sectionId, 'gaps', { label, description: desc, type, severity, id: Date.now() });
+    document.getElementById(`input_${sectionId}_gapLabel`).value = '';
+    document.getElementById(`input_${sectionId}_gapDesc`).value = '';
+}
+
+function addEpistemicClaim(sectionId) {
+    const text = document.getElementById(`input_${sectionId}_claimText`).value;
+    const level = document.getElementById(`input_${sectionId}_claimLevel`).value;
+    const source = document.getElementById(`input_${sectionId}_claimSource`).value;
+    if (!text) return;
+    addContentObject(sectionId, 'claims', { text, level, source, id: Date.now() });
+    document.getElementById(`input_${sectionId}_claimText`).value = '';
+    document.getElementById(`input_${sectionId}_claimSource`).value = '';
+}
+
+function addVerificationChallenge(sectionId) {
+    const text = document.getElementById(`input_${sectionId}_challengeText`).value;
+    const verdict = document.getElementById(`input_${sectionId}_challengeVerdict`).value;
+    if (!text) return;
+    addContentObject(sectionId, 'challenges', { text, verdict, evidence: [], id: Date.now() });
+    document.getElementById(`input_${sectionId}_challengeText`).value = '';
+    document.getElementById(`input_${sectionId}_challengeVerdict`).value = '';
 }
 
 function parseCoordinates(str) {
@@ -949,6 +1064,12 @@ function getContentPreview(section) {
             return (c.points && c.points.length) ? `🌍 ${c.points.length} locations` : '';
         case 'matte':
             return c.matteText ? `✨ "${c.matteText}"` : '';
+        case 'silence-mapping':
+            return (c.gaps && c.gaps.length) ? `🔇 ${c.gaps.length} silence gaps` : '';
+        case 'epistemic-text':
+            return (c.claims && c.claims.length) ? `🔬 ${c.claims.length} claims` : (c.bodyText ? `📝 "${c.bodyText.substring(0,30)}..."` : '');
+        case 'adversarial-verification':
+            return c.claim ? `⚖️ "${c.claim.substring(0,30)}..."` : '';
         default:
             return '';
     }
@@ -1077,7 +1198,8 @@ function exportToModules() {
         
         const state = buildModuleState(section);
         if (state) {
-            const key = 'disco_' + section.moduleType;
+            const keyOverrides = { 'silence-mapping': 'disco_silence-mapping_v3' };
+            const key = keyOverrides[section.moduleType] || ('disco_' + section.moduleType);
             try {
                 localStorage.setItem(key, JSON.stringify(state));
                 localStorage.setItem(key + '_from_planner', 'true');
@@ -1403,6 +1525,65 @@ function buildModuleState(section) {
                 bgColor: '#0a0a0a',
                 fontSize: 17,
                 maxWidth: 650
+            };
+
+        case 'silence-mapping':
+            if (!c.gaps || !c.gaps.length) return null;
+            return {
+                title: c.title || 'Silence Mapping',
+                intro: c.intro || '',
+                footer: c.footer || '',
+                showTitle: true,
+                showIntro: !!(c.intro),
+                showFooter: !!(c.footer),
+                gaps: c.gaps.map(g => ({
+                    label: g.label || '',
+                    description: g.description || '',
+                    type: g.type || 'omission',
+                    severity: g.severity || 5,
+                    id: g.id || Date.now()
+                })),
+                mobileOffset: 200
+            };
+
+        case 'epistemic-text':
+            if (!c.bodyText && (!c.claims || !c.claims.length)) return null;
+            return {
+                headline: { on: !!(c.headline), text: c.headline || '' },
+                subheadline: { on: false, text: '' },
+                kicker: { on: false, text: '' },
+                byline: { on: false, text: '' },
+                dateline: { on: false, text: '' },
+                bodyText: c.bodyText || '',
+                defaultMode: 'highlighted',
+                claims: (c.claims || []).map(cl => ({
+                    text: cl.text || '',
+                    level: cl.level || 'high',
+                    source: cl.source || '',
+                    id: cl.id || Date.now()
+                })),
+                mobileOffset: 200
+            };
+
+        case 'adversarial-verification':
+            if (!c.claim) return null;
+            return {
+                claim: c.claim,
+                source: c.source || '',
+                context: c.context || '',
+                showClaim: true,
+                showSource: !!(c.source),
+                showContext: !!(c.context),
+                subheading: '',
+                kicker: c.kicker || '',
+                challenges: (c.challenges || []).map(ch => ({
+                    text: ch.text || '',
+                    verdict: ch.verdict || '',
+                    evidence: ch.evidence || [],
+                    id: ch.id || Date.now()
+                })),
+                stats: { s1l: '', s1v: '', s2l: '', s2v: '' },
+                mobileOffset: 200
             };
         
         default:
