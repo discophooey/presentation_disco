@@ -859,7 +859,7 @@ function generateEmbedHTML() {
 
   const confStylesJSON = JSON.stringify(confStyles);
 
-  return `<div id="ec-root" style="font-family:'AP',Georgia,serif;">
+  return `<div id="ec-entrance" style="opacity:0;transform:translateY(40px);transition:opacity 0.6s ease,transform 0.6s ease;"><div id="ec-root" style="font-family:'AP',Georgia,serif;">
 <style>
 ${fullBleed ? `.ec-wrap{background:${bgColor};min-height:200px;position:relative;overflow:hidden;width:100vw;margin-left:calc(-50vw + 50%)}` : `.ec-wrap{background:${bgColor};min-height:200px;position:relative;overflow:hidden}`}
 .ec-inner{max-width:640px;margin:0 auto;padding:0 24px 48px}
@@ -958,9 +958,16 @@ document.querySelectorAll('.ec-c').forEach(function(sp){
 });
 window.__ecClose=function(){document.getElementById('ec-pn').classList.remove('open');document.getElementById('ec-ov').classList.remove('open')};
 applyMode();
+var ecEn=document.getElementById('ec-entrance');
+if(ecEn&&window.IntersectionObserver){
+var ecObs=new IntersectionObserver(function(entries){
+entries.forEach(function(e){if(e.isIntersecting){ecEn.style.opacity='1';ecEn.style.transform='translateY(0)';ecObs.unobserve(ecEn);}});
+},{threshold:0.05});
+ecObs.observe(ecEn);
+}else if(ecEn){ecEn.style.opacity='1';ecEn.style.transform='translateY(0)';}
 })();
 <\/script>
-</div>`;
+</div></div>`;
 }
 
 function generateExport() {

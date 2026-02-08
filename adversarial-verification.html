@@ -658,7 +658,8 @@ function generateExport(){
     +'<div style="flex:1;background:'+tcBtnBg+';padding:12px;text-align:center;"><div style="font-size:24px;font-weight:700;color:#22784a;">'+s2v+'</div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:'+tcDim+';">'+s2l+'</div></div>'
     +'</div></div>';
 
-  var innerDiv='<div id="'+uid+'" style="background:'+bgColor+';padding:40px 24px 60px;font-family:\'AP\',system-ui,sans-serif;'+bleedCSS+'">'
+  var innerDiv='<div id="'+uid+'-entrance" style="opacity:0;transform:translateY(40px);transition:opacity 0.6s ease,transform 0.6s ease;">'
+    +'<div id="'+uid+'" style="background:'+bgColor+';padding:40px 24px 60px;font-family:\'AP\',system-ui,sans-serif;'+bleedCSS+'">'
     +'<div style="max-width:680px;margin:0 auto;">'
     +'<div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#ff6666;margin-bottom:12px;">'+kicker+'</div>'
     +(showClaim?'<h1 style="font-size:28px;font-weight:700;line-height:1.25;margin-bottom:8px;color:'+tcMain+';">'+claim+'</h1>':'')
@@ -671,7 +672,7 @@ function generateExport(){
     +'<span class="'+uid+'-plbl">0 of '+challenges.length+' examined</span>'
     +'</div>'
     +challengeHTML+completionHTML
-    +'</div></div></div>';
+    +'</div></div></div></div>';
 
   var total=challenges.length;
   var js='(function(){'
@@ -697,6 +698,13 @@ function generateExport(){
     +'b.addEventListener("mouseover",function(){this.style.borderColor="#2c5f82";this.style.background="'+tcBtnHover+'";});'
     +'b.addEventListener("mouseout",function(){this.style.borderColor="'+tcBorder+'";this.style.background="'+tcBtnBg+'";});'
     +'});'
+    +'var en=document.getElementById("'+uid+'-entrance");'
+    +'if(en&&window.IntersectionObserver){'
+    +'var obs=new IntersectionObserver(function(entries){'
+    +'entries.forEach(function(e){if(e.isIntersecting){en.style.opacity="1";en.style.transform="translateY(0)";obs.unobserve(en);}});'
+    +'},{threshold:0.05});'
+    +'obs.observe(en);'
+    +'}else if(en){en.style.opacity="1";en.style.transform="translateY(0)";}'
     +'})();';
 
   var b64=btoa(unescape(encodeURIComponent(js)));
