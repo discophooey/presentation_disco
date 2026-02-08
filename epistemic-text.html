@@ -323,6 +323,16 @@
 <!-- Floating add-claim button -->
 <button id="addClaimFloat" onclick="addClaimFromSelection()">+ Add Claim</button>
 
+<!-- Claims Detail Panel -->
+<div id="ec-panel-overlay" style="position:fixed;inset:0;z-index:1100;display:none;background:rgba(0,0,0,0.15);" onclick="window.__ecClosePanel && window.__ecClosePanel()"></div>
+<div id="ec-panel" style="position:fixed;z-index:1101;width:340px;max-height:75vh;background:white;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.18),0 0 0 1px rgba(0,0,0,0.06);overflow-y:auto;display:none;">
+  <div style="position:sticky;top:0;background:white;border-bottom:1px solid #e5e2dd;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:1;">
+    <span id="ec-panel-badge" style="font-family:'AP',system-ui,sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:2px 8px;border-radius:4px;color:white;"></span>
+    <button onclick="window.__ecClosePanel && window.__ecClosePanel()" style="width:24px;height:24px;border-radius:50%;border:1px solid #e5e2dd;background:white;cursor:pointer;font-size:13px;line-height:1;">×</button>
+  </div>
+  <div id="ec-panel-body" style="padding:16px;font-family:'AP',system-ui,sans-serif;font-size:13px;line-height:1.55;color:#1a1a1a;"></div>
+</div>
+
 <!-- Export Modal -->
 <div class="modal-overlay" id="exportModal">
   <div class="modal">
@@ -596,7 +606,7 @@ function buildBodyWithClaims(bodyText, isEvidence, confStyles, confLabels, bodyC
       const cs = confStyles[c.confidence];
       const bgStyle = isEvidence ? `background:${cs.bg};box-shadow:inset 0 -2px 0 ${cs.border};padding:1px 3px;margin:0 -3px;border-radius:2px;` : '';
       const badgeHTML = isEvidence ? `<span style="display:inline;font-family:'AP',system-ui,sans-serif;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;padding:1px 5px;border-radius:2px;color:white;background:${cs.badge};vertical-align:super;margin-left:3px;">${confLabels[c.confidence]}</span>` : '';
-      const wrapper = `<span class="ec-claim ec-claim-highlight" data-idx="${ci}" style="cursor:pointer;${bgStyle}transition:background 0.3s;" onclick="window.__ecOpenPanel && window.__ecOpenPanel(${ci})">${claimEsc}${badgeHTML}</span>`;
+      const wrapper = `<span class="ec-claim ec-claim-highlight" data-idx="${ci}" style="cursor:pointer;${bgStyle}transition:background 0.3s;" onclick="window.__ecOpenPanel && window.__ecOpenPanel(${ci}, event)">${claimEsc}${badgeHTML}</span>`;
       html = html.replace(claimEsc, wrapper);
     });
 
@@ -629,16 +639,7 @@ function updatePreview() {
 
   const bodyHTML = buildBodyWithClaims(bodyText, isEvidence, confStyles, confLabels, tc.body);
 
-  // Source panel
-  const panelHTML = `
-    <div id="ec-panel-overlay" style="position:absolute;inset:0;background:rgba(0,0,0,0.2);z-index:200;opacity:0;pointer-events:none;transition:opacity 0.3s;" onclick="window.__ecClosePanel && window.__ecClosePanel()"></div>
-    <div id="ec-panel" style="position:absolute;top:0;right:0;width:min(380px,85%);height:100%;background:white;z-index:201;transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.22,1,0.36,1);overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,0.1);">
-      <div style="position:sticky;top:0;background:white;border-bottom:1px solid #e5e2dd;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;z-index:1;">
-        <span id="ec-panel-badge" style="font-family:'AP',system-ui,sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:3px 10px;border-radius:4px;color:white;"></span>
-        <button onclick="window.__ecClosePanel && window.__ecClosePanel()" style="width:28px;height:28px;border-radius:50%;border:1px solid #e5e2dd;background:white;cursor:pointer;font-size:14px;">×</button>
-      </div>
-      <div id="ec-panel-body" style="padding:20px;font-family:'AP',system-ui,sans-serif;font-size:14px;line-height:1.6;color:#1a1a1a;"></div>
-    </div>`;
+  // Source panel now lives outside preview frame as fixed element
 
   // Mode toggle
   const modeToggle = `
@@ -671,7 +672,6 @@ function updatePreview() {
         ${datelineOn && dateline ? `<p style="font-family:'AP',system-ui,sans-serif;font-size:13px;color:${tc.meta};padding-bottom:24px;border-bottom:1px solid ${tc.rule};margin-bottom:24px;">${esc(dateline)}</p>` : `${(bylineOn && byline) ? `<div style="padding-bottom:24px;border-bottom:1px solid ${tc.rule};margin-bottom:24px;"></div>` : ''}`}
         <div>${bodyHTML}</div>
       </div>
-      ${panelHTML}
     </div>`;
 
   document.getElementById('previewContent').innerHTML = html;
@@ -679,61 +679,83 @@ function updatePreview() {
 }
 
 function wirePanel(confStyles, confLabels) {
-  const previewFrame = document.getElementById('previewFrame');
-  const panelEl = previewFrame.querySelector('#ec-panel');
-  const overlayEl = previewFrame.querySelector('#ec-panel-overlay');
+  const panelEl = document.getElementById('ec-panel');
+  const overlayEl = document.getElementById('ec-panel-overlay');
   if (!panelEl || !overlayEl) return;
 
-  window.__ecOpenPanel = function(idx) {
+  window.__ecOpenPanel = function(idx, evt) {
     const c = claims[idx];
     if (!c) return;
     const cs = confStyles[c.confidence];
-    const badge = previewFrame.querySelector('#ec-panel-badge');
-    badge.style.background = cs.badge;
-    badge.textContent = confLabels[c.confidence];
+    document.getElementById('ec-panel-badge').style.background = cs.badge;
+    document.getElementById('ec-panel-badge').textContent = confLabels[c.confidence];
 
-    let html = `<div style="font-family:'AP',Georgia,serif;font-size:15px;line-height:1.6;font-style:italic;padding-bottom:16px;border-bottom:1px solid #e5e2dd;margin-bottom:16px;">"${esc(c.text)}"</div>`;
+    let html = `<div style="font-family:'AP',Georgia,serif;font-size:14px;line-height:1.5;font-style:italic;padding-bottom:12px;border-bottom:1px solid #e5e2dd;margin-bottom:12px;">"${esc(c.text)}"</div>`;
 
     if (c.image) {
-      html += `<div style="margin-bottom:16px;"><img src="${esc(c.image)}" style="max-width:100%;border-radius:6px;display:block;" onerror="this.style.display='none'">${c.imageDesc ? `<p style="font-size:12px;color:#5a564f;margin-top:6px;line-height:1.5;font-style:italic;">${esc(c.imageDesc)}</p>` : ''}</div>`;
+      html += `<div style="margin-bottom:12px;"><img src="${esc(c.image)}" style="max-width:100%;border-radius:6px;display:block;" onerror="this.style.display='none'">${c.imageDesc ? `<p style="font-size:11px;color:#5a564f;margin-top:4px;line-height:1.4;font-style:italic;">${esc(c.imageDesc)}</p>` : ''}</div>`;
     }
 
     if (c.contestedSides && c.confidence === 'contested') {
-      html += `<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:10px;">Competing Positions</div>`;
-      html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
-        <div style="padding:12px;border-radius:6px;background:${hexToRgba(confStyles.high.badge,0.08)};border:1px solid ${hexToRgba(confStyles.high.badge,0.2)};font-size:13px;line-height:1.5;">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:${confStyles.high.badge};margin-bottom:4px;">Our Finding</div>${esc(c.contestedSides.side_a)}
+      html += `<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:8px;">Competing Positions</div>`;
+      html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;">
+        <div style="padding:10px;border-radius:6px;background:${hexToRgba(confStyles.high.badge,0.08)};border:1px solid ${hexToRgba(confStyles.high.badge,0.2)};font-size:12px;line-height:1.4;">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:${confStyles.high.badge};margin-bottom:3px;">Our Finding</div>${esc(c.contestedSides.side_a)}
         </div>
-        <div style="padding:12px;border-radius:6px;background:${hexToRgba(confStyles.contested.badge,0.08)};border:1px solid ${hexToRgba(confStyles.contested.badge,0.2)};font-size:13px;line-height:1.5;">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:${confStyles.contested.badge};margin-bottom:4px;">Counter-Position</div>${esc(c.contestedSides.side_b)}
+        <div style="padding:10px;border-radius:6px;background:${hexToRgba(confStyles.contested.badge,0.08)};border:1px solid ${hexToRgba(confStyles.contested.badge,0.2)};font-size:12px;line-height:1.4;">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:${confStyles.contested.badge};margin-bottom:3px;">Counter-Position</div>${esc(c.contestedSides.side_b)}
         </div>
       </div>`;
     }
 
-    html += `<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:10px;">Sources (${c.sources.length})</div>`;
+    html += `<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:8px;">Sources (${c.sources.length})</div>`;
     c.sources.forEach(s => {
-      html += `<div style="background:#f2f0ed;border-radius:6px;padding:12px 14px;margin-bottom:6px;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.04em;color:#888;margin-bottom:4px;">${esc(s.type)}</div>
-        <div style="font-size:13px;line-height:1.5;">${esc(s.text)}</div>
-        ${s.link ? `<span style="display:inline-block;font-size:12px;color:${confStyles.high.badge};margin-top:4px;text-decoration:underline;cursor:pointer;">${esc(s.link)}</span>` : ''}
+      html += `<div style="background:#f2f0ed;border-radius:6px;padding:10px 12px;margin-bottom:5px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.04em;color:#888;margin-bottom:3px;">${esc(s.type)}</div>
+        <div style="font-size:12px;line-height:1.4;">${esc(s.text)}</div>
+        ${s.link ? `<span style="display:inline-block;font-size:11px;color:${confStyles.high.badge};margin-top:3px;text-decoration:underline;cursor:pointer;">${esc(s.link)}</span>` : ''}
       </div>`;
     });
 
     if (c.methodology) {
-      html += `<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:8px;margin-top:16px;">Methodology</div>`;
-      html += `<div style="background:#f2f0ed;border-radius:6px;padding:12px 14px;font-size:13px;line-height:1.6;color:#5a564f;">${esc(c.methodology)}</div>`;
+      html += `<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:6px;margin-top:12px;">Methodology</div>`;
+      html += `<div style="background:#f2f0ed;border-radius:6px;padding:10px 12px;font-size:12px;line-height:1.5;color:#5a564f;">${esc(c.methodology)}</div>`;
     }
 
-    previewFrame.querySelector('#ec-panel-body').innerHTML = html;
-    panelEl.style.transform = 'translateX(0)';
-    overlayEl.style.opacity = '1';
-    overlayEl.style.pointerEvents = 'auto';
+    document.getElementById('ec-panel-body').innerHTML = html;
+    panelEl.scrollTop = 0;
+
+    const previewFrame = document.getElementById('previewFrame');
+    const isMobile = previewFrame.classList.contains('mobile');
+    const frameRect = previewFrame.getBoundingClientRect();
+    const vh = window.innerHeight;
+
+    // Set width first so height measurement is accurate
+    const pw = isMobile ? Math.min(340, frameRect.width - 16) : 340;
+    panelEl.style.width = pw + 'px';
+    // Show offscreen to measure
+    panelEl.style.left = '-9999px';
+    panelEl.style.top = '0';
+    panelEl.style.display = 'block';
+    const ph = panelEl.offsetHeight;
+    // Y: center on click, clamp to viewport
+    const clickY = evt ? evt.clientY : vh / 2;
+    let top = clickY - (ph / 2);
+    if (top + ph > vh - 12) top = vh - ph - 12;
+    if (top < 12) top = 12;
+    panelEl.style.top = top + 'px';
+    // X: desktop=left of preview, mobile=centered on preview
+    if (isMobile) {
+      panelEl.style.left = (frameRect.left + (frameRect.width - pw) / 2) + 'px';
+    } else {
+      panelEl.style.left = (frameRect.left + 8) + 'px';
+    }
+    overlayEl.style.display = 'block';
   };
 
   window.__ecClosePanel = function() {
-    panelEl.style.transform = 'translateX(100%)';
-    overlayEl.style.opacity = '0';
-    overlayEl.style.pointerEvents = 'none';
+    overlayEl.style.display = 'none';
+    panelEl.style.display = 'none';
   };
 }
 
@@ -875,14 +897,11 @@ ${fullBleed ? `.ec-wrap{background:${bgColor};min-height:200px;position:relative
 .ec-legend-box{background:${tc.legBg};border:1px solid ${tc.legBdr};border-radius:8px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.06);font-family:'AP',system-ui,sans-serif;font-size:12px;color:${tc.legText}}
 .ec-legend-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
 .ec-legend-row:last-child{margin-bottom:0}
-.ec-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.2);z-index:200;opacity:0;pointer-events:none;transition:opacity 0.3s}
-.ec-overlay.open{opacity:1;pointer-events:auto}
-.ec-panel{position:fixed;top:${mobileOffset}px;right:0;width:min(400px,85vw);height:calc(100vh - ${mobileOffset}px);background:white;z-index:201;transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.22,1,0.36,1);overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,0.1)}
-.ec-panel.open{transform:translateX(0)}
-@media(min-width:768px){.ec-panel{top:${desktopOffset}px;height:calc(100vh - ${desktopOffset}px)}}
-.ec-panel-head{position:sticky;top:0;background:white;border-bottom:1px solid #e5e2dd;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;z-index:1}
-.ec-panel-body{padding:20px;font-family:'AP',system-ui,sans-serif;font-size:14px;line-height:1.6;color:#1a1a1a}
-.ec-close{width:28px;height:28px;border-radius:50%;border:1px solid #e5e2dd;background:white;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.ec-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.15)}
+.ec-popover{position:fixed;z-index:201;max-height:75vh;background:white;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.18),0 0 0 1px rgba(0,0,0,0.06);overflow-y:auto}
+.ec-popover-head{position:sticky;top:0;background:white;border-bottom:1px solid #e5e2dd;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:1;border-radius:10px 10px 0 0}
+.ec-popover-body{padding:16px;font-family:'AP',system-ui,sans-serif;font-size:13px;line-height:1.55;color:#1a1a1a}
+.ec-close{width:24px;height:24px;border-radius:50%;border:1px solid #e5e2dd;background:white;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center}
 </style>
 <div class="ec-wrap">
 <div class="ec-toggle"><div class="ec-toggle-box" id="ec-tog"><span id="ec-ts" class="${defaultMode==='story'?'active':'inactive'}" onclick="window.__ecMode('story')">Story</span><span id="ec-te" class="${defaultMode==='evidence'?'active':'inactive'}" onclick="window.__ecMode('evidence')">Evidence</span></div></div>
@@ -899,11 +918,6 @@ ${subOn && sub ? `<p style="font-family:'AP',Georgia,serif;font-size:18px;font-w
 ${bylineOn && byline ? `<p style="font-family:'AP',system-ui,sans-serif;font-size:13px;color:${tc.meta};margin-bottom:4px;">${e(byline)}</p>` : ''}
 ${datelineOn && dateline ? `<p style="font-family:'AP',system-ui,sans-serif;font-size:13px;color:${tc.meta};padding-bottom:24px;border-bottom:1px solid ${tc.rule};margin-bottom:24px;">${e(dateline)}</p>` : ''}
 <div id="ec-body">${bodyHTML}</div>
-</div>
-<div class="ec-overlay" id="ec-ov" onclick="window.__ecClose()"></div>
-<div class="ec-panel" id="ec-pn">
-<div class="ec-panel-head"><span id="ec-badge" style="font-family:'AP',system-ui,sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:3px 10px;border-radius:4px;color:white;"></span><button class="ec-close" onclick="window.__ecClose()">×</button></div>
-<div class="ec-panel-body" id="ec-pb"></div>
 </div>
 </div>
 <script>
@@ -938,37 +952,60 @@ function applyMode(){
 }
 window.__ecMode=function(m){mode=m;applyMode()};
 document.querySelectorAll('.ec-c').forEach(function(sp){
-  sp.addEventListener('click',function(){
+  sp.addEventListener('click',function(evt){
     var i=parseInt(sp.dataset.i);var c=claims[i];if(!c)return;
     var bd=document.getElementById('ec-badge');bd.style.background=cs[c.confidence].badge;bd.textContent=labels[c.confidence];
-    var h='<div style="font-family:\\'AP\\',Georgia,serif;font-size:15px;line-height:1.6;font-style:italic;padding-bottom:16px;border-bottom:1px solid #e5e2dd;margin-bottom:16px;">\\"'+esc(c.text)+'\\"</div>';
-    if(c.image){h+='<div style="margin-bottom:16px;"><img src="'+esc(c.image)+'" style="max-width:100%;border-radius:6px;display:block;" onerror="this.style.display=\\'none\\'">'+(c.imageDesc?'<p style="font-size:12px;color:#5a564f;margin-top:6px;line-height:1.5;font-style:italic;">'+esc(c.imageDesc)+'</p>':'')+'</div>';}
+    var h='<div style="font-family:\\'AP\\',Georgia,serif;font-size:14px;line-height:1.5;font-style:italic;padding-bottom:12px;border-bottom:1px solid #e5e2dd;margin-bottom:12px;">\\"'+esc(c.text)+'\\"</div>';
+    if(c.image){h+='<div style="margin-bottom:12px;"><img src="'+esc(c.image)+'" style="max-width:100%;border-radius:6px;display:block;" onerror="this.style.display=\\'none\\'">'+(c.imageDesc?'<p style="font-size:11px;color:#5a564f;margin-top:4px;line-height:1.4;font-style:italic;">'+esc(c.imageDesc)+'</p>':'')+'</div>';}
     if(c.contestedSides&&c.confidence==='contested'){
-      h+='<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:10px;">Competing Positions</div>';
-      h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;"><div style="padding:12px;border-radius:6px;background:'+cs.high.bg+';border:1px solid '+cs.high.border+';font-size:13px;line-height:1.5;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:'+cs.high.badge+';margin-bottom:4px;">Our Finding</div>'+esc(c.contestedSides.side_a)+'</div><div style="padding:12px;border-radius:6px;background:'+cs.contested.bg+';border:1px solid '+cs.contested.border+';font-size:13px;line-height:1.5;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:'+cs.contested.badge+';margin-bottom:4px;">Counter-Position</div>'+esc(c.contestedSides.side_b)+'</div></div>';
+      h+='<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:8px;">Competing Positions</div>';
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;"><div style="padding:10px;border-radius:6px;background:'+cs.high.bg+';border:1px solid '+cs.high.border+';font-size:12px;line-height:1.4;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:'+cs.high.badge+';margin-bottom:3px;">Our Finding</div>'+esc(c.contestedSides.side_a)+'</div><div style="padding:10px;border-radius:6px;background:'+cs.contested.bg+';border:1px solid '+cs.contested.border+';font-size:12px;line-height:1.4;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:'+cs.contested.badge+';margin-bottom:3px;">Counter-Position</div>'+esc(c.contestedSides.side_b)+'</div></div>';
     }
-    h+='<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:10px;">Sources ('+c.sources.length+')</div>';
+    h+='<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:8px;">Sources ('+c.sources.length+')</div>';
     c.sources.forEach(function(s){
-      h+='<div style="background:#f2f0ed;border-radius:6px;padding:12px 14px;margin-bottom:6px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.04em;color:#888;margin-bottom:4px;">'+esc(s.type)+'</div><div style="font-size:13px;line-height:1.5;">'+esc(s.text)+'</div>'+(s.link?'<span style="display:inline-block;font-size:12px;color:'+cs.high.badge+';margin-top:4px;text-decoration:underline;cursor:pointer;">'+esc(s.link)+'</span>':'')+'</div>';
+      h+='<div style="background:#f2f0ed;border-radius:6px;padding:10px 12px;margin-bottom:5px;"><div style="font-size:9px;text-transform:uppercase;letter-spacing:0.04em;color:#888;margin-bottom:3px;">'+esc(s.type)+'</div><div style="font-size:12px;line-height:1.4;">'+esc(s.text)+'</div>'+(s.link?'<span style="display:inline-block;font-size:11px;color:'+cs.high.badge+';margin-top:3px;text-decoration:underline;cursor:pointer;">'+esc(s.link)+'</span>':'')+'</div>';
     });
-    if(c.methodology){h+='<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:8px;margin-top:16px;">Methodology</div><div style="background:#f2f0ed;border-radius:6px;padding:12px 14px;font-size:13px;line-height:1.6;color:#5a564f;">'+esc(c.methodology)+'</div>';}
-    document.getElementById('ec-pb').innerHTML=h;
-    document.getElementById('ec-pn').classList.add('open');
-    document.getElementById('ec-ov').classList.add('open');
+    if(c.methodology){h+='<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:6px;margin-top:12px;">Methodology</div><div style="background:#f2f0ed;border-radius:6px;padding:10px 12px;font-size:12px;line-height:1.5;color:#5a564f;">'+esc(c.methodology)+'</div>';}
+    var ov=document.getElementById('ec-ov');
+    var pn=document.getElementById('ec-pn');
+    var pb=document.getElementById('ec-pb');
+    pb.innerHTML=h;
+    pn.scrollTop=0;
+    // Set width first so height measurement is accurate
+    var vw=window.innerWidth,vh=window.innerHeight;
+    var pw=vw>500?Math.min(340,vw*0.4):vw-32;
+    pn.style.width=pw+'px';
+    // Show offscreen to measure
+    pn.style.left='-9999px';pn.style.top='0';pn.style.display='block';
+    var ph=pn.offsetHeight;
+    // Y: center on click, clamp to viewport
+    var y=evt.clientY-(ph/2);
+    if(y+ph>vh-12)y=vh-ph-12;
+    if(y<12)y=12;
+    pn.style.top=y+'px';
+    // X: desktop=right edge, mobile=centered
+    if(vw>500){pn.style.left=(vw-pw-16)+'px';}
+    else{pn.style.left=((vw-pw)/2)+'px';}
+    ov.style.display='block';
   });
 });
-window.__ecClose=function(){document.getElementById('ec-pn').classList.remove('open');document.getElementById('ec-ov').classList.remove('open')};
+window.__ecClose=function(){document.getElementById('ec-ov').style.display='none';document.getElementById('ec-pn').style.display='none';};
 applyMode();
 var ecEn=document.getElementById('ec-entrance');
 if(ecEn&&window.IntersectionObserver){
 var ecObs=new IntersectionObserver(function(entries){
-entries.forEach(function(e){if(e.isIntersecting){ecEn.style.opacity='1';ecEn.style.transform='translateY(0)';ecObs.unobserve(ecEn);}});
+entries.forEach(function(e){if(e.isIntersecting){ecEn.style.opacity='1';ecEn.style.transform='none';ecObs.unobserve(ecEn);}});
 },{threshold:0.05});
 ecObs.observe(ecEn);
-}else if(ecEn){ecEn.style.opacity='1';ecEn.style.transform='translateY(0)';}
+}else if(ecEn){ecEn.style.opacity='1';ecEn.style.transform='none';}
 })();
 <\/script>
-</div></div>`;
+</div></div>
+<div class="ec-overlay" id="ec-ov" style="display:none" onclick="window.__ecClose()"></div>
+<div class="ec-popover" id="ec-pn" style="display:none">
+<div class="ec-popover-head"><span id="ec-badge" style="font-family:'AP',system-ui,sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:2px 8px;border-radius:4px;color:white;"></span><button class="ec-close" onclick="window.__ecClose()">×</button></div>
+<div class="ec-popover-body" id="ec-pb"></div>
+</div>`;
 }
 
 function generateExport() {
