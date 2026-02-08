@@ -1091,7 +1091,7 @@ function sendToStackBuilder() {
   if (!code) { generateExport(); code = document.getElementById('exportCode').value; }
   if (!code) { alert('Generate HTML first'); return; }
   var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
-  queue.push({ name: 'Epistemic Text', html: code, timestamp: Date.now() });
+  queue.push({ name: 'Epistemic Text', html: code, timestamp: Date.now(), layout: 'flow' });
   localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
   if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) { window.location.href = 'stack-builder-clean.html'; }
 }

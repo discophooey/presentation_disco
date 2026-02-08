@@ -538,6 +538,7 @@
                     sections.forEach(s => {
                         if (s.scrollBudget === undefined) s.scrollBudget = 2000;
                         if (s.collapsed === undefined) s.collapsed = false;
+                        if (s.layout === undefined) s.layout = 'viewport';
                     });
                     sectionIdCounter = parseInt(counter) || sections.length;
                     renderSections();
@@ -553,7 +554,8 @@
                 name: `Section ${sectionIdCounter}`,
                 html: '',
                 scrollBudget: 2000,
-                collapsed: false
+                collapsed: false,
+                layout: 'viewport'
             };
             sections.push(section);
             renderSections();
@@ -572,6 +574,15 @@
             const section = sections.find(s => s.id === id);
             if (section) {
                 section.html = html;
+                saveState();
+            }
+        }
+
+        function updateLayout(id, layout) {
+            const section = sections.find(s => s.id === id);
+            if (section) {
+                section.layout = layout;
+                renderSections();
                 saveState();
             }
         }
@@ -609,12 +620,22 @@
                             <div class="section-controls" onclick="event.stopPropagation()">
                                 ${mode === 'viewport' ? `
                                 <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:#888;">
+                                    <select style="padding:3px 4px;background:#0a0a0a;border:1px solid #333;border-radius:4px;color:#fff;font-size:11px;"
+                                        onchange="updateLayout(${section.id}, this.value)"
+                                        onclick="event.stopPropagation()">
+                                        <option value="viewport" ${section.layout !== 'flow' ? 'selected' : ''}>Scroll</option>
+                                        <option value="flow" ${section.layout === 'flow' ? 'selected' : ''}>Flow</option>
+                                    </select>
+                                </label>
+                                ${section.layout !== 'flow' ? `
+                                <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:#888;">
                                     Budget:
                                     <input type="number" value="${scrollBudget}" min="500" max="10000" step="100" 
                                         style="width:70px;padding:4px;background:#0a0a0a;border:1px solid #333;border-radius:4px;color:#fff;font-size:11px;"
                                         onchange="updateScrollBudget(${section.id}, this.value)"
                                         onclick="event.stopPropagation()">px
                                 </label>
+                                ` : '<span style="font-size:10px;color:#4a9;margin:0 4px;">↕ natural height</span>'}
                                 ` : ''}
                                 <button onclick="renameSection(${section.id}); event.stopPropagation();">✏️</button>
                                 <button onclick="removeSection(${section.id}); event.stopPropagation();" class="remove">✕</button>
@@ -894,170 +915,171 @@
             const transitionPct = parseInt(document.getElementById('transitionDuration').value) / 100;
             const topOffset = parseInt(document.getElementById('vpDesktopOffset').value) || 50;
             const wipeDirection = document.getElementById('wipeDirection').value;
-            
-            let combinedStyles = '';
-            let combinedBody = '';
-            let combinedScripts = '';
-            let moduleIds = [];
-            let sectionBudgets = [];
             let title = 'Disco Viewport Stack';
 
+            // --- Step 1: Parse each section ---
+            const parsed = [];
             sections.forEach((section, index) => {
                 if (!section.html.trim()) return;
-
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(section.html, 'text/html');
-
                 if (index === 0 && doc.querySelector('title')) {
                     title = doc.querySelector('title').textContent;
                 }
-
-                // Find the module's unique ID from the HTML
                 const firstDiv = doc.body.querySelector('div[id]');
                 const moduleId = firstDiv ? firstDiv.id : 'module' + index;
-                moduleIds.push(moduleId);
-                sectionBudgets.push(section.scrollBudget || 2000);
-
-                // Extract styles
-                doc.querySelectorAll('style').forEach(style => {
-                    combinedStyles += style.textContent + '\n\n';
-                });
-
-                // Wrap body content in a viewport layer
+                let styles = '';
+                doc.querySelectorAll('style').forEach(s => { styles += s.textContent + '\n'; });
+                let scripts = '';
+                doc.querySelectorAll('script').forEach(s => { scripts += s.textContent + '\n'; });
                 const bodyContent = doc.body ? doc.body.innerHTML : section.html;
-                combinedBody += '<div class="vp-layer" data-index="' + index + '">\n' + bodyContent + '\n</div>\n';
-
-                // Extract scripts
-                doc.querySelectorAll('script').forEach(script => {
-                    combinedScripts += script.textContent + '\n\n';
+                parsed.push({
+                    layout: section.layout || 'viewport',
+                    moduleId: moduleId,
+                    styles: styles,
+                    scripts: scripts,
+                    bodyContent: bodyContent,
+                    scrollBudget: section.scrollBudget || 2000
                 });
             });
 
-            if (moduleIds.length === 0) {
-                return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Empty Stack</title></head><body style="padding: 100px; text-align: center; font-family: sans-serif; color: #666;"><h1>No Content</h1><p>All sections were empty.</p></body></html>';
+            if (parsed.length === 0) {
+                return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Empty Stack</title></head><body style="padding:100px;text-align:center;font-family:sans-serif;color:#666;"><h1>No Content</h1></body></html>';
             }
 
-            const totalHeight = sectionBudgets.reduce((sum, b) => sum + b, 0);
-
-            // Build viewport mode controller with per-section budgets
-            const controllerJS = `
-window.SCROLLTASTIC_PROGRESS = window.SCROLLTASTIC_PROGRESS || {};
-(function(){
-var ids = ${JSON.stringify(moduleIds)};
-var budgets = ${JSON.stringify(sectionBudgets)};
-var totalBudget = ${totalHeight};
-var n = ids.length;
-var transType = "${transitionType}";
-var transPct = ${transitionPct};
-var wipeDir = "${wipeDirection}";
-var wrap = document.querySelector('.vp-wrap');
-var layers = document.querySelectorAll('.vp-layer');
-var blackout = document.querySelector('.vp-blackout');
-
-// Build cumulative ranges
-var ranges = [];
-var cumulative = 0;
-for(var i = 0; i < n; i++){
-    var start = cumulative / totalBudget;
-    cumulative += budgets[i];
-    var end = cumulative / totalBudget;
-    ranges.push({start: start, end: end});
-}
-
-function getClipPath(type, progress, dir){
-    if(type === 'wipe'){
-        var p = Math.max(0, Math.min(100, progress * 100));
-        if(dir === 'left') return 'inset(0 ' + (100 - p) + '% 0 0)';
-        if(dir === 'right') return 'inset(0 0 0 ' + (100 - p) + '%)';
-        if(dir === 'up') return 'inset(' + (100 - p) + '% 0 0 0)';
-        if(dir === 'down') return 'inset(0 0 ' + (100 - p) + '% 0)';
-    }
-    if(type === 'iris'){
-        var radius = Math.max(0, Math.min(100, progress * 75));
-        return 'circle(' + radius + '% at 50% 50%)';
-    }
-    return 'none';
-}
-
-function upd(){
-    var rect = wrap.getBoundingClientRect();
-    var wh = window.innerHeight;
-    var scrolled = Math.max(0, -rect.top);
-    var scrollRange = wrap.offsetHeight - wh;
-    if(scrollRange <= 0) scrollRange = 1;
-    var progress = Math.max(0, Math.min(1, scrolled / scrollRange));
-    
-    var blackoutOpacity = 0;
-    
-    for(var i = 0; i < n; i++){
-        var range = ranges[i];
-        var start = range.start;
-        var end = range.end;
-        var localP = Math.max(0, Math.min(1, (progress - start) / (end - start)));
-        
-        window.SCROLLTASTIC_PROGRESS[ids[i]] = localP;
-        
-        var layer = layers[i];
-        if(!layer) continue;
-        
-        var opacity = 1;
-        var filter = '';
-        var clipPath = 'none';
-        
-        if(transType !== 'none' && n > 1){
-            // Fade in from previous
-            if(i > 0 && localP < transPct){
-                var fadeP = localP / transPct;
-                
-                if(transType === 'crossfade'){
-                    opacity = fadeP;
-                } else if(transType === 'blur'){
-                    opacity = fadeP;
-                    filter = 'blur(' + ((1 - fadeP) * 10) + 'px)';
-                } else if(transType === 'wipe' || transType === 'iris'){
-                    opacity = 1;
-                    clipPath = getClipPath(transType, fadeP, wipeDir);
-                } else if(transType === 'fadeblack'){
-                    opacity = fadeP;
-                    blackoutOpacity = Math.max(blackoutOpacity, 1 - fadeP);
+            // --- Step 2: Group into runs ---
+            // Each run is either {type:'viewport', items:[...]} or {type:'flow', item: {...}}
+            const runs = [];
+            parsed.forEach(p => {
+                if (p.layout === 'flow') {
+                    runs.push({ type: 'flow', item: p });
+                } else {
+                    // Add to current viewport run or start new one
+                    if (runs.length > 0 && runs[runs.length - 1].type === 'viewport') {
+                        runs[runs.length - 1].items.push(p);
+                    } else {
+                        runs.push({ type: 'viewport', items: [p] });
+                    }
                 }
-            }
-            
-            // Fade out to next
-            if(i < n - 1 && localP > (1 - transPct)){
-                var fadeP = (1 - localP) / transPct;
-                
-                if(transType === 'crossfade'){
-                    opacity = fadeP;
-                } else if(transType === 'blur'){
-                    opacity = fadeP;
-                    filter = 'blur(' + ((1 - fadeP) * 10) + 'px)';
-                } else if(transType === 'wipe' || transType === 'iris'){
-                    // Outgoing layer stays full, incoming wipes over
-                    opacity = 1;
-                } else if(transType === 'fadeblack'){
-                    opacity = fadeP;
-                    blackoutOpacity = Math.max(blackoutOpacity, 1 - fadeP);
-                }
-            }
-        }
-        
-        var isActive = progress >= start - transPct/n && progress <= end + transPct/n;
-        layer.style.opacity = isActive ? opacity : 0;
-        layer.style.filter = filter;
-        layer.style.clipPath = clipPath;
-        layer.style.webkitClipPath = clipPath;
-        layer.style.pointerEvents = isActive && opacity > 0.5 ? 'auto' : 'none';
-    }
-    
-    if(blackout) blackout.style.opacity = blackoutOpacity;
-    
-    requestAnimationFrame(upd);
-}
-upd();
-})();
-`;
+            });
 
+            // --- Step 3: Build combined output ---
+            let allStyles = '';
+            let bodyHTML = '';
+            let allScripts = '';
+            let vpGroupIndex = 0;
+
+            runs.forEach((run, ri) => {
+                if (run.type === 'flow') {
+                    // Flow section: natural height with entrance animation
+                    const p = run.item;
+                    allStyles += p.styles + '\n';
+                    allScripts += p.scripts + '\n';
+                    const flowId = 'flow-' + ri;
+                    bodyHTML += '    <div id="' + flowId + '" class="flow-section" style="opacity:0;transform:translateY(40px);transition:opacity 0.6s ease,transform 0.6s ease;">\n' +
+                        p.bodyContent + '\n    </div>\n';
+                } else {
+                    // Viewport group
+                    const g = vpGroupIndex++;
+                    const gClass = 'vpg-' + g;
+                    let groupBody = '';
+                    let groupIds = [];
+                    let groupBudgets = [];
+
+                    run.items.forEach((p, li) => {
+                        allStyles += p.styles + '\n';
+                        allScripts += p.scripts + '\n';
+                        groupIds.push(p.moduleId);
+                        groupBudgets.push(p.scrollBudget);
+                        groupBody += '        <div class="' + gClass + '-layer vp-layer" data-index="' + li + '">\n' + p.bodyContent + '\n        </div>\n';
+                    });
+
+                    const totalHeight = groupBudgets.reduce((s, b) => s + b, 0);
+
+                    bodyHTML += '    <div class="' + gClass + '-wrap vp-wrap" style="position:relative;width:100%;height:' + totalHeight + 'px;background:#000;overflow:clip;">\n' +
+                        '    <div class="' + gClass + '-container vp-container">\n' +
+                        groupBody +
+                        '        <div class="' + gClass + '-blackout vp-blackout"></div>\n' +
+                        '    </div>\n' +
+                        '    </div>\n';
+
+                    // Build per-group scroll controller
+                    allScripts += '\n/* Viewport group ' + g + ' controller */\n' +
+                        '(function(){\n' +
+                        'var ids = ' + JSON.stringify(groupIds) + ';\n' +
+                        'var budgets = ' + JSON.stringify(groupBudgets) + ';\n' +
+                        'var totalBudget = ' + totalHeight + ';\n' +
+                        'var n = ids.length;\n' +
+                        'var transType = "' + transitionType + '";\n' +
+                        'var transPct = ' + transitionPct + ';\n' +
+                        'var wipeDir = "' + wipeDirection + '";\n' +
+                        'var wrap = document.querySelector(".' + gClass + '-wrap");\n' +
+                        'var layers = wrap.querySelectorAll(".' + gClass + '-layer");\n' +
+                        'var blackout = wrap.querySelector(".' + gClass + '-blackout");\n' +
+                        'window.SCROLLTASTIC_PROGRESS = window.SCROLLTASTIC_PROGRESS || {};\n' +
+                        'var ranges = [];\n' +
+                        'var cumulative = 0;\n' +
+                        'for(var i=0;i<n;i++){var start=cumulative/totalBudget;cumulative+=budgets[i];ranges.push({start:start,end:cumulative/totalBudget});}\n' +
+                        'function getClipPath(type,progress,dir){\n' +
+                        '  if(type==="wipe"){var p=Math.max(0,Math.min(100,progress*100));if(dir==="left")return"inset(0 "+(100-p)+"% 0 0)";if(dir==="right")return"inset(0 0 0 "+(100-p)+"%)";if(dir==="up")return"inset("+(100-p)+"% 0 0 0)";if(dir==="down")return"inset(0 0 "+(100-p)+"% 0)";}\n' +
+                        '  if(type==="iris"){var radius=Math.max(0,Math.min(100,progress*75));return"circle("+radius+"% at 50% 50%)";}\n' +
+                        '  return"none";\n' +
+                        '}\n' +
+                        'function upd(){\n' +
+                        '  var rect=wrap.getBoundingClientRect();var wh=window.innerHeight;\n' +
+                        '  var scrolled=Math.max(0,-rect.top);var scrollRange=wrap.offsetHeight-wh;\n' +
+                        '  if(scrollRange<=0)scrollRange=1;\n' +
+                        '  var progress=Math.max(0,Math.min(1,scrolled/scrollRange));\n' +
+                        '  var blackoutOpacity=0;\n' +
+                        '  for(var i=0;i<n;i++){\n' +
+                        '    var range=ranges[i];var start=range.start;var end=range.end;\n' +
+                        '    var localP=Math.max(0,Math.min(1,(progress-start)/(end-start)));\n' +
+                        '    window.SCROLLTASTIC_PROGRESS[ids[i]]=localP;\n' +
+                        '    var layer=layers[i];if(!layer)continue;\n' +
+                        '    var opacity=1;var filter="";var clipPath="none";\n' +
+                        '    if(transType!=="none"&&n>1){\n' +
+                        '      if(i>0&&localP<transPct){var fadeP=localP/transPct;' +
+                        'if(transType==="crossfade"){opacity=fadeP;}' +
+                        'else if(transType==="blur"){opacity=fadeP;filter="blur("+((1-fadeP)*10)+"px)";}' +
+                        'else if(transType==="wipe"||transType==="iris"){opacity=1;clipPath=getClipPath(transType,fadeP,wipeDir);}' +
+                        'else if(transType==="fadeblack"){opacity=fadeP;blackoutOpacity=Math.max(blackoutOpacity,1-fadeP);}}\n' +
+                        '      if(i<n-1&&localP>(1-transPct)){var fadeP=(1-localP)/transPct;' +
+                        'if(transType==="crossfade"){opacity=fadeP;}' +
+                        'else if(transType==="blur"){opacity=fadeP;filter="blur("+((1-fadeP)*10)+"px)";}' +
+                        'else if(transType==="wipe"||transType==="iris"){opacity=1;}' +
+                        'else if(transType==="fadeblack"){opacity=fadeP;blackoutOpacity=Math.max(blackoutOpacity,1-fadeP);}}\n' +
+                        '    }\n' +
+                        '    var isActive=progress>=start-transPct/n&&progress<=end+transPct/n;\n' +
+                        '    layer.style.opacity=isActive?opacity:0;\n' +
+                        '    layer.style.filter=filter;\n' +
+                        '    layer.style.clipPath=clipPath;\n' +
+                        '    layer.style.webkitClipPath=clipPath;\n' +
+                        '    layer.style.pointerEvents=isActive&&opacity>0.5?"auto":"none";\n' +
+                        '  }\n' +
+                        '  if(blackout)blackout.style.opacity=blackoutOpacity;\n' +
+                        '  requestAnimationFrame(upd);\n' +
+                        '}\n' +
+                        'upd();\n' +
+                        '})();\n';
+                }
+            });
+
+            // --- Step 4: Flow entrance observer ---
+            allScripts += '\n/* Flow section entrance animations */\n' +
+                '(function(){\n' +
+                'var flows=document.querySelectorAll(".flow-section");\n' +
+                'if(!flows.length)return;\n' +
+                'if(window.IntersectionObserver){\n' +
+                '  var obs=new IntersectionObserver(function(entries){\n' +
+                '    entries.forEach(function(e){\n' +
+                '      if(e.isIntersecting){e.target.style.opacity="1";e.target.style.transform="translateY(0)";obs.unobserve(e.target);}\n' +
+                '    });\n' +
+                '  },{threshold:0.05});\n' +
+                '  flows.forEach(function(f){obs.observe(f);});\n' +
+                '}else{flows.forEach(function(f){f.style.opacity="1";f.style.transform="translateY(0)";});}\n' +
+                '})();\n';
+
+            // --- Step 5: Assemble document ---
             const htmlDoc = '<!DOCTYPE html>\n' +
                 '<html lang="en">\n' +
                 '<head>\n' +
@@ -1067,16 +1089,14 @@ upd();
                 '    <style>\n' +
                 '        * { margin: 0; padding: 0; box-sizing: border-box; }\n' +
                 '        body { background: #000; }\n' +
-                '        ' + combinedStyles + '\n' +
-                '        .vp-wrap { position: relative; width: 100%; height: ' + totalHeight + 'px; background: #000; overflow: clip; }\n' +
+                '        ' + allStyles + '\n' +
                 '        .vp-container { position: -webkit-sticky; position: sticky; top: ' + topOffset + 'px; width: 100%; height: calc(100vh - ' + topOffset + 'px); overflow: hidden; }\n' +
                 '        .vp-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.1s; overflow: hidden; }\n' +
                 '        .vp-layer:first-child { opacity: 1; }\n' +
                 '        .vp-blackout { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; opacity: 0; pointer-events: none; z-index: 9999; }\n' +
-                '        /* Override ALL module internals for viewport mode */\n' +
                 '        .vp-layer > div { height: 100% !important; position: relative !important; }\n' +
                 '        .vp-layer [class*="-stage"] { position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100% !important; height: 100% !important; }\n' +
-                '        /* Mobile: same framing as desktop */\n' +
+                '        .flow-section { position: relative; width: 100%; }\n' +
                 '        @media(max-width:768px){\n' +
                 '          .vp-container { top: ' + topOffset + 'px; height: calc(100vh - ' + topOffset + 'px); }\n' +
                 '          .vp-layer > div { height: 100% !important; }\n' +
@@ -1085,15 +1105,9 @@ upd();
                 '    </style>\n' +
                 '</head>\n' +
                 '<body>\n' +
-                '    <div class="vp-wrap">\n' +
-                '    <div class="vp-container">\n' +
-                '        ' + combinedBody + '\n' +
-                '        <div class="vp-blackout"></div>\n' +
-                '    </div>\n' +
-                '    </div>\n' +
+                bodyHTML +
                 '    <script>\n' +
-                '        ' + combinedScripts + '\n' +
-                '        ' + controllerJS + '\n' +
+                '        ' + allScripts + '\n' +
                 '    </' + 'script>\n' +
                 '</body>\n' +
                 '</html>';
@@ -1163,8 +1177,9 @@ upd();
                             id: ++sectionIdCounter,
                             name: item.name || `Section ${sectionIdCounter}`,
                             html: item.html,
-                            scrollBudget: 2000,
-                            collapsed: false
+                            scrollBudget: item.layout === 'flow' ? 0 : 2000,
+                            collapsed: false,
+                            layout: item.layout || 'viewport'
                         };
                         sections.push(section);
                     });
