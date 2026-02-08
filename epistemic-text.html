@@ -897,8 +897,8 @@ ${fullBleed ? `.ec-wrap{background:${bgColor};min-height:200px;position:relative
 .ec-legend-box{background:${tc.legBg};border:1px solid ${tc.legBdr};border-radius:8px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.06);font-family:'AP',system-ui,sans-serif;font-size:12px;color:${tc.legText}}
 .ec-legend-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
 .ec-legend-row:last-child{margin-bottom:0}
-.ec-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.15)}
-.ec-popover{position:fixed;z-index:201;max-height:75vh;background:white;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.18),0 0 0 1px rgba(0,0,0,0.06);overflow-y:auto}
+.ec-overlay{position:absolute;top:0;left:0;right:0;bottom:0;z-index:200;background:rgba(0,0,0,0.15)}
+.ec-popover{position:absolute;z-index:201;max-height:75vh;background:white;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.18),0 0 0 1px rgba(0,0,0,0.06);overflow-y:auto}
 .ec-popover-head{position:sticky;top:0;background:white;border-bottom:1px solid #e5e2dd;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:1;border-radius:10px 10px 0 0}
 .ec-popover-body{padding:16px;font-family:'AP',system-ui,sans-serif;font-size:13px;line-height:1.55;color:#1a1a1a}
 .ec-close{width:24px;height:24px;border-radius:50%;border:1px solid #e5e2dd;background:white;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center}
@@ -918,6 +918,11 @@ ${subOn && sub ? `<p style="font-family:'AP',Georgia,serif;font-size:18px;font-w
 ${bylineOn && byline ? `<p style="font-family:'AP',system-ui,sans-serif;font-size:13px;color:${tc.meta};margin-bottom:4px;">${e(byline)}</p>` : ''}
 ${datelineOn && dateline ? `<p style="font-family:'AP',system-ui,sans-serif;font-size:13px;color:${tc.meta};padding-bottom:24px;border-bottom:1px solid ${tc.rule};margin-bottom:24px;">${e(dateline)}</p>` : ''}
 <div id="ec-body">${bodyHTML}</div>
+</div>
+<div class="ec-overlay" id="ec-ov" style="display:none" onclick="window.__ecClose()"></div>
+<div class="ec-popover" id="ec-pn" style="display:none">
+<div class="ec-popover-head"><span id="ec-badge" style="font-family:'AP',system-ui,sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:2px 8px;border-radius:4px;color:white;"></span><button class="ec-close" onclick="window.__ecClose()">×</button></div>
+<div class="ec-popover-body" id="ec-pb"></div>
 </div>
 </div>
 <script>
@@ -969,23 +974,27 @@ document.querySelectorAll('.ec-c').forEach(function(sp){
     var ov=document.getElementById('ec-ov');
     var pn=document.getElementById('ec-pn');
     var pb=document.getElementById('ec-pb');
+    var wrap=document.querySelector('.ec-wrap');
+    var wr=wrap.getBoundingClientRect();
     pb.innerHTML=h;
     pn.scrollTop=0;
-    // Set width first so height measurement is accurate
-    var vw=window.innerWidth,vh=window.innerHeight;
-    var pw=vw>500?Math.min(340,vw*0.4):vw-32;
+    // Width first for accurate height measurement
+    var ww=wr.width;
+    var pw=ww>500?Math.min(340,ww*0.35):ww-32;
     pn.style.width=pw+'px';
-    // Show offscreen to measure
+    // Measure offscreen
     pn.style.left='-9999px';pn.style.top='0';pn.style.display='block';
     var ph=pn.offsetHeight;
-    // Y: center on click, clamp to viewport
-    var y=evt.clientY-(ph/2);
-    if(y+ph>vh-12)y=vh-ph-12;
+    // Y relative to ec-wrap
+    var clickInWrap=evt.clientY-wr.top;
+    var y=clickInWrap-(ph/2);
+    var wrapH=wrap.offsetHeight;
+    if(y+ph>wrapH-12)y=wrapH-ph-12;
     if(y<12)y=12;
     pn.style.top=y+'px';
-    // X: desktop=right edge, mobile=centered
-    if(vw>500){pn.style.left=(vw-pw-16)+'px';}
-    else{pn.style.left=((vw-pw)/2)+'px';}
+    // X: desktop=right, mobile=centered
+    if(ww>500){pn.style.right='16px';pn.style.left='auto';}
+    else{pn.style.left=((ww-pw)/2)+'px';pn.style.right='auto';}
     ov.style.display='block';
   });
 });
@@ -1000,12 +1009,7 @@ ecObs.observe(ecEn);
 }else if(ecEn){ecEn.style.opacity='1';ecEn.style.transform='none';}
 })();
 <\/script>
-</div></div>
-<div class="ec-overlay" id="ec-ov" style="display:none" onclick="window.__ecClose()"></div>
-<div class="ec-popover" id="ec-pn" style="display:none">
-<div class="ec-popover-head"><span id="ec-badge" style="font-family:'AP',system-ui,sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:2px 8px;border-radius:4px;color:white;"></span><button class="ec-close" onclick="window.__ecClose()">×</button></div>
-<div class="ec-popover-body" id="ec-pb"></div>
-</div>`;
+</div></div>`;
 }
 
 function generateExport() {
