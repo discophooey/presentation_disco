@@ -108,6 +108,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .export-result { margin-top: 16px; padding: 12px; background: #1a2a1a; border: 1px solid #2a3a2a; border-radius: 8px; }
 .export-result-title { color: #2ecc71; font-size: 13px; margin-bottom: 8px; }
 .export-result-item { color: #888; font-size: 12px; padding: 4px 0; }
+
+/* Disco Modal */
+.disco-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.disco-modal-overlay.active{opacity:1;pointer-events:auto}
+.disco-modal{background:#1e1e24;border-radius:12px;padding:24px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);transform:scale(0.95);transition:transform 0.2s}
+.disco-modal-overlay.active .disco-modal{transform:scale(1)}
+.disco-modal-title{color:#4a9eff;font-size:14px;font-weight:600;margin-bottom:12px}
+.disco-modal-msg{color:#ccc;font-size:14px;line-height:1.5;margin-bottom:20px;white-space:pre-line}
+.disco-modal-btns{display:flex;gap:8px;justify-content:flex-end}
+.disco-modal-btns button{padding:8px 18px;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s}
+.disco-modal-btns .disco-btn-primary{background:#4a9eff;color:#fff}
+.disco-modal-btns .disco-btn-primary:hover{background:#3a8eef}
+.disco-modal-btns .disco-btn-secondary{background:#2a2a34;color:#aaa}
+.disco-modal-btns .disco-btn-secondary:hover{background:#3a3a44;color:#ccc}
 </style>
 </head>
 <body>
@@ -293,10 +307,8 @@ function addSection() {
 
 function removeSection(id, e) {
     e.stopPropagation();
-    if (confirm('Remove this section?')) {
-        sections = sections.filter(s => s.id !== id);
-        renderSections();
-    }
+    discoConfirm('Remove this section?', function(){sections = sections.filter(s => s.id !== id);
+        renderSections();});
 }
 
 function toggleEdit(id) {
@@ -1026,7 +1038,7 @@ function addGlobeItem(sectionId) {
     
     const coords = parseCoordinates(coordsInput);
     if (!coords) {
-        alert('Could not parse coordinates. Try formats like:\n• 40.71, -74.00\n• 40°42\'N 74°0\'W\n• Paste Google Maps URL');
+        discoAlert('Could not parse coordinates. Try formats like:\n• 40.71, -74.00\n• 40°42\'N 74°0\'W\n• Paste Google Maps URL');
         return;
     }
     
@@ -1185,7 +1197,7 @@ function exportToModules() {
     const exportSections = sections.filter(s => (s.take || 1) === currentTake && s.moduleType !== 'text');
     
     if (exportSections.length === 0) {
-        alert('No sections to export in Take ' + currentTake);
+        discoAlert('No sections to export in Take ' + currentTake);
         return;
     }
     
@@ -1616,12 +1628,13 @@ function handleDragEnd() {
 
 // Save/Load
 function newProject() {
-    if (sections.length > 0 && !confirm('Start a new project? Unsaved changes will be lost.')) return;
-    document.getElementById('projectTitle').value = 'Untitled Presentation';
+    if(sections.length > 0){discoConfirm('Start a new project? Unsaved changes will be lost.', function(){
+document.getElementById('projectTitle').value = 'Untitled Presentation';
     sections = [];
     sectionIdCounter = 0;
     editingId = null;
     renderSections();
+});} else {return;}
 }
 
 function openLoadModal() {
@@ -1659,11 +1672,12 @@ function loadProject(projectId) {
 }
 
 function deleteProject(projectId) {
-    if (!confirm('Delete this project?')) return;
-    const saved = JSON.parse(localStorage.getItem('disco_planner_projects') || '[]');
+    discoConfirm('Delete this project?', function(){
+const saved = JSON.parse(localStorage.getItem('disco_planner_projects') || '[]');
     const updated = saved.filter(p => p.id !== projectId);
     localStorage.setItem('disco_planner_projects', JSON.stringify(updated));
     openLoadModal();
+});
 }
 
 function importJSON(e) {
@@ -1682,7 +1696,7 @@ function importJSON(e) {
                 closeModal('loadModal');
             }
         } catch (err) {
-            alert('Invalid project file');
+            discoAlert('Invalid project file');
         }
     };
     reader.readAsText(file);
@@ -1727,7 +1741,7 @@ function openSaveShareModal() {
 function saveAndDownload() {
     const newTitle = document.getElementById('saveProjectName').value.trim();
     if (!newTitle) {
-        alert('Please enter a project name');
+        discoAlert('Please enter a project name');
         return;
     }
     
@@ -1774,12 +1788,12 @@ function saveAndDownload() {
 
 function copyShareUrl() {
     navigator.clipboard.writeText(generateShareUrl());
-    alert('Share URL copied! Send this link to collaborators.');
+    discoAlert('Share URL copied! Send this link to collaborators.');
 }
 
 function copyShareText() {
     navigator.clipboard.writeText(generateShareText());
-    alert('Text copied to clipboard!');
+    discoAlert('Text copied to clipboard!');
 }
 
 function exportJSON() {
@@ -1866,6 +1880,14 @@ if (!loadFromUrl()) {
     loadPlannerState();
 }
 renderSections();
+</script>
+
+<div class="disco-modal-overlay" id="discoModalOverlay" onclick="if(event.target===this)discoCloseModal()"><div class="disco-modal"><div class="disco-modal-title">Disco says:</div><div class="disco-modal-msg" id="discoModalMsg"></div><div class="disco-modal-btns" id="discoModalBtns"></div></div></div>
+<script>
+function discoAlert(msg,cb){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent=typeof msg==='string'?msg:String(msg);b.innerHTML='<button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">OK</button>';o.classList.add('active');window._discoCb=cb||null;window._discoOk=null;window._discoCancel=null;}
+function discoConfirm(msg,onOk,onCancel){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent=typeof msg==='string'?msg:String(msg);b.innerHTML='<button class="disco-btn-secondary" onclick="discoCloseModal(\'cancel\')">Cancel</button><button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">OK</button>';o.classList.add('active');window._discoOk=onOk||null;window._discoCancel=onCancel||null;window._discoCb=null;}
+function discoStackSend(){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent='Sent to Stack Builder!';b.innerHTML='<button class="disco-btn-secondary" onclick="discoCloseModal(\'cancel\')">Close</button><button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">Open Stack Builder now</button>';o.classList.add('active');window._discoOk=function(){window.location.href='stack-builder-clean.html';};window._discoCancel=null;window._discoCb=null;}
+function discoCloseModal(action){document.getElementById('discoModalOverlay').classList.remove('active');if(action==='ok'&&window._discoOk){var f=window._discoOk;window._discoOk=null;f();}else if(action==='cancel'&&window._discoCancel){var f=window._discoCancel;window._discoCancel=null;f();}else if(action==='ok'&&window._discoCb){var f=window._discoCb;window._discoCb=null;f();}}
 </script>
 </body>
 </html>

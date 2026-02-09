@@ -365,7 +365,21 @@
             margin-top: 4px;
             text-align: right;
         }
-    </style>
+    
+/* Disco Modal */
+.disco-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.disco-modal-overlay.active{opacity:1;pointer-events:auto}
+.disco-modal{background:#1e1e24;border-radius:12px;padding:24px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);transform:scale(0.95);transition:transform 0.2s}
+.disco-modal-overlay.active .disco-modal{transform:scale(1)}
+.disco-modal-title{color:#4a9eff;font-size:14px;font-weight:600;margin-bottom:12px}
+.disco-modal-msg{color:#ccc;font-size:14px;line-height:1.5;margin-bottom:20px;white-space:pre-line}
+.disco-modal-btns{display:flex;gap:8px;justify-content:flex-end}
+.disco-modal-btns button{padding:8px 18px;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s}
+.disco-modal-btns .disco-btn-primary{background:#4a9eff;color:#fff}
+.disco-modal-btns .disco-btn-primary:hover{background:#3a8eef}
+.disco-modal-btns .disco-btn-secondary{background:#2a2a34;color:#aaa}
+.disco-modal-btns .disco-btn-secondary:hover{background:#3a3a44;color:#ccc}
+</style>
 </head>
 <body>
 <div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
@@ -564,11 +578,9 @@
         }
 
         function removeSection(id) {
-            if (confirm('Remove this section?')) {
-                sections = sections.filter(s => s.id !== id);
+            discoConfirm('Remove this section?', function(){sections = sections.filter(s => s.id !== id);
                 renderSections();
-                saveState();
-            }
+                saveState();});
         }
 
         function updateSection(id, html) {
@@ -767,13 +779,13 @@
 
         function previewStack() {
             if (sections.length === 0) {
-                alert('Add some sections first!');
+                discoAlert('Add some sections first!');
                 return;
             }
 
             const hasContent = sections.some(s => s.html.trim());
             if (!hasContent) {
-                alert('All sections are empty! Paste some HTML code first.');
+                discoAlert('All sections are empty! Paste some HTML code first.');
                 return;
             }
 
@@ -845,7 +857,15 @@
             });
 
             if (!combinedBody.trim()) {
-                return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Empty Stack</title></head><body style="padding: 100px; text-align: center; font-family: sans-serif; color: #666;"><h1>No Content</h1><p>All sections were empty.</p></body></html>';
+                return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Empty Stack</title></head><body style="padding: 100px; text-align: center; font-family: sans-serif; color: #666;"><h1>No Content</h1><p>All sections were empty.</p>
+<div class="disco-modal-overlay" id="discoModalOverlay" onclick="if(event.target===this)discoCloseModal()"><div class="disco-modal"><div class="disco-modal-title">Disco says:</div><div class="disco-modal-msg" id="discoModalMsg"></div><div class="disco-modal-btns" id="discoModalBtns"></div></div></div>
+<script>
+function discoAlert(msg,cb){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent=typeof msg==='string'?msg:String(msg);b.innerHTML='<button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">OK</button>';o.classList.add('active');window._discoCb=cb||null;window._discoOk=null;window._discoCancel=null;}
+function discoConfirm(msg,onOk,onCancel){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent=typeof msg==='string'?msg:String(msg);b.innerHTML='<button class="disco-btn-secondary" onclick="discoCloseModal(\'cancel\')">Cancel</button><button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">OK</button>';o.classList.add('active');window._discoOk=onOk||null;window._discoCancel=onCancel||null;window._discoCb=null;}
+function discoStackSend(){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent='Sent to Stack Builder!';b.innerHTML='<button class="disco-btn-secondary" onclick="discoCloseModal(\'cancel\')">Close</button><button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">Open Stack Builder now</button>';o.classList.add('active');window._discoOk=function(){window.location.href='stack-builder-clean.html';};window._discoCancel=null;window._discoCb=null;}
+function discoCloseModal(action){document.getElementById('discoModalOverlay').classList.remove('active');if(action==='ok'&&window._discoOk){var f=window._discoOk;window._discoOk=null;f();}else if(action==='cancel'&&window._discoCancel){var f=window._discoCancel;window._discoCancel=null;f();}else if(action==='ok'&&window._discoCb){var f=window._discoCb;window._discoCb=null;f();}}
+</script>
+</body></html>';
             }
 
             // Build the final combined HTML with wrapper for CMS isolation
@@ -1118,13 +1138,13 @@
 
         function exportStack() {
             if (sections.length === 0) {
-                alert('Add some sections first!');
+                discoAlert('Add some sections first!');
                 return;
             }
 
             const hasContent = sections.some(s => s.html.trim());
             if (!hasContent) {
-                alert('All sections are empty! Paste some HTML code first.');
+                discoAlert('All sections are empty! Paste some HTML code first.');
                 return;
             }
 
@@ -1136,31 +1156,29 @@
             a.download = 'scrolltastic-stack.html';
             a.click();
 
-            alert('✓ Exported! File: scrolltastic-stack.html');
+            discoAlert('✓ Exported! File: scrolltastic-stack.html');
         }
 
         function clearStack() {
             if (sections.length === 0) return;
 
-            if (confirm(`Clear all ${sections.length} sections?`)) {
-                sections = [];
+            discoConfirm(`Clear all ${sections.length} sections?`, function(){sections = [];
                 sectionIdCounter = 0;
                 document.getElementById('embedCode').value = '';
                 renderSections();
-                saveState();
-            }
+                saveState();});
         }
 
         function copyCode() {
             const textarea = document.getElementById('embedCode');
             if (!textarea.value) {
-                alert('Nothing to copy! Preview first to generate the combined HTML.');
+                discoAlert('Nothing to copy! Preview first to generate the combined HTML.');
                 return;
             }
 
             textarea.select();
             document.execCommand('copy');
-            alert('✓ Copied to clipboard!');
+            discoAlert('✓ Copied to clipboard!');
         }
 
         // Check for queued items from other modules
@@ -1172,8 +1190,7 @@
                 const count = queue.length;
                 const names = queue.map(q => q.name).join(', ');
                 
-                if (confirm(`Import ${count} module${count > 1 ? 's' : ''} from queue?\n\n${names}`)) {
-                    queue.forEach(item => {
+                discoConfirm(`Import ${count} module${count > 1 ? 's' : ''} from queue?\n\n${names}`, function(){queue.forEach(item => {
                         const section = {
                             id: ++sectionIdCounter,
                             name: item.name || `Section ${sectionIdCounter}`,
@@ -1185,8 +1202,7 @@
                         sections.push(section);
                     });
                     renderSections();
-                    saveState();
-                }
+                    saveState();});
                 
                 // Clear queue after processing
                 localStorage.removeItem('disco_stack_queue');

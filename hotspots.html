@@ -92,6 +92,20 @@ button.secondary { background: #2a2a2a; color: #fff; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .modal-close { background: none; border: none; color: #888; font-size: 20px; cursor: pointer; width: auto; }
 textarea.code { width: 100%; height: 250px; background: #0a0a0a; border: 1px solid #2a2a2a; color: #4a9eff; font-family: 'APRegular', 'APMedium', 'APBold', sans-serif; font-size: 11px; padding: 10px; border-radius: 4px; }
+
+/* Disco Modal */
+.disco-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.disco-modal-overlay.active{opacity:1;pointer-events:auto}
+.disco-modal{background:#1e1e24;border-radius:12px;padding:24px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);transform:scale(0.95);transition:transform 0.2s}
+.disco-modal-overlay.active .disco-modal{transform:scale(1)}
+.disco-modal-title{color:#4a9eff;font-size:14px;font-weight:600;margin-bottom:12px}
+.disco-modal-msg{color:#ccc;font-size:14px;line-height:1.5;margin-bottom:20px;white-space:pre-line}
+.disco-modal-btns{display:flex;gap:8px;justify-content:flex-end}
+.disco-modal-btns button{padding:8px 18px;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s}
+.disco-modal-btns .disco-btn-primary{background:#4a9eff;color:#fff}
+.disco-modal-btns .disco-btn-primary:hover{background:#3a8eef}
+.disco-modal-btns .disco-btn-secondary{background:#2a2a34;color:#aaa}
+.disco-modal-btns .disco-btn-secondary:hover{background:#3a3a44;color:#ccc}
 </style>
 </head>
 <body>
@@ -260,19 +274,19 @@ let placingId = null;
 // IMAGE
 function loadImage() {
     let url = document.getElementById('imageUrl').value.trim();
-    if (!url) return alert('Enter image URL');
+    if (!url) return discoAlert('Enter image URL');
     if (url.includes('github.com') && url.includes('/blob/')) {
         url = url.replace('github.com','raw.githubusercontent.com').replace('/blob/','/').split('?')[0];
     }
     const img = new Image();
     img.onload = () => { imageUrl = url; rebuildPreview(); };
-    img.onerror = () => alert('Failed to load image');
+    img.onerror = () => discoAlert('Failed to load image');
     img.src = url;
 }
 
 // HOTSPOT CRUD
 function addHotspot() {
-    if (!imageUrl) return alert('Load image first');
+    if (!imageUrl) return discoAlert('Load image first');
     hotspots.push({
         id: Date.now(),
         x: 50, y: 50,
@@ -428,7 +442,7 @@ document.getElementById('previewScroll').addEventListener('scroll', handleScroll
 
 // EXPORT
 function generateExport() {
-    if (!imageUrl) return alert('Load image first');
+    if (!imageUrl) return discoAlert('Load image first');
     const dur = document.getElementById('scrollDuration').value;
     const offset = document.getElementById('stickyOffset').value;
     const stageBgTransparent = document.getElementById('stageBgTransparent').checked;
@@ -513,7 +527,7 @@ upd();
 
 // MODAL
 function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
-function copyCode() { document.getElementById('exportCode').select(); document.execCommand('copy'); alert('Copied!'); }
+function copyCode() { document.getElementById('exportCode').select(); document.execCommand('copy'); discoAlert('Copied!'); }
 function downloadCode() {
     var filename = prompt('Save export as:', 'hotspots');
     if (!filename) return;
@@ -523,13 +537,11 @@ function downloadCode() {
 }
 function sendToStackBuilder() {
     var code = document.getElementById('exportCode').value;
-    if (!code) { alert('Generate HTML first'); return; }
+    if (!code) { discoAlert('Generate HTML first'); return; }
     var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
     queue.push({ name: 'Hotspots', html: code, timestamp: Date.now() });
     localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
-    if (confirm('Sent to Stack Builder!\n\nOpen Stack Builder now?')) {
-        window.location.href = 'stack-builder-clean.html';
-    }
+    discoStackSend()
 }
 
 // SAVE/LOAD
@@ -567,8 +579,8 @@ function loadProject() {
                     document.getElementById('stickyOffset').value = p.settings.stickyOffset || 50;
                 }
                 renderList(); setPreviewHeight(); rebuildPreview();
-                alert('Loaded!');
-            } catch(err) { alert('Error: '+err.message); }
+                discoAlert('Loaded!');
+            } catch(err) { discoAlert('Error: '+err.message); }
         };
         reader.readAsText(file);
     };
@@ -632,10 +644,8 @@ updateCaption();
     }
     
     window.resetModule = function() {
-        if (confirm('Reset all settings to defaults?')) {
-            localStorage.removeItem(KEY);
-            location.reload();
-        }
+        discoConfirm('Reset all settings to defaults?', function(){localStorage.removeItem(KEY);
+            location.reload();});
     };
     
     var _orig_addHotspot = window.addHotspot;
@@ -651,7 +661,7 @@ updateCaption();
 
 function downloadCodeTxt() {
     var code = document.getElementById('exportCode').value;
-    if (!code) { alert('Generate code first'); return; }
+    if (!code) { discoAlert('Generate code first'); return; }
     var filename = prompt('Save as:', 'hotspots');
     if (!filename) return;
     var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
@@ -661,6 +671,14 @@ function downloadCodeTxt() {
     a.download = safeName + '.txt';
     a.click();
 }
+</script>
+
+<div class="disco-modal-overlay" id="discoModalOverlay" onclick="if(event.target===this)discoCloseModal()"><div class="disco-modal"><div class="disco-modal-title">Disco says:</div><div class="disco-modal-msg" id="discoModalMsg"></div><div class="disco-modal-btns" id="discoModalBtns"></div></div></div>
+<script>
+function discoAlert(msg,cb){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent=typeof msg==='string'?msg:String(msg);b.innerHTML='<button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">OK</button>';o.classList.add('active');window._discoCb=cb||null;window._discoOk=null;window._discoCancel=null;}
+function discoConfirm(msg,onOk,onCancel){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent=typeof msg==='string'?msg:String(msg);b.innerHTML='<button class="disco-btn-secondary" onclick="discoCloseModal(\'cancel\')">Cancel</button><button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">OK</button>';o.classList.add('active');window._discoOk=onOk||null;window._discoCancel=onCancel||null;window._discoCb=null;}
+function discoStackSend(){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent='Sent to Stack Builder!';b.innerHTML='<button class="disco-btn-secondary" onclick="discoCloseModal(\'cancel\')">Close</button><button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">Open Stack Builder now</button>';o.classList.add('active');window._discoOk=function(){window.location.href='stack-builder-clean.html';};window._discoCancel=null;window._discoCb=null;}
+function discoCloseModal(action){document.getElementById('discoModalOverlay').classList.remove('active');if(action==='ok'&&window._discoOk){var f=window._discoOk;window._discoOk=null;f();}else if(action==='cancel'&&window._discoCancel){var f=window._discoCancel;window._discoCancel=null;f();}else if(action==='ok'&&window._discoCb){var f=window._discoCb;window._discoCb=null;f();}}
 </script>
 </body>
 </html>

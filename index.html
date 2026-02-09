@@ -101,13 +101,27 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .demo-modal-close:hover { background: #3a3a3a; color: #fff; }
 .demo-modal-body { height: 400px; }
 .demo-modal-body iframe { width: 100%; height: 100%; border: none; }
+
+/* Disco Modal */
+.disco-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.disco-modal-overlay.active{opacity:1;pointer-events:auto}
+.disco-modal{background:#1e1e24;border-radius:12px;padding:24px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);transform:scale(0.95);transition:transform 0.2s}
+.disco-modal-overlay.active .disco-modal{transform:scale(1)}
+.disco-modal-title{color:#4a9eff;font-size:14px;font-weight:600;margin-bottom:12px}
+.disco-modal-msg{color:#ccc;font-size:14px;line-height:1.5;margin-bottom:20px;white-space:pre-line}
+.disco-modal-btns{display:flex;gap:8px;justify-content:flex-end}
+.disco-modal-btns button{padding:8px 18px;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s}
+.disco-modal-btns .disco-btn-primary{background:#4a9eff;color:#fff}
+.disco-modal-btns .disco-btn-primary:hover{background:#3a8eef}
+.disco-modal-btns .disco-btn-secondary{background:#2a2a34;color:#aaa}
+.disco-modal-btns .disco-btn-secondary:hover{background:#3a3a44;color:#ccc}
 </style>
 </head>
 <body>
 
 <div id="loginScreen">
     <div class="login-box">
-        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v210</span></h1>
+        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v211</span></h1>
         <p>Scroll-driven storytelling modules</p>
         <input type="password" id="passwordInput" placeholder="Enter password" onkeypress="if(event.key==='Enter')checkPassword()">
         <button onclick="checkPassword()">Enter</button>
@@ -117,7 +131,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
 <div id="hubScreen">
     <div class="hub-header">
-        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v210</span></h1>
+        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v211</span></h1>
         <button onclick="logout()">Logout</button>
     </div>
     
@@ -379,16 +393,14 @@ function checkPassword() {
 }
 
 function logout() {
-    if (confirm('Log out and clear all saved module data?\n\nThis will reset all modules to defaults.')) {
-        // Clear all disco_ localStorage keys
+    discoConfirm('Log out and clear all saved module data?\n\nThis will reset all modules to defaults.', function(){// Clear all disco_ localStorage keys
         Object.keys(localStorage).forEach(key => {
             if (key.startsWith('disco_')) {
                 localStorage.removeItem(key);
             }
         });
         sessionStorage.removeItem('disco_auth');
-        location.reload();
-    }
+        location.reload();});
 }
 
 function openDemo(demoFile, title) {
@@ -452,7 +464,7 @@ function closeSaveModal() {
 function confirmSaveSession() {
     var name = document.getElementById('sessionName').value.trim();
     if (!name) {
-        alert('Please enter a session name');
+        discoAlert('Please enter a session name');
         return;
     }
     
@@ -500,10 +512,8 @@ function loadSession(event) {
             if (meta.date) msg += ' from ' + new Date(meta.date).toLocaleDateString();
             msg += '?\n\nThis will replace your current session data.';
             
-            if (!confirm(msg)) {
-                event.target.value = '';
-                return;
-            }
+            discoConfirm(msg, null, function(){event.target.value = '';
+                return;});
             
             // Clear existing scrolltastic data
             var keysToRemove = [];
@@ -526,11 +536,11 @@ function loadSession(event) {
                 }
             }
             
-            alert('Session loaded! Restored ' + count + ' items.\n\nRefreshing page...');
+            discoAlert('Session loaded! Restored ' + count + ' items.\n\nRefreshing page...');
             location.reload();
             
         } catch (err) {
-            alert('Error loading session: ' + err.message);
+            discoAlert('Error loading session: ' + err.message);
         }
     };
     reader.readAsText(file);
@@ -547,20 +557,18 @@ function clearAllData() {
     }
     
     if (keysToRemove.length === 0) {
-        alert('No session data to clear.');
+        discoAlert('No session data to clear.');
         return;
     }
     
-    if (!confirm('Clear all session data?\n\nThis will remove ' + keysToRemove.length + ' saved items and cannot be undone.')) {
-        return;
-    }
-    
+    discoConfirm('Clear all session data?\n\nThis will remove ' + keysToRemove.length + ' saved items and cannot be undone.', function() {
     keysToRemove.forEach(function(key) {
         localStorage.removeItem(key);
     });
     
-    alert('Cleared ' + keysToRemove.length + ' items.\n\nRefreshing page...');
+    discoAlert('Cleared ' + keysToRemove.length + ' items.\n\nRefreshing page...');
     location.reload();
+});
 }
 
 function openWorkFolder() {
@@ -572,6 +580,14 @@ document.getElementById('sessionName').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') confirmSaveSession();
     if (e.key === 'Escape') closeSaveModal();
 });
+</script>
+
+<div class="disco-modal-overlay" id="discoModalOverlay" onclick="if(event.target===this)discoCloseModal()"><div class="disco-modal"><div class="disco-modal-title">Disco says:</div><div class="disco-modal-msg" id="discoModalMsg"></div><div class="disco-modal-btns" id="discoModalBtns"></div></div></div>
+<script>
+function discoAlert(msg,cb){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent=typeof msg==='string'?msg:String(msg);b.innerHTML='<button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">OK</button>';o.classList.add('active');window._discoCb=cb||null;window._discoOk=null;window._discoCancel=null;}
+function discoConfirm(msg,onOk,onCancel){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent=typeof msg==='string'?msg:String(msg);b.innerHTML='<button class="disco-btn-secondary" onclick="discoCloseModal(\'cancel\')">Cancel</button><button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">OK</button>';o.classList.add('active');window._discoOk=onOk||null;window._discoCancel=onCancel||null;window._discoCb=null;}
+function discoStackSend(){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent='Sent to Stack Builder!';b.innerHTML='<button class="disco-btn-secondary" onclick="discoCloseModal(\'cancel\')">Close</button><button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">Open Stack Builder now</button>';o.classList.add('active');window._discoOk=function(){window.location.href='stack-builder-clean.html';};window._discoCancel=null;window._discoCb=null;}
+function discoCloseModal(action){document.getElementById('discoModalOverlay').classList.remove('active');if(action==='ok'&&window._discoOk){var f=window._discoOk;window._discoOk=null;f();}else if(action==='cancel'&&window._discoCancel){var f=window._discoCancel;window._discoCancel=null;f();}else if(action==='ok'&&window._discoCb){var f=window._discoCb;window._discoCb=null;f();}}
 </script>
 </body>
 </html>
