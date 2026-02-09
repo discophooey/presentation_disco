@@ -1207,7 +1207,7 @@
         loadState();
         loadSettings();
         updateMode(); // Apply mode visibility
-        checkQueue();
+        setTimeout(checkQueue, 0); // Defer so modal functions are available
     </script>
 <script>
 (function(){
