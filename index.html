@@ -107,7 +107,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
 <div id="loginScreen">
     <div class="login-box">
-        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v209</span></h1>
+        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v210</span></h1>
         <p>Scroll-driven storytelling modules</p>
         <input type="password" id="passwordInput" placeholder="Enter password" onkeypress="if(event.key==='Enter')checkPassword()">
         <button onclick="checkPassword()">Enter</button>
@@ -117,7 +117,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
 <div id="hubScreen">
     <div class="hub-header">
-        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v209</span></h1>
+        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v210</span></h1>
         <button onclick="logout()">Logout</button>
     </div>
     
@@ -274,36 +274,42 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
         <a href="epistemic-text.html" class="module-card" data-module="epistemic-text"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Epistemic Text</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('epistemic-text-demo.html', 'Epistemic Text')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Confidence-tagged article text with toggleable claim verification overlays.</p>
         </a>
         <a href="adversarial-verification.html" class="module-card" data-module="adversarial-verification"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Adversarial Verification</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('adversarial-verification-demo.html', 'Adversarial Verification')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Interactive claim challenges with expandable evidence chains and progress tracking.</p>
         </a>
         <a href="silence-mapping.html" class="module-card" data-module="silence-mapping"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Silence Mapping</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('silence-mapping-demo.html', 'Silence Mapping')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Document reporting gaps — denied sources, pending FOIAs, and scope limitations with expandable timelines.</p>
         </a>
         <a href="multi-angle.html" class="module-card" data-module="multi-angle"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Multi-Angle Investigation</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('multi-angle-demo.html', 'Multi-Angle Investigation')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Compare multiple sources side-by-side with annotated media, lightbox viewer, and source attribution.</p>
         </a>
         <a href="clock-narrative.html" class="module-card" data-module="clock-narrative"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Clock Narrative</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('clock-narrative-demo.html', 'Clock Narrative')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Chronological event timeline with animated clock face, time-synced entries, and scroll-driven playback.</p>
         </a>
         <a href="claim-evidence.html" class="module-card" data-module="claim-evidence"><span class="status-dot"></span>
             <div class="module-card-header">
                 <h3>Claim vs Evidence</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('claim-evidence-demo.html', 'Claim vs Evidence')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Side-by-side claim vs. evidence comparison with split-panel layout and navigable entry dots.</p>
         </a>

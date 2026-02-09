@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clock Narrative Demo</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+.container { text-align: center; }
+.title { color: #4a9eff; font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+.subtitle { color: #666; font-size: 14px; margin-bottom: 24px; }
+.demo { width: 340px; height: 260px; border-radius: 12px; overflow: hidden; background: #0d0d14; box-shadow: 0 20px 60px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; gap: 24px; padding: 20px; }
+.clock-wrap { flex-shrink: 0; }
+.clock { width: 110px; height: 110px; position: relative; }
+.clock-face { width: 100%; height: 100%; border-radius: 50%; border: 2px solid #2a2a3a; position: relative; }
+.tick { position: absolute; width: 1px; height: 6px; background: #3a3a4a; left: 50%; top: 4px; transform-origin: 50% 51px; }
+.tick.major { height: 10px; width: 2px; background: #555; }
+.hand-min { position: absolute; bottom: 50%; left: 50%; width: 2px; height: 36px; background: #e0e0e0; transform-origin: bottom center; border-radius: 1px; margin-left: -1px; }
+.hand-hr { position: absolute; bottom: 50%; left: 50%; width: 3px; height: 24px; background: #aaa; transform-origin: bottom center; border-radius: 1.5px; margin-left: -1.5px; }
+.center-dot { position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: #4a9eff; border-radius: 50%; transform: translate(-50%, -50%); }
+.time-display { font-size: 22px; color: #e0e0e0; font-weight: 300; letter-spacing: 2px; font-variant-numeric: tabular-nums; margin-top: 8px; text-align: center; }
+.events { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.ev { display: flex; align-items: flex-start; gap: 8px; opacity: 0; transform: translateX(10px); transition: all 0.5s ease; }
+.ev.active { opacity: 1; transform: translateX(0); }
+.ev-time { font-size: 10px; color: #4a9eff; font-weight: 600; white-space: nowrap; padding-top: 1px; font-variant-numeric: tabular-nums; }
+.ev-body { flex: 1; }
+.ev-bar { height: 6px; background: #2a2a35; border-radius: 2px; margin-bottom: 4px; }
+.ev-sub { height: 4px; background: #1e1e26; border-radius: 2px; width: 60%; }
+.ev-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 3px; flex-shrink: 0; transition: background 0.3s; }
+.ev.active .ev-dot { box-shadow: 0 0 8px currentColor; }
+.ev:nth-child(1) .ev-dot { color: #f87171; background: #f87171; }
+.ev:nth-child(2) .ev-dot { color: #facc15; background: #facc15; }
+.ev:nth-child(3) .ev-dot { color: #4ade80; background: #4ade80; }
+.ev:nth-child(4) .ev-dot { color: #4a9eff; background: #4a9eff; }
+.timeline-bar { height: 3px; background: #1a1a22; border-radius: 2px; overflow: hidden; margin-top: auto; }
+.timeline-fill { height: 100%; background: #4a9eff; border-radius: 2px; width: 0%; transition: width 0.1s; }
+.hint { margin-top: 20px; color: #666; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.hint span { animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="title">Clock Narrative</div>
+    <div class="subtitle">Chronological events with animated clock</div>
+    <div class="demo">
+        <div class="clock-wrap">
+            <div class="clock">
+                <div class="clock-face" id="face"></div>
+                <div class="hand-hr" id="hr"></div>
+                <div class="hand-min" id="mn"></div>
+                <div class="center-dot"></div>
+            </div>
+            <div class="time-display" id="timeDisp">14:00</div>
+        </div>
+        <div class="events">
+            <div class="ev" id="e0"><div class="ev-dot"></div><div class="ev-time">14:12</div><div class="ev-body"><div class="ev-bar" style="width:85%"></div><div class="ev-sub"></div></div></div>
+            <div class="ev" id="e1"><div class="ev-dot"></div><div class="ev-time">14:28</div><div class="ev-body"><div class="ev-bar" style="width:70%"></div><div class="ev-sub" style="width:50%"></div></div></div>
+            <div class="ev" id="e2"><div class="ev-dot"></div><div class="ev-time">14:45</div><div class="ev-body"><div class="ev-bar" style="width:90%"></div><div class="ev-sub" style="width:65%"></div></div></div>
+            <div class="ev" id="e3"><div class="ev-dot"></div><div class="ev-time">15:03</div><div class="ev-body"><div class="ev-bar" style="width:60%"></div><div class="ev-sub" style="width:40%"></div></div></div>
+            <div class="timeline-bar"><div class="timeline-fill" id="tFill"></div></div>
+        </div>
+    </div>
+    <div class="hint"><span>↕</span> Scroll through time</div>
+</div>
+<script>
+// Build ticks
+var face = document.getElementById('face');
+for (var i = 0; i < 12; i++) {
+    var t = document.createElement('div');
+    t.className = 'tick major';
+    t.style.transform = 'rotate(' + (i * 30) + 'deg)';
+    face.appendChild(t);
+}
+var hr = document.getElementById('hr'), mn = document.getElementById('mn'), timeDisp = document.getElementById('timeDisp'), tFill = document.getElementById('tFill');
+var evs = [document.getElementById('e0'), document.getElementById('e1'), document.getElementById('e2'), document.getElementById('e3')];
+var startMin = 14 * 60, endMin = 15 * 60 + 10;
+var pos = 0, dir = 1;
+function pad(n) { return n < 10 ? '0' + n : '' + n; }
+function animate() {
+    pos += dir * 0.6;
+    if (pos >= 100) dir = -1;
+    if (pos <= 0) dir = 1;
+    var curMin = startMin + (pos / 100) * (endMin - startMin);
+    var h = Math.floor(curMin / 60), m = Math.floor(curMin % 60);
+    var minAngle = (m / 60) * 360;
+    var hrAngle = ((h % 12) / 12) * 360 + (m / 60) * 30;
+    mn.style.transform = 'rotate(' + minAngle + 'deg)';
+    hr.style.transform = 'rotate(' + hrAngle + 'deg)';
+    timeDisp.textContent = pad(h) + ':' + pad(m);
+    tFill.style.width = pos + '%';
+    var evTimes = [12, 28, 45, 63];
+    evs.forEach(function(e, i) {
+        e.classList.toggle('active', (curMin - startMin) >= evTimes[i]);
+    });
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>

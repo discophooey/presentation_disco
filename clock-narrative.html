@@ -10,6 +10,8 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFo
 .container{display:flex;height:calc(100vh - 40px);overflow:hidden}
 .panel{width:420px;min-width:420px;background:#1a1a1a;border-right:1px solid #2a2a2a;overflow-y:auto;padding:16px}
 .preview-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.preview-wrap.fit-frame{background:#1a1a1a}
+.preview-wrap.fit-frame .pv-sticky,.preview-wrap.fit-frame .pv-fixed{border:3px solid #4a9eff;box-sizing:border-box;max-width:700px;margin:0 auto}
 .preview-mode-bar{display:flex;align-items:center;gap:8px;padding:6px 12px;background:#111;border-bottom:1px solid #2a2a2a;flex:0 0 auto}
 .preview-mode-btn{padding:4px 12px;font-size:11px;border-radius:3px;background:#1a1a1a;color:#888;border:1px solid #2a2a2a;cursor:pointer;font-weight:600}
 .preview-mode-btn.active{background:#4a9eff;color:#000;border-color:#4a9eff}
@@ -122,6 +124,7 @@ button.load-btn{flex:0 0 auto;padding:6px 10px;font-size:11px;background:#2a2a2a
 <button class="preview-mode-btn active" id="modeScroll" onclick="setMode('scroll')">Scroll</button>
 <button class="preview-mode-btn" id="modeScrub" onclick="setMode('scrub')">Scrub</button>
 <div class="scrub-controls" id="scrubControls" style="display:none"><span>Scrub:</span><input type="range" id="scrubber" min="0" max="100" value="0"><span id="scrubVal">0%</span></div>
+<label style="margin-left:auto;display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11px;color:#888"><input type="checkbox" id="fitFrameToggle" onchange="toggleFitFrame()"> Fit Frame</label>
 </div>
 <div class="preview-scroll" id="scrollPreview">
 <div class="scroll-spacer" id="scrollSpacer" style="height:500vh">
@@ -155,6 +158,7 @@ function pad(n){return n<10?'0'+n:''+n;}
 function getAR(){var v=document.getElementById('matteAspect').value.split(':');return parseInt(v[0])/parseInt(v[1]);}
 function loadUrl(ei){var input=document.querySelector('#ev-url-'+ei);if(input&&input.value.trim()){events[ei].mediaUrl=input.value.trim();events[ei].mediaType=isVideo(input.value)?'video':(events[ei].mediaType||'image');lastEvIdx={1:-2,2:-2};updatePreview();triggerSave();}}
 function setMode(m){previewMode=m;document.getElementById('modeScroll').classList.toggle('active',m==='scroll');document.getElementById('modeScrub').classList.toggle('active',m==='scrub');document.getElementById('scrollPreview').style.display=m==='scroll'?'':'none';document.getElementById('scrubPreview').style.display=m==='scrub'?'':'none';document.getElementById('scrubControls').style.display=m==='scrub'?'flex':'none';updatePreview();}
+function toggleFitFrame(){var wrap=document.querySelector('.preview-wrap');var toggle=document.getElementById('fitFrameToggle');if(toggle.checked){wrap.classList.add('fit-frame');}else{wrap.classList.remove('fit-frame');}}
 function addEvent(data){events.push(data||{time:document.getElementById('startTime').value||'14:00',text:'',detail:'',source:'',mediaUrl:'',mediaType:'image',type:'event',scale:100,posX:50,posY:50});renderEvents();updatePreview();}
 function removeEvent(i){events.splice(i,1);renderEvents();updatePreview();}
 function updateEvent(i,f,v){events[i][f]=v;if(f==='mediaUrl'){events[i].mediaType=isVideo(v)?'video':events[i].mediaType;lastEvIdx={1:-2,2:-2};}if(f==='scale'||f==='posX'||f==='posY')applyMediaTransform(i);updatePreview();triggerSave();}

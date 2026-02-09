@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adversarial Verification Demo</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+.container { text-align: center; }
+.title { color: #4a9eff; font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+.subtitle { color: #666; font-size: 14px; margin-bottom: 24px; }
+.demo { width: 340px; height: 260px; border-radius: 12px; overflow: hidden; background: #111118; box-shadow: 0 20px 60px rgba(0,0,0,0.5); padding: 20px; display: flex; flex-direction: column; gap: 10px; justify-content: center; }
+.claim { background: #1a1a24; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; opacity: 0.25; transform: translateX(-8px); transition: all 0.5s ease; border-left: 3px solid transparent; }
+.claim.active { opacity: 1; transform: translateX(0); }
+.claim.pass { border-left-color: #4ade80; }
+.claim.fail { border-left-color: #f87171; }
+.claim.pending { border-left-color: #facc15; }
+.icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; transition: all 0.3s; }
+.claim.pass .icon { background: rgba(74,222,128,0.15); color: #4ade80; }
+.claim.fail .icon { background: rgba(248,113,113,0.15); color: #f87171; }
+.claim.pending .icon { background: rgba(250,204,21,0.15); color: #facc15; }
+.claim-body { flex: 1; text-align: left; }
+.claim-text { height: 7px; background: #2a2a35; border-radius: 2px; margin-bottom: 5px; }
+.claim-sub { height: 5px; background: #22222a; border-radius: 2px; width: 60%; }
+.chain { display: flex; gap: 3px; margin-left: auto; }
+.chain-dot { width: 5px; height: 5px; border-radius: 50%; background: #2a2a35; transition: background 0.3s; }
+.claim.active .chain-dot.lit { background: #4a9eff; }
+.progress-bar { height: 4px; background: #1a1a24; border-radius: 2px; overflow: hidden; margin-top: 4px; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #4ade80, #facc15, #4a9eff); width: 0%; border-radius: 2px; transition: width 0.1s; }
+.hint { margin-top: 20px; color: #666; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.hint span { animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="title">Adversarial Verification</div>
+    <div class="subtitle">Challenge claims with expandable evidence chains</div>
+    <div class="demo">
+        <div class="claim pass" id="c0">
+            <div class="icon">✓</div>
+            <div class="claim-body"><div class="claim-text" style="width:85%"></div><div class="claim-sub"></div></div>
+            <div class="chain"><div class="chain-dot lit"></div><div class="chain-dot lit"></div><div class="chain-dot lit"></div></div>
+        </div>
+        <div class="claim fail" id="c1">
+            <div class="icon">✗</div>
+            <div class="claim-body"><div class="claim-text" style="width:75%"></div><div class="claim-sub" style="width:50%"></div></div>
+            <div class="chain"><div class="chain-dot lit"></div><div class="chain-dot lit"></div><div class="chain-dot"></div></div>
+        </div>
+        <div class="claim pending" id="c2">
+            <div class="icon">?</div>
+            <div class="claim-body"><div class="claim-text" style="width:90%"></div><div class="claim-sub" style="width:45%"></div></div>
+            <div class="chain"><div class="chain-dot lit"></div><div class="chain-dot"></div><div class="chain-dot"></div></div>
+        </div>
+        <div class="claim pass" id="c3">
+            <div class="icon">✓</div>
+            <div class="claim-body"><div class="claim-text" style="width:70%"></div><div class="claim-sub" style="width:55%"></div></div>
+            <div class="chain"><div class="chain-dot lit"></div><div class="chain-dot lit"></div><div class="chain-dot lit"></div></div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
+    </div>
+    <div class="hint"><span>↕</span> Scroll to verify claims</div>
+</div>
+<script>
+var claims = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2'), document.getElementById('c3')];
+var pFill = document.getElementById('pFill');
+var pos = 0, dir = 1;
+function animate() {
+    pos += dir * 1;
+    if (pos >= 100) dir = -1;
+    if (pos <= 0) dir = 1;
+    var count = 0;
+    claims.forEach(function(c, i) {
+        var threshold = (i / (claims.length - 1)) * 100;
+        var active = pos >= threshold;
+        c.classList.toggle('active', active);
+        if (active) count++;
+    });
+    pFill.style.width = ((count / claims.length) * 100) + '%';
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>

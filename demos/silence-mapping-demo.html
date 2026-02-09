@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Silence Mapping Demo</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+.container { text-align: center; }
+.title { color: #4a9eff; font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+.subtitle { color: #666; font-size: 14px; margin-bottom: 24px; }
+.demo { width: 340px; height: 260px; border-radius: 12px; overflow: hidden; background: #111116; box-shadow: 0 20px 60px rgba(0,0,0,0.5); padding: 20px 24px; display: flex; flex-direction: column; justify-content: center; }
+.coverage-bar { display: flex; height: 20px; border-radius: 4px; overflow: hidden; margin-bottom: 16px; gap: 2px; }
+.seg { border-radius: 2px; transition: all 0.4s; }
+.seg.covered { background: #1e3a2a; }
+.seg.gap { background: #3a1e1e; position: relative; }
+.seg.gap::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(248,113,113,0.15) 3px, rgba(248,113,113,0.15) 6px); }
+.seg.active.covered { background: #2d5a3d; }
+.seg.active.gap { background: #5a2d2d; }
+.gap-items { display: flex; flex-direction: column; gap: 8px; }
+.gap-item { display: flex; align-items: center; gap: 10px; opacity: 0.2; transform: translateY(6px); transition: all 0.45s ease; }
+.gap-item.active { opacity: 1; transform: translateY(0); }
+.gap-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.gap-icon.denied { background: rgba(248,113,113,0.12); color: #f87171; }
+.gap-icon.foia { background: rgba(250,204,21,0.12); color: #facc15; }
+.gap-icon.scope { background: rgba(148,163,184,0.12); color: #94a3b8; }
+.gap-body { flex: 1; text-align: left; }
+.gap-label { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 3px; }
+.gap-label.denied { color: #f87171; }
+.gap-label.foia { color: #facc15; }
+.gap-label.scope { color: #94a3b8; }
+.gap-bar { height: 6px; background: #222; border-radius: 2px; }
+.hint { margin-top: 20px; color: #666; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.hint span { animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="title">Silence Mapping</div>
+    <div class="subtitle">Document reporting gaps and denied sources</div>
+    <div class="demo">
+        <div class="coverage-bar" id="cbar">
+            <div class="seg covered" style="flex:3"></div>
+            <div class="seg gap" style="flex:1.5"></div>
+            <div class="seg covered" style="flex:2"></div>
+            <div class="seg gap" style="flex:2"></div>
+            <div class="seg covered" style="flex:4"></div>
+            <div class="seg gap" style="flex:1"></div>
+            <div class="seg covered" style="flex:2.5"></div>
+        </div>
+        <div class="gap-items">
+            <div class="gap-item" id="g0">
+                <div class="gap-icon denied">✕</div>
+                <div class="gap-body"><div class="gap-label denied">DENIED SOURCE</div><div class="gap-bar" style="width:80%"></div></div>
+            </div>
+            <div class="gap-item" id="g1">
+                <div class="gap-icon foia">⏳</div>
+                <div class="gap-body"><div class="gap-label foia">PENDING FOIA</div><div class="gap-bar" style="width:65%"></div></div>
+            </div>
+            <div class="gap-item" id="g2">
+                <div class="gap-icon scope">◇</div>
+                <div class="gap-body"><div class="gap-label scope">SCOPE LIMIT</div><div class="gap-bar" style="width:70%"></div></div>
+            </div>
+            <div class="gap-item" id="g3">
+                <div class="gap-icon denied">✕</div>
+                <div class="gap-body"><div class="gap-label denied">DENIED SOURCE</div><div class="gap-bar" style="width:55%"></div></div>
+            </div>
+        </div>
+    </div>
+    <div class="hint"><span>↕</span> Scroll to reveal gaps</div>
+</div>
+<script>
+var items = [document.getElementById('g0'), document.getElementById('g1'), document.getElementById('g2'), document.getElementById('g3')];
+var segs = document.querySelectorAll('.seg');
+var pos = 0, dir = 1;
+function animate() {
+    pos += dir * 1;
+    if (pos >= 100) dir = -1;
+    if (pos <= 0) dir = 1;
+    segs.forEach(function(s, i) {
+        s.classList.toggle('active', pos >= (i / segs.length) * 100);
+    });
+    items.forEach(function(g, i) {
+        g.classList.toggle('active', pos >= ((i + 1) / (items.length + 1)) * 100);
+    });
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>

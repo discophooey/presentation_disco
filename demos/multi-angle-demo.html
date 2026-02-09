@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Angle Investigation Demo</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+.container { text-align: center; }
+.title { color: #4a9eff; font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+.subtitle { color: #666; font-size: 14px; margin-bottom: 24px; }
+.demo { width: 340px; height: 260px; border-radius: 12px; overflow: hidden; background: #111116; box-shadow: 0 20px 60px rgba(0,0,0,0.5); padding: 16px; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+.grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.card { background: #1a1a22; border-radius: 6px; overflow: hidden; opacity: 0.2; transform: scale(0.92); transition: all 0.5s ease; }
+.card.active { opacity: 1; transform: scale(1); }
+.card-img { height: 55px; display: flex; align-items: center; justify-content: center; }
+.card-img svg { width: 24px; height: 24px; opacity: 0.4; }
+.card:nth-child(1) .card-img { background: linear-gradient(135deg, #1a2a3a, #0f1f2f); }
+.card:nth-child(2) .card-img { background: linear-gradient(135deg, #2a1a2a, #1f0f1f); }
+.card:nth-child(3) .card-img { background: linear-gradient(135deg, #1a2a1a, #0f1f0f); }
+.card-body { padding: 6px 8px; }
+.card-source { font-size: 7px; color: #666; letter-spacing: 0.3px; text-transform: uppercase; margin-bottom: 2px; }
+.card-label { font-size: 9px; color: #ccc; font-weight: 500; margin-bottom: 4px; }
+.ann-tag { display: inline-block; font-size: 7px; font-weight: 600; padding: 1px 4px; border-radius: 2px; margin-right: 2px; opacity: 0; transform: translateY(4px); transition: all 0.4s ease; }
+.card.active .ann-tag { opacity: 1; transform: translateY(0); }
+.ann-tag.confirms { background: rgba(74,222,128,0.15); color: #4ade80; }
+.ann-tag.contradicts { background: rgba(248,113,113,0.15); color: #f87171; }
+.ann-tag.unclear { background: rgba(250,204,21,0.15); color: #facc15; }
+.expand-icon { display: block; text-align: center; font-size: 8px; color: #4a9eff; padding: 3px 0; opacity: 0; transition: opacity 0.3s; }
+.card.active .expand-icon { opacity: 0.6; }
+.hint { margin-top: 20px; color: #666; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.hint span { animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="title">Multi-Angle Investigation</div>
+    <div class="subtitle">Compare sources side-by-side with annotations</div>
+    <div class="demo">
+        <div class="grid">
+            <div class="card" id="c0">
+                <div class="card-img"><svg viewBox="0 0 24 24" fill="none" stroke="#4a9eff" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg></div>
+                <div class="card-body">
+                    <div class="card-source">Maxar Technologies</div>
+                    <div class="card-label">Satellite imagery</div>
+                    <div><span class="ann-tag confirms">✓ Confirms</span></div>
+                </div>
+                <div class="expand-icon">⤢</div>
+            </div>
+            <div class="card" id="c1">
+                <div class="card-img"><svg viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+                <div class="card-body">
+                    <div class="card-source">Social media</div>
+                    <div class="card-label">Eyewitness video</div>
+                    <div><span class="ann-tag confirms">✓ Confirms</span><span class="ann-tag contradicts">✗ Contradicts</span></div>
+                </div>
+                <div class="expand-icon">⤢</div>
+            </div>
+            <div class="card" id="c2">
+                <div class="card-img"><svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="card-body">
+                    <div class="card-source">Ministry of Defense</div>
+                    <div class="card-label">Official statement</div>
+                    <div><span class="ann-tag contradicts">✗ Contradicts</span></div>
+                </div>
+                <div class="expand-icon">⤢</div>
+            </div>
+        </div>
+    </div>
+    <div class="hint"><span>↕</span> Scroll to compare sources</div>
+</div>
+<script>
+var cards = [document.getElementById('c0'), document.getElementById('c1'), document.getElementById('c2')];
+var pos = 0, dir = 1;
+function animate() {
+    pos += dir * 1.2;
+    if (pos >= 100) dir = -1;
+    if (pos <= 0) dir = 1;
+    cards.forEach(function(c, i) {
+        var threshold = 15 + i * 30;
+        c.classList.toggle('active', pos >= threshold);
+    });
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>

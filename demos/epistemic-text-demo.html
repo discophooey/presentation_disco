@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Epistemic Text Demo</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+.container { text-align: center; }
+.title { color: #4a9eff; font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+.subtitle { color: #666; font-size: 14px; margin-bottom: 24px; }
+.demo { width: 340px; height: 260px; border-radius: 12px; overflow: hidden; background: #141418; box-shadow: 0 20px 60px rgba(0,0,0,0.5); padding: 24px 28px; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+.line { display: flex; align-items: center; gap: 8px; opacity: 0.3; transform: translateY(6px); transition: all 0.5s ease; }
+.line.active { opacity: 1; transform: translateY(0); }
+.tag { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 6px; border-radius: 3px; white-space: nowrap; flex-shrink: 0; text-transform: uppercase; }
+.tag.confirmed { background: rgba(74,222,128,0.15); color: #4ade80; }
+.tag.probable { background: rgba(250,204,21,0.15); color: #facc15; }
+.tag.disputed { background: rgba(248,113,113,0.15); color: #f87171; }
+.tag.unverified { background: rgba(148,163,184,0.15); color: #94a3b8; }
+.text-bar { height: 8px; border-radius: 2px; flex: 1; }
+.line.active .text-bar { transition: background 0.3s; }
+.text-bar.c { background: rgba(74,222,128,0.25); }
+.text-bar.p { background: rgba(250,204,21,0.2); }
+.text-bar.d { background: rgba(248,113,113,0.2); }
+.text-bar.u { background: rgba(148,163,184,0.15); }
+.text-bar.plain { background: #2a2a2f; }
+.legend { display: flex; gap: 12px; justify-content: center; margin-top: 4px; }
+.legend-item { font-size: 9px; color: #555; display: flex; align-items: center; gap: 4px; }
+.legend-dot { width: 6px; height: 6px; border-radius: 50%; }
+.hint { margin-top: 20px; color: #666; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.hint span { animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="title">Epistemic Text</div>
+    <div class="subtitle">Confidence-tagged claims with verification overlays</div>
+    <div class="demo">
+        <div class="line" id="l0"><div class="text-bar plain" style="width:90%"></div></div>
+        <div class="line" id="l1"><div class="tag confirmed">confirmed</div><div class="text-bar c" style="width:70%"></div></div>
+        <div class="line" id="l2"><div class="text-bar plain" style="width:85%"></div></div>
+        <div class="line" id="l3"><div class="tag probable">probable</div><div class="text-bar p" style="width:60%"></div></div>
+        <div class="line" id="l4"><div class="text-bar plain" style="width:75%"></div></div>
+        <div class="line" id="l5"><div class="tag disputed">disputed</div><div class="text-bar d" style="width:80%"></div></div>
+        <div class="line" id="l6"><div class="text-bar plain" style="width:65%"></div></div>
+        <div class="line" id="l7"><div class="tag unverified">unverified</div><div class="text-bar u" style="width:55%"></div></div>
+        <div class="line" id="l8"><div class="text-bar plain" style="width:90%"></div></div>
+        <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div>Confirmed</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#facc15"></div>Probable</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div>Disputed</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Unverified</div>
+        </div>
+    </div>
+    <div class="hint"><span>↕</span> Scroll to reveal confidence tags</div>
+</div>
+<script>
+var lines = [];
+for (var i = 0; i <= 8; i++) lines.push(document.getElementById('l' + i));
+var pos = 0, dir = 1;
+function animate() {
+    pos += dir * 1.2;
+    if (pos >= 100) dir = -1;
+    if (pos <= 0) dir = 1;
+    lines.forEach(function(line, i) {
+        var threshold = (i / (lines.length - 1)) * 100;
+        line.classList.toggle('active', pos >= threshold);
+    });
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>

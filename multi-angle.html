@@ -9,7 +9,11 @@
 body{background:#0a0a0a;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding-top:40px}
 .container{display:flex;height:calc(100vh - 40px);overflow:hidden}
 .panel{width:420px;min-width:420px;background:#1a1a1a;border-right:1px solid #2a2a2a;overflow-y:auto;padding:16px}
-.preview-area{flex:1;background:#0a0a0a;overflow-y:auto;padding:20px}
+.preview-area{flex:1;background:#0a0a0a;display:flex;flex-direction:column;overflow:hidden}
+.preview-header{padding:8px 12px;background:#111;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#666;flex:0 0 auto}
+.preview-content{flex:1;overflow-y:auto;padding:20px}
+.preview-area.fit-frame{background:#1a1a1a}
+.preview-area.fit-frame .preview-content{max-width:700px;margin:0 auto;border:3px solid #4a9eff;box-sizing:border-box}
 h2{font-size:14px;color:#4a9eff;margin:16px 0 8px;border-bottom:1px solid #2a2a2a;padding-bottom:6px}
 h2:first-child{margin-top:0}
 label{display:block;font-size:11px;color:#888;margin:8px 0 3px}
@@ -118,7 +122,10 @@ button.load-btn{flex:0 0 auto;padding:6px 10px;font-size:11px;background:#2a2a2a
 </div>
 <div style="display:flex;gap:8px;margin-top:16px;padding-bottom:20px"><button onclick="generateExport()">⚡ Generate Export</button><button class="secondary" onclick="window.resetModule()">↺ Reset</button></div>
 </div>
-<div class="preview-area" id="previewArea"></div>
+<div class="preview-area" id="previewArea">
+<div class="preview-header"><span>Preview</span><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="fitFrameToggle" onchange="toggleFitFrame()"> Fit Frame</label></div>
+<div class="preview-content" id="previewContent"></div>
+</div>
 </div>
 
 <!-- LIGHTBOX -->
@@ -220,8 +227,15 @@ function renderSources(){
 
 function playSvg(){return '<svg class="play-icon" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg><svg class="pause-icon" viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>';}
 
+function toggleFitFrame(){
+    var area=document.getElementById('previewArea');
+    var content=document.getElementById('previewContent');
+    var toggle=document.getElementById('fitFrameToggle');
+    if(toggle.checked){area.classList.add('fit-frame');}
+    else{area.classList.remove('fit-frame');}
+}
 function renderPreview(){
-    var area=document.getElementById('previewArea'),cols=document.getElementById('gridCols').value;
+    var area=document.getElementById('previewContent'),cols=document.getElementById('gridCols').value;
     var title=document.getElementById('panelTitle').value,desc=document.getElementById('panelDesc').value;
     var html='<div class="corr-header">';
     if(title)html+='<h1>'+esc(title)+'</h1>';

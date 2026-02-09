@@ -10,6 +10,8 @@ body{background:#0a0a0a;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFo
 .container{display:flex;height:calc(100vh - 40px);overflow:hidden}
 .panel{width:420px;min-width:420px;background:#1a1a1a;border-right:1px solid #2a2a2a;overflow-y:auto;padding:16px}
 .preview-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.preview-wrap.fit-frame{background:#1a1a1a}
+.preview-wrap.fit-frame .pv-sticky,.preview-wrap.fit-frame .pv-fixed{border:3px solid #4a9eff;box-sizing:border-box;max-width:700px;margin:0 auto}
 .preview-mode-bar{display:flex;align-items:center;gap:8px;padding:6px 12px;background:#111;border-bottom:1px solid #2a2a2a;flex:0 0 auto}
 .preview-mode-btn{padding:4px 12px;font-size:11px;border-radius:3px;background:#1a1a1a;color:#888;border:1px solid #2a2a2a;cursor:pointer;font-weight:600}
 .preview-mode-btn.active{background:#4a9eff;color:#000;border-color:#4a9eff}
@@ -143,6 +145,7 @@ button.load-btn{flex:0 0 auto;padding:6px 10px;font-size:11px;background:#2a2a2a
 <button class="preview-mode-btn active" id="modeScroll" onclick="setMode('scroll')">Scroll</button>
 <button class="preview-mode-btn" id="modeScrub" onclick="setMode('scrub')">Scrub</button>
 <div class="scrub-controls" id="scrubControls" style="display:none"><span>Scrub:</span><input type="range" id="scrubber" min="0" max="100" value="0"><span id="scrubVal">0%</span></div>
+<label style="margin-left:auto;display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11px;color:#888"><input type="checkbox" id="fitFrameToggle" onchange="toggleFitFrame()"> Fit Frame</label>
 </div>
 <div class="preview-scroll" id="scrollPreview">
 <div class="scroll-spacer" id="scrollSpacer" style="height:400vh">
@@ -180,6 +183,7 @@ function getTextColors(){
 }
 
 function setMode(m){previewMode=m;document.getElementById('modeScroll').classList.toggle('active',m==='scroll');document.getElementById('modeScrub').classList.toggle('active',m==='scrub');document.getElementById('scrollPreview').style.display=m==='scroll'?'':'none';document.getElementById('scrubPreview').style.display=m==='scrub'?'':'none';document.getElementById('scrubControls').style.display=m==='scrub'?'flex':'none';updatePreview();}
+function toggleFitFrame(){var wrap=document.querySelector('.preview-wrap');var toggle=document.getElementById('fitFrameToggle');if(toggle.checked){wrap.classList.add('fit-frame');}else{wrap.classList.remove('fit-frame');}}
 function addPair(data){var d=lastDefaults();pairs.push(data||{claimText:'',claimSource:'',claimMedia:'',claimMediaType:'image',evidenceText:'',evidenceSource:'',evidenceMedia:'',evidenceMediaType:'image',evidenceDetail:'',verdict:'false',textScale:d.textScale,claimOffY:d.claimOffY,evidOffY:d.evidOffY});renderPairs();updatePreview();}
 function removePair(i){pairs.splice(i,1);renderPairs();updatePreview();}
 function updatePair(i,f,v){pairs[i][f]=v;if(f==='claimMedia')pairs[i].claimMediaType=isVideo(v)?'video':pairs[i].claimMediaType;if(f==='evidenceMedia')pairs[i].evidenceMediaType=isVideo(v)?'video':pairs[i].evidenceMediaType;updatePreview();triggerSave();}
