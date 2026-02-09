@@ -115,13 +115,96 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .disco-modal-btns .disco-btn-primary:hover{background:#3a8eef}
 .disco-modal-btns .disco-btn-secondary{background:#2a2a34;color:#aaa}
 .disco-modal-btns .disco-btn-secondary:hover{background:#3a3a44;color:#ccc}
+
+/* Mode Toggle */
+.mode-toggle { display: flex; background: #1a1a1a; border-radius: 8px; border: 1px solid #2a2a2a; overflow: hidden; }
+.mode-toggle button { padding: 8px 16px; background: none; border: none; color: #666; font-size: 12px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.mode-toggle button.active { background: #4a9eff; color: #000; font-weight: 600; }
+.mode-toggle button:hover:not(.active) { color: #aaa; }
+
+/* Presentation Mode Layout */
+#presentationMode { display: none; max-width: 100%; height: calc(100vh - 80px); }
+#presentationMode.active { display: flex; gap: 0; }
+
+/* Module Palette (left) */
+.pm-palette { width: 220px; min-width: 220px; background: #111; border-right: 1px solid #2a2a2a; display: flex; flex-direction: column; height: 100%; }
+.pm-palette-header { padding: 12px; border-bottom: 1px solid #2a2a2a; }
+.pm-palette-header h3 { color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+.pm-palette-list { flex: 1; overflow-y: auto; padding: 8px; }
+.pm-palette-cat { color: #555; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 6px 4px; margin-top: 4px; }
+.pm-palette-cat:first-child { margin-top: 0; }
+.pm-palette-item { padding: 8px 10px; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 6px; margin-bottom: 4px; cursor: grab; transition: all 0.15s; user-select: none; }
+.pm-palette-item:hover { border-color: #4a9eff; background: #1e1e2a; }
+.pm-palette-item:active { cursor: grabbing; }
+.pm-palette-item .pm-mod-name { color: #ccc; font-size: 12px; font-weight: 500; }
+.pm-palette-item .pm-mod-desc { color: #555; font-size: 10px; margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.pm-palette-item.dragging { opacity: 0.4; }
+
+/* Planner (right) */
+.pm-planner { flex: 1; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+.pm-planner-toolbar { display: flex; gap: 8px; padding: 12px 16px; border-bottom: 1px solid #2a2a2a; align-items: center; flex-wrap: wrap; background: #0f0f0f; }
+.pm-planner-toolbar button { padding: 7px 14px; background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 6px; color: #bbb; font-size: 12px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.pm-planner-toolbar button:hover { background: #3a3a3a; color: #fff; }
+.pm-planner-toolbar button.send-btn { background: #1a3a1a; border-color: #2a5a2a; color: #6c6; }
+.pm-planner-toolbar button.send-btn:hover { background: #2a5a2a; color: #8e8; }
+.pm-planner-toolbar .pm-separator { width: 1px; height: 24px; background: #2a2a2a; }
+.pm-planner-title-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #1a1a1a; }
+.pm-planner-title-row input { flex: 1; background: #111; border: 1px solid #2a2a2a; border-radius: 6px; padding: 8px 12px; color: #e0e0e0; font-size: 16px; font-weight: 600; }
+.pm-planner-title-row input:focus { outline: none; border-color: #4a9eff; }
+
+/* Planner Sections */
+.pm-sections { flex: 1; overflow-y: auto; padding: 12px 16px; }
+.pm-section { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; margin-bottom: 8px; transition: all 0.15s; }
+.pm-section.drag-over { border-color: #4a9eff; box-shadow: 0 0 12px rgba(74,158,255,0.2); }
+.pm-section.dragging-section { opacity: 0.4; }
+.pm-section-header { display: flex; align-items: center; gap: 8px; padding: 10px 12px; cursor: pointer; }
+.pm-section-header:hover { background: #1e1e1e; border-radius: 8px 8px 0 0; }
+.pm-section-drag { cursor: grab; color: #444; font-size: 14px; padding: 2px; }
+.pm-section-drag:active { cursor: grabbing; }
+.pm-section-check { accent-color: #4a9eff; }
+.pm-section-num { color: #555; font-size: 11px; font-weight: 600; min-width: 20px; }
+.pm-section-module { color: #4a9eff; font-size: 13px; font-weight: 500; flex: 1; }
+.pm-section-actions { display: flex; gap: 4px; }
+.pm-section-actions button { background: #2a2a2a; border: none; border-radius: 4px; color: #888; font-size: 11px; padding: 4px 8px; cursor: pointer; }
+.pm-section-actions button:hover { background: #3a3a3a; color: #fff; }
+.pm-section-actions button.open-btn { color: #4a9eff; }
+.pm-section-actions button.open-btn:hover { background: #1a2a3a; }
+.pm-section-actions button.del-btn:hover { background: #3a1a1a; color: #e66; }
+.pm-section-body { padding: 0 12px 12px; display: none; }
+.pm-section.expanded .pm-section-body { display: block; }
+.pm-section-body .pm-field { margin-bottom: 8px; }
+.pm-section-body .pm-field label { display: block; color: #666; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.pm-section-body .pm-field input, .pm-section-body .pm-field textarea, .pm-section-body .pm-field select { width: 100%; background: #111; border: 1px solid #2a2a2a; border-radius: 4px; padding: 6px 8px; color: #ccc; font-size: 12px; font-family: inherit; }
+.pm-section-body .pm-field input:focus, .pm-section-body .pm-field textarea:focus, .pm-section-body .pm-field select:focus { outline: none; border-color: #4a9eff; }
+.pm-section-body .pm-field textarea { resize: vertical; min-height: 50px; }
+.pm-section-body .pm-row { display: flex; gap: 8px; }
+.pm-section-body .pm-row .pm-field { flex: 1; }
+.pm-section-expand-icon { color: #444; font-size: 10px; transition: transform 0.2s; }
+.pm-section.expanded .pm-section-expand-icon { transform: rotate(90deg); }
+
+/* Drop Zone */
+.pm-dropzone { border: 2px dashed #2a2a2a; border-radius: 8px; padding: 40px 20px; text-align: center; color: #444; font-size: 13px; margin-top: 8px; transition: all 0.2s; }
+.pm-dropzone.drag-hover { border-color: #4a9eff; background: rgba(74,158,255,0.05); color: #4a9eff; }
+
+/* Load Projects Modal */
+.pm-load-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; }
+.pm-load-modal.active { display: flex; }
+.pm-load-modal-content { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 24px; max-width: 500px; width: 90%; max-height: 70vh; overflow-y: auto; }
+.pm-load-modal-content h3 { color: #fff; margin-bottom: 16px; }
+.pm-load-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #111; border-radius: 6px; margin-bottom: 6px; }
+.pm-load-item span { color: #ccc; font-size: 13px; }
+.pm-load-item small { color: #555; font-size: 11px; margin-left: 8px; }
+.pm-load-item button { padding: 5px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; }
+.pm-load-btn { background: #4a9eff; color: #000; font-weight: 500; margin-right: 4px; }
+.pm-del-btn { background: #2a2a2a; color: #888; }
+.pm-del-btn:hover { background: #3a1a1a; color: #e66; }
 </style>
 </head>
 <body>
 
 <div id="loginScreen">
     <div class="login-box">
-        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v215</span></h1>
+        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v216</span></h1>
         <p>Scroll-driven storytelling modules</p>
         <input type="password" id="passwordInput" placeholder="Enter password" onkeypress="if(event.key==='Enter')checkPassword()">
         <button onclick="checkPassword()">Enter</button>
@@ -131,9 +214,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
 <div id="hubScreen">
     <div class="hub-header">
-        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v215</span></h1>
-        <button onclick="logout()">Logout</button>
+        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v216</span></h1>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <div class="mode-toggle">
+                <button id="assetModeBtn" class="active" onclick="switchMode('asset')">Asset Mode</button>
+                <button id="presentationModeBtn" onclick="switchMode('presentation')">Presentation Mode</button>
+            </div>
+            <button onclick="logout()">Logout</button>
+        </div>
     </div>
+    
+    <div id="assetMode">
     
     <div class="section-title">Modules</div>
     <div class="landing-grid">
@@ -347,6 +438,40 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
             <input type="file" id="loadSessionInput" accept=".json" onchange="loadSession(event)" style="display:none;">
         </div>
         <button onclick="openWorkFolder()" style="padding:12px 24px;background:#2a2a2a;border:1px solid #3a3a3a;border-radius:8px;color:#e0e0e0;cursor:pointer;font-size:14px;">📁 Work Folder</button>
+    </div>
+    </div><!-- end assetMode -->
+
+    <!-- Presentation Mode -->
+    <div id="presentationMode">
+        <div class="pm-palette">
+            <div class="pm-palette-header"><h3>Modules</h3></div>
+            <div class="pm-palette-list" id="pmPaletteList"></div>
+        </div>
+        <div class="pm-planner">
+            <div class="pm-planner-toolbar">
+                <button onclick="pmNew()">✚ New</button>
+                <button onclick="pmSave()">💾 Save</button>
+                <button onclick="pmOpenLoad()">📂 Load</button>
+                <div class="pm-separator"></div>
+                <button class="send-btn" onclick="pmSendAll()">📚 Send All</button>
+                <button class="send-btn" onclick="pmSendSelected()">☑ Send Selected</button>
+            </div>
+            <div class="pm-planner-title-row">
+                <input type="text" id="pmProjectTitle" value="Untitled Presentation" placeholder="Presentation title...">
+            </div>
+            <div class="pm-sections" id="pmSections">
+                <div class="pm-dropzone" id="pmDropzone">Drag modules here to build your presentation</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Projects Modal (Presentation Mode) -->
+    <div class="pm-load-modal" id="pmLoadModal" onclick="if(event.target===this)pmCloseLoad()">
+        <div class="pm-load-modal-content">
+            <h3>Load Project</h3>
+            <div id="pmLoadList"></div>
+            <div style="text-align:right;margin-top:16px;"><button onclick="pmCloseLoad()" style="padding:8px 16px;background:#2a2a2a;border:none;border-radius:6px;color:#aaa;cursor:pointer;">Close</button></div>
+        </div>
     </div>
 </div>
 
@@ -579,6 +704,491 @@ document.getElementById('sessionName').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') confirmSaveSession();
     if (e.key === 'Escape') closeSaveModal();
 });
+
+// =========================================
+// PRESENTATION MODE
+// =========================================
+
+var PM_STORAGE = 'disco_pm_planner';
+var PM_PROJECTS = 'disco_pm_projects';
+var PM_MODE_KEY = 'disco_hub_mode';
+var pmSections = [];
+var pmSectionId = 0;
+
+// Module registry
+var PM_MODULES = [
+    { cat: 'Visual', name: 'Before/After', href: 'before-after.html', key: 'before-after', desc: 'Scroll-driven comparison slider' },
+    { cat: 'Visual', name: 'Card Stack', href: 'card-stack.html', key: 'card-stack', desc: 'Cards that fly away on scroll' },
+    { cat: 'Visual', name: 'Chart', href: 'chart.html', key: 'chart', desc: 'Animated bar and pie charts' },
+    { cat: 'Visual', name: 'Collage', href: 'collage.html', key: 'collage', desc: 'Multi-image grid layout' },
+    { cat: 'Visual', name: 'Doc Module', href: 'doc-module.html', key: 'doc-module', desc: 'Document with highlight bars' },
+    { cat: 'Visual', name: 'Gallery', href: 'gallery.html', key: 'gallery', desc: 'Image sequence with transitions' },
+    { cat: 'Visual', name: 'Globe', href: 'globe.html', key: 'globe', desc: '3D globe with markers' },
+    { cat: 'Visual', name: 'Hotspots', href: 'hotspots.html', key: 'hotspots', desc: 'Interactive annotation points' },
+    { cat: 'Visual', name: 'Layers', href: 'layers.html', key: 'layers', desc: 'Multi-layer parallax' },
+    { cat: 'Visual', name: 'Matte', href: 'matte.html', key: 'matte', desc: 'Text/image matte reveals' },
+    { cat: 'Visual', name: 'Single Image', href: 'single-image.html', key: 'single-image', desc: 'Hero images with scroll effects' },
+    { cat: 'Visual', name: 'Stat Counter', href: 'stat-counter.html', key: 'stat-counter', desc: 'Animated number counters' },
+    { cat: 'Visual', name: 'Timeline', href: 'timeline.html', key: 'timeline', desc: 'Vertical timeline with events' },
+    { cat: 'Visual', name: 'Video', href: 'video.html', key: 'video', desc: 'Scroll-controlled video' },
+    { cat: 'Visual', name: 'Zoom Detail', href: 'zoom-detail.html', key: 'zoom-detail', desc: 'Progressive zoom into image' },
+    { cat: 'Text', name: 'Text Scroll', href: 'text-scroll.html', key: 'text-scroll', desc: 'Statement blocks with backgrounds' },
+    { cat: 'Text', name: 'Chapter Marker', href: 'chapter-marker.html', key: 'chapter-marker', desc: 'Section dividers with text reveals' },
+    { cat: 'Text', name: 'Key Facts Panel', href: 'key-facts.html', key: 'key-facts', desc: 'Structured info box' },
+    { cat: 'Text', name: 'Body Module', href: 'body-module.html', key: 'body-module', desc: 'Article text with floating image' },
+    { cat: 'Text', name: 'Pull Quote', href: 'pull-quote.html', key: 'pull-quote', desc: 'Large-format quote display' },
+    { cat: 'Fact Focus', name: 'Epistemic Text', href: 'epistemic-text.html', key: 'epistemic-text', desc: 'Confidence-tagged text' },
+    { cat: 'Fact Focus', name: 'Adversarial Verification', href: 'adversarial-verification.html', key: 'adversarial-verification', desc: 'Claim challenges with evidence' },
+    { cat: 'Fact Focus', name: 'Silence Mapping', href: 'silence-mapping.html', key: 'silence-mapping', desc: 'Document reporting gaps' },
+    { cat: 'Fact Focus', name: 'Multi-Angle Investigation', href: 'multi-angle.html', key: 'multi-angle', desc: 'Compare multiple sources' },
+    { cat: 'Fact Focus', name: 'Clock Narrative', href: 'clock-narrative.html', key: 'clock-narrative', desc: 'Chronological event timeline' },
+    { cat: 'Fact Focus', name: 'Claim vs Evidence', href: 'claim-evidence.html', key: 'claim-evidence', desc: 'Side-by-side claim comparison' }
+];
+
+// Mode switching
+function switchMode(mode) {
+    var assetMode = document.getElementById('assetMode');
+    var presMode = document.getElementById('presentationMode');
+    var assetBtn = document.getElementById('assetModeBtn');
+    var presBtn = document.getElementById('presentationModeBtn');
+    
+    if (mode === 'presentation') {
+        assetMode.style.display = 'none';
+        presMode.classList.add('active');
+        assetBtn.classList.remove('active');
+        presBtn.classList.add('active');
+        sessionStorage.setItem(PM_MODE_KEY, 'presentation');
+    } else {
+        assetMode.style.display = '';
+        presMode.classList.remove('active');
+        presBtn.classList.remove('active');
+        assetBtn.classList.add('active');
+        sessionStorage.setItem(PM_MODE_KEY, 'asset');
+    }
+}
+
+// Build palette
+function pmBuildPalette() {
+    var list = document.getElementById('pmPaletteList');
+    var html = '';
+    var lastCat = '';
+    PM_MODULES.forEach(function(mod, i) {
+        if (mod.cat !== lastCat) {
+            html += '<div class="pm-palette-cat">' + mod.cat + '</div>';
+            lastCat = mod.cat;
+        }
+        html += '<div class="pm-palette-item" draggable="true" data-idx="' + i + '" ondragstart="pmDragStart(event,' + i + ')" ondblclick="window.open(\'' + mod.href + '\')">' +
+            '<div class="pm-mod-name">' + mod.name + '</div>' +
+            '<div class="pm-mod-desc">' + mod.desc + '</div></div>';
+    });
+    list.innerHTML = html;
+}
+
+// Drag from palette
+var pmDragIdx = -1;
+function pmDragStart(e, idx) {
+    pmDragIdx = idx;
+    e.dataTransfer.effectAllowed = 'copy';
+    e.dataTransfer.setData('text/plain', idx);
+    e.target.classList.add('dragging');
+    setTimeout(function() { e.target.classList.remove('dragging'); }, 200);
+}
+
+// Drop zone and section reordering
+function pmInitDrop() {
+    var sectionsEl = document.getElementById('pmSections');
+    
+    sectionsEl.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = pmDragIdx >= 0 ? 'copy' : 'move';
+        var dz = document.getElementById('pmDropzone');
+        if (dz) dz.classList.add('drag-hover');
+        
+        // Find closest section for reorder indicator
+        var sections = sectionsEl.querySelectorAll('.pm-section');
+        sections.forEach(function(s) { s.classList.remove('drag-over'); });
+        var closest = pmGetClosestSection(sectionsEl, e.clientY);
+        if (closest) closest.classList.add('drag-over');
+    });
+    
+    sectionsEl.addEventListener('dragleave', function(e) {
+        if (!sectionsEl.contains(e.relatedTarget)) {
+            var dz = document.getElementById('pmDropzone');
+            if (dz) dz.classList.remove('drag-hover');
+            sectionsEl.querySelectorAll('.pm-section').forEach(function(s) { s.classList.remove('drag-over'); });
+        }
+    });
+    
+    sectionsEl.addEventListener('drop', function(e) {
+        e.preventDefault();
+        var dz = document.getElementById('pmDropzone');
+        if (dz) dz.classList.remove('drag-hover');
+        sectionsEl.querySelectorAll('.pm-section').forEach(function(s) { s.classList.remove('drag-over'); });
+        
+        if (pmDragIdx >= 0) {
+            // Drop from palette — add new section
+            var mod = PM_MODULES[pmDragIdx];
+            var insertIdx = pmGetInsertIndex(sectionsEl, e.clientY);
+            pmAddSection(mod, insertIdx);
+            pmDragIdx = -1;
+        } else {
+            // Reorder existing section
+            var dragId = parseInt(e.dataTransfer.getData('text/plain'));
+            if (!isNaN(dragId)) {
+                var insertIdx = pmGetInsertIndex(sectionsEl, e.clientY);
+                var fromIdx = pmSections.findIndex(function(s) { return s.id === dragId; });
+                if (fromIdx >= 0 && fromIdx !== insertIdx) {
+                    var item = pmSections.splice(fromIdx, 1)[0];
+                    if (insertIdx > fromIdx) insertIdx--;
+                    pmSections.splice(insertIdx, 0, item);
+                    pmRender();
+                    pmAutoSave();
+                }
+            }
+        }
+    });
+}
+
+function pmGetClosestSection(container, y) {
+    var sections = container.querySelectorAll('.pm-section');
+    var closest = null;
+    var closestDist = Infinity;
+    sections.forEach(function(s) {
+        var rect = s.getBoundingClientRect();
+        var mid = rect.top + rect.height / 2;
+        var dist = Math.abs(y - mid);
+        if (dist < closestDist) {
+            closestDist = dist;
+            closest = s;
+        }
+    });
+    return closest;
+}
+
+function pmGetInsertIndex(container, y) {
+    var sections = container.querySelectorAll('.pm-section');
+    for (var i = 0; i < sections.length; i++) {
+        var rect = sections[i].getBoundingClientRect();
+        if (y < rect.top + rect.height / 2) return i;
+    }
+    return pmSections.length;
+}
+
+// Section management
+function pmAddSection(mod, insertIdx) {
+    var section = {
+        id: ++pmSectionId,
+        moduleKey: mod.key,
+        moduleName: mod.name,
+        moduleHref: mod.href,
+        title: '',
+        notes: '',
+        layout: 'viewport',
+        scrollBudget: 2000,
+        selected: false,
+        expanded: false
+    };
+    if (insertIdx !== undefined && insertIdx < pmSections.length) {
+        pmSections.splice(insertIdx, 0, section);
+    } else {
+        pmSections.push(section);
+    }
+    pmRender();
+    pmAutoSave();
+}
+
+function pmRemoveSection(id) {
+    discoConfirm('Remove this section?', function() {
+        pmSections = pmSections.filter(function(s) { return s.id !== id; });
+        pmRender();
+        pmAutoSave();
+    });
+}
+
+function pmToggleExpand(id) {
+    var s = pmSections.find(function(s) { return s.id === id; });
+    if (s) s.expanded = !s.expanded;
+    pmRender();
+}
+
+function pmOpenModule(section) {
+    window.open(section.moduleHref);
+}
+
+function pmUpdateField(id, field, value) {
+    var s = pmSections.find(function(s) { return s.id === id; });
+    if (s) {
+        s[field] = value;
+        pmAutoSave();
+    }
+}
+
+function pmToggleSelect(id) {
+    var s = pmSections.find(function(s) { return s.id === id; });
+    if (s) {
+        s.selected = !s.selected;
+        pmAutoSave();
+    }
+}
+
+function pmDuplicateSection(id) {
+    var orig = pmSections.find(function(s) { return s.id === id; });
+    if (!orig) return;
+    var idx = pmSections.indexOf(orig);
+    var copy = JSON.parse(JSON.stringify(orig));
+    copy.id = ++pmSectionId;
+    copy.title = orig.title ? orig.title + ' (copy)' : '';
+    pmSections.splice(idx + 1, 0, copy);
+    pmRender();
+    pmAutoSave();
+}
+
+// Render sections
+function pmRender() {
+    var container = document.getElementById('pmSections');
+    var html = '';
+    
+    pmSections.forEach(function(s, i) {
+        var expandedClass = s.expanded ? ' expanded' : '';
+        html += '<div class="pm-section' + expandedClass + '" data-id="' + s.id + '" draggable="true" ondragstart="pmSectionDragStart(event,' + s.id + ')">' +
+            '<div class="pm-section-header" onclick="pmToggleExpand(' + s.id + ')">' +
+                '<span class="pm-section-drag" title="Drag to reorder">⠿</span>' +
+                '<input type="checkbox" class="pm-section-check" ' + (s.selected ? 'checked' : '') + ' onclick="event.stopPropagation();pmToggleSelect(' + s.id + ')" title="Select for send">' +
+                '<span class="pm-section-num">' + (i + 1) + '</span>' +
+                '<span class="pm-section-module">' + s.moduleName + '</span>' +
+                (s.title ? '<span style="color:#888;font-size:11px;margin-right:8px;">' + s.title.substring(0, 30) + '</span>' : '') +
+                '<span class="pm-section-expand-icon">▶</span>' +
+                '<div class="pm-section-actions" onclick="event.stopPropagation()">' +
+                    '<button class="open-btn" onclick="pmOpenModule(pmSections.find(function(x){return x.id===' + s.id + '}))" title="Open module editor">Open</button>' +
+                    '<button onclick="pmDuplicateSection(' + s.id + ')" title="Duplicate">⧉</button>' +
+                    '<button class="del-btn" onclick="pmRemoveSection(' + s.id + ')" title="Delete">✕</button>' +
+                '</div>' +
+            '</div>' +
+            '<div class="pm-section-body">' +
+                '<div class="pm-field"><label>Section Title</label><input type="text" value="' + (s.title || '').replace(/"/g, '&quot;') + '" onchange="pmUpdateField(' + s.id + ',\'title\',this.value)" placeholder="e.g. The Aftermath"></div>' +
+                '<div class="pm-field"><label>Notes</label><textarea onchange="pmUpdateField(' + s.id + ',\'notes\',this.value)" placeholder="Editorial notes...">' + (s.notes || '') + '</textarea></div>' +
+                '<div class="pm-row">' +
+                    '<div class="pm-field"><label>Layout</label><select onchange="pmUpdateField(' + s.id + ',\'layout\',this.value)">' +
+                        '<option value="viewport"' + (s.layout === 'viewport' ? ' selected' : '') + '>Viewport (scroll-driven)</option>' +
+                        '<option value="flow"' + (s.layout === 'flow' ? ' selected' : '') + '>Flow (natural height)</option>' +
+                    '</select></div>' +
+                    '<div class="pm-field"><label>Scroll Budget (vh)</label><input type="number" value="' + s.scrollBudget + '" onchange="pmUpdateField(' + s.id + ',\'scrollBudget\',parseInt(this.value)||2000)" min="0" step="100"></div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    });
+    
+    html += '<div class="pm-dropzone" id="pmDropzone">' + 
+        (pmSections.length === 0 ? 'Drag modules here to build your presentation' : '+ Drop module here') + 
+        '</div>';
+    
+    container.innerHTML = html;
+}
+
+// Section drag for reorder
+function pmSectionDragStart(e, id) {
+    pmDragIdx = -1; // Not from palette
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', id);
+    e.target.classList.add('dragging-section');
+    setTimeout(function() { e.target.classList.remove('dragging-section'); }, 200);
+}
+
+// Auto-save
+function pmAutoSave() {
+    var data = {
+        title: document.getElementById('pmProjectTitle').value,
+        sections: pmSections,
+        sectionId: pmSectionId
+    };
+    localStorage.setItem(PM_STORAGE, JSON.stringify(data));
+}
+
+// Load state
+function pmLoadState() {
+    try {
+        var data = JSON.parse(localStorage.getItem(PM_STORAGE));
+        if (data) {
+            document.getElementById('pmProjectTitle').value = data.title || 'Untitled Presentation';
+            pmSections = data.sections || [];
+            pmSectionId = data.sectionId || 0;
+        }
+    } catch(e) {}
+    pmRender();
+}
+
+// New project
+function pmNew() {
+    if (pmSections.length > 0) {
+        discoConfirm('Start a new project? Unsaved changes will be lost.', function() {
+            document.getElementById('pmProjectTitle').value = 'Untitled Presentation';
+            pmSections = [];
+            pmSectionId = 0;
+            pmRender();
+            pmAutoSave();
+        });
+    } else {
+        document.getElementById('pmProjectTitle').value = 'Untitled Presentation';
+        pmSections = [];
+        pmSectionId = 0;
+        pmRender();
+        pmAutoSave();
+    }
+}
+
+// Save project
+function pmSave() {
+    var title = document.getElementById('pmProjectTitle').value.trim() || 'Untitled';
+    var projects = JSON.parse(localStorage.getItem(PM_PROJECTS) || '[]');
+    
+    var project = {
+        id: Date.now(),
+        title: title,
+        date: new Date().toISOString(),
+        sections: JSON.parse(JSON.stringify(pmSections)),
+        sectionId: pmSectionId
+    };
+    projects.push(project);
+    localStorage.setItem(PM_PROJECTS, JSON.stringify(projects));
+    discoAlert('Project saved: ' + title);
+}
+
+// Load project
+function pmOpenLoad() {
+    var projects = JSON.parse(localStorage.getItem(PM_PROJECTS) || '[]');
+    var container = document.getElementById('pmLoadList');
+    
+    if (projects.length === 0) {
+        container.innerHTML = '<p style="color:#666;text-align:center;padding:30px;">No saved projects</p>';
+    } else {
+        var html = '';
+        projects.forEach(function(p) {
+            var date = new Date(p.date).toLocaleDateString();
+            html += '<div class="pm-load-item">' +
+                '<div><span>' + p.title + '</span><small>' + date + ' · ' + (p.sections ? p.sections.length : 0) + ' sections</small></div>' +
+                '<div><button class="pm-load-btn" onclick="pmLoadProject(' + p.id + ')">Load</button>' +
+                '<button class="pm-del-btn" onclick="pmDeleteProject(' + p.id + ')">Delete</button></div></div>';
+        });
+        container.innerHTML = html;
+    }
+    document.getElementById('pmLoadModal').classList.add('active');
+}
+
+function pmCloseLoad() {
+    document.getElementById('pmLoadModal').classList.remove('active');
+}
+
+function pmLoadProject(id) {
+    var projects = JSON.parse(localStorage.getItem(PM_PROJECTS) || '[]');
+    var project = projects.find(function(p) { return p.id === id; });
+    if (!project) return;
+    
+    document.getElementById('pmProjectTitle').value = project.title;
+    pmSections = project.sections || [];
+    pmSectionId = project.sectionId || 0;
+    pmRender();
+    pmAutoSave();
+    pmCloseLoad();
+}
+
+function pmDeleteProject(id) {
+    discoConfirm('Delete this project?', function() {
+        var projects = JSON.parse(localStorage.getItem(PM_PROJECTS) || '[]');
+        projects = projects.filter(function(p) { return p.id !== id; });
+        localStorage.setItem(PM_PROJECTS, JSON.stringify(projects));
+        pmOpenLoad(); // Refresh list
+    });
+}
+
+// Send to Stack Builder
+function pmSendSections(sections) {
+    if (sections.length === 0) {
+        discoAlert('No sections to send.');
+        return;
+    }
+    
+    // Collect generated HTML from each module's localStorage
+    var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
+    var sent = 0;
+    var skipped = [];
+    
+    sections.forEach(function(s) {
+        var storageKey = 'disco_' + s.moduleKey;
+        var saved = localStorage.getItem(storageKey);
+        var html = '';
+        
+        if (saved) {
+            try {
+                var data = JSON.parse(saved);
+                html = data.exportCode || data.html || data.code || '';
+            } catch(e) {
+                html = '';
+            }
+        }
+        
+        if (html) {
+            queue.push({
+                name: s.title || s.moduleName,
+                html: html,
+                layout: s.layout,
+                timestamp: Date.now()
+            });
+            sent++;
+        } else {
+            skipped.push(s.moduleName + (s.title ? ' (' + s.title + ')' : ''));
+        }
+    });
+    
+    if (sent === 0) {
+        discoAlert('No modules have generated HTML yet.\n\nOpen each module and generate its export code first.');
+        return;
+    }
+    
+    localStorage.setItem('disco_stack_queue', JSON.stringify(queue));
+    
+    var msg = 'Sent ' + sent + ' module' + (sent > 1 ? 's' : '') + ' to Stack Builder!';
+    if (skipped.length > 0) {
+        msg += '\n\nSkipped (no export code):\n' + skipped.join('\n');
+    }
+    
+    var o = document.getElementById('discoModalOverlay');
+    var m = document.getElementById('discoModalMsg');
+    var b = document.getElementById('discoModalBtns');
+    m.textContent = msg;
+    b.innerHTML = '<button class="disco-btn-secondary" onclick="discoCloseModal(\'cancel\')">Close</button><button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">Open Stack Builder now</button>';
+    o.classList.add('active');
+    window._discoOk = function() { window.location.href = 'stack-builder-clean.html'; };
+    window._discoCancel = null;
+    window._discoCb = null;
+}
+
+function pmSendAll() {
+    pmSendSections(pmSections);
+}
+
+function pmSendSelected() {
+    var selected = pmSections.filter(function(s) { return s.selected; });
+    if (selected.length === 0) {
+        discoAlert('No sections selected.\n\nUse the checkboxes to select sections to send.');
+        return;
+    }
+    pmSendSections(selected);
+}
+
+// Title auto-save
+document.getElementById('pmProjectTitle').addEventListener('input', function() {
+    pmAutoSave();
+});
+
+// Initialize presentation mode
+pmBuildPalette();
+pmInitDrop();
+pmLoadState();
+
+// Restore mode
+if (sessionStorage.getItem(PM_MODE_KEY) === 'presentation') {
+    switchMode('presentation');
+}
 </script>
 
 <div class="disco-modal-overlay" id="discoModalOverlay" onclick="if(event.target===this)discoCloseModal()"><div class="disco-modal"><div class="disco-modal-title">Disco says:</div><div class="disco-modal-msg" id="discoModalMsg"></div><div class="disco-modal-btns" id="discoModalBtns"></div></div></div>
