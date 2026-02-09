@@ -1202,10 +1202,10 @@ function discoCloseModal(action){document.getElementById('discoModalOverlay').cl
                         sections.push(section);
                     });
                     renderSections();
-                    saveState();});
-                
-                // Clear queue after processing
-                localStorage.removeItem('disco_stack_queue');
+                    saveState();
+                    // Clear queue after processing
+                    localStorage.removeItem('disco_stack_queue');
+                });
             } catch (e) {
                 console.warn('Could not process queue:', e);
             }

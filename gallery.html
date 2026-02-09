@@ -1189,12 +1189,12 @@ function toggleFitFrame() {
 
  function remove(i) {
  discoConfirm('Delete this image?', function(){images.splice(i, 1);
- render();});
+ render(); saveState();});
  }
 
  function clearAll() {
  discoConfirm('Clear all images?', function(){images = [];
- render();});
+ render(); saveState();});
  }
 
  function exportHTML() {

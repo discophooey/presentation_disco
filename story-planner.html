@@ -1628,13 +1628,14 @@ function handleDragEnd() {
 
 // Save/Load
 function newProject() {
-    if(sections.length > 0){discoConfirm('Start a new project? Unsaved changes will be lost.', function(){
-document.getElementById('projectTitle').value = 'Untitled Presentation';
-    sections = [];
-    sectionIdCounter = 0;
-    editingId = null;
-    renderSections();
-});} else {return;}
+    function doReset() {
+        document.getElementById('projectTitle').value = 'Untitled Presentation';
+        sections = [];
+        sectionIdCounter = 0;
+        editingId = null;
+        renderSections();
+    }
+    if(sections.length > 0){discoConfirm('Start a new project? Unsaved changes will be lost.', doReset);} else {doReset();}
 }
 
 function openLoadModal() {
