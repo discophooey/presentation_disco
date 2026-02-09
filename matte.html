@@ -109,8 +109,8 @@ input[type="range"] { width: 100%; margin: 8px 0; }
 textarea#exportCode { width: 100%; height: 300px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px; color: #4a9eff; font-family: monospace; font-size: 12px; resize: vertical; }
 
 /* Disco Modal */
-.disco-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-.disco-modal-overlay.active{opacity:1;pointer-events:auto}
+.disco-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.disco-modal-overlay.active{display:flex;opacity:1;pointer-events:auto}
 .disco-modal{background:#1e1e24;border-radius:12px;padding:24px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);transform:scale(0.95);transition:transform 0.2s}
 .disco-modal-overlay.active .disco-modal{transform:scale(1)}
 .disco-modal-title{color:#4a9eff;font-size:14px;font-weight:600;margin-bottom:12px}

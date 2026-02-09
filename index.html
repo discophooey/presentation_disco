@@ -103,8 +103,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .demo-modal-body iframe { width: 100%; height: 100%; border: none; }
 
 /* Disco Modal */
-.disco-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-.disco-modal-overlay.active{opacity:1;pointer-events:auto}
+.disco-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.disco-modal-overlay.active{display:flex;opacity:1;pointer-events:auto}
 .disco-modal{background:#1e1e24;border-radius:12px;padding:24px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);transform:scale(0.95);transition:transform 0.2s}
 .disco-modal-overlay.active .disco-modal{transform:scale(1)}
 .disco-modal-title{color:#4a9eff;font-size:14px;font-weight:600;margin-bottom:12px}
@@ -121,7 +121,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
 <div id="loginScreen">
     <div class="login-box">
-        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v212</span></h1>
+        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v213</span></h1>
         <p>Scroll-driven storytelling modules</p>
         <input type="password" id="passwordInput" placeholder="Enter password" onkeypress="if(event.key==='Enter')checkPassword()">
         <button onclick="checkPassword()">Enter</button>
@@ -131,7 +131,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
 <div id="hubScreen">
     <div class="hub-header">
-        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v212</span></h1>
+        <h1>Presentation Disco <span style="font-size: 12px; font-weight: 300; color: #666;">v213</span></h1>
         <button onclick="logout()">Logout</button>
     </div>
     
@@ -536,6 +536,7 @@ function loadSession(event) {
             
             discoAlert('Session loaded! Restored ' + count + ' items.\n\nRefreshing page...');
             location.reload();
+            });
             
         } catch (err) {
             discoAlert('Error loading session: ' + err.message);
