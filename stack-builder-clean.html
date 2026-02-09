@@ -857,15 +857,7 @@
             });
 
             if (!combinedBody.trim()) {
-                return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Empty Stack</title></head><body style="padding: 100px; text-align: center; font-family: sans-serif; color: #666;"><h1>No Content</h1><p>All sections were empty.</p>
-<div class="disco-modal-overlay" id="discoModalOverlay" onclick="if(event.target===this)discoCloseModal()"><div class="disco-modal"><div class="disco-modal-title">Disco says:</div><div class="disco-modal-msg" id="discoModalMsg"></div><div class="disco-modal-btns" id="discoModalBtns"></div></div></div>
-<script>
-function discoAlert(msg,cb){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent=typeof msg==='string'?msg:String(msg);b.innerHTML='<button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">OK</button>';o.classList.add('active');window._discoCb=cb||null;window._discoOk=null;window._discoCancel=null;}
-function discoConfirm(msg,onOk,onCancel){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent=typeof msg==='string'?msg:String(msg);b.innerHTML='<button class="disco-btn-secondary" onclick="discoCloseModal(\'cancel\')">Cancel</button><button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">OK</button>';o.classList.add('active');window._discoOk=onOk||null;window._discoCancel=onCancel||null;window._discoCb=null;}
-function discoStackSend(){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent='Sent to Stack Builder!';b.innerHTML='<button class="disco-btn-secondary" onclick="discoCloseModal(\'cancel\')">Close</button><button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">Open Stack Builder now</button>';o.classList.add('active');window._discoOk=function(){window.location.href='stack-builder-clean.html';};window._discoCancel=null;window._discoCb=null;}
-function discoCloseModal(action){document.getElementById('discoModalOverlay').classList.remove('active');if(action==='ok'&&window._discoOk){var f=window._discoOk;window._discoOk=null;f();}else if(action==='cancel'&&window._discoCancel){var f=window._discoCancel;window._discoCancel=null;f();}else if(action==='ok'&&window._discoCb){var f=window._discoCb;window._discoCb=null;f();}}
-</script>
-</body></html>';
+                return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Empty Stack</title></head><body style="padding: 100px; text-align: center; font-family: sans-serif; color: #666;"><h1>No Content</h1><p>All sections were empty.</p></body></html>';
             }
 
             // Build the final combined HTML with wrapper for CMS isolation
@@ -1227,6 +1219,13 @@ function discoCloseModal(action){document.getElementById('discoModalOverlay').cl
     }
   });
 })();
+</script>
+<div class="disco-modal-overlay" id="discoModalOverlay" onclick="if(event.target===this)discoCloseModal()"><div class="disco-modal"><div class="disco-modal-title">Disco says:</div><div class="disco-modal-msg" id="discoModalMsg"></div><div class="disco-modal-btns" id="discoModalBtns"></div></div></div>
+<script>
+function discoAlert(msg,cb){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent=typeof msg==='string'?msg:String(msg);b.innerHTML='<button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">OK</button>';o.classList.add('active');window._discoCb=cb||null;window._discoOk=null;window._discoCancel=null;}
+function discoConfirm(msg,onOk,onCancel){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent=typeof msg==='string'?msg:String(msg);b.innerHTML='<button class="disco-btn-secondary" onclick="discoCloseModal(\'cancel\')">Cancel</button><button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">OK</button>';o.classList.add('active');window._discoOk=onOk||null;window._discoCancel=onCancel||null;window._discoCb=null;}
+function discoStackSend(){var o=document.getElementById('discoModalOverlay'),m=document.getElementById('discoModalMsg'),b=document.getElementById('discoModalBtns');m.textContent='Sent to Stack Builder!';b.innerHTML='<button class="disco-btn-secondary" onclick="discoCloseModal(\'cancel\')">Close</button><button class="disco-btn-primary" onclick="discoCloseModal(\'ok\')">Open Stack Builder now</button>';o.classList.add('active');window._discoOk=function(){window.location.href='stack-builder-clean.html';};window._discoCancel=null;window._discoCb=null;}
+function discoCloseModal(action){document.getElementById('discoModalOverlay').classList.remove('active');if(action==='ok'&&window._discoOk){var f=window._discoOk;window._discoOk=null;f();}else if(action==='cancel'&&window._discoCancel){var f=window._discoCancel;window._discoCancel=null;f();}else if(action==='ok'&&window._discoCb){var f=window._discoCb;window._discoCb=null;f();}}
 </script>
 </body>
 </html>
