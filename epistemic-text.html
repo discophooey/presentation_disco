@@ -1144,7 +1144,7 @@ function importJSON() {
   input.click();
 }
 
-function sendToStackBuilder() {
+function sendToStackBuilder() {var _em=document.getElementById('exportModal');if(_em){_em.classList.remove('active');_em.classList.remove('open');}
   var code = document.getElementById('exportCode').value;
   if (!code) { generateExport(); code = document.getElementById('exportCode').value; }
   if (!code) { discoAlert('Generate HTML first'); return; }

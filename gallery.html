@@ -1427,7 +1427,7 @@ window.addEventListener('scroll',onScroll,{passive:true});setTimeout(upd,100);up
  URL.revokeObjectURL(url);
  }
 
- function sendToStackBuilder() {
+ function sendToStackBuilder() {var _em=document.getElementById('exportModal');if(_em){_em.classList.remove('active');_em.classList.remove('open');}
  const code = document.getElementById('exportCode').value;
  if (!code) { discoAlert('Generate HTML first'); return; }
  const queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');

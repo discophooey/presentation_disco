@@ -723,7 +723,7 @@ function downloadCode() {
     a.click();
 }
 
-function sendToStackBuilder() {
+function sendToStackBuilder() {var _em=document.getElementById('exportModal');if(_em){_em.classList.remove('active');_em.classList.remove('open');}
     var code = document.getElementById('exportCode').value;
     if (!code) { discoAlert('Generate HTML first'); return; }
     var queue = JSON.parse(localStorage.getItem('disco_stack_queue') || '[]');
