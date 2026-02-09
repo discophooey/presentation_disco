@@ -364,6 +364,8 @@ button.danger:hover { background: #e74c3c; }
 </div>
 
 <script>
+var _fromPlanner=new URLSearchParams(location.search).get('planner')==='1';
+
 var blocks = [];
 var selectedBlockIndex = -1;
 var STORAGE_KEY = 'disco_text-scroll';
@@ -844,8 +846,8 @@ captionHTML + '\n' +
 '})();\n' +
 '<\/scr' + 'ipt>';
     
-    document.getElementById('exportCode').value = code;
-    document.getElementById('exportModal').classList.add('active');
+    document.getElementById('exportCode').value = code;localStorage.setItem('disco_text-scroll_export',code);
+    if(!_fromPlanner){document.getElementById('exportModal').classList.add('active')};
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }

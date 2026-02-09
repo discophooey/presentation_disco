@@ -370,6 +370,8 @@
 </div>
 
 <script>
+var _fromPlanner=new URLSearchParams(location.search).get('planner')==='1';
+
 let claims = [];
 let previewMode = 'story';
 let pendingSelection = '';
@@ -1032,8 +1034,8 @@ function generateExport() {
   const script = `document.getElementById('ec-root-wrap').innerHTML=decodeURIComponent(escape(atob('${btoa(unescape(encodeURIComponent(embedHTML)))}')));var scripts=document.getElementById('ec-root-wrap').querySelectorAll('script');scripts.forEach(function(s){var n=document.createElement('script');n.textContent=s.textContent;s.parentNode.replaceChild(n,s);});`;
   const encoded = btoa(unescape(encodeURIComponent(script)));
   const embed = `${rootDiv}<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onload="eval(atob('${encoded}'))" style="display:none">`;
-  document.getElementById('exportCode').value = embed;
-  document.getElementById('exportModal').classList.add('open');
+  document.getElementById('exportCode').value = embed;localStorage.setItem('disco_epistemic-text_export',embed);
+  if(!_fromPlanner){document.getElementById('exportModal').classList.add('open')};
 }
 
 function openExportModal() { generateExport(); }

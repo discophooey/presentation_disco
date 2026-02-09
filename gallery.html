@@ -624,6 +624,8 @@
  </div>
 
  <script>
+var _fromPlanner=new URLSearchParams(location.search).get('planner')==='1';
+
 
 // Toggle Fit Frame preview mode
 function toggleFitFrame() {
@@ -1401,8 +1403,8 @@ window.addEventListener('scroll',onScroll,{passive:true});setTimeout(upd,100);up
 })();
 <\/scr` + `ipt>`;
 
- document.getElementById('exportCode').value = code;
- document.getElementById('exportModal').classList.add('active');
+ document.getElementById('exportCode').value = code;localStorage.setItem('disco_gallery_export',code);
+ if(!_fromPlanner){document.getElementById('exportModal').classList.add('active')};
  }
 
  function copyCode() {

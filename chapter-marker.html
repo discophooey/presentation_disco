@@ -284,6 +284,8 @@ button.secondary:hover { background: #333; color: #fff; }
 </div>
 
 <script>
+var _fromPlanner=new URLSearchParams(location.search).get('planner')==='1';
+
 var scrambleInterval = null;
 var STORAGE_KEY = 'disco_chapter-marker';
 var PROJECTS_KEY = 'disco_chapter-marker_projects';
@@ -514,8 +516,8 @@ captionHTML +
 '})();\n' +
 '<\/scr' + 'ipt>';
     
-    document.getElementById('exportCode').value = code;
-    document.getElementById('exportModal').classList.add('active');
+    document.getElementById('exportCode').value = code;localStorage.setItem('disco_chapter-marker_export',code);
+    if(!_fromPlanner){document.getElementById('exportModal').classList.add('active')};
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }

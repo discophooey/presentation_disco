@@ -323,6 +323,8 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 </div>
 
 <script>
+var _fromPlanner=new URLSearchParams(location.search).get('planner')==='1';
+
 
 // Toggle Fit Frame preview mode
 function toggleFitFrame() {
@@ -666,8 +668,8 @@ upd();
 })();
 </scrip` + `t>`;
 
-    document.getElementById('exportCode').value = code;
-    document.getElementById('exportModal').classList.add('active');
+    document.getElementById('exportCode').value = code;localStorage.setItem('disco_before-after_export',code);
+    if(!_fromPlanner){document.getElementById('exportModal').classList.add('active')};
 }
 
 function closeModal() { document.getElementById('exportModal').classList.remove('active'); }

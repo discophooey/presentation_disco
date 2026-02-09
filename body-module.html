@@ -353,6 +353,8 @@ Continue writing your story here. The text will automatically wrap and maintain 
 </div>
 
 <script>
+var _fromPlanner=new URLSearchParams(location.search).get('planner')==='1';
+
 var STORAGE_KEY = 'disco_body-module';
 var PROJECTS_KEY = 'disco_body-module_projects';
 var loadedImageUrl = null;
@@ -708,8 +710,8 @@ moduleCaptionHTML +
 '})();\n' +
 '<\/scr' + 'ipt>';
     
-    document.getElementById('exportCode').value = code;
-    document.getElementById('exportModal').classList.add('active');
+    document.getElementById('exportCode').value = code;localStorage.setItem('disco_body-module_export',code);
+    if(!_fromPlanner){document.getElementById('exportModal').classList.add('active')};
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }

@@ -357,6 +357,8 @@ button.danger:hover { background: #e74c3c; }
 </div>
 
 <script>
+var _fromPlanner=new URLSearchParams(location.search).get('planner')==='1';
+
 var facts = [];
 var selectedFactIndex = -1;
 var STORAGE_KEY = 'disco_key-facts';
@@ -806,8 +808,8 @@ lightboxJs +
 '})();\n' +
 '<\/scr' + 'ipt>';
     
-    document.getElementById('exportCode').value = code;
-    document.getElementById('exportModal').classList.add('active');
+    document.getElementById('exportCode').value = code;localStorage.setItem('disco_key-facts_export',code);
+    if(!_fromPlanner){document.getElementById('exportModal').classList.add('active')};
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }

@@ -264,6 +264,8 @@
 </div>
 
 <script>
+var _fromPlanner=new URLSearchParams(location.search).get('planner')==='1';
+
 let challenges = [];
 let challengeCollapseState = {};
 let evidenceCollapseState = {};
@@ -725,8 +727,8 @@ function generateExport(){
   var b64=btoa(unescape(encodeURIComponent(js)));
   var embed=innerDiv+'\n<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onload="eval(atob(\''+b64+'\'))" style="position:absolute;width:1px;height:1px;opacity:0;">';
 
-  document.getElementById('exportCode').value=embed;
-  document.getElementById('exportModal').classList.add('open');
+  document.getElementById('exportCode').value=embed;localStorage.setItem('disco_adversarial-verification_export',embed);
+  if(!_fromPlanner){document.getElementById('exportModal').classList.add('open')};
 }
 function closeModal(){document.getElementById('exportModal').classList.remove('open');}
 function copyCode(){

@@ -219,6 +219,8 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 </div>
 
 <script>
+var _fromPlanner=new URLSearchParams(location.search).get('planner')==='1';
+
 var stats = [
     { value: 500, prefix: '', suffix: 'M+', label: 'Users Worldwide', decimals: 0 },
     { value: 99.9, prefix: '', suffix: '%', label: 'Uptime', decimals: 1 },
@@ -364,8 +366,8 @@ function generateExport() {
     
     var code = '<style>\n#' + uid + '{position:relative}\n#' + uid + ' .sc-stage{position:-webkit-sticky;position:sticky;top:0;height:' + containerHeight + 'vh;display:flex;align-items:center;justify-content:center;background:' + bgColor + ';padding:20px;box-sizing:border-box}\n#' + uid + ' .sc-wrap{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;max-width:1000px;width:100%}\n#' + uid + ' .sc-box{text-align:center;min-width:120px;flex:1;max-width:250px}\n#' + uid + ' .sc-num{font-size:' + numSize + 'px;font-weight:700;color:' + numColor + ';line-height:1;font-variant-numeric:tabular-nums}\n#' + uid + ' .sc-lbl{font-size:14px;color:' + labelColor + ';margin-top:10px}\n' + captionCss + '@media(max-width:768px){#' + uid + ' .sc-wrap{gap:25px}#' + uid + ' .sc-box{min-width:100px}#' + uid + ' .sc-num{font-size:' + Math.round(numSize * 0.7) + 'px!important}#' + uid + ' .sc-lbl{font-size:12px}' + captionMobile + '}</style>\n<div id="' + uid + '">\n<div class="sc-stage"><div class="sc-wrap">' + statsHtml + '</div>' + captionHtml + '</div>\n</div>\n<script>\n(function(){\nvar w=document.getElementById("' + uid + '");\nvar s=w.querySelector(".sc-stage");\nvar boxes=w.querySelectorAll(".sc-box");\nvar data=' + JSON.stringify(statsData) + ';\nvar scrollMult=' + scrollMult + ';\nvar curP=0,tarP=0;\nfunction setH(){w.style.height=(s.offsetHeight*scrollMult)+"px";}\nsetH();window.addEventListener("resize",setH);\nfunction lerp(a,b,t){return a+(b-a)*t;}\nfunction ease(t){return 1-Math.pow(1-t,4);}\nfunction fmt(n,d){return d>0?n.toFixed(d):Math.round(n).toLocaleString();}\nfunction upd(){\nvar extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + uid + '"];\nif(extP!==undefined){tarP=extP;}else{\nvar r=w.getBoundingClientRect();\nvar wh=window.innerHeight;\nvar scrolled=Math.max(0,-r.top);\nvar scrollRange=w.offsetHeight-wh;\nif(scrollRange<=0)scrollRange=1;\ntarP=Math.max(0,Math.min(1,scrolled/scrollRange));\n}\ncurP=lerp(curP,tarP,0.12);\nfor(var i=0;i<boxes.length;i++){\nvar cp=Math.max(0,Math.min(1,(curP-i*0.1)/0.6));\nvar val=data[i].value*ease(cp);\nvar el=boxes[i].querySelector(".sc-val");\nif(el)el.textContent=fmt(val,data[i].decimals);\n}\nrequestAnimationFrame(upd);\n}\nupd();\n})();\n<\/script>';
     
-    document.getElementById('exportCode').value = code;
-    document.getElementById('exportModal').classList.add('active');
+    document.getElementById('exportCode').value = code;localStorage.setItem('disco_stat-counter_export',code);
+    if(!_fromPlanner){document.getElementById('exportModal').classList.add('active')};
 }
 
 function closeModal() { document.getElementById('exportModal').classList.remove('active'); }

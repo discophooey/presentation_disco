@@ -417,6 +417,8 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 </div>
 
 <script>
+var _fromPlanner=new URLSearchParams(location.search).get('planner')==='1';
+
 let points = [];
 let lines = [];
 let scene, camera, renderer, globe, pointsGroup, linesGroup;
@@ -1376,8 +1378,8 @@ ${labelCSS}
 </div>
 <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style="display:none" onload="eval(atob('${jsBase64}'))">`;
     
-    document.getElementById('exportCode').value = code;
-    document.getElementById('exportModal').classList.add('active');
+    document.getElementById('exportCode').value = code;localStorage.setItem('disco_globe_export',code);
+    if(!_fromPlanner){document.getElementById('exportModal').classList.add('active')};
 }
 
 function closeModal() { document.getElementById('exportModal').classList.remove('active'); }

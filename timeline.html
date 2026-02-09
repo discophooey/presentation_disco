@@ -188,6 +188,8 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 </div>
 
 <script>
+var _fromPlanner=new URLSearchParams(location.search).get('planner')==='1';
+
 var events = [
     { date: '2020', title: 'First Event', text: 'Description of the first milestone.', image: '' },
     { date: '2021', title: 'Second Event', text: 'Description of the second milestone.', image: '' },
@@ -382,8 +384,8 @@ upd();
 })();
 </scrip` + `t>`;
     
-    document.getElementById('exportCode').value = code;
-    document.getElementById('exportModal').classList.add('active');
+    document.getElementById('exportCode').value = code;localStorage.setItem('disco_timeline_export',code);
+    if(!_fromPlanner){document.getElementById('exportModal').classList.add('active')};
 }
 
 function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
