@@ -64,6 +64,7 @@ button.load-btn{flex:0 0 auto;padding:6px 10px;font-size:11px;background:#2a2a2a
 .pv-mk{position:absolute;top:7px;width:10px;height:10px;background:#4a9eff;border-radius:50%;transform:translateX(-50%);opacity:0.4;transition:opacity 0.3s,box-shadow 0.3s;border:2px solid #0a0a0a}
 .pv-mk.active{opacity:1;box-shadow:0 0 10px #4a9eff}
 .pv-date{font-size:11px;color:#888;letter-spacing:1px}
+.pv-headline{font-size:clamp(14px,3vw,18px);font-weight:600;color:#e0e0e0;letter-spacing:0.5px;margin-bottom:2px;max-width:600px;margin-left:auto;margin-right:auto}
 .pv-clock{font-size:38px;font-weight:200;color:#e0e0e0;letter-spacing:3px;font-variant-numeric:tabular-nums;font-family:'Courier New',monospace;line-height:1.1}
 .pv-ev{margin-top:3px;opacity:0;transform:translateY(4px);transition:opacity 0.3s,transform 0.3s}
 .pv-ev.vis{opacity:1;transform:translateY(0)}
@@ -129,6 +130,8 @@ button.load-btn{flex:0 0 auto;padding:6px 10px;font-size:11px;background:#2a2a2a
 <label>Background Color</label><div class="row"><input type="color" id="bgColor" value="#0a0a0a" style="flex:0 0 40px"><div class="checkbox-row" style="flex:1"><input type="checkbox" id="bgTransparent"><label>Transparent</label></div></div>
 <label>Clock Color</label><input type="color" id="clockColor" value="#e0e0e0" style="width:40px">
 <label>Accent Color</label><input type="color" id="accentColor" value="#4a9eff" style="width:40px">
+<label>Lower Section Y Offset <span id="yOffsetVal">0</span>px</label><input type="range" id="yOffset" min="-200" max="200" value="0" step="5">
+<div class="sub-label">Shifts timeline, clock & text up/down (image stays fixed)</div>
 </div>
 <div style="display:flex;gap:8px;margin-top:16px;padding-bottom:20px"><button onclick="generateExport()">⚡ Generate Export</button><button class="secondary" onclick="window.resetModule()">↺ Reset</button></div>
 </div>
@@ -146,6 +149,7 @@ button.load-btn{flex:0 0 auto;padding:6px 10px;font-size:11px;background:#2a2a2a
 <div class="pv-matte-wrap" id="pvMatteWrap1"><div class="pv-matte" id="pvMatte1"></div></div>
 <div class="pv-lower" id="pvLower1">
 <div class="pv-timeline"><div class="pv-bar"><div class="pv-fill" id="pvFill1"></div></div><div id="pvMarkers1"></div></div>
+<div class="pv-headline" id="pvHeadline1"></div>
 <div class="pv-date" id="pvDate1"></div>
 <div class="pv-clock" id="pvClock1">14:00:00</div>
 <div class="pv-ev" id="pvEv1"><div class="pv-ev-time"></div><div class="pv-ev-text"></div><div class="pv-ev-detail"></div><div class="pv-ev-source"></div></div>
@@ -154,6 +158,7 @@ button.load-btn{flex:0 0 auto;padding:6px 10px;font-size:11px;background:#2a2a2a
 <div class="pv-matte-wrap" id="pvMatteWrap2"><div class="pv-matte" id="pvMatte2"></div></div>
 <div class="pv-lower" id="pvLower2">
 <div class="pv-timeline"><div class="pv-bar"><div class="pv-fill" id="pvFill2"></div></div><div id="pvMarkers2"></div></div>
+<div class="pv-headline" id="pvHeadline2"></div>
 <div class="pv-date" id="pvDate2"></div>
 <div class="pv-clock" id="pvClock2">14:00:00</div>
 <div class="pv-ev" id="pvEv2"><div class="pv-ev-time"></div><div class="pv-ev-text"></div><div class="pv-ev-detail"></div><div class="pv-ev-source"></div></div>
@@ -203,10 +208,25 @@ function getProgress(){if(previewMode==='scrub')return parseFloat(document.getEl
 var lastEvIdx={1:-2,2:-2};
 function sizeMatte(suffix){var wrap=document.getElementById('pvMatteWrap'+suffix);var matte=document.getElementById('pvMatte'+suffix);var ar=getAR();var wW=wrap.clientWidth-12,wH=wrap.clientHeight-12;var cW,cH;if(wW/wH>ar){cH=wH;cW=cH*ar;}else{cW=wW;cH=cW/ar;}var outScale=(parseInt(document.getElementById('outputScale').value)||100)/100;cW*=outScale;cH*=outScale;cW=Math.min(cW,wW);cH=Math.min(cH,wH);matte.style.width=Math.round(cW)+'px';matte.style.height=Math.round(cH)+'px';matte.style.background=document.getElementById('matteColor').value;}
 function updatePreview(){
-    var progress=getProgress();var startMin=timeToMinutes(document.getElementById('startTime').value);var endMin=timeToMinutes(document.getElementById('endTime').value);var style=document.getElementById('clockStyle').value;var currentMin=startMin+(endMin-startMin)*progress;
+    var rawProgress=getProgress();var startMin=timeToMinutes(document.getElementById('startTime').value);var endMin=timeToMinutes(document.getElementById('endTime').value);var style=document.getElementById('clockStyle').value;
+    var range=endMin-startMin;var progress=rawProgress;
+    // Snap: divide scroll into equal segments per event, lock time to each event
+    if(events.length>0&&range>0){
+        var n=events.length;var seg=1/n;var idx=Math.min(Math.floor(rawProgress/seg),n-1);
+        var evMin=timeToMinutes(events[idx].time);
+        var nextMin=idx<n-1?timeToMinutes(events[idx+1].time):endMin;
+        var segProgress=(rawProgress-idx*seg)/seg;
+        var hold=0.7;
+        if(segProgress<=hold){progress=(evMin-startMin)/range;}
+        else{var t=(segProgress-hold)/(1-hold);progress=((evMin+(nextMin-evMin)*t)-startMin)/range;}
+    }
+    var currentMin=startMin+range*progress;
     document.getElementById('scrollSpacer').style.height=document.getElementById('scrollDuration').value+'vh';
     var suffix=previewMode==='scrub'?'2':'1';sizeMatte(suffix);
+    document.getElementById('pvHeadline'+suffix).textContent=document.getElementById('headline').value||'';
     document.getElementById('pvClock'+suffix).textContent=minutesToTime(currentMin,style);document.getElementById('pvDate'+suffix).textContent=document.getElementById('dateLine').value||'';document.getElementById('pvFill'+suffix).style.width=(progress*100)+'%';
+    var yo=parseInt(document.getElementById('yOffset').value)||0;
+    document.getElementById('pvLower'+suffix).style.transform='translateY('+yo+'px)';
     var currentEvent=null,ci=-1;for(var i=events.length-1;i>=0;i--){if(timeToMinutes(events[i].time)<=currentMin){currentEvent=events[i];ci=i;break;}}
     var matte=document.getElementById('pvMatte'+suffix);var evEl=document.getElementById('pvEv'+suffix);
     if(ci!==lastEvIdx[suffix]){lastEvIdx[suffix]=ci;matte.querySelectorAll('.play-btn').forEach(function(b){b.remove();});matte.querySelectorAll('img,video').forEach(function(m){m.remove();});
@@ -218,12 +238,13 @@ document.getElementById('scrubber').addEventListener('input',function(){document
 document.getElementById('scrollPreview').addEventListener('scroll',function(){if(previewMode==='scroll')updatePreview();});
 document.getElementById('scrollDuration').addEventListener('input',function(){document.getElementById('scrollDurVal').textContent=this.value;updatePreview();});
 document.getElementById('outputScale').addEventListener('input',function(){document.getElementById('outputScaleVal').textContent=this.value;lastEvIdx={1:-2,2:-2};updatePreview();});
-['startTime','endTime','clockStyle','dateLine','headline','matteColor','matteAspect'].forEach(function(id){var el=document.getElementById(id);if(el){el.addEventListener('change',function(){lastEvIdx={1:-2,2:-2};updatePreview();});el.addEventListener('input',function(){lastEvIdx={1:-2,2:-2};updatePreview();});}});
+document.getElementById('yOffset').addEventListener('input',function(){document.getElementById('yOffsetVal').textContent=this.value;updatePreview();});
+['startTime','endTime','clockStyle','dateLine','headline','matteColor','matteAspect','yOffset'].forEach(function(id){var el=document.getElementById(id);if(el){el.addEventListener('change',function(){lastEvIdx={1:-2,2:-2};updatePreview();});el.addEventListener('input',function(){lastEvIdx={1:-2,2:-2};updatePreview();});}});
 window.addEventListener('resize',function(){lastEvIdx={1:-2,2:-2};updatePreview();});
 var SAVE_KEY='disco_clock-narrative';
 function triggerSave(){clearTimeout(triggerSave._t);triggerSave._t=setTimeout(saveState,200);}
 function saveState(){var state={events:events,inputs:{}};document.querySelectorAll('#editorPanel input[id],#editorPanel select[id],#editorPanel textarea[id]').forEach(function(el){if(el.type==='checkbox')state.inputs[el.id]=el.checked;else if(el.type==='file')return;else state.inputs[el.id]=el.value;});try{localStorage.setItem(SAVE_KEY,JSON.stringify(state));}catch(e){}}
-function loadState(){try{var saved=localStorage.getItem(SAVE_KEY);if(!saved)return;var state=JSON.parse(saved);Object.keys(state.inputs||{}).forEach(function(id){var el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=state.inputs[id];else el.value=state.inputs[id];}});if(state.events){events=state.events;events.forEach(function(e){if(!e.mediaType)e.mediaType='image';if(e.scale==null)e.scale=100;if(e.posX==null)e.posX=50;if(e.posY==null)e.posY=50;});renderEvents();}document.getElementById('scrollDurVal').textContent=document.getElementById('scrollDuration').value;document.getElementById('outputScaleVal').textContent=document.getElementById('outputScale').value;updatePreview();}catch(e){console.warn('Load error:',e);}}
+function loadState(){try{var saved=localStorage.getItem(SAVE_KEY);if(!saved)return;var state=JSON.parse(saved);Object.keys(state.inputs||{}).forEach(function(id){var el=document.getElementById(id);if(el){if(el.type==='checkbox')el.checked=state.inputs[id];else el.value=state.inputs[id];}});if(state.events){events=state.events;events.forEach(function(e){if(!e.mediaType)e.mediaType='image';if(e.scale==null)e.scale=100;if(e.posX==null)e.posX=50;if(e.posY==null)e.posY=50;});renderEvents();}document.getElementById('scrollDurVal').textContent=document.getElementById('scrollDuration').value;document.getElementById('outputScaleVal').textContent=document.getElementById('outputScale').value;document.getElementById('yOffsetVal').textContent=document.getElementById('yOffset').value;updatePreview();}catch(e){console.warn('Load error:',e);}}
 window.resetModule=function(){discoConfirm('Reset all settings to defaults?', function(){localStorage.removeItem(SAVE_KEY);location.reload();});};
 document.addEventListener('change',saveState);document.addEventListener('input',saveState);
 
@@ -232,14 +253,15 @@ function generateExport(){
     var bg=document.getElementById('bgColor').value,bgt=document.getElementById('bgTransparent').checked;
     var clkCol=document.getElementById('clockColor').value,accCol=document.getElementById('accentColor').value,matteCol=document.getElementById('matteColor').value;
     var clkStyle=document.getElementById('clockStyle').value,dl=document.getElementById('dateLine').value;
+    var hl=document.getElementById('headline').value;
+    var yo=parseInt(document.getElementById('yOffset').value)||0;
     var st=document.getElementById('startTime').value,et=document.getElementById('endTime').value;
     var startMin=timeToMinutes(st),endMin=timeToMinutes(et);
     var arVal=document.getElementById('matteAspect').value;var arParts=arVal.split(':');var arW=parseInt(arParts[0]),arH=parseInt(arParts[1]);
     var outScale=(parseInt(document.getElementById('outputScale').value)||100);
     var bgCSS=bgt?'transparent':bg;
+    var yoCSS=yo!==0?'transform:translateY('+yo+'px);':'';
 
-    /* KEY FIX: .cn-mt gets width:100% so aspect-ratio has a dimension to calculate from.
-       max-height:100% constrains tall ratios. Browser auto-shrinks width when max-height kicks in. */
     var css='#'+uid+'{position:relative;width:100%;height:'+sd+'vh;background:'+bgCSS+';}'+
         '#'+uid+' .cn-s{position:sticky;top:'+dko+'px;height:calc(100vh - '+dko+'px);display:flex;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;overflow:hidden;}'+
         '#'+uid+' .cn-mw{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:6px;overflow:hidden;}'+
@@ -248,12 +270,13 @@ function generateExport(){
         '#'+uid+' .cn-pb{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:56px;height:56px;background:rgba(0,0,0,0.5);border:2px solid rgba(255,255,255,0.8);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;z-index:4;}'+
         '#'+uid+' .cn-pb:hover{background:rgba(74,158,255,0.7);}#'+uid+' .cn-pb svg{width:20px;height:20px;fill:#fff;margin-left:2px;}'+
         '#'+uid+' .cn-pb.on svg.pi{display:none;}#'+uid+' .cn-pb:not(.on) svg.pa{display:none;}'+
-        '#'+uid+' .cn-lo{flex:0 0 auto;padding:4px 24px 6px;text-align:center;background:'+bgCSS+';max-height:45vh;overflow:hidden;}'+
+        '#'+uid+' .cn-lo{flex:0 0 auto;padding:4px 24px 6px;text-align:center;background:'+bgCSS+';max-height:45vh;overflow:hidden;'+yoCSS+'}'+
         '#'+uid+' .cn-tl{position:relative;height:26px;max-width:600px;margin:0 auto;padding:0 16px;}'+
         '#'+uid+' .cn-br{position:absolute;top:11px;left:16px;right:16px;height:3px;background:#2a2a2a;border-radius:2px;}'+
         '#'+uid+' .cn-fl{height:100%;background:'+accCol+';border-radius:2px;transition:width 0.2s;}'+
         '#'+uid+' .cn-mk{position:absolute;top:7px;width:10px;height:10px;background:'+accCol+';border-radius:50%;transform:translateX(-50%);opacity:0.4;transition:opacity 0.3s;border:2px solid '+bgCSS+';}'+
         '#'+uid+' .cn-mk.act{opacity:1;box-shadow:0 0 10px '+accCol+';}'+
+        '#'+uid+' .cn-hl{font-size:clamp(14px,3vw,18px);font-weight:600;color:'+clkCol+';letter-spacing:0.5px;max-width:600px;margin:0 auto 2px;}'+
         '#'+uid+' .cn-dt{font-size:11px;color:#888;letter-spacing:1px;}'+
         '#'+uid+' .cn-ck{font-size:clamp(24px,7vw,38px);font-weight:200;color:'+clkCol+';letter-spacing:3px;font-variant-numeric:tabular-nums;font-family:Courier New,monospace;line-height:1.1;}'+
         '#'+uid+' .cn-ev{margin-top:3px;opacity:0;transform:translateY(4px);transition:opacity 0.3s,transform 0.3s;padding-bottom:4px;}#'+uid+' .cn-ev.vis{opacity:1;transform:translateY(0);}'+
@@ -265,10 +288,11 @@ function generateExport(){
 
     var markersHTML='';var rng=endMin-startMin;events.forEach(function(e,i){var pct=rng>0?((timeToMinutes(e.time)-startMin)/rng)*100:0;markersHTML+='<div class="cn-mk" style="left:'+pct+'%" data-i="'+i+'"></div>';});
     var evJSON=JSON.stringify(events);
-    var js='(function(){var uid="'+uid+'";var w=document.getElementById(uid);if(!w)return;var events='+evJSON+';var sm='+startMin+',em='+endMin+',cs="'+clkStyle+'";var ck=w.querySelector(".cn-ck"),ev=w.querySelector(".cn-ev"),fl=w.querySelector(".cn-fl"),mks=w.querySelectorAll(".cn-mk"),mt=w.querySelector(".cn-mt");function pad(n){return n<10?"0"+n:""+n;}function m2t(m){var h=Math.floor(m/60)%24,mn=Math.floor(m%60),s=Math.floor((m%1)*60);if(cs==="12h"){var ap=h>=12?"PM":"AM";return(h%12||12)+":"+pad(mn)+":"+pad(s)+" "+ap;}return pad(h)+":"+pad(mn)+":"+pad(s);}function toMin(t){var p=t.split(":");return parseInt(p[0])*60+parseInt(p[1]);}function isVid(u){return u&&/\\.(mp4|webm|ogg|mov)($|\\?)/i.test(u);}var lI=-1;function up(){var r=w.getBoundingClientRect();var sc=Math.max(0,-r.top);var rn=w.offsetHeight-window.innerHeight;var p=rn>0?Math.max(0,Math.min(1,sc/rn)):0;var ext=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS[uid];if(ext!==undefined)p=ext;var cm=sm+(em-sm)*p;ck.textContent=m2t(cm);fl.style.width=(p*100)+"%";var cur=null,ci=-1;for(var i=events.length-1;i>=0;i--){if(toMin(events[i].time)<=cm){cur=events[i];ci=i;break;}}mks.forEach(function(m,i){m.classList.toggle("act",i===ci);});if(ci!==lI){lI=ci;mt.querySelectorAll(".cn-pb,img,video").forEach(function(x){x.remove();});if(cur){ev.querySelector(".cn-et").textContent=cur.time;ev.querySelector(".cn-ex").textContent=cur.text;ev.querySelector(".cn-ed").textContent=cur.detail||"";ev.querySelector(".cn-es").textContent=cur.source?"\\u2014 "+cur.source:"";if(cur.mediaUrl){var iv=cur.mediaType==="video"||isVid(cur.mediaUrl);var sca=(cur.scale||100)/100;var px=cur.posX!=null?cur.posX:50;var py=cur.posY!=null?cur.posY:50;var sty="width:"+sca*100+"%;height:"+sca*100+"%;left:"+((1-sca)*px)+"%;top:"+((1-sca)*py)+"%;object-fit:cover;";if(iv){var v=document.createElement("video");v.src=cur.mediaUrl;v.preload="metadata";v.muted=true;v.playsInline=true;v.setAttribute("style",sty);mt.appendChild(v);var pb=document.createElement("div");pb.className="cn-pb";pb.innerHTML=\'<svg class="pi" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg><svg class="pa" viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>\';mt.appendChild(pb);pb.onclick=function(){if(v.paused){v.play();pb.classList.add("on");}else{v.pause();pb.classList.remove("on");}}}else{var im=document.createElement("img");im.src=cur.mediaUrl;im.setAttribute("style",sty);mt.appendChild(im);}}ev.classList.add("vis");}else{ev.classList.remove("vis");}}requestAnimationFrame(up);}up();})();';
+    var js='(function(){var uid="'+uid+'";var w=document.getElementById(uid);if(!w)return;var events='+evJSON+';var sm='+startMin+',em='+endMin+',cs="'+clkStyle+'";var ck=w.querySelector(".cn-ck"),ev=w.querySelector(".cn-ev"),fl=w.querySelector(".cn-fl"),mks=w.querySelectorAll(".cn-mk"),mt=w.querySelector(".cn-mt");function pad(n){return n<10?"0"+n:""+n;}function m2t(m){var h=Math.floor(m/60)%24,mn=Math.floor(m%60),s=Math.floor((m%1)*60);if(cs==="12h"){var ap=h>=12?"PM":"AM";return(h%12||12)+":"+pad(mn)+":"+pad(s)+" "+ap;}return pad(h)+":"+pad(mn)+":"+pad(s);}function toMin(t){var p=t.split(":");return parseInt(p[0])*60+parseInt(p[1]);}function isVid(u){return u&&/\\.(mp4|webm|ogg|mov)($|\\?)/i.test(u);}function snap(p){if(events.length===0)return p;var rng=em-sm;if(rng<=0)return p;var n=events.length,seg=1/n,idx=Math.min(Math.floor(p/seg),n-1);var evM=toMin(events[idx].time),nxM=idx<n-1?toMin(events[idx+1].time):em;var sp=(p-idx*seg)/seg,hold=0.7;if(sp<=hold)return(evM-sm)/rng;var t=(sp-hold)/(1-hold);return((evM+(nxM-evM)*t)-sm)/rng;}var lI=-1;function up(){var r=w.getBoundingClientRect();var sc=Math.max(0,-r.top);var rn=w.offsetHeight-window.innerHeight;var p=rn>0?Math.max(0,Math.min(1,sc/rn)):0;var ext=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS[uid];if(ext!==undefined)p=ext;p=snap(p);var cm=sm+(em-sm)*p;ck.textContent=m2t(cm);fl.style.width=(p*100)+"%";var cur=null,ci=-1;for(var i=events.length-1;i>=0;i--){if(toMin(events[i].time)<=cm){cur=events[i];ci=i;break;}}mks.forEach(function(m,i){m.classList.toggle("act",i===ci);});if(ci!==lI){lI=ci;mt.querySelectorAll(".cn-pb,img,video").forEach(function(x){x.remove();});if(cur){ev.querySelector(".cn-et").textContent=cur.time;ev.querySelector(".cn-ex").textContent=cur.text;ev.querySelector(".cn-ed").textContent=cur.detail||"";ev.querySelector(".cn-es").textContent=cur.source?"\\u2014 "+cur.source:"";if(cur.mediaUrl){var iv=cur.mediaType==="video"||isVid(cur.mediaUrl);var sca=(cur.scale||100)/100;var px=cur.posX!=null?cur.posX:50;var py=cur.posY!=null?cur.posY:50;var sty="width:"+sca*100+"%;height:"+sca*100+"%;left:"+((1-sca)*px)+"%;top:"+((1-sca)*py)+"%;object-fit:cover;";if(iv){var v=document.createElement("video");v.src=cur.mediaUrl;v.preload="metadata";v.muted=true;v.playsInline=true;v.setAttribute("style",sty);mt.appendChild(v);var pb=document.createElement("div");pb.className="cn-pb";pb.innerHTML=\'<svg class="pi" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg><svg class="pa" viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>\';mt.appendChild(pb);pb.onclick=function(){if(v.paused){v.play();pb.classList.add("on");}else{v.pause();pb.classList.remove("on");}}}else{var im=document.createElement("img");im.src=cur.mediaUrl;im.setAttribute("style",sty);mt.appendChild(im);}}ev.classList.add("vis");}else{ev.classList.remove("vis");}}requestAnimationFrame(up);}up();})();';
 
+    var hlHTML=hl?'<div class="cn-hl">'+esc(hl)+'</div>':'';
     var b64=btoa(unescape(encodeURIComponent(js)));
-    var code='<style>'+css+'</style>\n<div id="'+uid+'">\n<div class="cn-s">\n<div class="cn-mw"><div class="cn-mt"></div></div>\n<div class="cn-lo">\n<div class="cn-tl"><div class="cn-br"><div class="cn-fl"></div></div>'+markersHTML+'</div>\n<div class="cn-dt">'+esc(dl)+'</div>\n<div class="cn-ck">'+minutesToTime(startMin,clkStyle)+'</div>\n<div class="cn-ev"><div class="cn-et"></div><div class="cn-ex"></div><div class="cn-ed"></div><div class="cn-es"></div></div>\n</div>\n</div>\n</div>\n<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onload="eval(atob(\''+b64+'\'))">';
+    var code='<style>'+css+'</style>\n<div id="'+uid+'">\n<div class="cn-s">\n<div class="cn-mw"><div class="cn-mt"></div></div>\n<div class="cn-lo">\n<div class="cn-tl"><div class="cn-br"><div class="cn-fl"></div></div>'+markersHTML+'</div>\n'+hlHTML+'<div class="cn-dt">'+esc(dl)+'</div>\n<div class="cn-ck">'+minutesToTime(startMin,clkStyle)+'</div>\n<div class="cn-ev"><div class="cn-et"></div><div class="cn-ex"></div><div class="cn-ed"></div><div class="cn-es"></div></div>\n</div>\n</div>\n</div>\n<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onload="eval(atob(\''+b64+'\'))">';
     document.getElementById('exportCode').value=code;localStorage.setItem('disco_clock-narrative_export',code);if(!_fromPlanner){document.getElementById('exportModal').classList.add('active')};
 }
 function closeModal(){document.getElementById('exportModal').classList.remove('active');}
