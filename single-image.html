@@ -5,41 +5,95 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scrolltastic Single Image</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+:root {
+    --bg-deep: #0a0a0a;
+    --bg-primary: #111111;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #242424;
+    --border: #2e2e2e;
+    --border-light: #3d3d3d;
+    --text-primary: #e0e0e0;
+    --text-secondary: #888888;
+    --text-dim: #5a5a5a;
+    --accent: #4a9eff;
+    --accent-dim: #2a6db8;
+    --accent-glow: rgba(74,158,255,0.12);
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --display: 'Instrument Serif', serif;
+}
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --display: 'Instrument Serif', serif;
+}
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e0e0e0; padding-top: 41px; }
+body { font-family: var(--sans); background: var(--bg-deep); color: var(--text-primary); padding-top: 41px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+
 .app { display: grid; grid-template-columns: 380px 1fr; height: calc(100vh - 41px); transition: grid-template-columns 0.3s; }
 .app.controls-hidden { grid-template-columns: 0 1fr; }
-.controls { background: #111; padding: 20px; overflow-y: auto; border-right: 1px solid #222; transition: opacity 0.3s, padding 0.3s; }
+.controls { background: var(--bg-primary); padding: 20px; overflow-y: auto; border-right: 1px solid var(--border); transition: opacity 0.3s, padding 0.3s; }
 .app.controls-hidden .controls { opacity: 0; padding: 0; overflow: hidden; }
-.toggle-btn { position: fixed; top: 10px; left: 10px; z-index: 100; width: 36px; height: 36px; padding: 0; border-radius: 50%; font-size: 16px; background: #333; border: none; color: #fff; cursor: pointer; }
-.toggle-btn:hover { background: #4a9eff; }
-h1 { font-size: 18px; color: #4a9eff; margin-bottom: 20px; }
-h2 { font-size: 11px; color: #888; margin: 16px 0 10px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #1a1a1a; border-radius: 4px; }
-h2:hover { background: #222; }
-h2::after { content: '▼'; font-size: 9px; transition: transform 0.2s; }
+
+.toggle-btn { position: fixed; top: 10px; left: 10px; z-index: 100; width: 32px; height: 32px; padding: 0; border-radius: 8px; font-size: 14px; background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-secondary); cursor: pointer; transition: all .15s; }
+.toggle-btn:hover { border-color: var(--accent-dim); color: var(--accent); }
+
+.module-title { font-family: var(--display); font-size: 22px; font-weight: 400; color: var(--text-primary); margin-bottom: 20px; letter-spacing: -0.01em; }
+.module-title span { color: var(--accent); }
+
+h2 { font-family: var(--mono); font-size: 9px; color: var(--text-dim); margin: 14px 0 8px; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; transition: all .15s; }
+h2:hover { border-color: var(--border-light); background: var(--bg-tertiary); }
+h2::after { content: '▾'; font-size: 10px; color: var(--text-dim); transition: transform 0.2s; }
 h2.collapsed::after { transform: rotate(-90deg); }
 .section { max-height: 2000px; overflow: hidden; transition: max-height 0.3s; }
 .section.collapsed { max-height: 0; }
-.control-group { margin-bottom: 12px; }
-label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; }
-input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 8px 10px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; }
-input[type="range"] { width: 100%; }
-input[type="color"] { width: 50px; height: 28px; border: none; background: none; cursor: pointer; }
-input[type="checkbox"] { margin-right: 6px; }
-button { width: 100%; padding: 10px; background: #4a9eff; border: none; color: #000; font-weight: 600; border-radius: 4px; cursor: pointer; font-size: 12px; margin-bottom: 8px; }
-button:hover { background: #357abd; }
-button.secondary { background: #333; color: #fff; }
+
+.control-group { margin-bottom: 10px; }
+label { display: block; font-family: var(--mono); font-size: 10px; color: var(--text-dim); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+input[type="text"], input[type="number"], select, textarea {
+    width: 100%; padding: 7px 10px;
+    background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary);
+    border-radius: 6px; font-family: var(--mono); font-size: 11px; outline: none; transition: border-color .15s;
+}
+input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus { border-color: var(--accent-dim); }
+input[type="range"] { width: 100%; height: 3px; -webkit-appearance: none; background: var(--bg-tertiary); border-radius: 2px; outline: none; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); cursor: pointer; box-shadow: 0 0 6px rgba(74,158,255,0.3); }
+input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; box-shadow: 0 0 6px rgba(74,158,255,0.3); }
+input[type="color"] { width: 36px; height: 24px; border: 1px solid var(--border); background: var(--bg-tertiary); cursor: pointer; border-radius: 4px; padding: 1px; }
+input[type="checkbox"] { margin-right: 6px; accent-color: var(--accent); }
+
+button {
+    width: 100%; padding: 8px 14px;
+    font-family: var(--mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;
+    background: var(--accent); border: 1px solid var(--accent); color: #0a0a0a; font-weight: 600;
+    border-radius: 6px; cursor: pointer; margin-bottom: 6px; transition: all .15s;
+}
+button:hover { opacity: 0.85; }
+button.secondary { background: var(--bg-tertiary); border-color: var(--border); color: var(--text-secondary); }
+button.secondary:hover { border-color: var(--accent-dim); color: var(--accent); }
+
 .row { display: flex; gap: 8px; align-items: flex-start; }
 .row > * { flex: 1; }
-.hint { font-size: 10px; color: #666; margin-top: 4px; }
-.range-val { font-size: 10px; color: #4a9eff; float: right; }
+.hint { font-family: var(--mono); font-size: 9px; color: var(--text-dim); margin-top: 3px; }
+.range-val { font-family: var(--mono); font-size: 9px; color: var(--accent); float: right; text-transform: none; letter-spacing: 0; }
 
-.preview-area { background: #000; display: flex; flex-direction: column; overflow: hidden; }
-.preview-area.fit-frame { background: #1a1a1a; }
-.preview-area.fit-frame .preview-stage { border: 3px solid #4a9eff; box-sizing: border-box; max-width: 700px; margin: 0 auto; }
+/* Preview Area */
+.preview-area { background: var(--bg-deep); display: flex; flex-direction: column; overflow: hidden; }
+.preview-area.fit-frame { background: var(--bg-secondary); }
+.preview-area.fit-frame .preview-stage { border: 2px solid var(--accent-dim); box-sizing: border-box; max-width: 700px; margin: 0 auto; }
 
-.preview-header { padding: 10px 16px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #666; }
-#progressDisplay { color: #4a9eff; font-weight: bold; }
+.preview-header {
+    padding: 0 16px; height: 34px; display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+    font-family: var(--mono); font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;
+}
+.preview-header label { font-size: 9px; display: flex; align-items: center; gap: 5px; cursor: pointer; margin: 0; }
+#progressDisplay { color: var(--accent); font-weight: 600; font-family: var(--mono); font-size: 11px; }
+
 .preview-scroll { flex: 1; overflow-y: auto; }
 .preview-container { position: relative; }
 .preview-stage { position: sticky; top: 0; height: 100vh; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; }
@@ -47,65 +101,73 @@ button.secondary { background: #333; color: #fff; }
 .preview-matte { position: relative; overflow: hidden; background: #000; }
 .preview-matte img { display: block; width: 100%; height: 100%; }
 .preview-caption { flex-shrink: 0; width: 100%; max-width: 650px; background: rgba(0,0,0,0.85); padding: 6px 16px 8px; border-radius: 0 0 6px 6px; z-index: 11; box-sizing: border-box; }
-.cap-text { font-size: 13px; line-height: 1.5; color: #e0e0e0; }
-.cap-credit { font-size: 11px; color: #888; font-style: italic; margin-top: 6px; }
+.cap-text { font-family: var(--sans); font-size: 13px; line-height: 1.5; color: var(--text-primary); }
+.cap-credit { font-family: var(--mono); font-size: 10px; color: var(--text-dim); font-style: italic; margin-top: 6px; }
 
-.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
+/* Export Modal */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; }
 .modal.active { display: flex; }
-.modal-content { background: #111; border-radius: 12px; padding: 24px; width: 90%; max-width: 800px; max-height: 85vh; overflow: auto; }
+.modal-content { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 12px; padding: 24px; width: 90%; max-width: 800px; max-height: 85vh; overflow: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.modal-close { background: none; border: none; color: #666; font-size: 28px; cursor: pointer; width: auto; padding: 0; }
-textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px solid #333; color: #4a9eff; font-family: monospace; font-size: 11px; padding: 12px; border-radius: 6px; }
+.modal-header h1 { font-family: var(--mono); font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+.modal-close { background: none; border: none; color: var(--text-dim); font-size: 22px; cursor: pointer; width: auto; padding: 4px 8px; margin: 0; }
+.modal-close:hover { color: var(--accent); }
+textarea.code {
+    width: 100%; height: 300px;
+    background: var(--bg-deep); border: 1px solid var(--border); color: var(--accent);
+    font-family: var(--mono); font-size: 10px; padding: 12px; border-radius: 8px; outline: none;
+}
+textarea.code:focus { border-color: var(--accent-dim); }
 
-/* Disco Modal */
-.disco-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-.disco-modal-overlay.active{display:flex;opacity:1;pointer-events:auto}
-.disco-modal{background:#1e1e24;border-radius:12px;padding:24px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);transform:scale(0.95);transition:transform 0.2s}
-.disco-modal-overlay.active .disco-modal{transform:scale(1)}
-.disco-modal-title{color:#4a9eff;font-size:14px;font-weight:600;margin-bottom:12px}
-.disco-modal-msg{color:#ccc;font-size:14px;line-height:1.5;margin-bottom:20px;white-space:pre-line}
-.disco-modal-btns{display:flex;gap:8px;justify-content:flex-end}
-.disco-modal-btns button{padding:8px 18px;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s}
-.disco-modal-btns .disco-btn-primary{background:#4a9eff;color:#fff}
-.disco-modal-btns .disco-btn-primary:hover{background:#3a8eef}
-.disco-modal-btns .disco-btn-secondary{background:#2a2a34;color:#aaa}
-.disco-modal-btns .disco-btn-secondary:hover{background:#3a3a44;color:#ccc}
+/* Disco Confirm/Alert Modal */
+.disco-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; pointer-events: none; font-family: var(--sans); }
+.disco-modal-overlay.active { display: flex; opacity: 1; pointer-events: auto; }
+.disco-modal { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 12px; padding: 24px; max-width: 360px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); transform: scale(0.95); transition: transform 0.2s; }
+.disco-modal-overlay.active .disco-modal { transform: scale(1); }
+.disco-modal-title { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+.disco-modal-msg { color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-bottom: 20px; white-space: pre-line; }
+.disco-modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.disco-modal-btns button { padding: 7px 16px; border: none; border-radius: 6px; font-family: var(--mono); font-size: 10px; font-weight: 500; cursor: pointer; transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.5px; width: auto; margin: 0; }
+.disco-modal-btns .disco-btn-primary { background: var(--accent); color: #0a0a0a; font-weight: 600; border: 1px solid var(--accent); }
+.disco-modal-btns .disco-btn-primary:hover { opacity: 0.85; }
+.disco-modal-btns .disco-btn-secondary { background: var(--bg-tertiary); color: var(--text-dim); border: 1px solid var(--border); }
+.disco-modal-btns .disco-btn-secondary:hover { border-color: var(--border-light); color: var(--text-secondary); }
 </style>
 </head>
 <body>
-<div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
-<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
-<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
-<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
-<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
-<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
-<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
-<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
-<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
-<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
-<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
-<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
-<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
-<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
-<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
-<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
-<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
-<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
-<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
-<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
-<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
-<a href="epistemic-text.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Epistemic Text</a>
-<a href="adversarial-verification.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Adversarial</a>
-<a href="silence-mapping.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Silence Map</a>
-<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
+<div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:var(--bg-primary);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;font-family:var(--mono);">
+<a href="index.html" style="padding:10px 16px;color:var(--accent);text-decoration:none;font-size:11px;font-weight:600;white-space:nowrap;letter-spacing:0.5px;">← Hub</a>
+<a href="before-after.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Before/After</a>
+<a href="card-stack.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Card Stack</a>
+<a href="chart.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Chart</a>
+<a href="collage.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Collage</a>
+<a href="doc-module.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Doc Module</a>
+<a href="gallery.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Gallery</a>
+<a href="globe.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Globe</a>
+<a href="hotspots.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Hotspots</a>
+<a href="layers.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Layers</a>
+<a href="pull-quote.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Pull Quote</a>
+<a href="matte.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Matte</a>
+<a href="single-image.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Single Image</a>
+<a href="stat-counter.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Stat Counter</a>
+<a href="timeline.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Timeline</a>
+<a href="video.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Video</a>
+<a href="zoom-detail.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Zoom Detail</a>
+<a href="text-scroll.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Text Scroll</a>
+<a href="chapter-marker.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Chapter Marker</a>
+<a href="key-facts.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Key Facts</a>
+<a href="body-module.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Body Module</a>
+<a href="epistemic-text.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Epistemic Text</a>
+<a href="adversarial-verification.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Adversarial</a>
+<a href="silence-mapping.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Silence Map</a>
+<a href="stack-builder-clean.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Stack Builder</a>
 </div>
-<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
+<style>#disco-nav a:hover{color:var(--accent)!important;background:var(--bg-secondary);}</style>
 
 <button class="toggle-btn" onclick="toggleControls()">☰</button>
 <div class="app" id="app">
     <div class="controls">
-        <h1>📷 Single Image</h1>
+        <div class="module-title">Single <span>Image</span></div>
         
         <h2 onclick="toggleSection(this)">Image Source</h2>
         <div class="section">
@@ -114,7 +176,7 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 <input type="text" id="imageUrl" placeholder="https://example.com/image.jpg">
             </div>
             <button onclick="loadImage()">Load Image</button>
-            <div class="hint">Upload image via CDN, S3, or direct URL</div>
+            <div class="hint">Any direct image URL — CDN, S3, Cloudinary, etc.</div>
         </div>
         
         <h2 onclick="toggleSection(this)">Image Controls</h2>
@@ -136,7 +198,7 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                     <option value="3:2">3:2 Photo</option>
                     <option value="full">Full Viewport</option>
                 </select>
-                <div class="hint">Widescreen crops the view - use Scale/Position to frame</div>
+                <div class="hint">Widescreen crops the view — use Scale/Position to frame</div>
             </div>
             <div class="control-group">
                 <label>Scale <span class="range-val" id="scaleVal">1.0x</span></label>
@@ -154,7 +216,7 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 <label>Background Color</label>
                 <div style="display:flex;align-items:center;gap:10px;">
                     <input type="color" id="bgColor" value="#000000" onchange="updateStageBg();">
-                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="bgTransparent" checked onchange="updateStageBg();"> Transparent</label>
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;margin:0;text-transform:none;letter-spacing:0;"><input type="checkbox" id="bgTransparent" checked onchange="updateStageBg();"> Transparent</label>
                 </div>
             </div>
         </div>
@@ -200,11 +262,11 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         
         <h2 onclick="toggleSection(this)">Caption</h2>
         <div class="section">
-            <div class="control-group"><label><input type="checkbox" id="captionEnabled" checked onchange="updateCaption()"> Enable Caption</label></div>
-            <div class="control-group"><label><input type="checkbox" id="captionBg" checked onchange="updateCaption()"> Caption Background</label></div>
+            <div class="control-group"><label style="text-transform:none;letter-spacing:0;"><input type="checkbox" id="captionEnabled" checked onchange="updateCaption()"> Enable Caption</label></div>
+            <div class="control-group"><label style="text-transform:none;letter-spacing:0;"><input type="checkbox" id="captionBg" checked onchange="updateCaption()"> Caption Background</label></div>
             <div class="control-group"><label>Text Color</label>
                 <select id="captionColor" onchange="updateCaption()"><option value="white">White</option><option value="black">Black</option></select></div>
-            <div class="control-group"><label>Caption Y Offset: <span id="captionOffsetVal">0</span>px</label>
+            <div class="control-group"><label>Caption Y Offset: <span class="range-val" id="captionOffsetVal">0</span>px</label>
                 <input type="range" id="captionOffsetY" min="-50" max="100" value="0" oninput="document.getElementById('captionOffsetVal').textContent=this.value;updateCaption()"></div>
             <div class="control-group"><label>Caption Text</label>
                 <textarea id="captionText" rows="2" oninput="updateCaption()">Display a single image with scroll-driven effects including zoom, pan, blur, and color.</textarea></div>
@@ -228,13 +290,14 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 <input type="number" id="desktopOffset" value="0" min="0" max="300">
             </div>
             <div class="control-group">
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="fullBleed"> Full Bleed</label>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;"><input type="checkbox" id="fullBleed"> Full Bleed</label>
                 <div class="hint">Forces full viewport width even in narrow CMS containers</div>
             </div>
             <button onclick="generateExport()">Generate HTML</button>
             <button class="secondary" onclick="copyCode()">📋 Copy Code</button>
-            <button class="secondary" onclick="downloadCode()">💾 Download</button><button onclick="downloadCodeTxt()" class="secondary">📄 .txt</button>
-            <button class="secondary" onclick="resetModule()" style="margin-top:8px;">↺ Reset</button>
+            <button class="secondary" onclick="downloadCode()">💾 Download</button>
+            <button class="secondary" onclick="downloadCodeTxt()">📄 .txt</button>
+            <button class="secondary" onclick="resetModule()" style="margin-top:6px;">↺ Reset</button>
         </div>
         
         <h2 onclick="toggleSection(this)">Project</h2>
@@ -248,8 +311,8 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
     
     <div class="preview-area" id="previewArea">
         <div class="preview-header">
-            <span>Preview (scroll to test)</span>
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+            <span>Preview</span>
+            <label>
                 <input type="checkbox" id="fitFrameToggle" onchange="toggleFitFrame()"> Fit Frame
             </label>
             <span id="progressDisplay">0%</span>
@@ -259,7 +322,7 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
                 <div class="preview-stage" id="previewStage">
                     <div class="preview-stage-in">
                         <div class="preview-matte" id="previewMatte">
-                            <div style="color:#666;text-align:center;padding:40vh 20px;">Load an image</div>
+                            <div style="color:var(--text-dim);text-align:center;padding:40vh 20px;font-family:var(--mono);font-size:11px;letter-spacing:1px;">Load an image</div>
                         </div>
                         <div class="preview-caption" id="previewCaption">
                             <div class="cap-text" id="capText"></div>
@@ -278,7 +341,8 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
         <textarea class="code" id="exportCode" readonly></textarea>
         <div style="margin-top:12px;display:flex;gap:8px;">
             <button onclick="copyCode()">📋 Copy</button>
-            <button class="secondary" onclick="downloadCode()">💾 Download</button><button onclick="downloadCodeTxt()" class="secondary">📄 .txt</button>
+            <button class="secondary" onclick="downloadCode()">💾 Download</button>
+            <button class="secondary" onclick="downloadCodeTxt()">📄 .txt</button>
             <button class="secondary" onclick="sendToStackBuilder()">📚 Stack</button>
         </div>
     </div>
@@ -338,7 +402,7 @@ function setPreviewHeight() {
 function rebuildPreview() {
     var matte = document.getElementById('previewMatte');
     if (!imageUrl) {
-        matte.innerHTML = '<div style="color:#666;text-align:center;padding:40vh 20px;">Load an image</div>';
+        matte.innerHTML = '<div style="color:var(--text-dim);text-align:center;padding:40vh 20px;font-family:var(--mono);font-size:11px;letter-spacing:1px;">Load an image</div>';
         matte.style.cssText = '';
         return;
     }
