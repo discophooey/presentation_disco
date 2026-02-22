@@ -5,28 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scrolltastic Doc Module</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+:root {
+    --bg-deep: #0a0a0a;
+    --bg-primary: #111111;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #242424;
+    --border: #2e2e2e;
+    --border-light: #3d3d3d;
+    --text-primary: #e0e0e0;
+    --text-secondary: #888888;
+    --text-dim: #5a5a5a;
+    --accent: #4a9eff;
+    --accent-dim: #2a6db8;
+    --accent-glow: rgba(74,158,255,0.12);
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --display: 'Instrument Serif', serif;
+}
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e0e0e0; padding-top: 41px; }
+body { font-family: var(--sans); background: var(--bg-deep); color: var(--text-primary); padding-top: 41px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
 .app { display: grid; grid-template-columns: 380px 1fr; height: calc(100vh - 41px); transition: grid-template-columns 0.3s; }
 .app.controls-hidden { grid-template-columns: 0 1fr; }
-.controls { background: #111; padding: 20px; overflow-y: auto; border-right: 1px solid #222; transition: opacity 0.3s, padding 0.3s; }
+.controls { background: var(--bg-primary); padding: 20px; overflow-y: auto; border-right: 1px solid var(--border); transition: opacity 0.3s, padding 0.3s; }
 .app.controls-hidden .controls { opacity: 0; padding: 0; overflow: hidden; }
 .toggle-btn { position: fixed; top: 10px; left: 10px; z-index: 100; width: 36px; height: 36px; padding: 0; border-radius: 50%; font-size: 16px; background: #333; border: none; color: #fff; cursor: pointer; }
 .toggle-btn:hover { background: #4a9eff; }
 h1 { font-size: 18px; color: #4a9eff; margin-bottom: 20px; }
-h2 { font-size: 11px; color: #888; margin: 16px 0 10px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #1a1a1a; border-radius: 4px; }
+h2 { font-family: var(--mono); font-size: 9px; color: var(--text-dim); letter-spacing: 1.5px; margin: 16px 0 10px; text-transform: uppercase; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #1a1a1a; border-radius: 4px; }
 h2:hover { background: #222; }
 h2::after { content: '▼'; font-size: 9px; transition: transform 0.2s; }
 h2.collapsed::after { transform: rotate(-90deg); }
 .section { max-height: 2000px; overflow: hidden; transition: max-height 0.3s; }
 .section.collapsed { max-height: 0; }
 .control-group { margin-bottom: 12px; }
-label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; }
-input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 8px 10px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; }
+label { display: block; font-family: var(--mono); font-size: 10px; color: var(--text-dim); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 8px 10px; background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); border-radius: 4px; font-family: var(--mono); font-size: 11px; }
 input[type="range"] { width: 100%; }
 input[type="color"] { width: 50px; height: 28px; border: none; background: none; cursor: pointer; }
 input[type="checkbox"] { margin-right: 6px; }
-button { width: 100%; padding: 10px; background: #4a9eff; border: none; color: #000; font-weight: 600; border-radius: 4px; cursor: pointer; font-size: 12px; margin-bottom: 8px; }
+button { width: 100%; padding: 10px; background: var(--accent); border: none; color: #0a0a0a; font-weight: 600; border-radius: 4px; cursor: pointer; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
 button:hover { background: #357abd; }
 button.secondary { background: #333; color: #fff; }
 button.small { width: auto; padding: 4px 10px; font-size: 11px; }
@@ -42,12 +63,12 @@ button.small { width: auto; padding: 4px 10px; font-size: 11px; }
 .highlight-body { padding: 12px; border-top: 1px solid #333; display: none; }
 .highlight-body.open { display: block; }
 
-.preview-area { background: #000; display: flex; flex-direction: column; overflow: hidden; }
+.preview-area { background: var(--bg-deep); display: flex; flex-direction: column; overflow: hidden; }
 .preview-area.fit-frame { background: #1a1a1a; }
 .preview-area.fit-frame .preview-stage,
 .preview-area.fit-frame .sticky-stage { border: 3px solid #4a9eff; box-sizing: border-box; max-width: 700px; margin: 0 auto; }
 
-.preview-header { padding: 10px 16px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #666; }
+.preview-header { padding: 10px 16px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 9px; color: var(--text-dim); }
 #progressDisplay { color: #4a9eff; font-weight: bold; }
 .preview-scroll { flex: 1; overflow-y: auto; }
 .preview-container { position: relative; }
@@ -76,24 +97,24 @@ button.small { width: auto; padding: 4px 10px; font-size: 11px; }
 
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
 .modal.active { display: flex; }
-.modal-content { background: #111; border-radius: 12px; padding: 24px; width: 90%; max-width: 800px; max-height: 85vh; overflow: auto; }
+.modal-content { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 12px; padding: 24px; width: 90%; max-width: 800px; max-height: 85vh; overflow: auto; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .modal-close { background: none; border: none; color: #666; font-size: 28px; cursor: pointer; width: auto; padding: 0; }
 textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px solid #333; color: #4a9eff; font-family: monospace; font-size: 11px; padding: 12px; border-radius: 6px; }
 
 /* Disco Modal */
-.disco-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-.disco-modal-overlay.active{display:flex;opacity:1;pointer-events:auto}
-.disco-modal{background:#1e1e24;border-radius:12px;padding:24px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);transform:scale(0.95);transition:transform 0.2s}
-.disco-modal-overlay.active .disco-modal{transform:scale(1)}
-.disco-modal-title{color:#4a9eff;font-size:14px;font-weight:600;margin-bottom:12px}
-.disco-modal-msg{color:#ccc;font-size:14px;line-height:1.5;margin-bottom:20px;white-space:pre-line}
-.disco-modal-btns{display:flex;gap:8px;justify-content:flex-end}
-.disco-modal-btns button{padding:8px 18px;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s}
-.disco-modal-btns .disco-btn-primary{background:#4a9eff;color:#fff}
-.disco-modal-btns .disco-btn-primary:hover{background:#3a8eef}
-.disco-modal-btns .disco-btn-secondary{background:#2a2a34;color:#aaa}
-.disco-modal-btns .disco-btn-secondary:hover{background:#3a3a44;color:#ccc}
+.disco-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; pointer-events: none; font-family: var(--sans); }
+.disco-modal-overlay.active { display: flex; opacity: 1; pointer-events: auto; }
+.disco-modal { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 12px; padding: 24px; max-width: 360px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); transform: scale(0.95); transition: transform 0.2s; }
+.disco-modal-overlay.active .disco-modal { transform: scale(1); }
+.disco-modal-title { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+.disco-modal-msg { color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-bottom: 20px; white-space: pre-line; }
+.disco-modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.disco-modal-btns button { padding: 7px 16px; border: none; border-radius: 6px; font-family: var(--mono); font-size: 10px; font-weight: 500; cursor: pointer; transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.5px; width: auto; margin: 0; }
+.disco-modal-btns .disco-btn-primary { background: var(--accent); color: #0a0a0a; font-weight: 600; border: 1px solid var(--accent); }
+.disco-modal-btns .disco-btn-primary:hover { opacity: 0.85; }
+.disco-modal-btns .disco-btn-secondary { background: var(--bg-tertiary); color: var(--text-dim); border: 1px solid var(--border); }
+.disco-modal-btns .disco-btn-secondary:hover { border-color: var(--border-light); color: var(--text-secondary); }
 </style>
 </head>
 <body>

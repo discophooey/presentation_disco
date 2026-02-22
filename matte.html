@@ -5,14 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scrolltastic Matte</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+:root {
+    --bg-deep: #0a0a0a;
+    --bg-primary: #111111;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #242424;
+    --border: #2e2e2e;
+    --border-light: #3d3d3d;
+    --text-primary: #e0e0e0;
+    --text-secondary: #888888;
+    --text-dim: #5a5a5a;
+    --accent: #4a9eff;
+    --accent-dim: #2a6db8;
+    --accent-glow: rgba(74,158,255,0.12);
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --display: 'Instrument Serif', serif;
+}
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #111; color: #fff; }
+body { font-family: var(--sans); background: var(--bg-deep); color: var(--text-primary); padding-top: 41px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
 
 /* Grid Layout */
 .app { display: grid; grid-template-columns: 400px 1fr; height: calc(100vh - 45px); margin-top: 45px; }
-.controls { background: #111; padding: 20px; overflow-y: auto; border-right: 1px solid #222; }
+.controls { background: var(--bg-primary); padding: 20px; overflow-y: auto; border-right: 1px solid var(--border); }
 
 /* Collapsible Sections */
 .section { margin-bottom: 16px; background: #1a1a1a; border-radius: 8px; overflow: hidden; }
@@ -24,8 +43,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .section.open .section-toggle { transform: rotate(180deg); }
 
 /* Form Elements */
-label { display: block; margin-bottom: 6px; font-size: 12px; color: #888; }
-input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 8px 12px; background: #222; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 13px; margin-bottom: 12px; }
+label { display: block; margin-bottom: 6px; font-family: var(--mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 8px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-family: var(--mono); font-size: 11px; margin-bottom: 12px; }
 textarea { min-height: 60px; resize: vertical; }
 input[type="color"] { width: 50px; height: 32px; padding: 2px; background: #222; border: 1px solid #333; border-radius: 4px; cursor: pointer; }
 input[type="range"] { width: 100%; margin: 8px 0; }
@@ -47,8 +66,8 @@ input[type="range"] { width: 100%; margin: 8px 0; }
 .pos-btn.active { background: #4a9eff; border-color: #4a9eff; color: #fff; }
 
 /* Buttons */
-.btn { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; }
-.btn-primary { background: #4a9eff; color: #fff; width: 100%; margin-bottom: 8px; }
+.btn { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; transition: all 0.2s; }
+.btn-primary { background: var(--accent); color: #0a0a0a; width: 100%; margin-bottom: 8px; font-weight: 600; }
 .btn-primary:hover { background: #3a8eef; }
 .btn-secondary { background: #333; color: #fff; }
 .btn-secondary:hover { background: #444; }
@@ -56,12 +75,12 @@ input[type="range"] { width: 100%; margin: 8px 0; }
 .btn-danger:hover { background: #c0392b; }
 
 /* Preview Area */
-.preview-area { background: #000; display: flex; flex-direction: column; overflow: hidden; }
+.preview-area { background: var(--bg-deep); display: flex; flex-direction: column; overflow: hidden; }
 .preview-area.fit-frame { background: #1a1a1a; }
 .preview-area.fit-frame .preview-stage,
 .preview-area.fit-frame .sticky-stage { border: 3px solid #4a9eff; box-sizing: border-box; max-width: 700px; margin: 0 auto; }
 
-.preview-header { padding: 10px 16px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; font-size: 11px; color: #666; }
+.preview-header { padding: 10px 16px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 9px; color: var(--text-dim); }
 .preview-scroll { flex: 1; overflow-y: auto; }
 .preview-container { position: relative; }
 .preview-stage { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000; }
@@ -103,55 +122,55 @@ input[type="range"] { width: 100%; margin: 8px 0; }
 /* Modal */
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
 .modal.active { display: flex; }
-.modal-content { background: #111; border-radius: 12px; padding: 24px; width: 90%; max-width: 800px; max-height: 85vh; overflow: auto; }
+.modal-content { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 12px; padding: 24px; width: 90%; max-width: 800px; max-height: 85vh; overflow: auto; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .modal-close { background: none; border: none; color: #888; font-size: 24px; cursor: pointer; }
 textarea#exportCode { width: 100%; height: 300px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px; color: #4a9eff; font-family: monospace; font-size: 12px; resize: vertical; }
 
 /* Disco Modal */
-.disco-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-.disco-modal-overlay.active{display:flex;opacity:1;pointer-events:auto}
-.disco-modal{background:#1e1e24;border-radius:12px;padding:24px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);transform:scale(0.95);transition:transform 0.2s}
-.disco-modal-overlay.active .disco-modal{transform:scale(1)}
-.disco-modal-title{color:#4a9eff;font-size:14px;font-weight:600;margin-bottom:12px}
-.disco-modal-msg{color:#ccc;font-size:14px;line-height:1.5;margin-bottom:20px;white-space:pre-line}
-.disco-modal-btns{display:flex;gap:8px;justify-content:flex-end}
-.disco-modal-btns button{padding:8px 18px;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s}
-.disco-modal-btns .disco-btn-primary{background:#4a9eff;color:#fff}
-.disco-modal-btns .disco-btn-primary:hover{background:#3a8eef}
-.disco-modal-btns .disco-btn-secondary{background:#2a2a34;color:#aaa}
-.disco-modal-btns .disco-btn-secondary:hover{background:#3a3a44;color:#ccc}
+.disco-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; pointer-events: none; font-family: var(--sans); }
+.disco-modal-overlay.active { display: flex; opacity: 1; pointer-events: auto; }
+.disco-modal { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 12px; padding: 24px; max-width: 360px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); transform: scale(0.95); transition: transform 0.2s; }
+.disco-modal-overlay.active .disco-modal { transform: scale(1); }
+.disco-modal-title { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+.disco-modal-msg { color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-bottom: 20px; white-space: pre-line; }
+.disco-modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.disco-modal-btns button { padding: 7px 16px; border: none; border-radius: 6px; font-family: var(--mono); font-size: 10px; font-weight: 500; cursor: pointer; transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.5px; width: auto; margin: 0; }
+.disco-modal-btns .disco-btn-primary { background: var(--accent); color: #0a0a0a; font-weight: 600; border: 1px solid var(--accent); }
+.disco-modal-btns .disco-btn-primary:hover { opacity: 0.85; }
+.disco-modal-btns .disco-btn-secondary { background: var(--bg-tertiary); color: var(--text-dim); border: 1px solid var(--border); }
+.disco-modal-btns .disco-btn-secondary:hover { border-color: var(--border-light); color: var(--text-secondary); }
 </style>
 </head>
 <body>
-<div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;border-bottom:1px solid #2a2a2a;display:flex;overflow-x:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-<a href="index.html" style="padding:10px 16px;color:#4a9eff;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;">← Hub</a>
-<a href="before-after.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Before/After</a>
-<a href="card-stack.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Card Stack</a>
-<a href="chart.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chart</a>
-<a href="collage.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Collage</a>
-<a href="doc-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Doc Module</a>
-<a href="gallery.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Gallery</a>
-<a href="globe.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Globe</a>
-<a href="hotspots.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Hotspots</a>
-<a href="layers.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Layers</a>
-<a href="pull-quote.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Pull Quote</a>
-<a href="matte.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Matte</a>
-<a href="single-image.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Single Image</a>
-<a href="stat-counter.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stat Counter</a>
-<a href="timeline.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Timeline</a>
-<a href="video.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Video</a>
-<a href="zoom-detail.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Zoom Detail</a>
-<a href="text-scroll.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Text Scroll</a>
-<a href="chapter-marker.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Chapter Marker</a>
-<a href="key-facts.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Key Facts</a>
-<a href="body-module.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Body Module</a>
-<a href="epistemic-text.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Epistemic Text</a>
-<a href="adversarial-verification.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Adversarial</a>
-<a href="silence-mapping.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Silence Map</a>
-<a href="stack-builder-clean.html" style="padding:10px 14px;color:#888;text-decoration:none;font-size:11px;white-space:nowrap;">Stack Builder</a>
+<div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:var(--bg-primary);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;font-family:var(--mono);">
+<a href="index.html" style="padding:10px 16px;color:var(--accent);text-decoration:none;font-size:11px;font-weight:600;white-space:nowrap;letter-spacing:0.5px;">← Hub</a>
+<a href="before-after.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Before/After</a>
+<a href="card-stack.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Card Stack</a>
+<a href="chart.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Chart</a>
+<a href="collage.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Collage</a>
+<a href="doc-module.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Doc Module</a>
+<a href="gallery.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Gallery</a>
+<a href="globe.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Globe</a>
+<a href="hotspots.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Hotspots</a>
+<a href="layers.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Layers</a>
+<a href="pull-quote.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Pull Quote</a>
+<a href="matte.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Matte</a>
+<a href="single-image.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Single Image</a>
+<a href="stat-counter.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Stat Counter</a>
+<a href="timeline.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Timeline</a>
+<a href="video.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Video</a>
+<a href="zoom-detail.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Zoom Detail</a>
+<a href="text-scroll.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Text Scroll</a>
+<a href="chapter-marker.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Chapter Marker</a>
+<a href="key-facts.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Key Facts</a>
+<a href="body-module.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Body Module</a>
+<a href="epistemic-text.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Epistemic Text</a>
+<a href="adversarial-verification.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Adversarial</a>
+<a href="silence-mapping.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Silence Map</a>
+<a href="stack-builder-clean.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Stack Builder</a>
 </div>
-<style>#disco-nav a:hover{color:#fff!important;background:#1a1a1a;}</style>
+<style>#disco-nav a:hover{color:var(--accent)!important;background:var(--bg-secondary);}</style>
 
 <div class="app">
     <div class="controls">
