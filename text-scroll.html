@@ -30,6 +30,7 @@ body { font-family: var(--sans); background: var(--bg-deep); color: var(--text-p
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
 .app { display: grid; grid-template-columns: 380px 1fr; height: calc(100vh - 41px); }
 .controls { background: var(--bg-primary); padding: 20px; overflow-y: auto; border-right: 1px solid var(--border); }
+.preview-wrap { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .preview-header {
     padding: 0 16px; height: 34px; display: flex; align-items: center; justify-content: space-between;
     background: var(--bg-secondary); border-bottom: 1px solid var(--border);
@@ -101,14 +102,15 @@ button.secondary:hover { border-color: var(--accent-dim); color: var(--accent); 
 .block-item .block-bg { font-size: 10px; color: #666; }
 
 .save-load-bar { display: flex; gap: 8px; margin-bottom: 16px; }
-.save-load-bar 
+.save-load-bar button { flex: 1; margin: 0; }
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
 .modal.active { display: flex; }
 .modal-content { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 12px; padding: 24px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; }
 .modal-content h3 { color: #4a9eff; margin-bottom: 16px; }
 .modal-content textarea { height: 200px; font-family: monospace; font-size: 11px; }
 .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
-.modal-actions .saved-list { max-height: 200px; overflow-y: auto; margin: 10px 0; }
+.modal-actions button { flex: 1; }
+.saved-list { max-height: 200px; overflow-y: auto; margin: 10px 0; }
 .saved-item { background: #2a2a2a; padding: 10px 12px; border-radius: 6px; margin-bottom: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
 .saved-item:hover { background: #3a3a3a; }
 .saved-item .name { color: #fff; }
