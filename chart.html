@@ -29,60 +29,83 @@ body { font-family: var(--sans); background: var(--bg-deep); color: var(--text-p
 ::-webkit-scrollbar-track { background: var(--bg-deep); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
 
-/* Grid Layout */
-.app { display: grid; grid-template-columns: 400px 1fr; height: calc(100vh - 45px); margin-top: 45px; }
-.controls { background: var(--bg-primary); padding: 20px; overflow-y: auto; border-right: 1px solid var(--border); }
+.app { display: grid; grid-template-columns: 380px 1fr; height: calc(100vh - 41px); transition: grid-template-columns 0.3s; }
+.app.controls-hidden { grid-template-columns: 0 1fr; }
+.controls { background: var(--bg-primary); padding: 20px; overflow-y: auto; border-right: 1px solid var(--border); transition: opacity 0.3s, padding 0.3s; }
+.app.controls-hidden .controls { opacity: 0; padding: 0; overflow: hidden; }
 
-/* Collapsible Sections */
-.section { margin-bottom: 16px; background: #1a1a1a; border-radius: 8px; overflow: hidden; }
-.section-header { padding: 12px 16px; background: #222; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-family: var(--mono); font-size: 9px; color: var(--text-dim); letter-spacing: 1.5px; }
-.section-header:hover { background: #2a2a2a; }
-.section-content { padding: 16px; display: none; }
-.section.open .section-content { display: block; }
-.section-toggle { transition: transform 0.2s; }
-.section.open .section-toggle { transform: rotate(180deg); }
+.toggle-btn { position: fixed; top: 10px; left: 10px; z-index: 100; width: 32px; height: 32px; padding: 0; border-radius: 8px; font-size: 14px; background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-secondary); cursor: pointer; transition: all .15s; }
+.toggle-btn:hover { border-color: var(--accent-dim); color: var(--accent); }
 
-/* Form Elements */
-label { display: block; margin-bottom: 6px; font-family: var(--mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
-input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 8px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-family: var(--mono); font-size: 11px; margin-bottom: 12px; }
+.module-title { font-family: var(--display); font-size: 22px; font-weight: 400; color: var(--text-primary); margin-bottom: 20px; letter-spacing: -0.01em; }
+.module-title span { color: var(--accent); }
+
+h2 { font-family: var(--mono); font-size: 9px; color: var(--text-dim); margin: 14px 0 8px; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; transition: all .15s; }
+h2:hover { border-color: var(--border-light); background: var(--bg-tertiary); }
+h2::after { content: '▾'; font-size: 10px; color: var(--text-dim); transition: transform 0.2s; }
+h2.collapsed::after { transform: rotate(-90deg); }
+.section { max-height: 2000px; overflow: hidden; transition: max-height 0.3s; }
+.section.collapsed { max-height: 0; }
+
+.control-group { margin-bottom: 10px; }
+label { display: block; font-family: var(--mono); font-size: 10px; color: var(--text-dim); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+input[type="text"], input[type="number"], select, textarea {
+    width: 100%; padding: 7px 10px;
+    background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary);
+    border-radius: 6px; font-family: var(--mono); font-size: 11px; outline: none; transition: border-color .15s;
+}
+input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus { border-color: var(--accent-dim); }
 textarea { min-height: 60px; resize: vertical; }
-input[type="color"] { width: 50px; height: 32px; padding: 2px; background: #222; border: 1px solid #333; border-radius: 4px; cursor: pointer; }
-input[type="range"] { width: 100%; margin: 8px 0; }
+input[type="range"] { width: 100%; height: 3px; -webkit-appearance: none; background: var(--bg-tertiary); border-radius: 2px; outline: none; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); cursor: pointer; box-shadow: 0 0 6px rgba(74,158,255,0.3); }
+input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; box-shadow: 0 0 6px rgba(74,158,255,0.3); }
+input[type="color"] { width: 36px; height: 24px; border: 1px solid var(--border); background: var(--bg-tertiary); cursor: pointer; border-radius: 4px; padding: 1px; }
+input[type="checkbox"] { margin-right: 6px; accent-color: var(--accent); }
 
-.row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
-.row input[type="number"] { width: 70px; margin-bottom: 0; }
-.row input[type="range"] { flex: 1; margin: 0; }
+button {
+    width: 100%; padding: 8px 14px;
+    font-family: var(--mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;
+    background: var(--accent); border: 1px solid var(--accent); color: #0a0a0a; font-weight: 600;
+    border-radius: 6px; cursor: pointer; margin-bottom: 6px; transition: all .15s;
+}
+button:hover { opacity: 0.85; }
+button.secondary { background: var(--bg-tertiary); border-color: var(--border); color: var(--text-secondary); }
+button.secondary:hover { border-color: var(--accent-dim); color: var(--accent); }
 
-/* Toggle Buttons */
-.toggle-group { display: flex; gap: 8px; margin-bottom: 12px; }
-.toggle-btn { flex: 1; padding: 8px 12px; background: #222; border: 1px solid #333; border-radius: 6px; color: #888; cursor: pointer; font-size: 12px; text-align: center; transition: all 0.2s; }
-.toggle-btn:hover { background: #2a2a2a; }
-.toggle-btn.active { background: #4a9eff; border-color: #4a9eff; color: #fff; }
+.row { display: flex; gap: 8px; align-items: flex-start; }
+.row > * { flex: 1; }
+.hint { font-family: var(--mono); font-size: 9px; color: var(--text-dim); margin-top: 3px; }
+.range-val { font-family: var(--mono); font-size: 9px; color: var(--accent); float: right; text-transform: none; letter-spacing: 0; }
+
+/* Toggle Groups */
+.toggle-group { display: flex; gap: 6px; margin-bottom: 10px; }
+.toggle-group .tg-btn { flex: 1; padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-dim); cursor: pointer; font-family: var(--mono); font-size: 10px; font-weight: 500; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.15s; width: auto; margin: 0; }
+.toggle-group .tg-btn:hover { border-color: var(--border-light); color: var(--text-secondary); }
+.toggle-group .tg-btn.active { background: var(--accent); border-color: var(--accent); color: #0a0a0a; font-weight: 600; }
 
 /* Data List */
 .data-list { max-height: 240px; overflow-y: auto; }
-.data-entry { background: #222; padding: 10px; border-radius: 6px; margin-bottom: 8px; }
-.data-entry-row { display: flex; gap: 8px; align-items: center; }
+.data-entry { background: var(--bg-secondary); padding: 8px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border); }
+.data-entry-row { display: flex; gap: 6px; align-items: center; }
 .data-entry input[type="text"] { flex: 2; margin-bottom: 0; }
-.data-entry input[type="number"] { width: 70px; margin-bottom: 0; }
-.data-entry input[type="color"] { width: 36px; height: 30px; }
-.data-entry .remove { width: 30px; height: 30px; background: #e74c3c; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 16px; }
-.data-entry .remove:hover { background: #c0392b; }
+.data-entry input[type="number"] { width: 60px; margin-bottom: 0; flex: none; }
+.data-entry input[type="color"] { width: 30px; height: 24px; flex: none; }
+.data-entry .remove { width: 24px; height: 24px; min-width: 24px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; color: #ff6b6b; cursor: pointer; font-size: 14px; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; flex: none; }
+.data-entry .remove:hover { background: #ff6b6b; color: white; border-color: #ff6b6b; }
 
-/* Buttons */
-.btn { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; }
-.btn-primary { background: var(--accent); color: #0a0a0a; width: 100%; margin-bottom: 8px; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-.btn-primary:hover { background: #3a8eef; }
-.btn-secondary { background: #333; color: #fff; }
-.btn-secondary:hover { background: #444; }
-.btn-danger { background: #e74c3c; color: #fff; }
-.btn-danger:hover { background: #c0392b; }
-.btn-add { background: #2a2a2a; color: #4a9eff; border: 1px dashed #4a9eff; width: 100%; margin-top: 8px; }
-.btn-add:hover { background: #333; }
+.btn-add { background: transparent; border: 1px dashed var(--border); color: var(--text-dim); }
+.btn-add:hover { border-color: var(--accent-dim); color: var(--accent); opacity: 1; }
 
 /* Preview Area */
 .preview-area { background: var(--bg-deep); display: flex; flex-direction: column; overflow: hidden; }
-.preview-header { padding: 10px 16px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 9px; color: var(--text-dim); }
+.preview-header {
+    padding: 0 16px; height: 34px; display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+    font-family: var(--mono); font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;
+}
+#progressDisplay { color: var(--accent); font-weight: 600; font-family: var(--mono); font-size: 11px; }
+
 .preview-scroll { flex: 1; overflow-y: auto; }
 .preview-container { position: relative; }
 .preview-stage { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -125,15 +148,22 @@ input[type="range"] { width: 100%; margin: 8px 0; }
 .preview-caption .caption-credit { color: #999; font-size: 11px; font-style: italic; margin-top: 4px; }
 .text-overlay { position: absolute; padding: 12px 20px; border-radius: 4px; transition: opacity 0.4s; z-index: 50; max-width: 90%; box-sizing: border-box; white-space: pre-line; }
 
-/* Modal */
-.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
+/* Export Modal */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; }
 .modal.active { display: flex; }
-.modal-content { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 12px; padding: 24px; width: 90%; max-width: 800px; max-height: 85vh; overflow: auto; }
+.modal-content { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 12px; padding: 24px; width: 90%; max-width: 800px; max-height: 85vh; overflow: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.modal-close { background: none; border: none; color: #888; font-size: 24px; cursor: pointer; }
-textarea#exportCode { width: 100%; height: 300px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px; color: #4a9eff; font-family: monospace; font-size: 12px; resize: vertical; }
+.modal-header h1 { font-family: var(--mono); font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+.modal-close { background: none; border: none; color: var(--text-dim); font-size: 22px; cursor: pointer; width: auto; padding: 4px 8px; margin: 0; }
+.modal-close:hover { color: var(--accent); }
+textarea.code {
+    width: 100%; height: 300px;
+    background: var(--bg-deep); border: 1px solid var(--border); color: var(--accent);
+    font-family: var(--mono); font-size: 10px; padding: 12px; border-radius: 8px; outline: none;
+}
+textarea.code:focus { border-color: var(--accent-dim); }
 
-/* Disco Modal */
+/* Disco Confirm/Alert Modal */
 .disco-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; pointer-events: none; font-family: var(--sans); }
 .disco-modal-overlay.active { display: flex; opacity: 1; pointer-events: auto; }
 .disco-modal { background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 12px; padding: 24px; max-width: 360px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); transform: scale(0.95); transition: transform 0.2s; }
@@ -150,7 +180,7 @@ textarea#exportCode { width: 100%; height: 300px; background: #1a1a1a; border: 1
 </head>
 <body>
 <div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:var(--bg-primary);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;font-family:var(--mono);">
-<a href="index.html" style="padding:10px 16px;color:var(--accent);text-decoration:none;font-size:11px;font-weight:600;white-space:nowrap;letter-spacing:0.5px;">← Hub</a>
+<a href="index.html" style="padding:10px 16px;color:var(--accent);text-decoration:none;font-size:11px;font-weight:600;white-space:nowrap;letter-spacing:0.5px;">&#8592; Hub</a>
 <a href="before-after.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Before/After</a>
 <a href="card-stack.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Card Stack</a>
 <a href="chart.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Chart</a>
@@ -178,225 +208,205 @@ textarea#exportCode { width: 100%; height: 300px; background: #1a1a1a; border: 1
 </div>
 <style>#disco-nav a:hover{color:var(--accent)!important;background:var(--bg-secondary);}</style>
 
-<div class="app">
+<button class="toggle-btn" onclick="toggleControls()">&#9776;</button>
+<div class="app" id="app">
     <div class="controls">
-        <!-- Chart Type Section -->
-        <div class="section open">
-            <div class="section-header" onclick="toggleSection(this)">
-                <span>📊 Chart Type</span>
-                <span class="section-toggle">▼</span>
-            </div>
-            <div class="section-content">
+        <div class="module-title">Chart <span>Module</span></div>
+
+        <h2 onclick="toggleSection(this)">Chart Type</h2>
+        <div class="section">
+            <div class="control-group">
+                <label>Type</label>
                 <div class="toggle-group">
-                    <div class="toggle-btn active" data-type="bar" onclick="setChartType('bar')">Bar</div>
-                    <div class="toggle-btn" data-type="pie" onclick="setChartType('pie')">Pie</div>
+                    <div class="tg-btn active" data-type="bar" onclick="setChartType('bar')">Bar</div>
+                    <div class="tg-btn" data-type="pie" onclick="setChartType('pie')">Pie</div>
                 </div>
-                <div id="bar-options">
+            </div>
+            <div id="bar-options">
+                <div class="control-group">
                     <label>Orientation</label>
                     <div class="toggle-group">
-                        <div class="toggle-btn active" data-orient="horizontal" onclick="setOrientation('horizontal')">Horizontal</div>
-                        <div class="toggle-btn" data-orient="vertical" onclick="setOrientation('vertical')">Vertical</div>
+                        <div class="tg-btn active" data-orient="horizontal" onclick="setOrientation('horizontal')">Horizontal</div>
+                        <div class="tg-btn" data-orient="vertical" onclick="setOrientation('vertical')">Vertical</div>
                     </div>
                 </div>
-                <div id="pie-options" style="display:none">
+            </div>
+            <div id="pie-options" style="display:none">
+                <div class="control-group">
                     <label>Style</label>
                     <div class="toggle-group">
-                        <div class="toggle-btn active" data-pie="pie" onclick="setPieStyle('pie')">Pie</div>
-                        <div class="toggle-btn" data-pie="donut" onclick="setPieStyle('donut')">Donut</div>
+                        <div class="tg-btn active" data-pie="pie" onclick="setPieStyle('pie')">Pie</div>
+                        <div class="tg-btn" data-pie="donut" onclick="setPieStyle('donut')">Donut</div>
                     </div>
+                </div>
+                <div class="control-group">
                     <label>Center Text (Donut)</label>
                     <input type="text" id="center-text" value="Total" oninput="updatePreview()">
                 </div>
             </div>
         </div>
 
-        <!-- Data Section -->
-        <div class="section open">
-            <div class="section-header" onclick="toggleSection(this)">
-                <span>📈 Data</span>
-                <span class="section-toggle">▼</span>
-            </div>
-            <div class="section-content">
-                <div class="data-list" id="data-list"></div>
-                <button class="btn btn-add" onclick="addDataEntry()">+ Add Data Point</button>
-            </div>
+        <h2 onclick="toggleSection(this)">Data</h2>
+        <div class="section">
+            <div class="data-list" id="data-list"></div>
+            <button class="btn-add" onclick="addDataEntry()">+ Add Data Point</button>
         </div>
 
-        <!-- Animation Section -->
-        <div class="section open">
-            <div class="section-header" onclick="toggleSection(this)">
-                <span>✨ Animation</span>
-                <span class="section-toggle">▼</span>
-            </div>
-            <div class="section-content">
+        <h2 onclick="toggleSection(this)">Animation</h2>
+        <div class="section">
+            <div class="control-group">
                 <label>Stagger Animation</label>
                 <div class="toggle-group">
-                    <div class="toggle-btn active" data-stagger="true" onclick="setStagger(true)">On</div>
-                    <div class="toggle-btn" data-stagger="false" onclick="setStagger(false)">Off</div>
+                    <div class="tg-btn active" data-stagger="true" onclick="setStagger(true)">On</div>
+                    <div class="tg-btn" data-stagger="false" onclick="setStagger(false)">Off</div>
                 </div>
-                <label>Scroll Duration (vh)</label>
-                <div class="row">
-                    <input type="range" id="scrollDuration" min="150" max="500" value="200" oninput="document.getElementById('scrollDurationVal').textContent=this.value+'%';updatePreviewHeight()">
-                    <span id="scrollDurationVal" style="min-width:50px;text-align:right;color:#888;font-size:12px">200%</span>
-                </div>
+            </div>
+            <div class="control-group">
+                <label>Scroll Duration (vh) <span class="range-val" id="scrollDurationVal">200</span></label>
+                <input type="range" id="scrollDuration" min="150" max="500" value="200" oninput="document.getElementById('scrollDurationVal').textContent=this.value;updatePreviewHeight()">
             </div>
         </div>
 
-        <!-- Styling Section -->
-        <div class="section open">
-            <div class="section-header" onclick="toggleSection(this)">
-                <span>🎨 Styling</span>
-                <span class="section-toggle">▼</span>
-            </div>
-            <div class="section-content">
+        <h2 onclick="toggleSection(this)">Styling</h2>
+        <div class="section">
+            <div class="control-group">
                 <label>Chart Title</label>
                 <input type="text" id="chart-title" value="Simple Chart" oninput="updatePreview()">
+            </div>
+            <div class="control-group">
                 <label>Background Color</label>
-                <div class="row" style="align-items:center;gap:10px;">
+                <div style="display:flex;align-items:center;gap:10px;">
                     <input type="color" id="bg-color" value="#000000" oninput="updatePreview()">
-                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="bgTransparent" checked onchange="updatePreview()"> Transparent</label>
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;margin:0;text-transform:none;letter-spacing:0;"><input type="checkbox" id="bgTransparent" checked onchange="updatePreview()"> Transparent</label>
                 </div>
-                <label>Chart Scale (%)</label>
-                <div class="row">
-                    <input type="range" id="chartScale" min="40" max="100" value="80" oninput="document.getElementById('chartScaleVal').textContent=this.value+'%';updatePreview()">
-                    <span id="chartScaleVal" style="min-width:50px;text-align:right;color:#888;font-size:12px">80%</span>
-                </div>
-                <label>Offset X</label>
-                <div class="row">
-                    <input type="range" id="chartOffsetX" min="-200" max="200" value="0" oninput="document.getElementById('chartOffsetXVal').textContent=this.value+'px';updatePreview()">
-                    <span id="chartOffsetXVal" style="min-width:50px;text-align:right;color:#888;font-size:12px">0px</span>
-                </div>
-                <label>Offset Y</label>
-                <div class="row">
-                    <input type="range" id="chartOffsetY" min="-200" max="200" value="0" oninput="document.getElementById('chartOffsetYVal').textContent=this.value+'px';updatePreview()">
-                    <span id="chartOffsetYVal" style="min-width:50px;text-align:right;color:#888;font-size:12px">0px</span>
-                </div>
+            </div>
+            <div class="control-group">
+                <label>Chart Scale <span class="range-val" id="chartScaleVal">80%</span></label>
+                <input type="range" id="chartScale" min="40" max="100" value="80" oninput="document.getElementById('chartScaleVal').textContent=this.value+'%';updatePreview()">
+            </div>
+            <div class="control-group">
+                <label>Offset X <span class="range-val" id="chartOffsetXVal">0px</span></label>
+                <input type="range" id="chartOffsetX" min="-200" max="200" value="0" oninput="document.getElementById('chartOffsetXVal').textContent=this.value+'px';updatePreview()">
+            </div>
+            <div class="control-group">
+                <label>Offset Y <span class="range-val" id="chartOffsetYVal">0px</span></label>
+                <input type="range" id="chartOffsetY" min="-200" max="200" value="0" oninput="document.getElementById('chartOffsetYVal').textContent=this.value+'px';updatePreview()">
+            </div>
+            <div class="control-group">
                 <label>Sizing</label>
                 <div class="toggle-group">
-                    <div class="toggle-btn active" data-sizing="fit" onclick="setSizing('fit')">Fit</div>
-                    <div class="toggle-btn" data-sizing="cover" onclick="setSizing('cover')">Cover</div>
-                    <div class="toggle-btn" data-sizing="fill" onclick="setSizing('fill')">Fill</div>
+                    <div class="tg-btn active" data-sizing="fit" onclick="setSizing('fit')">Fit</div>
+                    <div class="tg-btn" data-sizing="cover" onclick="setSizing('cover')">Cover</div>
+                    <div class="tg-btn" data-sizing="fill" onclick="setSizing('fill')">Fill</div>
                 </div>
             </div>
         </div>
 
-        <!-- Text Overlay Section -->
+        <h2 onclick="toggleSection(this)">Text Overlay</h2>
         <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <span>📝 Text Overlay</span>
-                <span class="section-toggle">▼</span>
+            <div class="control-group">
+                <label style="text-transform:none;letter-spacing:0;"><input type="checkbox" id="textEnabled" onchange="updatePreview()"> Enable Text Overlay</label>
             </div>
-            <div class="section-content">
-                <label><input type="checkbox" id="textEnabled" onchange="updatePreview()"> Enable Text Overlay</label>
-                <div id="textControls" style="display:none;margin-top:12px">
+            <div id="textControls" style="display:none">
+                <div class="control-group">
                     <label>Text</label>
                     <textarea id="overlayText" rows="2" oninput="updatePreview()" placeholder="Enter text..."></textarea>
-                    <div class="row">
-                        <div style="flex:1">
-                            <label>Size</label>
-                            <div class="row">
-                                <input type="range" id="textSize" min="16" max="80" value="32" oninput="document.getElementById('textSizeVal').textContent=this.value+'px';updatePreview()">
-                                <span id="textSizeVal" style="min-width:50px;text-align:right;color:#888;font-size:12px">32px</span>
-                            </div>
-                        </div>
-                        <div style="width:60px">
-                            <label>Color</label>
-                            <input type="color" id="textColor" value="#ffffff" oninput="updatePreview()">
-                        </div>
+                </div>
+                <div class="control-group">
+                    <label>Font Size <span class="range-val" id="textSizeVal">32px</span></label>
+                    <input type="range" id="textSize" min="16" max="80" value="32" oninput="document.getElementById('textSizeVal').textContent=this.value+'px';updatePreview()">
+                </div>
+                <div class="control-group">
+                    <label>Text Color</label>
+                    <input type="color" id="textColor" value="#ffffff" oninput="updatePreview()">
+                </div>
+                <div class="row">
+                    <div class="control-group">
+                        <label>Position</label>
+                        <select id="textPosition" onchange="updatePreview()">
+                            <option value="top">Top</option>
+                            <option value="center" selected>Center</option>
+                            <option value="bottom">Bottom</option>
+                        </select>
                     </div>
-                    <div class="row">
-                        <div style="flex:1">
-                            <label>Position</label>
-                            <select id="textPosition" onchange="updatePreview()">
-                                <option value="top">Top</option>
-                                <option value="center" selected>Center</option>
-                                <option value="bottom">Bottom</option>
-                            </select>
-                        </div>
-                        <div style="flex:1">
-                            <label>Align</label>
-                            <select id="textAlign" onchange="updatePreview()">
-                                <option value="left">Left</option>
-                                <option value="center" selected>Center</option>
-                                <option value="right">Right</option>
-                            </select>
-                        </div>
+                    <div class="control-group">
+                        <label>Align</label>
+                        <select id="textAlign" onchange="updatePreview()">
+                            <option value="left">Left</option>
+                            <option value="center" selected>Center</option>
+                            <option value="right">Right</option>
+                        </select>
                     </div>
-                    <div class="row">
-                        <div style="flex:1">
-                            <label>X Offset</label>
-                            <div class="row">
-                                <input type="range" id="textX" min="-300" max="300" value="0" oninput="document.getElementById('textXVal').textContent=this.value+'px';updatePreview()">
-                                <span id="textXVal" style="min-width:50px;text-align:right;color:#888;font-size:12px">0px</span>
-                            </div>
-                        </div>
-                        <div style="flex:1">
-                            <label>Y Offset</label>
-                            <div class="row">
-                                <input type="range" id="textY" min="-300" max="300" value="0" oninput="document.getElementById('textYVal').textContent=this.value+'px';updatePreview()">
-                                <span id="textYVal" style="min-width:50px;text-align:right;color:#888;font-size:12px">0px</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <label><input type="checkbox" id="textBold" onchange="updatePreview()"> Bold</label>
-                        <label style="margin-left:16px"><input type="checkbox" id="textBgEnabled" onchange="updatePreview()"> Background</label>
-                    </div>
+                </div>
+                <div class="control-group">
+                    <label>X Offset <span class="range-val" id="textXVal">0px</span></label>
+                    <input type="range" id="textX" min="-300" max="300" value="0" oninput="document.getElementById('textXVal').textContent=this.value+'px';updatePreview()">
+                </div>
+                <div class="control-group">
+                    <label>Y Offset <span class="range-val" id="textYVal">0px</span></label>
+                    <input type="range" id="textY" min="-300" max="300" value="0" oninput="document.getElementById('textYVal').textContent=this.value+'px';updatePreview()">
+                </div>
+                <div class="control-group" style="display:flex;gap:16px;">
+                    <label style="text-transform:none;letter-spacing:0;"><input type="checkbox" id="textBold" onchange="updatePreview()"> Bold</label>
+                    <label style="text-transform:none;letter-spacing:0;"><input type="checkbox" id="textBgEnabled" onchange="updatePreview()"> Background</label>
                 </div>
             </div>
         </div>
 
-        <!-- Caption Section -->
+        <h2 onclick="toggleSection(this)">Caption</h2>
         <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <span>💬 Caption</span>
-                <span class="section-toggle">▼</span>
+            <div class="control-group">
+                <label style="text-transform:none;letter-spacing:0;"><input type="checkbox" id="captionEnabled" checked onchange="updatePreview()"> Enable Caption</label>
             </div>
-            <div class="section-content">
-                <label><input type="checkbox" id="captionEnabled" checked onchange="updatePreview()"> Enable Caption</label>
-                <div id="captionControls" style="margin-top:12px">
+            <div id="captionControls">
+                <div class="control-group">
                     <label>Caption Text</label>
                     <textarea id="captionText" rows="2" oninput="updatePreview()" placeholder="Caption text...">Scroll-driven bar and pie charts.</textarea>
+                </div>
+                <div class="control-group">
                     <label>Credit</label>
                     <input type="text" id="captionCredit" value="" oninput="updatePreview()" placeholder="Source or credit">
-                    <label><input type="checkbox" id="captionBgEnabled" checked onchange="updatePreview()"> Background</label>
+                </div>
+                <div class="control-group">
+                    <label style="text-transform:none;letter-spacing:0;"><input type="checkbox" id="captionBgEnabled" checked onchange="updatePreview()"> Caption Background</label>
                 </div>
             </div>
         </div>
 
-        <!-- Embed Section -->
+        <h2 onclick="toggleSection(this)">Embed Settings</h2>
         <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <span>⚙️ Embed Settings</span>
-                <span class="section-toggle">▼</span>
+            <div class="control-group">
+                <label>Mobile Top Offset <span class="range-val" id="mobileOffsetVal">200px</span></label>
+                <input type="range" id="mobileOffset" min="0" max="300" value="200" oninput="document.getElementById('mobileOffsetVal').textContent=this.value+'px'">
+                <div class="hint">Default 200px for AP mobile nav/banners</div>
             </div>
-            <div class="section-content">
-                <label>Mobile Top Offset (px)</label>
-                <div class="row">
-                    <input type="range" id="mobileOffset" min="0" max="300" value="200" oninput="document.getElementById('mobileOffsetVal').textContent=this.value+'px'">
-                    <span id="mobileOffsetVal" style="min-width:50px;text-align:right;color:#888;font-size:12px">200px</span>
-                </div>
-                <label>Desktop Top Offset (px)</label>
-                <div class="row">
-                    <input type="range" id="desktopOffset" min="0" max="200" value="0" oninput="document.getElementById('desktopOffsetVal').textContent=this.value+'px'">
-                    <span id="desktopOffsetVal" style="min-width:50px;text-align:right;color:#888;font-size:12px">0px</span>
-                </div>
+            <div class="control-group">
+                <label>Desktop Top Offset <span class="range-val" id="desktopOffsetVal">0px</span></label>
+                <input type="range" id="desktopOffset" min="0" max="200" value="0" oninput="document.getElementById('desktopOffsetVal').textContent=this.value+'px'">
             </div>
         </div>
 
-        <!-- Action Buttons -->
-        <button class="btn btn-primary" onclick="generateExport()">Generate HTML</button>
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-            <button class="btn btn-secondary" style="flex:1" onclick="saveConfig()">💾 Save Config</button>
-            <button class="btn btn-secondary" style="flex:1" onclick="loadConfig()">📂 Load Config</button>
+        <h2 onclick="toggleSection(this)">Export</h2>
+        <div class="section">
+            <button onclick="generateExport()">Generate HTML</button>
+            <button class="secondary" onclick="copyCode()">&#128203; Copy Code</button>
+            <button class="secondary" onclick="downloadHTML()">&#128190; Download</button>
+            <button class="secondary" onclick="downloadCodeTxt()">&#128196; .txt</button>
+            <button class="secondary" onclick="resetModule()" style="margin-top:6px;">&#8634; Reset</button>
         </div>
-        <button class="btn btn-danger" style="width:100%" onclick="resetModule()">Reset Module</button>
+
+        <h2 onclick="toggleSection(this)">Project</h2>
+        <div class="section">
+            <div class="row">
+                <button class="secondary" onclick="saveConfig()">&#128190; Save</button>
+                <button class="secondary" onclick="loadConfig()">&#128194; Load</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Preview Area -->
     <div class="preview-area">
         <div class="preview-header">
-            <span>Preview (scroll to animate)</span>
+            <span>Preview</span>
             <span id="progressDisplay">0%</span>
         </div>
         <div class="preview-scroll" id="previewScroll">
@@ -415,18 +425,15 @@ textarea#exportCode { width: 100%; height: 300px; background: #1a1a1a; border: 1
     </div>
 </div>
 
-<!-- Export Modal -->
 <div class="modal" id="exportModal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h3>Generated HTML</h3>
-            <button class="modal-close" onclick="document.getElementById('exportModal').classList.remove('active')">&times;</button>
-        </div>
-        <textarea id="exportCode" readonly></textarea>
-        <div style="display:flex;gap:8px;margin-top:12px">
-            <button class="btn btn-primary" style="flex:1" onclick="copyCode()">📋 Copy Code</button><button onclick="downloadCodeTxt()" class="secondary">📄 .txt</button>
-            <button class="btn btn-secondary" onclick="downloadHTML()">⬇️ Download</button>
-            <button class="btn btn-secondary" onclick="sendToStackBuilder()">📚 Stack</button>
+        <div class="modal-header"><h1>Export Code</h1><button class="modal-close" onclick="closeModal()">&times;</button></div>
+        <textarea class="code" id="exportCode" readonly></textarea>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+            <button onclick="copyCode()">&#128203; Copy</button>
+            <button class="secondary" onclick="downloadHTML()">&#128190; Download</button>
+            <button class="secondary" onclick="downloadCodeTxt()">&#128196; .txt</button>
+            <button class="secondary" onclick="sendToStackBuilder()">&#128218; Stack</button>
         </div>
     </div>
 </div>
@@ -434,9 +441,9 @@ textarea#exportCode { width: 100%; height: 300px; background: #1a1a1a; border: 1
 <script>
 var _fromPlanner=new URLSearchParams(location.search).get('planner')==='1';
 
-function toggleSection(header) {
-    header.parentElement.classList.toggle('open');
-}
+function toggleControls() { document.getElementById('app').classList.toggle('controls-hidden'); }
+function toggleSection(el) { el.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('collapsed'); }
+function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
 
 const defColors = ['#ff6666', '#888888', '#666666', '#aaaaaa', '#555555', '#999999'];
 
@@ -543,7 +550,7 @@ function renderDataList() {
             '<input type="text" placeholder="Label" value="' + d.label + '" onchange="updateDataEntry(' + i + ',\'label\',this.value)">' +
             '<input type="number" placeholder="Val" value="' + d.value + '" onchange="updateDataEntry(' + i + ',\'value\',this.value)">' +
             '<input type="color" value="' + d.color + '" onchange="updateDataEntry(' + i + ',\'color\',this.value)">' +
-            '<button class="remove" onclick="removeDataEntry(' + i + ')">×</button>' +
+            '<button class="remove" onclick="removeDataEntry(' + i + ')">&#215;</button>' +
             '</div></div>';
     }).join('');
 }
@@ -578,7 +585,7 @@ function updatePreview() {
     document.getElementById('textControls').style.display = config.textEnabled ? 'block' : 'none';
     document.getElementById('captionControls').style.display = config.captionEnabled ? 'block' : 'none';
     document.getElementById('chartTitle').textContent = config.title;
-    
+
     var wrap = document.getElementById('chartWrap');
     wrap.style.background = config.bgTransparent ? 'transparent' : config.bgColor;
     wrap.className = 'chart-wrap sizing-' + config.sizing;
@@ -671,14 +678,14 @@ function applyEffect() {
     var max = cnt.offsetHeight - scr.clientHeight;
     var prog = max > 0 ? scr.scrollTop / max : 0;
     document.getElementById('progressDisplay').textContent = Math.round(prog * 100) + '%';
-    
+
     var e = function(t) { return 1 - Math.pow(1 - t, 3); };
-    
+
     var barFills = document.querySelectorAll('.bar-fill');
     var barCount = barFills.length;
-    var maxStagger = 0.5; // Total stagger window
+    var maxStagger = 0.5;
     var staggerStep = barCount > 1 && config.stagger ? maxStagger / (barCount - 1) : 0;
-    
+
     barFills.forEach(function(f, i) {
         var t = parseFloat(f.dataset.target) || 0;
         var d = config.stagger ? i * staggerStep : 0;
@@ -688,11 +695,11 @@ function applyEffect() {
         var val = f.parentElement.parentElement.querySelector('.bar-value');
         if (val) val.style.opacity = p > 0.8 ? 1 : 0;
     });
-    
+
     var pieSegs = document.querySelectorAll('.pie-segment');
     var pieCount = pieSegs.length;
     var pieStagger = pieCount > 1 && config.stagger ? maxStagger / (pieCount - 1) : 0;
-    
+
     pieSegs.forEach(function(s, i) {
         var t = parseFloat(s.dataset.target) || 0;
         var c = parseFloat(s.dataset.circumference) || 628;
@@ -735,7 +742,7 @@ function generateExport() {
             h += '<div class="i"><span class="l">' + esc(d.label) + '</span><div class="t"><div class="f" style="background:' + d.color + '" data-t="' + Math.round((d.value / max) * 100) + '"></div></div><span class="n">' + d.value + '</span></div>';
         });
         h += '</div>';
-        css = v ? 
+        css = v ?
             '#' + u + ' .b{display:flex;flex-direction:row;align-items:flex-end;justify-content:center;width:100%;height:300px;gap:20px}#' + u + ' .i{display:flex;flex-direction:column-reverse;align-items:center;height:100%;gap:10px}#' + u + ' .l{font-size:.9rem;color:#ccc;text-align:center}#' + u + ' .t{width:50px;height:100%;background:#333;border-radius:4px;overflow:hidden;display:flex;align-items:flex-end;flex:none}#' + u + ' .f{width:100%;height:0;border-radius:4px;flex-shrink:0}#' + u + ' .n{font-size:.9rem;color:#fff;font-weight:bold;opacity:0;transition:opacity .3s}' :
             '#' + u + ' .b{display:flex;flex-direction:column;gap:15px}#' + u + ' .i{display:flex;align-items:center;gap:10px}#' + u + ' .l{min-width:100px;font-size:.9rem;color:#ccc}#' + u + ' .t{flex:1;height:30px;background:#333;border-radius:4px;overflow:hidden}#' + u + ' .f{height:100%;width:0;border-radius:4px}#' + u + ' .n{min-width:50px;font-size:.9rem;color:#fff;font-weight:bold;opacity:0;transition:opacity .3s}';
     } else {
@@ -773,7 +780,6 @@ function generateExport() {
         cap = '<div class="cap">' + esc(config.captionText) + (config.captionCredit ? '<em>' + esc(config.captionCredit) + '</em>' : '') + '</div>';
     }
 
-    // Base64 encoded JS for AP CMS compatibility
     var js = bar ?
         '!function(){var w=document.getElementById("' + u + '"),c=0;!function U(){var r=w.getBoundingClientRect(),t=Math.max(0,Math.min(1,-(r.top-(innerWidth<768?' + mob + ':' + dsk + '))/(w.offsetHeight-innerHeight+(innerWidth<768?' + mob + ':' + dsk + '))));var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + u + '"];if(extP!==undefined)t=extP;c+=(t-c)*.15;w.querySelectorAll(".f").forEach(function(f,i){var p=Math.max(0,Math.min(1,(c-i*' + stgStep + ')/' + animWin + ')),e=1-Math.pow(1-p,3);f.style.' + (v ? 'height' : 'width') + '=f.dataset.t*e+"%";f.parentNode.parentNode.lastChild.style.opacity=p>.8?1:0});requestAnimationFrame(U)}()}()' :
         '!function(){var w=document.getElementById("' + u + '"),c=0;!function U(){var r=w.getBoundingClientRect(),t=Math.max(0,Math.min(1,-(r.top-(innerWidth<768?' + mob + ':' + dsk + '))/(w.offsetHeight-innerHeight+(innerWidth<768?' + mob + ':' + dsk + '))));var extP=window.SCROLLTASTIC_PROGRESS&&window.SCROLLTASTIC_PROGRESS["' + u + '"];if(extP!==undefined)t=extP;c+=(t-c)*.15;w.querySelectorAll(".s").forEach(function(g,i){var p=Math.max(0,Math.min(1,(c-i*' + stgStep + ')/' + animWin + ')),e=1-Math.pow(1-p,3),a=g.dataset.t,k=g.dataset.c;g.style.strokeDasharray=a*e+" "+(k-a*e)});requestAnimationFrame(U)}()}()';
@@ -791,16 +797,18 @@ function generateExport() {
 
 function copyCode() {
     var code = document.getElementById('exportCode');
+    if (!code.value) { generateExport(); return; }
     code.select();
     document.execCommand('copy');
     discoAlert('Code copied to clipboard!');
 }
 
 function downloadHTML() {
+    var code = document.getElementById('exportCode').value;
+    if (!code) { generateExport(); return; }
     var filename = prompt('Save export as:', 'chart-embed');
     if (!filename) return;
     var safeName = filename.replace(/[^a-z0-9_-]/gi, '_');
-    var code = document.getElementById('exportCode').value;
     var blob = new Blob([code], { type: 'text/html' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -819,10 +827,12 @@ function sendToStackBuilder() {var _em=document.getElementById('exportModal');if
 }
 
 function saveConfig() {
+    var filename = prompt('Save config as:', 'chart-config');
+    if (!filename) return;
     var blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'chart-config.json';
+    a.download = filename.replace(/[^a-z0-9_-]/gi, '_') + '.json';
     a.click();
     URL.revokeObjectURL(a.href);
 }
@@ -891,7 +901,6 @@ updatePreviewHeight();
 updatePreview();
 </script>
 
-<!-- Navigation highlight -->
 <script>
 (function(){
   var path = location.pathname.split('/').pop() || 'index.html';
@@ -904,21 +913,20 @@ updatePreview();
 })();
 </script>
 
-<!-- Persistence for chart -->
 <script>
 (function() {
     var KEY = 'disco_chart';
-    
+
     function saveState() {
         var state = { inputs: {} };
-        
+
         state.data = config.data;
         state.chartType = config.chartType;
         state.orientation = config.orientation;
         state.pieStyle = config.pieStyle;
         state.stagger = config.stagger;
         state.sizing = config.sizing;
-        
+
         document.querySelectorAll('input[id], select[id], textarea[id]').forEach(function(el) {
             if (el.type === 'checkbox') state.inputs[el.id] = el.checked;
             else if (el.type === 'file') return;
@@ -926,24 +934,21 @@ updatePreview();
         });
         try { localStorage.setItem(KEY, JSON.stringify(state)); localStorage.removeItem(KEY + '_from_planner'); } catch(e) {}
     }
-    
+
     function loadState() {
         try {
             var saved = localStorage.getItem(KEY);
             if (!saved) return;
             var state = JSON.parse(saved);
-            
-            // Restore data array
+
             if (state.data) config.data = state.data;
-            
-            // Restore toggle states directly to config
+
             if (state.chartType) config.chartType = state.chartType;
             if (state.orientation) config.orientation = state.orientation;
             if (state.pieStyle) config.pieStyle = state.pieStyle;
             if (typeof state.stagger !== 'undefined') config.stagger = state.stagger;
             if (state.sizing) config.sizing = state.sizing;
-            
-            // Restore input values
+
             Object.keys(state.inputs || {}).forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) {
@@ -954,38 +959,34 @@ updatePreview();
                     if (valEl && el.type === 'range') valEl.textContent = el.value + (id.toLowerCase().includes('offset') ? 'px' : (id.toLowerCase().includes('size') ? 'px' : (id.toLowerCase().includes('scale') || id.toLowerCase().includes('duration') ? '%' : '')));
                 }
             });
-            
-            // Update toggle button UI
+
             document.querySelectorAll('[data-type]').forEach(function(b) { b.classList.toggle('active', b.dataset.type === config.chartType); });
             document.querySelectorAll('[data-orient]').forEach(function(b) { b.classList.toggle('active', b.dataset.orient === config.orientation); });
             document.querySelectorAll('[data-pie]').forEach(function(b) { b.classList.toggle('active', b.dataset.pie === config.pieStyle); });
             document.querySelectorAll('[data-stagger]').forEach(function(b) { b.classList.toggle('active', b.dataset.stagger === String(config.stagger)); });
             document.querySelectorAll('[data-sizing]').forEach(function(b) { b.classList.toggle('active', b.dataset.sizing === config.sizing); });
-            
-            // Show/hide options
+
             document.getElementById('bar-options').style.display = config.chartType === 'bar' ? 'block' : 'none';
             document.getElementById('pie-options').style.display = config.chartType === 'pie' ? 'block' : 'none';
-            
+
             renderDataList();
             updatePreviewHeight();
             updatePreview();
         } catch(e) { console.warn('Load state error:', e); }
     }
-    
+
     window.resetModule = function() {
         discoConfirm('Reset all settings to defaults?', function(){localStorage.removeItem(KEY);
             location.reload();});
     };
-    
-    // Wrap data functions to trigger save
+
     var _orig_addDataEntry = window.addDataEntry;
     window.addDataEntry = function() { _orig_addDataEntry.apply(this, arguments); saveState(); };
     var _orig_removeDataEntry = window.removeDataEntry;
     window.removeDataEntry = function() { _orig_removeDataEntry.apply(this, arguments); saveState(); };
     var _orig_updateDataEntry = window.updateDataEntry;
     window.updateDataEntry = function() { _orig_updateDataEntry.apply(this, arguments); saveState(); };
-    
-    // Wrap toggle functions to trigger save (onclick doesn't fire change/input events)
+
     var _orig_setChartType = window.setChartType;
     window.setChartType = function() { _orig_setChartType.apply(this, arguments); saveState(); };
     var _orig_setOrientation = window.setOrientation;
@@ -996,10 +997,10 @@ updatePreview();
     window.setStagger = function() { _orig_setStagger.apply(this, arguments); saveState(); };
     var _orig_setSizing = window.setSizing;
     window.setSizing = function() { _orig_setSizing.apply(this, arguments); saveState(); };
-    
+
     document.addEventListener('change', saveState);
     document.addEventListener('input', saveState);
-    
+
     setTimeout(loadState, 150);
 })();
 

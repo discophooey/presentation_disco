@@ -23,17 +23,6 @@
     --mono: 'JetBrains Mono', monospace;
     --sans: 'DM Sans', sans-serif;
     --display: 'Instrument Serif', serif;
-    --ui-bg: #1a1a1e;
-    --ui-surface: #232328;
-    --ui-border: #333338;
-    --ui-text: #e0e0e0;
-    --ui-dim: #888;
-    --ui-accent: #6c8cff;
-    --ui-accent-hover: #8aa4ff;
-    --ui-danger: #ff6b6b;
-    --ui-success: #4ecdc4;
-    --ui-warning: #ffd93d;
-    --ui-radius: 6px;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -47,58 +36,36 @@
     color: var(--text-primary);
     font-size: 13px;
     line-height: 1.5;
-    display: flex;
-    height: calc(100vh - 41px);
     overflow: hidden;
     margin-top: 41px;
   }
 
-  /* ===== SIDEBAR ===== */
-  .sidebar {
-    width: 420px;
-    min-width: 420px;
+  .app {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    height: calc(100vh - 41px);
+  }
+
+  .controls {
     background: var(--bg-primary);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .sidebar-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--ui-border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .sidebar-title {
-    font-size: 15px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .sidebar-badge {
-    font-size: 10px;
-    font-weight: 600;
-    background: var(--ui-accent);
-    color: white;
-    padding: 2px 7px;
-    border-radius: 3px;
-    letter-spacing: 0.03em;
-  }
-
-  .sidebar-scroll {
-    flex: 1;
-    overflow-y: auto;
     padding: 20px;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
   }
 
-  .sidebar-scroll::-webkit-scrollbar { width: 5px; }
-  .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
-  .sidebar-scroll::-webkit-scrollbar-thumb { background: var(--ui-border); border-radius: 3px; }
+  .controls::-webkit-scrollbar { width: 5px; }
+  .controls::-webkit-scrollbar-track { background: transparent; }
+  .controls::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .module-title {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    line-height: 1.3;
+  }
+  .module-title span { color: var(--accent); }
 
   /* Form elements */
   .form-section {
@@ -108,15 +75,25 @@
   .form-section-title {
     font-family: var(--mono);
     font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
     color: var(--text-dim);
-    margin-bottom: 12px;
+    letter-spacing: 1.5px;
+    margin: 20px 0 12px;
+    padding: 10px 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
+    text-transform: uppercase;
+    font-weight: 700;
+    transition: background 0.15s;
   }
+  .form-section-title:hover { background: var(--bg-tertiary); }
+  .form-section-title::after { content: '\25BE'; font-size: 11px; color: var(--text-dim); transition: transform 0.2s; }
+  .form-section-title.collapsed::after { transform: rotate(-90deg); }
 
   .form-label {
     font-family: var(--mono);
@@ -131,7 +108,7 @@
 
   .form-hint {
     font-size: 11px;
-    color: var(--ui-dim);
+    color: var(--text-dim);
     margin-bottom: 6px;
   }
 
@@ -140,7 +117,7 @@
     padding: 8px 10px;
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
-    border-radius: var(--ui-radius);
+    border-radius: 6px;
     color: var(--text-primary);
     font-family: var(--mono);
     font-size: 11px;
@@ -149,7 +126,7 @@
   }
 
   .form-input:focus, .form-textarea:focus, .form-select:focus {
-    border-color: var(--ui-accent);
+    border-color: var(--accent-dim);
   }
 
   .form-textarea {
@@ -171,9 +148,9 @@
 
   /* Gap items editor */
   .gap-editor-item {
-    background: var(--ui-bg);
-    border: 1px solid var(--ui-border);
-    border-radius: var(--ui-radius);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
     padding: 12px;
     margin-bottom: 8px;
     position: relative;
@@ -186,9 +163,9 @@
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    border: 1px solid var(--ui-border);
-    background: var(--ui-surface);
-    color: var(--ui-danger);
+    border: 1px solid var(--border);
+    background: var(--bg-tertiary);
+    color: #ff6b6b;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -199,9 +176,9 @@
   }
 
   .gap-editor-item .delete-btn:hover {
-    background: var(--ui-danger);
+    background: #ff6b6b;
     color: white;
-    border-color: var(--ui-danger);
+    border-color: #ff6b6b;
   }
 
   .gap-category-tag {
@@ -240,7 +217,7 @@
     border-radius: 50%;
     border: none;
     background: transparent;
-    color: var(--ui-dim);
+    color: var(--text-dim);
     cursor: pointer;
     font-size: 12px;
     display: flex;
@@ -248,31 +225,31 @@
     justify-content: center;
   }
 
-  .timeline-row .delete-timeline:hover { color: var(--ui-danger); }
+  .timeline-row .delete-timeline:hover { color: #ff6b6b; }
 
   /* Buttons */
   .btn {
     padding: 7px 14px;
-    border-radius: var(--ui-radius);
+    border-radius: 6px;
     font-family: var(--sans);
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    border: 1px solid var(--ui-border);
-    background: var(--ui-surface);
-    color: var(--ui-text);
+    border: 1px solid var(--border);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
   }
 
-  .btn:hover { border-color: var(--ui-accent); color: var(--ui-accent); }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
 
   .btn-primary {
-    background: var(--ui-accent);
+    background: var(--accent);
     color: white;
-    border-color: var(--ui-accent);
+    border: 1px solid var(--accent);
   }
 
-  .btn-primary:hover { background: var(--ui-accent-hover); border-color: var(--ui-accent-hover); color: white; }
+  .btn-primary:hover { background: #5aadff; border-color: #5aadff; color: white; }
 
   .btn-sm { padding: 4px 10px; font-size: 11px; }
 
@@ -281,21 +258,23 @@
     padding: 8px;
     border-style: dashed;
     background: transparent;
-    color: var(--ui-dim);
+    color: var(--text-dim);
     text-align: center;
   }
 
-  .btn-add:hover { color: var(--ui-accent); border-color: var(--ui-accent); }
+  .btn-add:hover { color: var(--accent); border-color: var(--accent); }
 
-  /* Footer */
-  .sidebar-footer {
-    padding: 16px 20px;
-    border-top: 1px solid var(--ui-border);
+  /* Controls footer buttons */
+  .controls-footer {
+    padding: 16px 0 0;
+    border-top: 1px solid var(--border);
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
   }
 
-  .sidebar-footer .btn { flex: 1; text-align: center; }
+  .controls-footer .btn { flex: 1; text-align: center; }
 
   /* ===== PREVIEW AREA ===== */
   .preview-area {
@@ -306,12 +285,17 @@
   }
 
   .preview-toolbar {
-    padding: 10px 20px;
-    border-bottom: 1px solid var(--ui-border);
+    height: 34px;
+    padding: 0 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: var(--ui-surface);
   }
 
   .preview-toolbar-left {
@@ -319,15 +303,15 @@
     align-items: center;
     gap: 12px;
     font-size: 12px;
-    color: var(--ui-dim);
+    color: var(--text-dim);
   }
 
   .device-toggle {
     display: flex;
-    background: var(--ui-bg);
+    background: var(--bg-secondary);
     border-radius: 4px;
     overflow: hidden;
-    border: 1px solid var(--ui-border);
+    border: 1px solid var(--border);
   }
 
   .device-btn {
@@ -336,13 +320,13 @@
     font-weight: 600;
     background: transparent;
     border: none;
-    color: var(--ui-dim);
+    color: var(--text-dim);
     cursor: pointer;
     transition: all 0.2s;
   }
 
-  .device-btn.active { background: var(--ui-accent); color: white; }
-  .device-btn:hover:not(.active) { color: var(--ui-text); }
+  .device-btn.active { background: var(--accent); color: white; }
+  .device-btn:hover:not(.active) { color: var(--text-primary); }
 
   .preview-frame-wrap {
     flex: 1;
@@ -389,8 +373,8 @@
   .modal-overlay.open { display: flex; }
 
   .modal {
-    background: var(--ui-surface);
-    border: 1px solid var(--ui-border);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
     border-radius: 10px;
     width: min(640px, 90vw);
     max-height: 80vh;
@@ -401,21 +385,28 @@
 
   .modal-header {
     padding: 16px 20px;
-    border-bottom: 1px solid var(--ui-border);
+    border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
-  .modal-header h3 { font-size: 15px; font-weight: 700; }
+  .modal-header h3 {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
 
   .modal-close {
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    border: 1px solid var(--ui-border);
-    background: var(--ui-bg);
-    color: var(--ui-dim);
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-dim);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -423,7 +414,7 @@
     font-size: 16px;
   }
 
-  .modal-close:hover { color: var(--ui-text); }
+  .modal-close:hover { color: var(--text-primary); }
 
   .modal-body {
     padding: 20px;
@@ -432,9 +423,9 @@
   }
 
   .code-block {
-    background: var(--ui-bg);
-    border: 1px solid var(--ui-border);
-    border-radius: var(--ui-radius);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
     padding: 12px;
     font-family: var(--mono);
     font-size: 11px;
@@ -448,7 +439,7 @@
 
   .modal-footer {
     padding: 12px 20px;
-    border-top: 1px solid var(--ui-border);
+    border-top: 1px solid var(--border);
     display: flex;
     gap: 8px;
     justify-content: flex-end;
@@ -456,7 +447,7 @@
 
   .copy-status {
     font-size: 12px;
-    color: var(--ui-success);
+    color: #4ecdc4;
     opacity: 0;
     transition: opacity 0.3s;
   }
@@ -481,7 +472,7 @@
 <body>
 
 <div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:var(--bg-primary);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;font-family:var(--mono);">
-<a href="index.html" style="padding:10px 16px;color:var(--accent);text-decoration:none;font-size:11px;font-weight:600;white-space:nowrap;letter-spacing:0.5px;">← Hub</a>
+<a href="index.html" style="padding:10px 16px;color:var(--accent);text-decoration:none;font-size:11px;font-weight:600;white-space:nowrap;letter-spacing:0.5px;">&larr; Hub</a>
 <a href="before-after.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Before/After</a>
 <a href="card-stack.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Card Stack</a>
 <a href="chart.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Chart</a>
@@ -509,29 +500,25 @@
 </div>
 <style>#disco-nav a:hover{color:var(--accent)!important;background:var(--bg-secondary);}</style>
 
-<!-- ===== SIDEBAR ===== -->
-<div class="sidebar">
-  <div class="sidebar-header">
-    <div class="sidebar-title">
-      Silence Mapping <span class="sidebar-badge">MODULE</span>
-    </div>
-  </div>
+<div class="app">
 
-  <div class="sidebar-scroll">
+<!-- ===== CONTROLS ===== -->
+<div class="controls">
+  <div class="module-title">Silence <span>Mapping</span></div>
 
     <!-- SETTINGS -->
     <div class="form-section">
-      <div class="form-section-title">Settings</div>
+      <div class="form-section-title" onclick="toggleFormSection(this)">Settings</div>
       <div class="form-row">
-        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">Section Title <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--ui-dim);cursor:pointer;font-weight:400;"><input type="checkbox" id="showSectionTitle" checked onchange="updatePreview();saveState()"> Show</label></label>
-        <input class="form-input" id="sectionTitle" value="What This Report Doesn't Include — and Why" oninput="updatePreview()">
+        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">Section Title <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-dim);cursor:pointer;font-weight:400;"><input type="checkbox" id="showSectionTitle" checked onchange="updatePreview();saveState()"> Show</label></label>
+        <input class="form-input" id="sectionTitle" value="What This Report Doesn&#39;t Include &mdash; and Why" oninput="updatePreview()">
       </div>
       <div class="form-row">
-        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">Intro Text <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--ui-dim);cursor:pointer;font-weight:400;"><input type="checkbox" id="showIntroText" checked onchange="updatePreview();saveState()"> Show</label></label>
+        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">Intro Text <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-dim);cursor:pointer;font-weight:400;"><input type="checkbox" id="showIntroText" checked onchange="updatePreview();saveState()"> Show</label></label>
         <textarea class="form-textarea" id="introText" oninput="updatePreview()">Every investigation has boundaries. Some are chosen, some are imposed. This section documents the questions we tried to answer but couldn't, the sources who wouldn't speak, and the information we sought but were denied.</textarea>
       </div>
       <div class="form-row">
-        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">Footer Text <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--ui-dim);cursor:pointer;font-weight:400;"><input type="checkbox" id="showFooterText" checked onchange="updatePreview();saveState()"> Show</label></label>
+        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">Footer Text <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-dim);cursor:pointer;font-weight:400;"><input type="checkbox" id="showFooterText" checked onchange="updatePreview();saveState()"> Show</label></label>
         <textarea class="form-textarea" id="footerText" oninput="updatePreview()">We are committed to transparency about the boundaries of our reporting. If you have information relevant to this investigation, contact us securely.</textarea>
       </div>
       <div class="form-row-inline">
@@ -557,8 +544,8 @@
         <div>
           <label class="form-label">Background</label>
           <div style="display:flex;gap:6px;align-items:center;">
-            <input type="color" id="bgColor" value="#ffffff" style="width:32px;height:28px;border:1px solid var(--ui-border);border-radius:4px;cursor:pointer;background:var(--ui-bg);" oninput="updatePreview()">
-            <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--ui-dim);cursor:pointer;">
+            <input type="color" id="bgColor" value="#ffffff" style="width:32px;height:28px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:var(--bg-secondary);" oninput="updatePreview()">
+            <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-dim);cursor:pointer;">
               <input type="checkbox" id="bgTransparent" onchange="updatePreview()"> Transparent
             </label>
           </div>
@@ -574,7 +561,7 @@
         </div>
         <div>
           <label class="form-label">Full Bleed</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ui-dim);cursor:pointer;margin-top:4px;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);cursor:pointer;margin-top:4px;">
             <input type="checkbox" id="fullBleed" onchange="updatePreview()"> Extend to edges
           </label>
         </div>
@@ -583,7 +570,7 @@
 
     <!-- GAP ITEMS -->
     <div class="form-section">
-      <div class="form-section-title">
+      <div class="form-section-title" onclick="toggleFormSection(this)">
         Gap Items
         <span style="font-weight:400; text-transform:none; letter-spacing:0; font-size:11px;" id="gapCount">3 items</span>
       </div>
@@ -591,13 +578,11 @@
       <button class="btn btn-add" onclick="addGap()">+ Add Gap Item</button>
     </div>
 
-  </div>
-
-  <div class="sidebar-footer" style="flex-wrap:wrap;">
+  <div class="controls-footer">
     <button class="btn" onclick="loadSampleData()">Load Sample</button>
     <button class="btn" onclick="exportJSON()">Save JSON</button>
     <button class="btn" onclick="importJSON()">Load JSON</button>
-    <button class="btn" style="color:var(--ui-danger);border-color:var(--ui-danger);" onclick="resetModule()">Reset</button>
+    <button class="btn" style="color:#ff6b6b;border-color:#ff6b6b;" onclick="resetModule()">Reset</button>
     <button class="btn btn-primary" onclick="generateExport()">Export</button>
   </div>
 </div>
@@ -620,29 +605,31 @@
   </div>
 </div>
 
+</div><!-- end .app -->
+
 <!-- ===== EXPORT MODAL ===== -->
 <div class="modal-overlay" id="exportModal">
   <div class="modal">
     <div class="modal-header">
       <h3>Export Embed Code</h3>
-      <button class="modal-close" onclick="closeExportModal()">×</button>
+      <button class="modal-close" onclick="closeExportModal()">&times;</button>
     </div>
     <div class="modal-body">
-      <p style="margin-bottom:12px; color: var(--ui-dim); font-size:12px;">Copy this embed code into your CMS. Uses Base64-encoded JS in an img onload handler for CMS compatibility.</p>
+      <p style="margin-bottom:12px; color: var(--text-dim); font-size:12px;">Copy this embed code into your CMS. Uses Base64-encoded JS in an img onload handler for CMS compatibility.</p>
       <textarea class="code-block" id="exportCode" style="width:100%;min-height:200px;resize:vertical;"></textarea>
     </div>
     <div class="modal-footer">
       <span class="copy-status" id="copyStatus">Copied!</span>
       <button class="btn" onclick="closeExportModal()">Close</button>
-      <button class="btn" onclick="copyCode()">📋 Copy</button>
-      <button class="btn" onclick="downloadCode()">💾 .html</button>
-      <button class="btn" onclick="downloadCodeTxt()">📄 .txt</button>
-      <button class="btn btn-primary" onclick="sendToStackBuilder()">📚 Stack</button>
+      <button class="btn" onclick="copyCode()">&#x1F4CB; Copy</button>
+      <button class="btn" onclick="downloadCode()">&#x1F4BE; .html</button>
+      <button class="btn" onclick="downloadCodeTxt()">&#x1F4C4; .txt</button>
+      <button class="btn btn-primary" onclick="sendToStackBuilder()">&#x1F4DA; Stack</button>
     </div>
   </div>
 </div>
-
 <script>
+function toggleFormSection(el){el.classList.toggle('collapsed');var parent=el.closest('.form-section');if(parent){var children=parent.children;var hide=el.classList.contains('collapsed');for(var i=0;i<children.length;i++){if(children[i]!==el)children[i].style.display=hide?'none':'';}}}
 var _fromPlanner=new URLSearchParams(location.search).get('planner')==='1';
 
 // ===== AP FONT DATA =====

@@ -36,7 +36,8 @@
 body { font-family: var(--sans); background: var(--bg-deep); color: var(--text-primary); padding-top: 41px !important; }
 .app { display: grid; grid-template-columns: 400px 1fr; height: 100vh; }
 .controls { background: var(--bg-primary); padding: 20px; overflow-y: auto; border-right: 1px solid var(--border); }
-h1 { font-size: 18px; color: #4a9eff; margin-bottom: 20px; }
+.module-title { font-family: var(--display); font-size: 22px; font-weight: 400; color: var(--text-primary); margin-bottom: 20px; letter-spacing: -0.01em; }
+.module-title span { color: var(--accent); }
 h2 { font-family: var(--mono); font-size: 9px; color: var(--text-dim); margin: 14px 0 8px; padding: 7px 10px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; letter-spacing: 1.5px; transition: all .15s; }
 h2:hover { border-color: var(--border-light); background: var(--bg-tertiary); }
 h2::after { content: '▾'; font-size: 10px; color: var(--text-dim); transition: transform 0.2s; }
@@ -142,7 +143,7 @@ textarea.code { width: 100%; height: 300px; background: #0a0a0a; border: 1px sol
 
 <div class="app">
     <div class="controls">
-        <h1>⚖️ Before / After</h1>
+        <div class="module-title">Before / <span>After</span></div>
         
         <h2 onclick="toggleSection(this)">Before Image</h2>
         <div class="section">

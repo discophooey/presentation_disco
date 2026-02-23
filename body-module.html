@@ -28,9 +28,11 @@ body { font-family: var(--sans); background: var(--bg-deep); color: var(--text-p
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-deep); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
-.app { display: flex; height: 100vh; }
-.controls { width: 380px; background: var(--bg-primary); overflow-y: auto; padding: 20px; border-right: 1px solid var(--border); flex-shrink: 0; }
-.preview-wrap { flex: 1; display: flex; flex-direction: column; }
+
+.app { display: grid; grid-template-columns: 380px 1fr; height: calc(100vh - 41px); }
+
+.controls { background: var(--bg-primary); overflow-y: auto; padding: 20px; border-right: 1px solid var(--border); }
+.preview-wrap { display: flex; flex-direction: column; overflow: hidden; }
 .preview-header { padding: 0 16px; height: 34px; display: flex; align-items: center; justify-content: space-between; background: var(--bg-secondary); border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
 .preview-header span { color: var(--text-dim); font-size: 9px; }
 .preview-scroll { flex: 1; overflow-y: auto; background: var(--bg-deep); }
@@ -61,14 +63,18 @@ body { font-family: var(--sans); background: var(--bg-deep); color: var(--text-p
 .lightbox.active { display: flex; }
 .lightbox img { max-width: 90%; max-height: 80vh; border-radius: 8px; }
 .lightbox-caption { color: #888; font-size: 14px; margin-top: 16px; max-width: 600px; text-align: center; }
-.lightbox-close { position: absolute; top: 20px; right: 20px; background: #333; border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; }
+.lightbox-close { position: absolute; top: 20px; right: 20px; background: #333; border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; padding: 0; margin: 0; }
+
+.module-title { font-family: var(--display); font-size: 22px; font-weight: 400; color: var(--text-primary); margin-bottom: 20px; letter-spacing: -0.01em; }
+.module-title span { color: var(--accent); }
+
 .range-val { font-family: var(--mono); font-size: 9px; color: var(--accent); float: right; text-transform: none; letter-spacing: 0; }
 
-h1 { font-family: var(--display); font-size: 22px; font-weight: 400; color: var(--text-primary); margin-bottom: 20px; letter-spacing: -0.01em; }
-h2.ctrl { font-family: var(--mono); font-size: 9px; color: var(--text-dim); margin: 14px 0 8px; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; transition: all .15s; }
-h2.ctrl:hover { border-color: var(--border-light); background: var(--bg-tertiary); }
-h2.ctrl::after { content: '▾'; font-size: 10px; color: var(--text-dim); transition: transform 0.2s; }
-h2.ctrl.collapsed::after { transform: rotate(-90deg); }
+.controls > h2 { font-family: var(--mono); font-size: 9px; color: var(--text-dim); margin: 14px 0 8px; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; transition: all .15s; }
+.controls > h2:hover { border-color: var(--border-light); background: var(--bg-tertiary); }
+.controls > h2::after { content: '▾'; font-size: 10px; color: var(--text-dim); transition: transform 0.2s; }
+.controls > h2.collapsed::after { transform: rotate(-90deg); }
+
 .section { max-height: 2000px; overflow: hidden; transition: max-height 0.3s; }
 .section.collapsed { max-height: 0 !important; }
 .control-group { margin-bottom: 10px; }
@@ -78,6 +84,11 @@ h2.ctrl.collapsed::after { transform: rotate(-90deg); }
 .control-group input[type="color"] { width: 36px; height: 24px; border: 1px solid var(--border); background: var(--bg-tertiary); cursor: pointer; border-radius: 4px; padding: 1px; }
 .control-group input[type="checkbox"] { width: auto; margin-right: 6px; accent-color: var(--accent); }
 .control-group textarea { min-height: 150px; line-height: 1.5; }
+
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 3px; background: var(--bg-tertiary); border-radius: 2px; outline: none; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); cursor: pointer; box-shadow: 0 0 6px rgba(74,158,255,0.3); }
+input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; box-shadow: 0 0 6px rgba(74,158,255,0.3); }
+
 .inline-group { display: flex; gap: 8px; align-items: center; }
 .inline-group > * { flex: 1; }
 button { width: 100%; padding: 8px 14px; font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: var(--accent); border: 1px solid var(--accent); color: #0a0a0a; border-radius: 6px; cursor: pointer; margin-bottom: 6px; transition: all .15s; }
@@ -96,8 +107,10 @@ button.danger:hover { background: #e74c3c; }
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
 .modal.active { display: flex; }
 .modal-content { background: var(--bg-secondary); border-radius: 12px; padding: 24px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; border: 1px solid var(--border); }
-.modal-content h3 { color: var(--accent); margin-bottom: 16px; font-family: var(--mono); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-.modal-content textarea { height: 200px; font-family: var(--mono); font-size: 11px; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border); border-radius: 6px; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.modal-header h1 { color: var(--accent); font-family: var(--mono); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+.modal-close { background: none; border: none; color: #666; font-size: 28px; cursor: pointer; width: auto; padding: 0; margin: 0; }
+textarea.code { width: 100%; height: 200px; background: #0a0a0a; border: 1px solid #333; color: #4a9eff; font-family: var(--mono); font-size: 11px; padding: 12px; border-radius: 6px; }
 .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
 .modal-actions button { flex: 1; }
 .saved-list { max-height: 200px; overflow-y: auto; margin: 10px 0; }
@@ -130,7 +143,7 @@ button.danger:hover { background: #e74c3c; }
 </head>
 <body>
 <div id="disco-nav" style="position:fixed;top:0;left:0;right:0;z-index:99999;background:var(--bg-primary);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;font-family:var(--mono);">
-<a href="index.html" style="padding:10px 16px;color:var(--accent);text-decoration:none;font-size:11px;font-weight:600;white-space:nowrap;letter-spacing:0.5px;">← Hub</a>
+<a href="index.html" style="padding:10px 16px;color:var(--accent);text-decoration:none;font-size:11px;font-weight:600;white-space:nowrap;letter-spacing:0.5px;">&#8592; Hub</a>
 <a href="before-after.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Before/After</a>
 <a href="card-stack.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Card Stack</a>
 <a href="chart.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Chart</a>
@@ -157,16 +170,16 @@ button.danger:hover { background: #e74c3c; }
 <a href="stack-builder-clean.html" style="padding:10px 14px;color:var(--text-dim);text-decoration:none;font-size:10px;white-space:nowrap;">Stack Builder</a>
 </div>
 <style>#disco-nav a:hover{color:var(--accent)!important;background:var(--bg-secondary);}</style>
-<div class="app" style="margin-top:41px;height:calc(100vh - 41px);">
+<div class="app" id="app">
     <div class="controls">
-        <h1>📝 Body Module</h1>
-        
+        <div class="module-title">Body <span>Module</span></div>
+
         <div class="save-load-bar">
-            <button class="secondary" onclick="openSaveModal()">💾 Save</button>
-            <button class="secondary" onclick="openLoadModal()">📂 Load</button>
+            <button class="secondary" onclick="openSaveModal()">Save</button>
+            <button class="secondary" onclick="openLoadModal()">Load</button>
         </div>
-        
-        <h2 class="ctrl" onclick="toggleSection(this)">Text Content</h2>
+
+        <h2 onclick="toggleSection(this)">Text Content</h2>
         <div class="section">
             <div class="toolbar">
                 <button class="secondary" onclick="insertTag('**','**')"><b>B</b></button>
@@ -193,8 +206,8 @@ Continue writing your story here. The text will automatically wrap and maintain 
                 </select>
             </div>
         </div>
-        
-        <h2 class="ctrl" onclick="toggleSection(this)">Image (Optional)</h2>
+
+        <h2 onclick="toggleSection(this)">Image</h2>
         <div class="section">
             <div class="checkbox-row">
                 <input type="checkbox" id="imageEnabled" checked onchange="updatePreview()">
@@ -228,8 +241,8 @@ Continue writing your story here. The text will automatically wrap and maintain 
                 </div>
             </div>
         </div>
-        
-        <h2 class="ctrl" onclick="toggleSection(this)">Style</h2>
+
+        <h2 onclick="toggleSection(this)">Style</h2>
         <div class="section">
             <div class="control-group">
                 <label>Text Color</label>
@@ -255,8 +268,8 @@ Continue writing your story here. The text will automatically wrap and maintain 
                 <input type="number" id="maxWidth" value="800" min="400" max="1200" oninput="updatePreview()">
             </div>
         </div>
-        
-        <h2 class="ctrl" onclick="toggleSection(this)">Layout</h2>
+
+        <h2 onclick="toggleSection(this)">Layout</h2>
         <div class="section">
             <div class="control-group">
                 <label>Scroll Duration <span class="range-val" id="scrollDurVal">200%</span></label>
@@ -277,8 +290,8 @@ Continue writing your story here. The text will automatically wrap and maintain 
                 </div>
             </div>
         </div>
-        
-        <h2 class="ctrl" onclick="toggleSection(this)">Caption</h2>
+
+        <h2 onclick="toggleSection(this)">Caption</h2>
         <div class="section">
             <div class="control-group">
                 <label>Caption Text</label>
@@ -293,11 +306,14 @@ Continue writing your story here. The text will automatically wrap and maintain 
                 <input type="range" id="captionSize" min="10" max="16" value="12" oninput="updatePreview();">
             </div>
         </div>
-        
-        <button onclick="generateExport()">Generate HTML</button>
-        <button class="danger" onclick="resetModule()">Reset</button>
+
+        <h2 onclick="toggleSection(this)">Export</h2>
+        <div class="section">
+            <button onclick="generateExport()">Generate HTML</button>
+            <button class="danger" onclick="resetModule()">Reset</button>
+        </div>
     </div>
-    
+
     <div class="preview-wrap">
         <div class="preview-header">
             <span>Preview</span>
@@ -327,7 +343,7 @@ Continue writing your story here. The text will automatically wrap and maintain 
 
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <button class="lightbox-close" onclick="closeLightbox()">&#10005;</button>
     <img id="lightboxImg" src="" alt="">
     <div class="lightbox-caption" id="lightboxCaption"></div>
 </div>
@@ -335,15 +351,13 @@ Continue writing your story here. The text will automatically wrap and maintain 
 <!-- Export Modal -->
 <div class="modal" id="exportModal">
     <div class="modal-content">
-        <h3>Export HTML</h3>
-        <div class="control-group">
-            <label>Generated Code</label>
-            <textarea id="exportCode" readonly></textarea>
-        </div>
+        <div class="modal-header"><h1>Export HTML</h1><button class="modal-close" onclick="closeModal('exportModal')">&times;</button></div>
+        <textarea class="code" id="exportCode" readonly></textarea>
         <div class="modal-actions">
-            <button onclick="copyCode()">📋 Copy</button>
-            <button onclick="downloadCode()">⬇️ Download</button><button onclick="downloadCodeTxt()" class="secondary">📄 .txt</button>
-            <button onclick="sendToStackBuilder()">📚 Stack</button>
+            <button onclick="copyCode()">&#128203; Copy</button>
+            <button onclick="downloadCode()">&#11015;&#65039; Download</button>
+            <button onclick="downloadCodeTxt()" class="secondary">&#128196; .txt</button>
+            <button onclick="sendToStackBuilder()">&#128218; Stack</button>
             <button class="secondary" onclick="closeModal('exportModal')">Close</button>
         </div>
     </div>
@@ -352,13 +366,13 @@ Continue writing your story here. The text will automatically wrap and maintain 
 <!-- Save Modal -->
 <div class="modal" id="saveModal">
     <div class="modal-content">
-        <h3>Save Project</h3>
+        <div class="modal-header"><h1>Save Project</h1><button class="modal-close" onclick="closeModal('saveModal')">&times;</button></div>
         <div class="control-group">
             <label>Project Name</label>
             <input type="text" id="saveName" placeholder="My Body Module">
         </div>
         <div class="modal-actions">
-            <button onclick="saveProject()">💾 Save</button>
+            <button onclick="saveProject()">Save</button>
             <button class="secondary" onclick="closeModal('saveModal')">Cancel</button>
         </div>
     </div>
@@ -367,7 +381,7 @@ Continue writing your story here. The text will automatically wrap and maintain 
 <!-- Load Modal -->
 <div class="modal" id="loadModal">
     <div class="modal-content">
-        <h3>Load Project</h3>
+        <div class="modal-header"><h1>Load Project</h1><button class="modal-close" onclick="closeModal('loadModal')">&times;</button></div>
         <div class="saved-list" id="savedList"></div>
         <div class="modal-actions">
             <button class="secondary" onclick="closeModal('loadModal')">Cancel</button>
@@ -439,7 +453,7 @@ function updatePreview() {
     var caption = document.getElementById('previewCaption');
     var scroll = document.getElementById('previewScroll');
     var moduleCaption = document.getElementById('previewModuleCaption');
-    
+
     var bodyText = document.getElementById('bodyText').value;
     var textAlign = document.getElementById('textAlign').value;
     var imageEnabled = document.getElementById('imageEnabled').checked;
@@ -455,14 +469,14 @@ function updatePreview() {
     var captionCredit = document.getElementById('captionCredit').value;
     var captionSize = document.getElementById('captionSize').value;
     var scrollDuration = parseInt(document.getElementById('scrollDuration').value) / 100;
-    
+
     document.getElementById('imageSettings').style.display = imageEnabled ? 'block' : 'none';
-    
+
     stage.style.background = bgTransparent ? 'transparent' : bgColor;
     textEl.style.textAlign = textAlign;
     textEl.style.color = textColor;
     textEl.style.fontSize = fontSize + 'px';
-    
+
     // Toggle layout based on image
     var showImage = imageEnabled && loadedImageUrl;
     if (showImage) {
@@ -472,7 +486,7 @@ function updatePreview() {
         body.classList.remove('with-image');
         body.style.maxWidth = maxWidth + 'px';
     }
-    
+
     var html = parseMarkdown(bodyText);
     textEl.innerHTML = html;
     textEl.querySelectorAll('h2, h3').forEach(function(h) {
@@ -481,7 +495,7 @@ function updatePreview() {
     textEl.querySelectorAll('strong').forEach(function(s) {
         s.style.color = headlineColor;
     });
-    
+
     if (showImage) {
         imgCol.style.display = 'block';
         img.src = loadedImageUrl;
@@ -497,13 +511,13 @@ function updatePreview() {
         imgCol.style.transform = '';
         content.className = 'preview-content no-image';
     }
-    
+
     // Module caption
     var fullCaption = captionText + (captionText && captionCredit ? ' · ' : '') + captionCredit;
     moduleCaption.textContent = fullCaption;
     moduleCaption.style.fontSize = captionSize + 'px';
     moduleCaption.style.display = fullCaption ? 'block' : 'none';
-    
+
     // Set container height for scroll behavior
     setTimeout(function() {
         var bodyHeight = body.offsetHeight;
@@ -511,7 +525,7 @@ function updatePreview() {
         var scrollHeight = Math.max(stageHeight, bodyHeight * scrollDuration);
         container.style.height = scrollHeight + 'px';
     }, 50);
-    
+
     saveState();
 }
 
@@ -526,21 +540,21 @@ function setupPreviewScroll() {
         var container = document.getElementById('previewContainer');
         var body = document.getElementById('previewBody');
         var stage = document.getElementById('previewStage');
-        
+
         var scrollTop = scroll.scrollTop;
         var containerTop = container.offsetTop;
         var scrolled = scrollTop - containerTop;
         var scrollRange = container.offsetHeight - stage.offsetHeight;
-        
+
         if (scrollRange <= 0) return;
-        
+
         var progress = Math.max(0, Math.min(1, scrolled / scrollRange));
-        
+
         // Calculate how much the body needs to scroll up
         var bodyHeight = body.offsetHeight;
         var stageHeight = stage.offsetHeight;
         var overflow = bodyHeight - stageHeight;
-        
+
         if (overflow > 0) {
             var translateY = -progress * overflow;
             body.style.transform = 'translateY(' + translateY + 'px)';
@@ -619,18 +633,18 @@ function generateExport() {
     var captionText = document.getElementById('captionText').value;
     var captionCredit = document.getElementById('captionCredit').value;
     var captionSize = document.getElementById('captionSize').value;
-    
+
     var html = parseMarkdown(bodyText);
     var showImage = imageEnabled && loadedImageUrl;
     var fullCaption = captionText + (captionText && captionCredit ? ' · ' : '') + captionCredit;
-    
+
     var imgOffsetY = parseInt(document.getElementById('imgOffsetY').value) || 0;
     var imgScale = parseFloat(document.getElementById('imgScale').value) || 1;
-    
+
     var imgHTML = '';
     var imgCSS = '';
     var bodyMaxWidth = showImage ? '1100' : maxWidth;
-    
+
     if (showImage) {
         var imgTransform = '';
         if (imgOffsetY !== 0 || imgScale !== 1) {
@@ -639,14 +653,14 @@ function generateExport() {
             if (imgScale !== 1) parts.push('scale(' + imgScale + ')');
             imgTransform = 'transform:' + parts.join(' ') + ';transform-origin:top center;';
         }
-        
+
         imgHTML = '<div class="bm-img-col">\n' +
             '<div class="bm-img-wrap" onclick="document.getElementById(\'' + uid + 'lb\').classList.add(\'active\')">\n' +
             '<img src="' + loadedImageUrl + '" alt="">\n' +
             '</div>\n' +
             (imageCaption ? '<div class="bm-caption">' + imageCaption + '</div>\n' : '') +
             '</div>';
-        
+
         imgCSS = '#' + uid + ' .bm-img-col{width:400px;flex-shrink:0;' + imgTransform + '}\n' +
             '#' + uid + ' .bm-img-wrap{position:relative;cursor:pointer}\n' +
             '#' + uid + ' .bm-img-wrap img{width:100%;border-radius:6px;display:block}\n' +
@@ -659,12 +673,12 @@ function generateExport() {
             '#' + uid + 'lb .lb-cap{color:#888;font-size:14px;margin-top:16px;max-width:600px;text-align:center}\n' +
             '#' + uid + 'lb .lb-close{position:absolute;top:20px;right:20px;background:#333;border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:20px}\n';
     }
-    
+
     var flexDir = showImage ? (imagePosition === 'left' ? 'row' : 'row-reverse') : '';
-    
+
     var moduleCaptionCSS = fullCaption ? '#' + uid + ' .bm-module-caption{font-size:' + captionSize + 'px;color:#666;margin-top:20px;padding-top:20px;border-top:1px solid #333}\n' : '';
     var moduleCaptionHTML = fullCaption ? '<div class="bm-module-caption">' + fullCaption + '</div>\n' : '';
-    
+
     var code = '<style>\n' +
 '#' + uid + '{position:relative;background:' + bgColor + '}\n' +
 '#' + uid + ' .bm-stage{position:-webkit-sticky;position:sticky;top:' + desktopOffset + 'px;height:calc(100vh - ' + desktopOffset + 'px);overflow:hidden;display:flex;align-items:center;justify-content:center}\n' +
@@ -732,7 +746,7 @@ moduleCaptionHTML +
 'upd();\n' +
 '})();\n' +
 '<\/scr' + 'ipt>';
-    
+
     document.getElementById('exportCode').value = code;localStorage.setItem('disco_body-module_export',code);
     if(!_fromPlanner){document.getElementById('exportModal').classList.add('active')};
 }
@@ -779,17 +793,17 @@ function openLoadModal() {
 function saveProject() {
     var name = document.getElementById('saveName').value.trim();
     if (!name) { discoAlert('Enter a project name'); return; }
-    
+
     var projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
     var data = getCurrentState();
     data.name = name;
     data.savedAt = Date.now();
     data.id = 'proj_' + Date.now();
-    
+
     projects.unshift(data);
     if (projects.length > 20) projects = projects.slice(0, 20);
     localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
-    
+
     closeModal('saveModal');
     discoAlert('Saved!');
 }
@@ -815,7 +829,7 @@ function loadProject(id) {
     var projects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
     var proj = projects.find(function(p) { return p.id === id; });
     if (!proj) return;
-    
+
     document.getElementById('bodyText').value = proj.bodyText || '';
     document.getElementById('textAlign').value = proj.textAlign || 'left';
     document.getElementById('imageEnabled').checked = proj.imageEnabled !== false;
@@ -835,7 +849,7 @@ function loadProject(id) {
     document.getElementById('captionCredit').value = proj.captionCredit || '';
     document.getElementById('captionSize').value = proj.captionSize || 12;
     loadedImageUrl = proj.loadedImageUrl || null;
-    
+
     updatePreview();
     closeModal('loadModal');
 }

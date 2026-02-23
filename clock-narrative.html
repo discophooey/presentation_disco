@@ -28,12 +28,14 @@ body{font-family:var(--sans);background:var(--bg-deep);color:var(--text-primary)
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-deep); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
-.container{display:flex;height:calc(100vh - 40px);overflow:hidden}
-.panel{width:420px;min-width:420px;background:#1a1a1a;border-right:1px solid #2a2a2a;overflow-y:auto;padding:16px}
+.app{display:grid;grid-template-columns:380px 1fr;height:calc(100vh - 41px);overflow:hidden}
+.controls{background:var(--bg-primary);padding:20px;overflow-y:auto;border-right:1px solid var(--border)}
+.module-title{font-family:var(--display);font-size:22px;font-weight:400;color:var(--text-primary);margin-bottom:20px;line-height:1.3}
+.module-title span{color:var(--accent)}
 .preview-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .preview-wrap.fit-frame{background:#1a1a1a}
 .preview-wrap.fit-frame .pv-sticky,.preview-wrap.fit-frame .pv-fixed{border:3px solid #4a9eff;box-sizing:border-box;max-width:700px;margin:0 auto}
-.preview-mode-bar{display:flex;align-items:center;gap:8px;padding:6px 12px;background:#111;border-bottom:1px solid #2a2a2a;flex:0 0 auto}
+.preview-mode-bar{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--bg-secondary);border-bottom:1px solid var(--border);flex:0 0 auto;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1px}
 .preview-mode-btn{padding:4px 12px;font-size:11px;border-radius:3px;background:#1a1a1a;color:#888;border:1px solid #2a2a2a;cursor:pointer;font-weight:600}
 .preview-mode-btn.active{background:#4a9eff;color:#000;border-color:#4a9eff}
 .scrub-controls{display:flex;align-items:center;gap:8px;margin-left:auto}
@@ -43,18 +45,26 @@ body{font-family:var(--sans);background:var(--bg-deep);color:var(--text-primary)
 .scroll-spacer{position:relative}
 .pv-sticky{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;overflow:hidden;background:#0a0a0a}
 .pv-fixed{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#0a0a0a}
-h2{font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1.5px;margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:6px;text-transform:uppercase}
-h2:first-child{margin-top:0}
+.controls > h2{font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:1.5px;margin:20px 0 12px;padding:10px 12px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center;text-transform:uppercase}
+.controls > h2:hover{background:#222}
+.controls > h2::after{content:'▾';font-size:10px;transition:transform 0.2s}
+.controls > h2.collapsed::after{transform:rotate(-90deg)}
+.section{overflow:hidden;max-height:2000px;transition:max-height 0.3s}
+.section.collapsed{max-height:0}
 label{display:block;font-family:var(--mono);font-size:10px;color:var(--text-dim);margin:8px 0 3px;text-transform:uppercase;letter-spacing:0.5px}
-input[type="text"],input[type="number"],input[type="url"],input[type="time"],select,textarea{width:100%;background:var(--bg-tertiary);border:1px solid var(--border);color:var(--text-primary);padding:6px 8px;border-radius:4px;font-family:var(--mono);font-size:11px}
+input[type="text"],input[type="number"],input[type="url"],input[type="time"],select,textarea{width:100%;background:var(--bg-tertiary);border:1px solid var(--border);color:var(--text-primary);padding:6px 8px;border-radius:6px;font-family:var(--mono);font-size:11px;transition:border-color 0.2s}
+input[type="text"]:focus,input[type="number"]:focus,input[type="url"]:focus,input[type="time"]:focus,select:focus,textarea:focus{border-color:var(--accent-dim)}
 textarea{resize:vertical;min-height:40px}
 input[type="range"]{width:100%;margin:4px 0}
+input[type="range"]{-webkit-appearance:none;background:transparent}
+input[type="range"]::-webkit-slider-runnable-track{height:3px;background:var(--border);border-radius:2px}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--accent);margin-top:-5px;cursor:pointer;box-shadow:0 0 6px rgba(74,158,255,0.3)}
 input[type="color"]{width:40px;height:28px;border:1px solid #2a2a2a;background:#111;cursor:pointer;padding:1px}
 .row{display:flex;gap:8px;align-items:center}
 .row>*{flex:1}
-button{background:var(--accent);color:#0a0a0a;border:none;padding:8px 14px;border-radius:4px;cursor:pointer;font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+button{background:var(--accent);color:#0a0a0a;border:1px solid var(--accent);padding:8px 14px;border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
 button:hover{opacity:0.85}
-button.secondary{background:#2a2a2a;color:#e0e0e0}
+button.secondary{background:var(--bg-tertiary);color:var(--text-primary);border-color:var(--border)}
 button.small{padding:4px 8px;font-size:11px}
 button.load-btn{flex:0 0 auto;padding:6px 10px;font-size:11px;background:#2a2a2a;color:#e0e0e0}
 .url-row{display:flex;gap:4px;align-items:center}
@@ -97,9 +107,9 @@ button.load-btn{flex:0 0 auto;padding:6px 10px;font-size:11px;background:#2a2a2a
 .modal.active{display:flex}
 .modal-content{background:var(--bg-secondary);border:1px solid var(--border-light);border-radius:8px;padding:20px;width:700px;max-height:80vh;display:flex;flex-direction:column}
 .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.modal-header h1{font-size:16px;color:#4a9eff}
-.modal-close{background:none;border:none;color:#888;font-size:22px;cursor:pointer}
-.code{flex:1;background:#111;border:1px solid #2a2a2a;color:#e0e0e0;font-family:'Courier New',monospace;font-size:11px;padding:10px;border-radius:4px;resize:none;min-height:200px}
+.modal-header h1{font-family:var(--mono);font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
+.modal-close{background:none;border:none;color:var(--text-dim);font-size:22px;cursor:pointer;padding:0;width:auto}
+.code{flex:1;background:#111;border:1px solid #2a2a2a;color:#e0e0e0;font-family:var(--mono);font-size:11px;padding:10px;border-radius:6px;resize:none;min-height:200px}
 
 /* Disco Modal */
 .disco-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; pointer-events: none; font-family: var(--sans); }
@@ -146,9 +156,9 @@ button.load-btn{flex:0 0 auto;padding:6px 10px;font-size:11px;background:#2a2a2a
 </div>
 <style>#disco-nav a:hover{color:var(--accent)!important;background:var(--bg-secondary);}</style>
 
-<div class="container">
-<div class="panel" id="editorPanel">
-<h2>Clock Narrative</h2>
+<div class="app">
+<div class="controls" id="editorPanel">
+<div class="module-title">Clock <span>Narrative</span></div>
 <div class="section">
 <label>Headline</label><input type="text" id="headline" placeholder="e.g. The Night of the Raid">
 <label>Date Line</label><input type="text" id="dateLine" placeholder="e.g. March 15, 2024 — Eastern Time">
@@ -156,7 +166,7 @@ button.load-btn{flex:0 0 auto;padding:6px 10px;font-size:11px;background:#2a2a2a
 <label>Time Range</label>
 <div class="row"><div><label>Start</label><input type="time" id="startTime" value="14:00" step="1"></div><div><label>End</label><input type="time" id="endTime" value="16:00" step="1"></div></div>
 </div>
-<h2>Matte</h2>
+<h2 onclick="toggleSection(this)">Matte</h2>
 <div class="section">
 <label>Matte Background</label><input type="color" id="matteColor" value="#111111" style="width:40px">
 <label>Container Aspect Ratio</label>
@@ -165,9 +175,9 @@ button.load-btn{flex:0 0 auto;padding:6px 10px;font-size:11px;background:#2a2a2a
 <input type="range" id="outputScale" min="30" max="150" value="100" step="5">
 <div class="sub-label">Scales the entire matte container in export</div>
 </div>
-<h2>Events</h2>
+<h2 onclick="toggleSection(this)">Events</h2>
 <div class="section"><div id="eventList"></div><button class="small secondary" onclick="addEvent()" style="margin-top:8px">+ Add Event</button></div>
-<h2>Export Settings</h2>
+<h2 onclick="toggleSection(this)">Export Settings</h2>
 <div class="section">
 <label>Scroll Duration <span id="scrollDurVal">500</span>vh</label><input type="range" id="scrollDuration" min="200" max="1500" value="500" step="50">
 <div class="row"><div><label>Mobile Offset (px)</label><input type="number" id="mobileOffset" value="200" min="0" max="300"></div><div><label>Desktop Offset (px)</label><input type="number" id="desktopOffset" value="0" min="0" max="200"></div></div>
@@ -177,7 +187,7 @@ button.load-btn{flex:0 0 auto;padding:6px 10px;font-size:11px;background:#2a2a2a
 <label>Lower Section Y Offset <span id="yOffsetVal">0</span>px</label><input type="range" id="yOffset" min="-200" max="200" value="0" step="5">
 <div class="sub-label">Shifts timeline, clock & text up/down (image stays fixed)</div>
 </div>
-<div style="display:flex;gap:8px;margin-top:16px;padding-bottom:20px"><button onclick="generateExport()">⚡ Generate Export</button><button class="secondary" onclick="window.resetModule()">↺ Reset</button></div>
+<div style="display:flex;gap:8px;margin-top:16px;padding-bottom:20px"><button onclick="generateExport()">Generate Export</button><button class="secondary" onclick="window.resetModule()">Reset</button></div>
 </div>
 
 <div class="preview-wrap">
@@ -213,6 +223,7 @@ button.load-btn{flex:0 0 auto;padding:6px 10px;font-size:11px;background:#2a2a2a
 
 <script>
 var _fromPlanner=new URLSearchParams(location.search).get('planner')==='1';
+function toggleSection(el){el.classList.toggle('collapsed');el.nextElementSibling.classList.toggle('collapsed');}
 
 var events=[],previewMode='scroll';
 function isVideo(url){return url&&/\.(mp4|webm|ogg|mov)($|\?)/i.test(url);}
