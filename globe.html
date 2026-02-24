@@ -1601,19 +1601,30 @@ applyVisualStyle();
         
         state.points = points;
         state.lines = lines;
+        var count = 0;
         document.querySelectorAll('.controls input[id], .controls select[id], .controls textarea[id]').forEach(function(el) {
             if (el.type === 'checkbox') state.inputs[el.id] = el.checked;
             else if (el.type === 'file') return;
             else state.inputs[el.id] = el.value;
+            count++;
         });
-        try { localStorage.setItem(KEY, JSON.stringify(state)); localStorage.removeItem(KEY + '_from_planner'); } catch(e) { console.warn('Globe save error:', e); }
+        console.log('[GLOBE SAVE] Saving', count, 'inputs. visualStyle=', state.inputs.visualStyle, 'globeTilt=', state.inputs.globeTilt, 'globeZoom=', state.inputs.globeZoom);
+        try {
+            var json = JSON.stringify(state);
+            console.log('[GLOBE SAVE] JSON size:', json.length, 'bytes');
+            localStorage.setItem(KEY, json);
+            localStorage.removeItem(KEY + '_from_planner');
+            console.log('[GLOBE SAVE] Success. Verify:', localStorage.getItem(KEY) ? 'stored' : 'MISSING');
+        } catch(e) { console.error('[GLOBE SAVE] FAILED:', e); }
     }
     
     function loadState() {
         try {
             var saved = localStorage.getItem(KEY);
+            console.log('[GLOBE LOAD] localStorage entry:', saved ? saved.length + ' bytes' : 'EMPTY');
             if (!saved) return;
             var state = JSON.parse(saved);
+            console.log('[GLOBE LOAD] Parsed. visualStyle=', state.inputs && state.inputs.visualStyle, 'globeTilt=', state.inputs && state.inputs.globeTilt);
             
             
             if (state.points) points = state.points;
@@ -1638,7 +1649,8 @@ applyVisualStyle();
             // Fix display values for tilt/zoom
             document.getElementById('tiltVal').textContent = document.getElementById('globeTilt').value;
             document.getElementById('zoomVal').textContent = document.getElementById('globeZoom').value;
-        } catch(e) { console.warn('Load state error:', e); }
+            console.log('[GLOBE LOAD] After restore - visualStyle DOM:', document.getElementById('visualStyle').value, 'tilt DOM:', document.getElementById('globeTilt').value, 'zoom DOM:', document.getElementById('globeZoom').value);
+        } catch(e) { console.error('[GLOBE LOAD] ERROR:', e); }
     }
     
     window.resetModule = function() {
