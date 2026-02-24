@@ -1380,7 +1380,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 canvas.style.filter='${filterValue}';
 ${maskValue ? "canvas.style.mask='" + maskValue + "';canvas.style.webkitMask='" + maskValue + "';" : ''}
 var geo=new THREE.SphereGeometry(1,64,64);
-var mat=new THREE.MeshPhongMaterial({color:0x2266aa});
+var mat=new THREE.MeshPhongMaterial({color:0xffffff});
 globe=new THREE.Mesh(geo,mat);
 globe.rotation.x=tilt*Math.PI/180;
 scene.add(globe);
