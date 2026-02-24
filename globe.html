@@ -1601,12 +1601,12 @@ applyVisualStyle();
         
         state.points = points;
         state.lines = lines;
-        document.querySelectorAll('input[id], select[id], textarea[id]').forEach(function(el) {
+        document.querySelectorAll('.controls input[id], .controls select[id], .controls textarea[id]').forEach(function(el) {
             if (el.type === 'checkbox') state.inputs[el.id] = el.checked;
             else if (el.type === 'file') return;
             else state.inputs[el.id] = el.value;
         });
-        try { localStorage.setItem(KEY, JSON.stringify(state)); localStorage.removeItem(KEY + '_from_planner'); } catch(e) {}
+        try { localStorage.setItem(KEY, JSON.stringify(state)); localStorage.removeItem(KEY + '_from_planner'); } catch(e) { console.warn('Globe save error:', e); }
     }
     
     function loadState() {
