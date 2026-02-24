@@ -1634,7 +1634,10 @@ applyVisualStyle();
             rebuildPoints();
             rebuildLines();
             
-            renderPointList(); renderLinesList(); updatePreview(); updateStageBg(); updatePreviewHeight(); updateGlobeView();
+            renderPointList(); renderLinesList(); updatePreview(); updateStageBg(); updatePreviewHeight(); updateGlobeView(); applyVisualStyle();
+            // Fix display values for tilt/zoom
+            document.getElementById('tiltVal').textContent = document.getElementById('globeTilt').value;
+            document.getElementById('zoomVal').textContent = document.getElementById('globeZoom').value;
         } catch(e) { console.warn('Load state error:', e); }
     }
     
