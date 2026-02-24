@@ -1645,7 +1645,7 @@ applyVisualStyle();
             rebuildPoints();
             rebuildLines();
             
-            renderPointList(); renderLinesList(); updatePreview(); updateStageBg(); updatePreviewHeight(); updateGlobeView(); applyVisualStyle();
+            renderPointList(); renderLinesList(); updateStageBg(); updatePreviewHeight(); updateGlobeView(); applyVisualStyle(); updateLabels();
             // Fix display values for tilt/zoom
             document.getElementById('tiltVal').textContent = document.getElementById('globeTilt').value;
             document.getElementById('zoomVal').textContent = document.getElementById('globeZoom').value;
