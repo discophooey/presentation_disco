@@ -121,7 +121,6 @@ textarea { min-height: 40px; resize: vertical; }
 .collage-area { position: relative; width: 100%; max-width: 1200px; aspect-ratio: 16/10; overflow: hidden; border-radius: 8px; }
 .collage-item { position: absolute; overflow: hidden; border-radius: 4px; opacity: 0; transform: translateY(30px); transition: all 0.5s; cursor: pointer; }
 .collage-item.visible { opacity: 1; transform: translateY(0); }
-.collage-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
 
 .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; flex-direction: column; }
 .lightbox.active { display: flex; }
@@ -394,6 +393,8 @@ function addImage() {
             scale: 1,
             offsetX: 0,
             offsetY: 0,
+            natW: img.naturalWidth,
+            natH: img.naturalHeight,
             caption: 'A collection of images that animate into view as you scroll through the story.',
             credit: ''
         });
@@ -510,12 +511,14 @@ function updatePreview() {
         var row = Math.floor(i / cols);
         var x = gapPct + col * (cellW + gapPct);
         var y = gapPct + row * (cellH + gapPct);
-        var tx = img.offsetX * 2;
-        var ty = img.offsetY * 2;
-        
-        html += '<div class="collage-item" data-i="' + i + '" style="left:' + x + '%;top:' + y + '%;width:' + cellW + '%;height:' + cellH + '%;" onclick="openLightbox(' + i + ')">';
-        html += '<img src="' + img.url + '" alt="" style="transform:scale(' + img.scale + ') translate(' + tx + '%, ' + ty + '%);">';
-        html += '</div>';
+        var imgAR = (img.natW && img.natH) ? img.natW / img.natH : 1.5;
+        var cellAR = (cellW / cellH) * 1.6;
+        var coverW = Math.max(1, imgAR / cellAR);
+        var bgSize = coverW * 110 * img.scale;
+        var bpx = 50 - img.offsetX;
+        var bpy = 50 + img.offsetY;
+
+        html += '<div class="collage-item" data-i="' + i + '" style="left:' + x + '%;top:' + y + '%;width:' + cellW + '%;height:' + cellH + '%;background:url(\'' + img.url + '\') ' + bpx + '% ' + bpy + '% / ' + bgSize + '% auto no-repeat;" onclick="openLightbox(' + i + ')"></div>';
     }
     area.innerHTML = html;
     
@@ -628,11 +631,15 @@ function generateExport() {
         var row = Math.floor(i / cols);
         var x = gapPct + col * (cellW + gapPct);
         var y = gapPct + row * (cellH + gapPct);
-        var tx = img.offsetX * 2;
-        var ty = img.offsetY * 2;
-        
+        var imgAR = (img.natW && img.natH) ? img.natW / img.natH : 1.5;
+        var cellAR = (cellW / cellH) * 1.6;
+        var coverW = Math.max(1, imgAR / cellAR);
+        var bgSize = coverW * 110 * img.scale;
+        var bpx = 50 - img.offsetX;
+        var bpy = 50 + img.offsetY;
+
         imgData.push({ url: img.url, caption: img.caption || '', credit: img.credit || '' });
-        itemsHtml += '<div class="c-item" style="left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%;width:' + cellW.toFixed(2) + '%;height:' + cellH.toFixed(2) + '%;"><img src="' + img.url + '" alt="" style="transform:scale(' + img.scale + ') translate(' + tx + '%,' + ty + '%)"></div>';
+        itemsHtml += '<div class="c-item" style="left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%;width:' + cellW.toFixed(2) + '%;height:' + cellH.toFixed(2) + '%;background:url(\'' + img.url + '\') ' + bpx + '% ' + bpy + '% / ' + bgSize + '% auto no-repeat"></div>';
     }
     
     // Title HTML and CSS
@@ -649,7 +656,6 @@ function generateExport() {
 ${titleCSS}
 #${uid} .c-item{position:absolute;overflow:hidden;border-radius:4px;opacity:0;transform:translateY(30px);transition:all 0.5s;cursor:pointer}
 #${uid} .c-item.on{opacity:1;transform:translateY(0)}
-#${uid} .c-item img{width:100%;height:100%;object-fit:cover}
 #${uid} .c-lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999;align-items:center;justify-content:center;flex-direction:column}
 #${uid} .c-lb.on{display:flex}
 #${uid} .c-lb>img{max-width:95vw;max-height:85vh;object-fit:contain;border-radius:4px}
@@ -816,8 +822,17 @@ updatePreview();
             var state = JSON.parse(saved);
             
             
-            if (state.images) images = state.images;
-            
+            if (state.images) {
+                images = state.images;
+                images.forEach(function(img) {
+                    if (!img.natW) {
+                        var tmp = new Image();
+                        tmp.onload = function() { img.natW = tmp.naturalWidth; img.natH = tmp.naturalHeight; updatePreview(); };
+                        tmp.src = img.url;
+                    }
+                });
+            }
+
             Object.keys(state.inputs || {}).forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) {
