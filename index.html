@@ -29,18 +29,7 @@ body { font-family: var(--sans); background: var(--bg-deep); color: var(--text-p
 ::-webkit-scrollbar-track { background: var(--bg-deep); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
 
-#loginScreen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg-deep); }
-.login-box { background: var(--bg-secondary); padding: 44px; border-radius: 12px; border: 1px solid var(--border); text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
-.login-box h1 { font-family: var(--display); font-size: 30px; font-weight: 400; color: var(--text-primary); margin-bottom: 6px; letter-spacing: -0.01em; }
-.login-box h1 span { color: var(--text-dim) !important; font-family: var(--mono) !important; }
-.login-box p { font-family: var(--mono); color: var(--text-dim); font-size: 10px; margin-bottom: 28px; text-transform: uppercase; letter-spacing: 1.5px; }
-.login-box input { width: 260px; padding: 10px 14px; background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); border-radius: 6px; font-family: var(--mono); font-size: 12px; text-align: center; outline: none; transition: border-color .15s; }
-.login-box input:focus { border-color: var(--accent-dim); }
-.login-box button { width: 260px; padding: 10px; background: var(--accent); border: 1px solid var(--accent); color: #0a0a0a; font-family: var(--mono); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 6px; cursor: pointer; margin-top: 12px; transition: opacity .15s; }
-.login-box button:hover { opacity: 0.85; }
-.login-error { font-family: var(--mono); color: #e74c3c; font-size: 10px; margin-top: 12px; display: none; }
-
-#hubScreen { display: none; min-height: 100vh; padding: 20px 20px; }
+#hubScreen { min-height: 100vh; padding: 20px 20px; }
 .hub-header { max-width: 1200px; margin: 0 auto 20px; display: flex; justify-content: space-between; align-items: center; }
 .hub-header h1 { font-family: var(--display); font-size: 24px; font-weight: 400; color: var(--text-primary); letter-spacing: -0.01em; }
 .hub-header h1 span { color: var(--text-dim) !important; font-family: var(--mono) !important; }
@@ -170,6 +159,15 @@ body { font-family: var(--sans); background: var(--bg-deep); color: var(--text-p
 .pm-dropzone { border: 1px dashed var(--border); border-radius: 6px; padding: 32px 20px; text-align: center; font-family: var(--mono); color: var(--text-dim); font-size: 10px; letter-spacing: 0.5px; margin-top: 8px; transition: all 0.2s; opacity: 0.6; }
 .pm-dropzone:hover { opacity: 0.8; }
 .pm-dropzone.drag-hover { border-color: var(--accent-dim); border-style: solid; background: var(--accent-glow); color: var(--accent); opacity: 1; }
+.pm-module-data { border-top: 1px dashed var(--border); margin-top: 10px; padding-top: 10px; }
+.pm-module-data-title { font-family: var(--mono); color: var(--text-dim); font-size: 8px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; opacity: 0.7; }
+.pm-list-row { display: flex; gap: 4px; align-items: center; margin-bottom: 4px; }
+.pm-list-row input { flex: 1; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; padding: 5px 7px; color: var(--text-primary); font-family: var(--mono); font-size: 10px; outline: none; transition: border-color .15s; min-width: 0; }
+.pm-list-row input:focus { border-color: var(--accent-dim); }
+.pm-list-row .pm-list-rm { background: transparent; border: 1px solid transparent; color: var(--text-dim); font-size: 12px; cursor: pointer; padding: 2px 5px; border-radius: 3px; transition: all .15s; flex-shrink: 0; }
+.pm-list-row .pm-list-rm:hover { border-color: rgba(200,60,60,0.3); color: #e66; }
+.pm-list-add { border: 1px dashed var(--border); border-radius: 4px; padding: 4px 8px; background: transparent; color: var(--text-dim); font-family: var(--mono); font-size: 9px; cursor: pointer; width: 100%; text-align: center; transition: all .15s; margin-top: 2px; }
+.pm-list-add:hover { border-color: var(--accent-dim); color: var(--accent); }
 
 /* Load Projects Modal */
 .pm-load-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; }
@@ -189,16 +187,6 @@ body { font-family: var(--sans); background: var(--bg-deep); color: var(--text-p
 </head>
 <body>
 
-<div id="loginScreen">
-    <div class="login-box">
-        <h1>Disco <span style="color:var(--accent);">Stacker</span> <span style="font-size: 10px; font-weight: 300;">v222</span></h1>
-        <p>Scroll-driven, interactive and fact focused storytelling</p>
-        <input type="password" id="passwordInput" placeholder="Enter password" onkeypress="if(event.key==='Enter')checkPassword()">
-        <button onclick="checkPassword()">Enter</button>
-        <div class="login-error" id="loginError">Incorrect password</div>
-    </div>
-</div>
-
 <div id="hubScreen">
     <div class="hub-header">
         <h1>Disco <span style="color:var(--accent);">Stacker</span> <span style="font-size: 10px; font-weight: 300;">v222</span></h1>
@@ -207,7 +195,6 @@ body { font-family: var(--sans); background: var(--bg-deep); color: var(--text-p
                 <button id="assetModeBtn" class="active" onclick="switchMode('asset')">Asset Mode</button>
                 <button id="presentationModeBtn" onclick="switchMode('presentation')">Presentation Mode</button>
             </div>
-            <button onclick="logout()">Logout</button>
         </div>
     </div>
     
@@ -370,10 +357,10 @@ body { font-family: var(--sans); background: var(--bg-deep); color: var(--text-p
             </div>
             <p>Confidence-tagged article text with toggleable claim verification overlays.</p>
         </a>
-        <a href="adversarial-verification.html" class="module-card" data-module="adversarial-verification"><span class="status-dot"></span>
+        <a href="claim-challenger.html" class="module-card" data-module="claim-challenger"><span class="status-dot"></span>
             <div class="module-card-header">
-                <h3>Adversarial Verification</h3>
-                <button class="demo-btn" onclick="event.preventDefault(); openDemo('adversarial-verification-demo.html', 'Adversarial Verification')"><span class="play-icon">▶</span> demo</button>
+                <h3>Claim Challenger</h3>
+                <button class="demo-btn" onclick="event.preventDefault(); openDemo('claim-challenger-demo.html', 'Claim Challenger')"><span class="play-icon">▶</span> demo</button>
             </div>
             <p>Interactive claim challenges with expandable evidence chains and progress tracking.</p>
         </a>
@@ -490,33 +477,6 @@ body { font-family: var(--sans); background: var(--bg-deep); color: var(--text-p
 </div>
 
 <script>
-const PASS_HASH = '44c7be8469ab4904ff80ba58bdcf860c';
-
-function md5(s){function L(k,d){return(k<<d)|(k>>>(32-d))}function K(G,k){var I,d,F,H,x;F=(G&2147483648);H=(k&2147483648);I=(G&1073741824);d=(k&1073741824);x=(G&1073741823)+(k&1073741823);if(I&d){return(x^2147483648^F^H)}if(I|d){if(x&1073741824){return(x^3221225472^F^H)}else{return(x^1073741824^F^H)}}else{return(x^F^H)}}function r(d,F,k){return(d&F)|((~d)&k)}function q(d,F,k){return(d&k)|(F&(~k))}function p(d,F,k){return(d^F^k)}function n(d,F,k){return(F^(d|(~k)))}function u(G,F,aa,Z,k,H,I){G=K(G,K(K(r(F,aa,Z),k),I));return K(L(G,H),F)}function f(G,F,aa,Z,k,H,I){G=K(G,K(K(q(F,aa,Z),k),I));return K(L(G,H),F)}function D(G,F,aa,Z,k,H,I){G=K(G,K(K(p(F,aa,Z),k),I));return K(L(G,H),F)}function t(G,F,aa,Z,k,H,I){G=K(G,K(K(n(F,aa,Z),k),I));return K(L(G,H),F)}function e(G){var Z;var F=G.length;var x=F+8;var k=(x-(x%64))/64;var I=(k+1)*16;var aa=Array(I-1);var d=0;var H=0;while(H<F){Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=(aa[Z]|(G.charCodeAt(H)<<d));H++}Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=aa[Z]|(128<<d);aa[I-2]=F<<3;aa[I-1]=F>>>29;return aa}function B(x){var k="",F="",G,d;for(d=0;d<=3;d++){G=(x>>>(d*8))&255;F="0"+G.toString(16);k=k+F.substr(F.length-2,2)}return k}function J(k){k=k.replace(/\r\n/g,"\n");var d="";for(var F=0;F<k.length;F++){var x=k.charCodeAt(F);if(x<128){d+=String.fromCharCode(x)}else{if((x>127)&&(x<2048)){d+=String.fromCharCode((x>>6)|192);d+=String.fromCharCode((x&63)|128)}else{d+=String.fromCharCode((x>>12)|224);d+=String.fromCharCode(((x>>6)&63)|128);d+=String.fromCharCode((x&63)|128)}}}return d}var C=Array();var P,h,E,v,g,Y,X,W,V;var S=7,Q=12,N=17,M=22;var A=5,z=9,y=14,w=20;var o=4,m=11,l=16,j=23;var U=6,T=10,R=15,O=21;s=J(s);C=e(s);Y=1732584193;X=4023233417;W=2562383102;V=271733878;for(P=0;P<C.length;P+=16){h=Y;E=X;v=W;g=V;Y=u(Y,X,W,V,C[P+0],S,3614090360);V=u(V,Y,X,W,C[P+1],Q,3905402710);W=u(W,V,Y,X,C[P+2],N,606105819);X=u(X,W,V,Y,C[P+3],M,3250441966);Y=u(Y,X,W,V,C[P+4],S,4118548399);V=u(V,Y,X,W,C[P+5],Q,1200080426);W=u(W,V,Y,X,C[P+6],N,2821735955);X=u(X,W,V,Y,C[P+7],M,4249261313);Y=u(Y,X,W,V,C[P+8],S,1770035416);V=u(V,Y,X,W,C[P+9],Q,2336552879);W=u(W,V,Y,X,C[P+10],N,4294925233);X=u(X,W,V,Y,C[P+11],M,2304563134);Y=u(Y,X,W,V,C[P+12],S,1804603682);V=u(V,Y,X,W,C[P+13],Q,4254626195);W=u(W,V,Y,X,C[P+14],N,2792965006);X=u(X,W,V,Y,C[P+15],M,1236535329);Y=f(Y,X,W,V,C[P+1],A,4129170786);V=f(V,Y,X,W,C[P+6],z,3225465664);W=f(W,V,Y,X,C[P+11],y,643717713);X=f(X,W,V,Y,C[P+0],w,3921069994);Y=f(Y,X,W,V,C[P+5],A,3593408605);V=f(V,Y,X,W,C[P+10],z,38016083);W=f(W,V,Y,X,C[P+15],y,3634488961);X=f(X,W,V,Y,C[P+4],w,3889429448);Y=f(Y,X,W,V,C[P+9],A,568446438);V=f(V,Y,X,W,C[P+14],z,3275163606);W=f(W,V,Y,X,C[P+3],y,4107603335);X=f(X,W,V,Y,C[P+8],w,1163531501);Y=f(Y,X,W,V,C[P+13],A,2850285829);V=f(V,Y,X,W,C[P+2],z,4243563512);W=f(W,V,Y,X,C[P+7],y,1735328473);X=f(X,W,V,Y,C[P+12],w,2368359562);Y=D(Y,X,W,V,C[P+5],o,4294588738);V=D(V,Y,X,W,C[P+8],m,2272392833);W=D(W,V,Y,X,C[P+11],l,1839030562);X=D(X,W,V,Y,C[P+14],j,4259657740);Y=D(Y,X,W,V,C[P+1],o,2763975236);V=D(V,Y,X,W,C[P+4],m,1272893353);W=D(W,V,Y,X,C[P+7],l,4139469664);X=D(X,W,V,Y,C[P+10],j,3200236656);Y=D(Y,X,W,V,C[P+13],o,681279174);V=D(V,Y,X,W,C[P+0],m,3936430074);W=D(W,V,Y,X,C[P+3],l,3572445317);X=D(X,W,V,Y,C[P+6],j,76029189);Y=D(Y,X,W,V,C[P+9],o,3654602809);V=D(V,Y,X,W,C[P+12],m,3873151461);W=D(W,V,Y,X,C[P+15],l,530742520);X=D(X,W,V,Y,C[P+2],j,3299628645);Y=t(Y,X,W,V,C[P+0],U,4096336452);V=t(V,Y,X,W,C[P+7],T,1126891415);W=t(W,V,Y,X,C[P+14],R,2878612391);X=t(X,W,V,Y,C[P+5],O,4237533241);Y=t(Y,X,W,V,C[P+12],U,1700485571);V=t(V,Y,X,W,C[P+3],T,2399980690);W=t(W,V,Y,X,C[P+10],R,4293915773);X=t(X,W,V,Y,C[P+1],O,2240044497);Y=t(Y,X,W,V,C[P+8],U,1873313359);V=t(V,Y,X,W,C[P+15],T,4264355552);W=t(W,V,Y,X,C[P+6],R,2734768916);X=t(X,W,V,Y,C[P+13],O,1309151649);Y=t(Y,X,W,V,C[P+4],U,4149444226);V=t(V,Y,X,W,C[P+11],T,3174756917);W=t(W,V,Y,X,C[P+2],R,718787259);X=t(X,W,V,Y,C[P+9],O,3951481745);Y=K(Y,h);X=K(X,E);W=K(W,v);V=K(V,g)}return(B(Y)+B(X)+B(W)+B(V)).toLowerCase()}
-
-function checkPassword() {
-    const input = document.getElementById('passwordInput').value;
-    if (md5(input) === PASS_HASH) {
-        sessionStorage.setItem('disco_auth', '1');
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('hubScreen').style.display = 'block';
-    } else {
-        document.getElementById('loginError').style.display = 'block';
-        document.getElementById('passwordInput').value = '';
-    }
-}
-
-function logout() {
-    discoConfirm('Log out and clear all saved module data?\n\nThis will reset all modules to defaults.', function(){// Clear all disco_ localStorage keys
-        Object.keys(localStorage).forEach(key => {
-            if (key.startsWith('disco_')) {
-                localStorage.removeItem(key);
-            }
-        });
-        sessionStorage.removeItem('disco_auth');
-        location.reload();});
-}
-
 function openDemo(demoFile, title) {
     document.getElementById('demoTitle').textContent = title + ' Demo';
     document.getElementById('demoIframe').src = 'demos/' + demoFile;
@@ -539,11 +499,6 @@ document.addEventListener('keydown', function(e) {
 document.getElementById('demoModal').addEventListener('click', function(e) {
     if (e.target === this) closeDemo();
 });
-
-if (sessionStorage.getItem('disco_auth') === '1') {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('hubScreen').style.display = 'block';
-}
 
 // Update status dots for modules with saved content
 document.querySelectorAll('.module-card[data-module]').forEach(function(card) {
@@ -727,12 +682,158 @@ var PM_MODULES = [
     { cat: 'Text', name: 'Body Module', href: 'body-module.html', key: 'body-module', desc: 'Article text with floating image' },
     { cat: 'Text', name: 'Pull Quote', href: 'pull-quote.html', key: 'pull-quote', desc: 'Large-format quote display' },
     { cat: 'Fact Focus', name: 'Epistemic Text', href: 'epistemic-text.html', key: 'epistemic-text', desc: 'Confidence-tagged text' },
-    { cat: 'Fact Focus', name: 'Adversarial Verification', href: 'adversarial-verification.html', key: 'adversarial-verification', desc: 'Claim challenges with evidence' },
+    { cat: 'Fact Focus', name: 'Claim Challenger', href: 'claim-challenger.html', key: 'claim-challenger', desc: 'Claim challenges with evidence' },
     { cat: 'Fact Focus', name: 'Silence Mapping', href: 'silence-mapping.html', key: 'silence-mapping', desc: 'Document reporting gaps' },
     { cat: 'Fact Focus', name: 'Multi-Angle Investigation', href: 'multi-angle.html', key: 'multi-angle', desc: 'Compare multiple sources' },
     { cat: 'Fact Focus', name: 'Clock Narrative', href: 'clock-narrative.html', key: 'clock-narrative', desc: 'Chronological event timeline' },
     { cat: 'Fact Focus', name: 'Claim vs Evidence', href: 'claim-evidence.html', key: 'claim-evidence', desc: 'Side-by-side claim comparison' }
 ];
+
+// Module-specific inline input definitions
+var PM_MODULE_INPUTS = {
+    'before-after': [
+        { key: 'beforeUrl', label: 'Before Image URL', type: 'url', placeholder: 'https://...' },
+        { key: 'afterUrl', label: 'After Image URL', type: 'url', placeholder: 'https://...' },
+        { key: 'beforeLabel', label: 'Before Label', type: 'text', placeholder: 'Before' },
+        { key: 'afterLabel', label: 'After Label', type: 'text', placeholder: 'After' }
+    ],
+    'card-stack': [
+        { key: 'cards', label: 'Cards', type: 'list', fields: [
+            { key: 'text', label: 'Text', type: 'text', placeholder: 'Card text' },
+            { key: 'image', label: 'Image URL', type: 'url', placeholder: 'https://...' }
+        ]}
+    ],
+    'chart': [
+        { key: 'chartType', label: 'Chart Type', type: 'select', options: [
+            { value: 'bar', label: 'Bar' }, { value: 'pie', label: 'Pie' }
+        ]},
+        { key: 'entries', label: 'Data Entries', type: 'list', fields: [
+            { key: 'label', label: 'Label', type: 'text', placeholder: 'Category' },
+            { key: 'value', label: 'Value', type: 'text', placeholder: '0' }
+        ]}
+    ],
+    'collage': [
+        { key: 'images', label: 'Image URLs', type: 'list', fields: [
+            { key: 'url', label: 'URL', type: 'url', placeholder: 'https://...' }
+        ]}
+    ],
+    'doc-module': [
+        { key: 'imageUrl', label: 'Document Image URL', type: 'url', placeholder: 'https://...' },
+        { key: 'caption', label: 'Caption', type: 'text', placeholder: 'Document caption' }
+    ],
+    'gallery': [
+        { key: 'images', label: 'Image URLs', type: 'list', fields: [
+            { key: 'url', label: 'URL', type: 'url', placeholder: 'https://...' }
+        ]}
+    ],
+    'globe': [
+        { key: 'points', label: 'Map Points', type: 'list', fields: [
+            { key: 'lat', label: 'Lat', type: 'text', placeholder: '0' },
+            { key: 'lng', label: 'Lng', type: 'text', placeholder: '0' },
+            { key: 'label', label: 'Label', type: 'text', placeholder: 'Location' }
+        ]}
+    ],
+    'hotspots': [
+        { key: 'imageUrl', label: 'Background Image URL', type: 'url', placeholder: 'https://...' },
+        { key: 'caption', label: 'Caption', type: 'text', placeholder: 'Image caption' }
+    ],
+    'layers': [
+        { key: 'images', label: 'Layer Image URLs', type: 'list', fields: [
+            { key: 'url', label: 'URL', type: 'url', placeholder: 'https://...' }
+        ]}
+    ],
+    'matte': [
+        { key: 'matteText', label: 'Matte Text', type: 'text', placeholder: 'REVEAL' },
+        { key: 'imageUrl', label: 'Background Image URL', type: 'url', placeholder: 'https://...' }
+    ],
+    'single-image': [
+        { key: 'imageUrl', label: 'Image URL', type: 'url', placeholder: 'https://...' },
+        { key: 'caption', label: 'Caption', type: 'text', placeholder: 'Image caption' }
+    ],
+    'stat-counter': [
+        { key: 'stats', label: 'Stats', type: 'list', fields: [
+            { key: 'value', label: 'Value', type: 'text', placeholder: '100' },
+            { key: 'prefix', label: 'Prefix', type: 'text', placeholder: '$' },
+            { key: 'suffix', label: 'Suffix', type: 'text', placeholder: '%' },
+            { key: 'label', label: 'Label', type: 'text', placeholder: 'Stat name' }
+        ]}
+    ],
+    'timeline': [
+        { key: 'events', label: 'Events', type: 'list', fields: [
+            { key: 'date', label: 'Date', type: 'text', placeholder: '2024' },
+            { key: 'title', label: 'Title', type: 'text', placeholder: 'Event title' },
+            { key: 'text', label: 'Description', type: 'text', placeholder: 'Details...' }
+        ]}
+    ],
+    'video': [
+        { key: 'videoUrl', label: 'Video URL', type: 'url', placeholder: 'https://...' },
+        { key: 'caption', label: 'Caption', type: 'text', placeholder: 'Video caption' }
+    ],
+    'zoom-detail': [
+        { key: 'imageUrl', label: 'Image URL', type: 'url', placeholder: 'https://...' },
+        { key: 'caption', label: 'Caption', type: 'text', placeholder: 'Image caption' }
+    ],
+    'text-scroll': [
+        { key: 'blocks', label: 'Text Blocks', type: 'list', fields: [
+            { key: 'text', label: 'Text', type: 'text', placeholder: 'Statement text' },
+            { key: 'bgValue', label: 'BG (color or URL)', type: 'text', placeholder: '#1a1a1a' }
+        ]}
+    ],
+    'chapter-marker': [
+        { key: 'chapterNum', label: 'Chapter Number', type: 'text', placeholder: '01' },
+        { key: 'titleText', label: 'Title', type: 'text', placeholder: 'Chapter title' },
+        { key: 'subtitleText', label: 'Subtitle', type: 'text', placeholder: 'Optional subtitle' }
+    ],
+    'key-facts': [
+        { key: 'panelTitle', label: 'Panel Title', type: 'text', placeholder: 'What You Need to Know' },
+        { key: 'facts', label: 'Facts', type: 'list', fields: [
+            { key: 'label', label: 'Label', type: 'text', placeholder: 'Fact label' },
+            { key: 'value', label: 'Value', type: 'text', placeholder: 'Fact value' }
+        ]}
+    ],
+    'body-module': [
+        { key: 'bodyText', label: 'Body Text', type: 'textarea', placeholder: 'Article text...' },
+        { key: 'imageUrl', label: 'Float Image URL', type: 'url', placeholder: 'https://...' }
+    ],
+    'pull-quote': [
+        { key: 'quoteText', label: 'Quote', type: 'textarea', placeholder: 'Quote text...' },
+        { key: 'attribution', label: 'Attribution', type: 'text', placeholder: '— Author Name' }
+    ],
+    'epistemic-text': [
+        { key: 'headline', label: 'Headline', type: 'text', placeholder: 'Article headline' },
+        { key: 'bodyText', label: 'Body Text', type: 'textarea', placeholder: 'Article text with claims...' }
+    ],
+    'claim-challenger': [
+        { key: 'claim', label: 'Claim', type: 'textarea', placeholder: 'The claim to challenge...' },
+        { key: 'source', label: 'Source', type: 'text', placeholder: 'Claim source' },
+        { key: 'context', label: 'Context', type: 'text', placeholder: 'Additional context' }
+    ],
+    'silence-mapping': [
+        { key: 'title', label: 'Title', type: 'text', placeholder: 'Silence Mapping' },
+        { key: 'gaps', label: 'Reporting Gaps', type: 'list', fields: [
+            { key: 'label', label: 'Label', type: 'text', placeholder: 'Gap label' },
+            { key: 'description', label: 'Description', type: 'text', placeholder: 'What is missing' }
+        ]}
+    ],
+    'multi-angle': [
+        { key: 'topic', label: 'Topic', type: 'text', placeholder: 'Investigation topic' },
+        { key: 'sources', label: 'Sources', type: 'list', fields: [
+            { key: 'name', label: 'Source', type: 'text', placeholder: 'Source name' },
+            { key: 'perspective', label: 'Perspective', type: 'text', placeholder: 'Their angle' }
+        ]}
+    ],
+    'clock-narrative': [
+        { key: 'events', label: 'Timeline Events', type: 'list', fields: [
+            { key: 'time', label: 'Time', type: 'text', placeholder: '09:00' },
+            { key: 'title', label: 'Title', type: 'text', placeholder: 'Event title' },
+            { key: 'text', label: 'Description', type: 'text', placeholder: 'What happened' }
+        ]}
+    ],
+    'claim-evidence': [
+        { key: 'claim', label: 'Claim', type: 'textarea', placeholder: 'The claim...' },
+        { key: 'evidence', label: 'Evidence', type: 'textarea', placeholder: 'The evidence...' }
+    ]
+};
 
 // Mode switching
 function switchMode(mode) {
@@ -875,7 +976,8 @@ function pmAddSection(mod, insertIdx) {
         layout: 'viewport',
         scrollBudget: 2000,
         selected: false,
-        expanded: false
+        expanded: false,
+        moduleData: {}
     };
     if (insertIdx !== undefined && insertIdx < pmSections.length) {
         pmSections.splice(insertIdx, 0, section);
@@ -900,7 +1002,128 @@ function pmToggleExpand(id) {
     pmRender();
 }
 
+function pmBuildModuleState(moduleKey, md) {
+    if (!md || Object.keys(md).length === 0) return null;
+    switch(moduleKey) {
+        case 'single-image':
+            if (!md.imageUrl) return null;
+            return { imageUrl: md.imageUrl, inputs: { imageUrl: md.imageUrl, captionText: md.caption || '', captionCredit: '' } };
+        case 'before-after':
+            if (!md.beforeUrl && !md.afterUrl) return null;
+            return { beforeUrl: md.beforeUrl || '', afterUrl: md.afterUrl || '', inputs: { beforeUrl: md.beforeUrl || '', afterUrl: md.afterUrl || '', beforeLabel: md.beforeLabel || '', afterLabel: md.afterLabel || '' } };
+        case 'video':
+            if (!md.videoUrl) return null;
+            return { videoUrl: md.videoUrl, inputs: { videoUrl: md.videoUrl, captionText: md.caption || '' } };
+        case 'pull-quote':
+            if (!md.quoteText) return null;
+            return { inputs: { quoteText: md.quoteText, attribution: md.attribution || '' }, bgImageData: '' };
+        case 'gallery':
+            if (!md.images || !md.images.length) return null;
+            var now = Date.now();
+            return { images: md.images.map(function(img, i) {
+                return { id: now + i * 1000, src: img.url || '', name: (img.url || '').split('/').pop() || 'Image', textEnabled: false, text: '', textSize: 32, textColor: '#ffffff', textAlign: 'center', textPosition: 'bottom', textX: 0, textY: 0, textBgEnabled: true, textBgOpacity: 80, textLineHeight: 1.4, textLetterSpacing: 0, captionEnabled: true, caption: '', credit: '', link: '', startScroll: Math.round(i * 100 / md.images.length), endScroll: Math.round((i + 1) * 100 / md.images.length) };
+            }), inputs: {} };
+        case 'layers':
+            if (!md.images || !md.images.length) return null;
+            return { layers: md.images.map(function(img, i) {
+                return { id: Date.now() + i, url: img.url || '', depth: i / (md.images.length || 1), opacity: 1, fadeIn: 0, fadeOut: 100, blend: 'normal' };
+            }), textLayers: [], inputs: {} };
+        case 'collage':
+            if (!md.images || !md.images.length) return null;
+            return { images: md.images.map(function(img, i) {
+                return { id: Date.now() + i, url: img.url || '', x: 10 + (i % 3) * 30, y: 10 + Math.floor(i / 3) * 30, width: 35, height: 35, rotation: 0, zIndex: i };
+            }), inputs: {} };
+        case 'globe':
+            if (!md.points || !md.points.length) return null;
+            return { points: md.points.map(function(p) {
+                return { id: Date.now(), label: p.label || '', lat: parseFloat(p.lat) || 0, lng: parseFloat(p.lng) || 0, color: '#ff3333', size: 8, showLabel: true };
+            }), lines: [], inputs: {} };
+        case 'hotspots':
+            if (!md.imageUrl) return null;
+            return { imageUrl: md.imageUrl, hotspots: [], inputs: { imageUrl: md.imageUrl, captionText: md.caption || '' } };
+        case 'zoom-detail':
+            if (!md.imageUrl) return null;
+            return { imageUrl: md.imageUrl, inputs: { imageUrl: md.imageUrl, captionText: md.caption || '' } };
+        case 'doc-module':
+            if (!md.imageUrl) return null;
+            return { imageUrl: md.imageUrl, inputs: { imageUrl: md.imageUrl, captionText: md.caption || '' } };
+        case 'stat-counter':
+            if (!md.stats || !md.stats.length) return null;
+            return { stats: md.stats.map(function(st) {
+                return { value: parseFloat(st.value) || 0, prefix: st.prefix || '', suffix: st.suffix || '', label: st.label || '' };
+            }), inputs: {} };
+        case 'timeline':
+            if (!md.events || !md.events.length) return null;
+            return { events: md.events.map(function(ev) {
+                return { date: ev.date || '', title: ev.title || '', text: ev.text || '' };
+            }), inputs: {} };
+        case 'chart':
+            if (!md.entries || !md.entries.length) return null;
+            return { data: md.entries.map(function(e) {
+                return { label: e.label || '', value: parseFloat(e.value) || 0 };
+            }), chartType: md.chartType || 'bar', orientation: 'horizontal', pieStyle: 'pie', stagger: true, sizing: 'fit', inputs: {} };
+        case 'card-stack':
+            if (!md.cards || !md.cards.length) return null;
+            return { cards: md.cards.map(function(c, i) {
+                return { id: Date.now() + i, text: c.text || '', image: c.image || '', bgColor: '#1a1a1a' };
+            }), inputs: {} };
+        case 'matte':
+            return { config: { matteSource: 'text', matteText: md.matteText || 'REVEAL', fontSize: 120, fontSizeMobile: 65, textAnim: 'random', textPosition: 'center', letterStagger: 50, letterOrder: [], matteImageUrl: '', bgImageUrl: md.imageUrl || '', surroundColor: '#000000', sizing: 'contain', containerHeight: 500 }, inputs: { 'matte-text': md.matteText || 'REVEAL', 'bg-image-url': md.imageUrl || '' }, textAnim: 'random', textPosition: 'center', sizing: 'contain' };
+        case 'text-scroll':
+            if (!md.blocks || !md.blocks.length) return null;
+            return { blocks: md.blocks.map(function(b) {
+                var bg = b.bgValue || '#1a1a1a';
+                return { text: b.text || '', bgType: bg.startsWith('#') ? 'color' : 'image', bgColor: bg.startsWith('#') ? bg : '#1a1a1a', bgImage: bg.startsWith('#') ? '' : bg };
+            }), fontSize: 48, textColor: '#ffffff', textPosition: 'center', backdropBlur: 0, backdropDarken: 30, bgEffect: 'static', transitionSpeed: 600, scrollDuration: 200, desktopOffset: 50, mobileOffset: 200 };
+        case 'chapter-marker':
+            if (!md.titleText) return null;
+            return { chapterNum: md.chapterNum || '', titleText: md.titleText, subtitleText: md.subtitleText || '', titleSize: 72, titleColor: '#ffffff', bgType: 'solid', bgColor1: '#0f0f0f', bgColor2: '#1a1a2e', entryEffect: 'fadeUp', triggerPoint: 20, scrollDuration: 150, desktopOffset: 50, mobileOffset: 200 };
+        case 'key-facts':
+            if (!md.facts || !md.facts.length) return null;
+            return { facts: md.facts, panelTitle: md.panelTitle || 'What You Need to Know', sourceText: '', accentColor: '#4a9eff', panelBg: '#1a1a1a', borderColor: '#2a2a2a', maxWidth: 600, staggerDelay: 100, scrollDuration: 150, desktopOffset: 50, mobileOffset: 200 };
+        case 'body-module':
+            if (!md.bodyText) return null;
+            return { bodyText: md.bodyText, textAlign: 'left', imageUrl: md.imageUrl || '', imageCaption: '', imagePosition: 'right', textColor: '#cccccc', headlineColor: '#ffffff', bgColor: '#0a0a0a', fontSize: 17, maxWidth: 650 };
+        case 'epistemic-text':
+            if (!md.headline && !md.bodyText) return null;
+            return { headline: { on: !!(md.headline), text: md.headline || '' }, subheadline: { on: false, text: '' }, kicker: { on: false, text: '' }, byline: { on: false, text: '' }, dateline: { on: false, text: '' }, bodyText: md.bodyText || '', defaultMode: 'highlighted', claims: [], mobileOffset: 200 };
+        case 'claim-challenger':
+            if (!md.claim) return null;
+            return { claim: md.claim, source: md.source || '', context: md.context || '', showClaim: true, showSource: !!(md.source), showContext: !!(md.context), subheading: '', kicker: '', challenges: [], stats: { s1l: '', s1v: '', s2l: '', s2v: '' }, mobileOffset: 200 };
+        case 'silence-mapping':
+            if (!md.gaps || !md.gaps.length) return null;
+            return { title: md.title || 'Silence Mapping', intro: '', footer: '', showTitle: true, showIntro: false, showFooter: false, gaps: md.gaps.map(function(g) {
+                return { label: g.label || '', description: g.description || '', type: 'omission', severity: 5, id: Date.now() };
+            }), mobileOffset: 200 };
+        case 'multi-angle':
+            if (!md.sources || !md.sources.length) return null;
+            return { topic: md.topic || '', sources: md.sources.map(function(src) {
+                return { name: src.name || '', perspective: src.perspective || '' };
+            }) };
+        case 'clock-narrative':
+            if (!md.events || !md.events.length) return null;
+            return { events: md.events.map(function(ev) {
+                return { time: ev.time || '', title: ev.title || '', text: ev.text || '' };
+            }) };
+        case 'claim-evidence':
+            if (!md.claim && !md.evidence) return null;
+            return { claim: md.claim || '', evidence: md.evidence || '' };
+        default:
+            return null;
+    }
+}
+
 function pmOpenModule(section) {
+    var md = section.moduleData || {};
+    var state = pmBuildModuleState(section.moduleKey, md);
+    if (state) {
+        var keyOverrides = { 'silence-mapping': 'disco_silence-mapping_v3' };
+        var storageKey = keyOverrides[section.moduleKey] || ('disco_' + section.moduleKey);
+        try {
+            localStorage.setItem(storageKey, JSON.stringify(state));
+            localStorage.setItem(storageKey + '_from_planner', 'true');
+        } catch(e) {}
+    }
     window.open(section.moduleHref + '?planner=1');
 }
 
@@ -910,6 +1133,83 @@ function pmUpdateField(id, field, value) {
         s[field] = value;
         pmAutoSave();
     }
+}
+
+function pmUpdateModuleData(id, key, value) {
+    var s = pmSections.find(function(s) { return s.id === id; });
+    if (s) {
+        if (!s.moduleData) s.moduleData = {};
+        s.moduleData[key] = value;
+        pmAutoSave();
+    }
+}
+
+function pmUpdateListItem(id, listKey, rowIdx, fieldKey, value) {
+    var s = pmSections.find(function(s) { return s.id === id; });
+    if (s) {
+        if (!s.moduleData) s.moduleData = {};
+        if (!s.moduleData[listKey]) s.moduleData[listKey] = [];
+        if (!s.moduleData[listKey][rowIdx]) s.moduleData[listKey][rowIdx] = {};
+        s.moduleData[listKey][rowIdx][fieldKey] = value;
+        pmAutoSave();
+    }
+}
+
+function pmAddListRow(id, listKey) {
+    var s = pmSections.find(function(s) { return s.id === id; });
+    if (s) {
+        if (!s.moduleData) s.moduleData = {};
+        if (!s.moduleData[listKey]) s.moduleData[listKey] = [];
+        s.moduleData[listKey].push({});
+        pmRender();
+        pmAutoSave();
+    }
+}
+
+function pmRemoveListRow(id, listKey, rowIdx) {
+    var s = pmSections.find(function(s) { return s.id === id; });
+    if (s && s.moduleData && s.moduleData[listKey]) {
+        s.moduleData[listKey].splice(rowIdx, 1);
+        pmRender();
+        pmAutoSave();
+    }
+}
+
+function pmRenderModuleInputs(s) {
+    var inputs = PM_MODULE_INPUTS[s.moduleKey];
+    if (!inputs || !inputs.length) return '';
+    var md = s.moduleData || {};
+    var html = '<div class="pm-module-data"><div class="pm-module-data-title">Module Content</div>';
+    inputs.forEach(function(inp) {
+        if (inp.type === 'list') {
+            var rows = md[inp.key] || [];
+            html += '<div class="pm-field"><label>' + inp.label + '</label>';
+            rows.forEach(function(row, ri) {
+                html += '<div class="pm-list-row">';
+                inp.fields.forEach(function(f) {
+                    var val = (row[f.key] || '').toString().replace(/"/g, '&quot;');
+                    html += '<input type="text" value="' + val + '" placeholder="' + f.placeholder + '" title="' + f.label + '" onchange="pmUpdateListItem(' + s.id + ',\'' + inp.key + '\',' + ri + ',\'' + f.key + '\',this.value)">';
+                });
+                html += '<button class="pm-list-rm" onclick="pmRemoveListRow(' + s.id + ',\'' + inp.key + '\',' + ri + ')" title="Remove">✕</button></div>';
+            });
+            html += '<button class="pm-list-add" onclick="pmAddListRow(' + s.id + ',\'' + inp.key + '\')">+ Add ' + inp.label.replace(/s$/, '') + '</button></div>';
+        } else if (inp.type === 'select') {
+            var selVal = md[inp.key] || (inp.options && inp.options[0] ? inp.options[0].value : '');
+            html += '<div class="pm-field"><label>' + inp.label + '</label><select onchange="pmUpdateModuleData(' + s.id + ',\'' + inp.key + '\',this.value)">';
+            (inp.options || []).forEach(function(opt) {
+                html += '<option value="' + opt.value + '"' + (selVal === opt.value ? ' selected' : '') + '>' + opt.label + '</option>';
+            });
+            html += '</select></div>';
+        } else if (inp.type === 'textarea') {
+            var taVal = md[inp.key] || '';
+            html += '<div class="pm-field"><label>' + inp.label + '</label><textarea onchange="pmUpdateModuleData(' + s.id + ',\'' + inp.key + '\',this.value)" placeholder="' + inp.placeholder + '">' + taVal + '</textarea></div>';
+        } else {
+            var inpVal = (md[inp.key] || '').toString().replace(/"/g, '&quot;');
+            html += '<div class="pm-field"><label>' + inp.label + '</label><input type="' + (inp.type === 'url' ? 'url' : 'text') + '" value="' + inpVal + '" onchange="pmUpdateModuleData(' + s.id + ',\'' + inp.key + '\',this.value)" placeholder="' + inp.placeholder + '"></div>';
+        }
+    });
+    html += '</div>';
+    return html;
 }
 
 function pmToggleSelect(id) {
@@ -963,6 +1263,7 @@ function pmRender() {
                     '</select></div>' +
                     '<div class="pm-field"><label>Scroll Budget (vh)</label><input type="number" value="' + s.scrollBudget + '" onchange="pmUpdateField(' + s.id + ',\'scrollBudget\',parseInt(this.value)||2000)" min="0" step="100"></div>' +
                 '</div>' +
+                pmRenderModuleInputs(s) +
             '</div>' +
         '</div>';
     });
